@@ -226,7 +226,7 @@ export function useResetTimer({
           BackHandler.exitApp();
         }
 
-        console.log("The end of reset function", name);
+        // console.log("The end of reset function", name);
       } catch (error) {
         console.error(`An error occured in resetTimer function ❎`, error);
       }

@@ -127,10 +127,10 @@ export function useLoadTimerState({
 
         // Paused here
         if (timerStateRef.current === "running") {
-          console.log(
-            "Timeout cleared",
-            getSharedObject()[`timeoutId-${name}`]
-          );
+          // console.log(
+          //   "Timeout cleared",
+          //   getSharedObject()[`timeoutId-${name}`]
+          // );
 
           clearTimeout(getSharedObject()[`timeoutId-${name}`]);
 

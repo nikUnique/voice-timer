@@ -29,14 +29,12 @@ export default function TimerNameControl() {
   async function changeTimerName() {
     try {
       if (!isTapped) {
-        console.log("Closing the modal in the beginning of changeTimerName");
-
         onModalIsVisible();
         return;
       }
 
       if (!isReady) {
-        console.log(`Please wait a second, the dictionary is loading... ⌛`);
+        // console.log(`Please wait a second, the dictionary is loading... ⌛`);
 
         return;
       }

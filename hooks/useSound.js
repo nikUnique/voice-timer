@@ -88,10 +88,10 @@ function useSound() {
           }
 
           soundRef.current?.play((success) => {
-            console.log("Sound should have started now 💯");
+            // console.log("Sound should have started now 💯");
 
             if (success) {
-              console.log("Sound started playing");
+              // console.log("Sound started playing");
 
               soundRef.current.release();
             } else {

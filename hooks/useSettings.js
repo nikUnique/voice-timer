@@ -18,7 +18,7 @@ export function useSettings() {
     function () {
       async function load() {
         try {
-          console.log("Settings retrieved from storage 🤡");
+          // console.log("Settings retrieved from storage 🤡");
 
           const retrievedSettings = await getItemFromStorage("settings");
 

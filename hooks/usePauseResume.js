@@ -81,7 +81,7 @@ export function usePauseResume({
             Date.now() - (time - timeLeftRef.current) * 1000; // Adjust start time
         }
 
-        console.log("We are resuming now", reopenedTimer, name);
+        // console.log("We are resuming now", reopenedTimer, name);
         await updateTime("yes");
       } catch (err) {
         console.error("An error occured ⛑️", err);
@@ -110,7 +110,7 @@ export function usePauseResume({
   const pauseTimer = useCallback(
     async function () {
       try {
-        console.log("I am pausing now :)", timeoutRef.current);
+        // console.log("I am pausing now :)", timeoutRef.current);
 
         setIsPaused(true);
 
@@ -143,11 +143,11 @@ export function usePauseResume({
 
         clearTimeout(timeoutRef.current);
         clearTimeout(getSharedObject()[`timeoutId-${name}`]);
-        console.log(
-          "Timeout is cleared!",
-          timeoutRef.current,
-          getSharedObject()[`timeoutId-${name}`]
-        );
+        // console.log(
+        //   "Timeout is cleared!",
+        //   timeoutRef.current,
+        //   getSharedObject()[`timeoutId-${name}`]
+        // );
 
         setTimeout(function () {
           clearTimeout(timeoutRef.current);

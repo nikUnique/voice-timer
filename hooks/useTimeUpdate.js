@@ -180,10 +180,10 @@ export function useTimeUpdate({
 
         if (timeLeftRef.current <= 0 && timeLeftRef.current >= -5) {
           if (alertingTimerNamesRef.current.includes(name)) {
-            console.log(
-              "This already played the sound",
-              alertingTimerNamesRef.current
-            );
+            // console.log(
+            //   "This already played the sound",
+            //   alertingTimerNamesRef.current
+            // );
             return;
           }
 

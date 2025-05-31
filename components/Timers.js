@@ -269,7 +269,6 @@ export default function Timers({ navigation }) {
       emitter.all.delete("navigation");
       emitter.all.delete("goBack");
       emitter.on("navigation", (params) => {
-        console.log("params", params);
         updateSharedObject({ changeTimerNameParams: params });
         navigation.navigate(params.screen);
       });

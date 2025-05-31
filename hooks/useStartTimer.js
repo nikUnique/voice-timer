@@ -164,10 +164,10 @@ export function useStartTimer({
           Date.now() - freshlyCreatedTimerRef.current?.createdAt < 3000 &&
           name === freshlyCreatedTimerRef.current?.name
         ) {
-          console.log(
-            "time gap",
-            Date.now() - freshlyCreatedTimerRef.current?.createdAt
-          );
+          // console.log(
+          //   "time gap",
+          //   Date.now() - freshlyCreatedTimerRef.current?.createdAt
+          // );
 
           // freshlyCreatedTimerRef.current = null;
           // setTimeout(async function () {
