@@ -26,14 +26,6 @@ export default function TimerNameControl() {
 
   const { timers, dictionaryTypoRef, setTimers } = useRefsData();
 
-  console.log(
-    "chaps",
-    name,
-    modalIsVisible,
-    onModalIsVisible,
-    onLoadDictionary
-  );
-
   async function changeTimerName() {
     try {
       if (!isTapped) {
@@ -80,9 +72,7 @@ export default function TimerNameControl() {
         return;
       }
 
-      const areOnlyLetters = /^[A-Za-z0-9]+( [A-Za-z0-9]+)?$/.test(
-        lowerCaseName
-      );
+      const areOnlyLetters = /^[A-Za-z]+( [A-Za-z]+)?$/.test(lowerCaseName);
 
       if (!areOnlyLetters) {
         console.log(

@@ -16,6 +16,7 @@ import CheckBox from "@react-native-community/checkbox";
 import { useNavigation } from "@react-navigation/native";
 import IconButton from "../ui/IconButton";
 import { getItemFromStorage, setItemInStorage } from "../utils/helpers";
+import { Subtitle, Paragraph, BulletPoint, Label } from "./TextUnits";
 
 export default function Terms() {
   const [isAccepted, setIsAccepted] = useState(false);
@@ -331,41 +332,41 @@ export default function Terms() {
   );
 }
 
-function Subtitle({ children }) {
-  return (
-    <View>
-      <Text style={styles.subtitle}>{children}</Text>
-    </View>
-  );
-}
+// function Subtitle({ children }) {
+//   return (
+//     <View>
+//       <Text style={styles.subtitle}>{children}</Text>
+//     </View>
+//   );
+// }
 
-function Paragraph({ children }) {
-  return (
-    <View>
-      <Text style={styles.paragraph}>{children}</Text>
-    </View>
-  );
-}
+// function Paragraph({ children }) {
+//   return (
+//     <View>
+//       <Text style={styles.paragraph}>{children}</Text>
+//     </View>
+//   );
+// }
 
-function Label({ children }) {
-  return (
-    <View>
-      <Text style={styles.label}>{children}</Text>
-    </View>
-  );
-}
+// function Label({ children }) {
+//   return (
+//     <View>
+//       <Text style={styles.label}>{children}</Text>
+//     </View>
+//   );
+// }
 
-function BulletPoint({ children }) {
-  return (
-    <View>
-      <Text style={styles.bulletPoint}>
-        {"\u2022  "}
-        {children}
-        {"\n"}
-      </Text>
-    </View>
-  );
-}
+// function BulletPoint({ children }) {
+//   return (
+//     <View>
+//       <Text style={styles.bulletPoint}>
+//         {"\u2022  "}
+//         {children}
+//         {"\n"}
+//       </Text>
+//     </View>
+//   );
+// }
 
 const styles = StyleSheet.create({
   container: {
