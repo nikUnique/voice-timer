@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "com.asterinet.react.bgactions.react-native-background-actions-release-24:/layout-v21/notification_template_icon_group.xml",
+        "source": "com.asterinet.react.bgactions.react-native-background-actions-core-1.9.0-17:/layout-v21/notification_template_icon_group.xml"
+    },
+    {
+        "merged": "com.asterinet.react.bgactions.react-native-background-actions-release-24:/layout-v21/notification_action_tombstone.xml",
+        "source": "com.asterinet.react.bgactions.react-native-background-actions-core-1.9.0-17:/layout-v21/notification_action_tombstone.xml"
+    },
+    {
+        "merged": "com.asterinet.react.bgactions.react-native-background-actions-release-24:/layout-v21/notification_action.xml",
+        "source": "com.asterinet.react.bgactions.react-native-background-actions-core-1.9.0-17:/layout-v21/notification_action.xml"
+    },
+    {
+        "merged": "com.asterinet.react.bgactions.react-native-background-actions-release-24:/layout-v21/notification_template_custom_big.xml",
+        "source": "com.asterinet.react.bgactions.react-native-background-actions-core-1.9.0-17:/layout-v21/notification_template_custom_big.xml"
+    }
+]

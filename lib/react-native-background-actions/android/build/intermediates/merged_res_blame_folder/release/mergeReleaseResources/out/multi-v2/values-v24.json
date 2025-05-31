@@ -1,0 +1,34 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.asterinet.react.bgactions.react-native-background-actions-mergeReleaseResources-22:/values-v24/values-v24.xml",
+            "map": [
+                {
+                    "source": "/home/nik/.gradle/caches/8.10.2/transforms/066d0a679ecabea7c972c34a4e1b039b/transformed/appcompat-1.6.1/res/values-v24/values-v24.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,212",
+                        "endColumns": "156,134",
+                        "endOffsets": "207,342"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "com.asterinet.react.bgactions.react-native-background-actions-release-24:/values-v24/values-v24.xml",
+            "map": [
+                {
+                    "source": "/home/nik/.gradle/caches/8.10.2/transforms/066d0a679ecabea7c972c34a4e1b039b/transformed/appcompat-1.6.1/res/values-v24/values-v24.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,212",
+                        "endColumns": "156,134",
+                        "endOffsets": "207,342"
+                    }
+                }
+            ]
+        }
+    ]
+}

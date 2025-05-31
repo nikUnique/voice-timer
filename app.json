@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "Timer with commands",
+    "slug": "timer_with_commands",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/time_icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+
+    "androidStatusBar": {
+      "barStyle": "light-content",
+      "backgroundColor": "#0b7285",
+      "translucent": true
+    },
+
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.moonnic.timer-with-commands"
+    },
+
+    "android": {
+      "plugins": [
+        [
+          "expo-notifications",
+          {
+            "icon": "./assets/time_icon.png",
+            "color": "#ffffff",
+            "defaultChannel": "default",
+            "sounds": ["./assets/joy.mp3"],
+            "enableBackgroundRemoteNotifications": true
+          }
+        ],
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+        },
+        {
+          "notificationsPermission": "Allow $(PRODUCT_NAME) to send you notifications."
+        }
+      ],
+      "permissions": [
+        "WRITE_SETTINGS",
+        "FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_DATA_SYNC",
+        "android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "lightblue"
+      },
+      "package": "com.moonnic.timer-with-commands"
+    },
+    "scheme": "timer_with_commands",
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": ["./lib/withNotifeeAndroidFix"]
+  }
+}

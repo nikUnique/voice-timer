@@ -1,0 +1,36 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.asterinet.react.bgactions.react-native-background-actions-mergeReleaseResources-22:/values-hdpi-v4/values-hdpi-v4.xml",
+            "map": [
+                {
+                    "source": "/home/nik/.gradle/caches/8.10.2/transforms/066d0a679ecabea7c972c34a4e1b039b/transformed/appcompat-1.6.1/res/values-hdpi-v4/values-hdpi-v4.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "6",
+                        "endColumns": "13",
+                        "endOffsets": "327"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "com.asterinet.react.bgactions.react-native-background-actions-release-24:/values-hdpi-v4/values-hdpi-v4.xml",
+            "map": [
+                {
+                    "source": "/home/nik/.gradle/caches/8.10.2/transforms/066d0a679ecabea7c972c34a4e1b039b/transformed/appcompat-1.6.1/res/values-hdpi-v4/values-hdpi-v4.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "6",
+                        "endColumns": "13",
+                        "endOffsets": "327"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.asterinet.react.bgactions.react-native-background-actions-release-24:/layout-watch-v20/abc_alert_dialog_button_bar_material.xml",
+        "source": "com.asterinet.react.bgactions.react-native-background-actions-appcompat-1.6.1-0:/layout-watch-v20/abc_alert_dialog_button_bar_material.xml"
+    },
+    {
+        "merged": "com.asterinet.react.bgactions.react-native-background-actions-release-24:/layout-watch-v20/abc_alert_dialog_title_material.xml",
+        "source": "com.asterinet.react.bgactions.react-native-background-actions-appcompat-1.6.1-0:/layout-watch-v20/abc_alert_dialog_title_material.xml"
+    }
+]

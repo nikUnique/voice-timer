@@ -1,0 +1,27 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-native/all",
+    "plugin:prettier/recommended",
+    "expo"
+  ],
+  "env": {
+    "react-native/react-native": true
+  },
+  "plugins": ["react", "react-native"],
+  "rules": {
+    "prettier/prettier": "off",
+    "no-unused-vars": "warn",
+    "react/prop-types": "off",
+    "react-native/no-unused-styles": "warn",
+    "react-native/sort-styles": "off",
+    "react-native/no-color-literals": "off",
+    "react/react-in-jsx-scope": "off",
+    "react-native/no-inline-styles": "off",
+    "react-native/split-platform-components": "off",
+    "no-const-assign": "off",
+    "no-unused-expressions": "off",
+    "no-async-promise-executor": "off"
+  }
+}

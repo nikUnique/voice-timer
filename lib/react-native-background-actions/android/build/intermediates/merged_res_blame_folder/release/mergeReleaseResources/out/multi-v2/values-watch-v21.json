@@ -1,0 +1,36 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.asterinet.react.bgactions.react-native-background-actions-release-24:/values-watch-v21/values-watch-v21.xml",
+            "map": [
+                {
+                    "source": "/home/nik/.gradle/caches/8.10.2/transforms/066d0a679ecabea7c972c34a4e1b039b/transformed/appcompat-1.6.1/res/values-watch-v21/values-watch-v21.xml",
+                    "from": {
+                        "startLines": "2,6,10",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,271,499",
+                        "endLines": "5,9,13",
+                        "endColumns": "12,12,12",
+                        "endOffsets": "266,494,724"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "com.asterinet.react.bgactions.react-native-background-actions-mergeReleaseResources-22:/values-watch-v21/values-watch-v21.xml",
+            "map": [
+                {
+                    "source": "/home/nik/.gradle/caches/8.10.2/transforms/066d0a679ecabea7c972c34a4e1b039b/transformed/appcompat-1.6.1/res/values-watch-v21/values-watch-v21.xml",
+                    "from": {
+                        "startLines": "2,6,10",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,271,499",
+                        "endLines": "5,9,13",
+                        "endColumns": "12,12,12",
+                        "endOffsets": "266,494,724"
+                    }
+                }
+            ]
+        }
+    ]
+}

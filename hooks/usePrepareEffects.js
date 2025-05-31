@@ -1,0 +1,73 @@
+import { useCallback, useEffect } from "react";
+import { AppState } from "react-native";
+
+import { emitter } from "../utils/EventEmitter";
+import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
+import { useRefsData } from "../context/VoiceRecognizerContext";
+
+export function usePrepareEffects({
+  saveStorage,
+  loadTimerState,
+  name,
+  pauseTimerRef,
+  resumeTimerRef,
+  updatePersitentNotification,
+  timerIsActiveRef,
+  timeLeftRef,
+  handleReadyState,
+  index,
+  activateTimerRef,
+}) {
+  const { workingTimersRef } = useRefsData();
+
+  useEffect(
+    function () {
+      emitter.all.delete(`updateNotification-${name}`);
+      emitter.on(`updateNotification-${name}`, updatePersitentNotification);
+    },
+
+    [name, pauseTimerRef, resumeTimerRef, updatePersitentNotification]
+  );
+
+  const load = useCallback(
+    async function load() {
+      if (AppState.currentState === "active") {
+        const newAppState = await loadTimerState();
+        updateSharedObject({ appStateBox: newAppState });
+      }
+    },
+    [loadTimerState]
+  );
+
+  useEffect(
+    function () {
+      load();
+      const appStateListener = AppState.addEventListener("change", load);
+
+      return () => appStateListener.remove();
+    },
+    [load, loadTimerState]
+  );
+
+  useEffect(
+    function () {
+      const appStateListener = AppState.addEventListener(
+        "change",
+        async (nextAppState) => {
+          if (
+            AppState.currentState === "background" &&
+            timeLeftRef.current > 0
+          ) {
+            const newAppState = await saveStorage();
+
+            updateSharedObject({ appStateBox: newAppState });
+          }
+        }
+      );
+      return () => {
+        appStateListener.remove();
+      };
+    },
+    [name, saveStorage, timeLeftRef, timerIsActiveRef]
+  );
+}

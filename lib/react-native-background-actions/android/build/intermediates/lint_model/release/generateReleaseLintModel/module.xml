@@ -1,0 +1,19 @@
+<lint-module
+    format="1"
+    dir="/mnt/g/Programming/React Native/working directory/timer_with_commands/node_modules/react-native-background-actions/android"
+    name=":react-native-background-actions"
+    type="LIBRARY"
+    maven="timer_with_commands:react-native-background-actions:unspecified"
+    agpVersion="8.6.0"
+    buildFolder="build"
+    bootClassPath="/home/nik/Android/Sdk/platforms/android-35/android.jar:/home/nik/Android/Sdk/build-tools/34.0.0/core-lambda-stubs.jar"
+    javaSourceLevel="17"
+    compileTarget="android-35"
+    neverShrinking="true">
+  <lintOptions
+      abortOnError="true"
+      absolutePaths="true"
+      checkReleaseBuilds="true"
+      explainIssues="true"/>
+  <variant name="release"/>
+</lint-module>
