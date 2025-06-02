@@ -2,6 +2,7 @@ import { useCallback, useEffect } from "react";
 
 import { emitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
+import BackgroundService from "react-native-background-actions";
 
 import { AppState } from "react-native";
 import { setItemInStorage } from "../utils/helpers";
@@ -53,10 +54,24 @@ export function usePauseResume({
         }
 
         setIsPaused(false);
-        updateControlButtons(isActive, !isPaused);
+        updateControlButtons(isActive, false);
         timerStateRef.current = "running";
         isPausedRef.current = false;
         pausedTimeRef.current = null;
+
+        updateSharedObject({
+          pausedTimers: getSharedObject().pausedTimers.filter(
+            (timerName) => timerName !== name
+          ),
+          runningTimers: [...getSharedObject().runningTimers, name],
+        });
+
+        if (
+          getSharedObject().runningTimers.length > 0 &&
+          !BackgroundService.isRunning()
+        ) {
+          emitter.emit("startForegroundService");
+        }
 
         setItemInStorage(`timerState-${name}`, {
           timerState: timerStateRef.current,
@@ -91,7 +106,6 @@ export function usePauseResume({
       setIsPaused,
       updateControlButtons,
       isActive,
-      isPaused,
       timerStateRef,
       isPausedRef,
       pausedTimeRef,
@@ -114,7 +128,7 @@ export function usePauseResume({
 
         setIsPaused(true);
 
-        updateControlButtons(isActive, !isPaused);
+        updateControlButtons(isActive, true);
         isPausedRef.current = true;
         pausedTimeRef.current = Date.now();
         timerStateRef.current = "paused";
@@ -156,7 +170,17 @@ export function usePauseResume({
         }, 100);
 
         emitter.emit(`pause-${name}`);
-        updateSharedObject({ delay: 10 });
+        updateSharedObject({
+          delay: 10,
+          runningTimers: getSharedObject().runningTimers.filter(
+            (timerName) => timerName !== name
+          ),
+          pausedTimers: [...getSharedObject().pausedTimers, name],
+        });
+
+        if (getSharedObject().runningTimers.length === 0) {
+          BackgroundService.stop();
+        }
 
         emitter.all.delete(`updateNotification-${name}`);
         emitter.on(`updateNotification-${name}`, updatePersitentNotification);
@@ -180,7 +204,6 @@ export function usePauseResume({
       setIsPaused,
       updateControlButtons,
       isActive,
-      isPaused,
       isPausedRef,
       pausedTimeRef,
       timerStateRef,

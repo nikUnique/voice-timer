@@ -48,12 +48,13 @@ export function useLoadTimerState({
         }
       }
 
-      if (!savedTime) {
-        workingTimersRef.current = workingTimersRef.current.filter(
-          (workingTimer) => workingTimer !== name
-        );
-        // console.log("We should clean", name, workingTimersRef.current);
-      }
+      // If the app crashes then the time will be saved there because it is saved from the very beginning
+      // if (!savedTime) {
+      //   workingTimersRef.current = workingTimersRef.current.filter(
+      //     (workingTimer) => workingTimer !== name
+      //   );
+      //   // console.log("We should clean", name, workingTimersRef.current);
+      // }
 
       if (
         parsedTimerState?.timerState === "running" &&

@@ -265,7 +265,25 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         item.name.trim().split(" ").length > 1
           ? { recognizedCommand }
           : undefined;
+
+      if (
+        item.name.trim().split(" ").length === 1 &&
+        !numberOfRecognizedCommands.filter(
+          (timer) => timer.split(" ").length > 2
+        ).length
+      ) {
+        const longestCommand = numberOfRecognizedCommands.reduce(
+          (acc, command) => {
+            return acc.length > command.length ? acc : command;
+          },
+          numberOfRecognizedCommands[0]
+        );
+
+        isCommandNew = { recognizedCommand: longestCommand };
+      }
     }
+
+    // console.log("isCommandNew", isCommandNew, numberOfRecognizedCommands);
 
     return (
       <TimerInterface

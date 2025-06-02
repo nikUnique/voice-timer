@@ -4,7 +4,7 @@ import { AppState, Platform } from "react-native";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter } from "../utils/EventEmitter";
 import { setItemInStorage } from "../utils/helpers";
-import { updateSharedObject } from "../utils/sharedVariables";
+import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import { useUpdateControlButtons } from "./useUpdateControlButtons";
 
 export function useStartTimer({
@@ -55,6 +55,13 @@ export function useStartTimer({
           return;
         }
 
+        console.log(
+          "sumba",
+          isActive,
+          timeLeftRef.current,
+          workingTimersRef.current
+        );
+
         if ((!isActive || repeat) && timeLeftRef.current > 0) {
           if (workingTimersRef.current.length >= 5) {
             console.log(
@@ -82,7 +89,10 @@ export function useStartTimer({
           soundIsPlayedRef.current = false;
           isPausedRef.current = false;
           timerStateRef.current = "running";
-          updateSharedObject({ appStateBox: "active" });
+          updateSharedObject({
+            appStateBox: "active",
+            runningTimers: [...getSharedObject().runningTimers, name],
+          });
 
           if (!workingTimersRef.current?.includes(name)) {
             workingTimersRef.current = [...workingTimersRef.current, name];
@@ -134,6 +144,7 @@ export function useStartTimer({
       workingTimersRef,
       setIsActive,
       setIsReset,
+      updateControlButtons,
       setIsPaused,
       timerIsActiveRef,
       freshlyCreatedTimerRef,

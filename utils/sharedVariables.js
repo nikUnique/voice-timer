@@ -10,7 +10,8 @@ let sharedObject = {
   timerListHeight: 0,
   resetAllFinishedFromApp: false,
   changeTimerNameParams: {},
-  selectedTimerProps: {},
+  runningTimers: [],
+  pausedTimers: [],
 };
 
 export function getSharedObject() {

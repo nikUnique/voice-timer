@@ -106,7 +106,14 @@ export function useResetTimer({
         updateSharedObject({
           alertingTimers: alertingTimerNamesRef.current,
           index: workingTimersRef.current.length === 0 && 0,
+          runningTimers: getSharedObject().runningTimers.filter(
+            (timerName) => timerName !== name
+          ),
         });
+
+        if (getSharedObject().runningTimers.length === 0) {
+          BackgroundService.stop();
+        }
 
         setAlertingTimers(alertingTimerNamesRef.current);
         setItemInStorage("alertingTimerNames", alertingTimerNamesRef.current);

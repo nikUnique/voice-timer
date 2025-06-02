@@ -19,7 +19,8 @@ import { useUpdateControlButtons } from "../hooks/useUpdateControlButtons";
 
 function CreateTimer() {
   const { timers, setTimers } = useRecognizerData();
-  const { freshlyCreatedTimerRef, lastTimerStartedRef } = useRefsData();
+  const { freshlyCreatedTimerRef, lastTimerStartedRef, workingTimersRef } =
+    useRefsData();
   const navigation = useNavigation();
   const [inputValue, setInputValue] = useState("------");
   const { updateControlButtons } = useUpdateControlButtons();
@@ -144,7 +145,15 @@ function CreateTimer() {
       const newTimerArray = [...timers, newTimer];
 
       const sortedTimers = newTimerArray.slice();
-      updateSharedObject({ name: newName });
+
+      // let shiftedName;
+      // if(workingTimersRef.current.length >=5) {
+      //   const currentTimerIndex = timers.findIndex(timer => timer.name === getSharedObject().name)
+      // }
+      // workingTimersRef.current.length >=5 && updateSharedObject({name: shiftedName})
+
+      workingTimersRef.current.length < 5 &&
+        updateSharedObject({ name: newName });
 
       setItemInStorage("timers", sortedTimers);
       setTimers(sortedTimers);
@@ -198,6 +207,7 @@ function CreateTimer() {
               onPress={onCreateTimer}
               size={30}
               style={styles.icon}
+              // disabled={workingTimersRef.current.length >= 5}
             />
           </View>
         </View>

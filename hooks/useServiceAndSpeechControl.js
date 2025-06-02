@@ -55,10 +55,12 @@ export function useServiceAndSpeechControl() {
           if (
             nextAppState !== "active" &&
             areThereNotCompletedTimers &&
-            !leastTimeTimerRef.current?.isPaused
+            !leastTimeTimerRef.current?.isPaused &&
+            leastTimeTimerRef.current
           ) {
             Platform.constants.Release < 12 &&
               (await BackgroundService.start(backgroundTask, options));
+
             await onUpdateNotification(
               ongoingNotificationLabelRef.current,
               getSharedObject()?.timersLabel,
