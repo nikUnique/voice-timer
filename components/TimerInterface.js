@@ -22,6 +22,7 @@ import TimerInterfaceButtons from "./TimerInterfaceButtons";
 import TimerNameControl from "./TimerNameControl";
 import { emitter } from "../utils/EventEmitter";
 import { updateSharedObject } from "../utils/sharedVariables";
+import { useIsFocused } from "@react-navigation/native";
 
 function TimerInterface({
   time = 1200,
@@ -40,7 +41,15 @@ function TimerInterface({
 
   const timerInterfaceState = useTimerInterfaceState({ time });
 
-  const { timers } = useRefsData();
+  const { timers, isFocusedRef } = useRefsData();
+
+  // useEffect(
+  //   function () {
+  //     isFocusedRef.current = name;
+  //     console.log("The currently viewed timer is:", name);
+  //   },
+  //   [isFocused, isFocusedRef, name]
+  // );
 
   const allState = {
     name,

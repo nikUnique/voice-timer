@@ -193,7 +193,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       if (!isReady) return;
       try {
         if (!getSharedObject()?.notificationTap) {
-          updateSharedObject({ name: timers[timers.length - 1]?.name });
           return;
         }
 

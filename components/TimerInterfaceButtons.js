@@ -7,6 +7,8 @@ import IconButton from "../ui/IconButton";
 import { emitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 
+let isTimerStopped = true;
+
 export default function TimerInterfaceButtons({ onDelete }) {
   const navigation = useNavigation();
 
@@ -46,14 +48,24 @@ export default function TimerInterfaceButtons({ onDelete }) {
 
   // console.log("state", stateChanged);
 
-  // useEffect(
-  //   function () {
-  //     !getSharedObject()?.name &&
-  //       updateSharedObject({ name: timers[timers.length - 1]?.name });
-  //     setStateChanged((prev) => !prev);
-  //   },
-  //   [timers]
-  // );
+  // useEffect(function () {
+  //   updateSharedObject({ name: timers[timers.length - 1]?.name });
+  //   setStateChanged((prev) => !prev);
+  // }, []);
+
+  useEffect(function () {
+    console.log("The name is: ", getSharedObject()?.name, "💣");
+    // if (
+    //   getSharedObject()?.runningTimers.includes(timers[timers.length - 1].name)
+    // ) {
+    //   isTimerStopped = false;
+    // }
+
+    return () => {
+      console.log("We should already clean the name 📷");
+      updateSharedObject({ name: null });
+    };
+  }, []);
 
   async function onPress() {
     if (workingTimersRef.current.length >= 5) {
@@ -73,12 +85,31 @@ export default function TimerInterfaceButtons({ onDelete }) {
       navigation.push("CreateTimerScreen");
   }
 
-  let isTimerStopped =
-    getSharedObject().isPaused || !getSharedObject().isActive;
+  // if (
+  //   !getSharedObject()?.runningTimers.includes(timers[timers.length - 1]) &&
+  //   !getSharedObject()?.name
+  // ) {
+  //   isTimerStopped = true;
+  // }
 
-  if (!workingTimersRef.current.includes(getSharedObject()?.name)) {
-    isTimerStopped = true;
-  }
+  // if (
+  //   getSharedObject()?.runningTimers.includes(timers[timers.length - 1]) &&
+  //   !getSharedObject()?.name
+  // ) {
+  //   isTimerStopped = false;
+  // }
+
+  // if (
+  //   getSharedObject()?.runningTimers.includes(
+  //     timers[timers.length - 1]?.name
+  //   ) /* &&
+  //   !getSharedObject()?.name &&
+  //   getSharedObject()?.isPaused === false */
+  // ) {
+  //   console.log("supa", getSharedObject()?.isPaused);
+
+  //   isTimerStopped = false;
+  // }
 
   // if(!getSharedObject()?.name) {
   //   isTimerStopped =
@@ -124,7 +155,14 @@ export default function TimerInterfaceButtons({ onDelete }) {
         <View style={styles.playButtonContainer}>
           <IconButton
             size={36}
-            icon={isTimerStopped ? "play" : "pause"}
+            icon={
+              // The ultimate solution for the right icon to be displayed: I already found out that if there is no name then it the selected timers is the last one in the array or the first one in the view. And the second condition is to know whether that name is in the runningTimers array or not and if is - then the icon should be paused, otherwise it should be play.
+              !getSharedObject()?.runningTimers.includes(
+                getSharedObject()?.name || timers[timers.length - 1]?.name
+              )
+                ? "play"
+                : "pause"
+            }
             onPress={() => {
               if (
                 workingTimersRef.current.length >= 5 &&

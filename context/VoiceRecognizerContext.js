@@ -71,6 +71,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const dictionary2Ref = useRef(null);
   const dictionaryTypoRef = useRef(null);
   const currentlyViewedItemRef = useRef(null);
+  const isFocusedRef = useRef(null);
 
   // Settings
   const [screenTimeout, setScreenTimeout] = useState(1000 * 60 * 5);
@@ -238,6 +239,7 @@ export default function VoiceRecognizerProvider({ children }) {
       timerHeight,
       setTimerHeight,
       currentlyViewedItemRef,
+      isFocusedRef,
     }),
     [editableTimers, timerHeight, timers, voiceOptions]
   );
