@@ -5,7 +5,7 @@ import { Colors } from "../constants/colors";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import IconButton from "../ui/IconButton";
 import { emitter } from "../utils/EventEmitter";
-import { getSharedObject } from "../utils/sharedVariables";
+import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 
 export default function TimerInterfaceButtons({ onDelete }) {
   const navigation = useNavigation();
@@ -18,7 +18,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
   const createButtonTipTimeoutRef = useRef(null);
   const startButtonTipTimeoutRef = useRef(null);
 
-  const { timers, workingTimersRef } = useRefsData();
+  const { timers, workingTimersRef, leastTimeTimerRef } = useRefsData();
   const thereAre30Timers = timers.length >= 30;
 
   useEffect(
@@ -31,7 +31,29 @@ export default function TimerInterfaceButtons({ onDelete }) {
     [setStateChanged]
   );
 
+  // useEffect(
+  //   function () {
+  //     if (!getSharedObject().name) {
+  //       const isSelectedTimerPaused = leastTimeTimerRef.current?.isPaused;
+
+  //       if (leastTimeTimerRef.current && !isSelectedTimerPaused) {
+  //         updateSharedObject({ isPaused: false, isActive: true });
+  //       }
+  //     }
+  //   },
+  //   [leastTimeTimerRef, stateChanged]
+  // );
+
   // console.log("state", stateChanged);
+
+  // useEffect(
+  //   function () {
+  //     !getSharedObject()?.name &&
+  //       updateSharedObject({ name: timers[timers.length - 1]?.name });
+  //     setStateChanged((prev) => !prev);
+  //   },
+  //   [timers]
+  // );
 
   async function onPress() {
     if (workingTimersRef.current.length >= 5) {
@@ -51,8 +73,31 @@ export default function TimerInterfaceButtons({ onDelete }) {
       navigation.push("CreateTimerScreen");
   }
 
-  const isTimerStopped =
+  let isTimerStopped =
     getSharedObject().isPaused || !getSharedObject().isActive;
+
+  if (!workingTimersRef.current.includes(getSharedObject()?.name)) {
+    isTimerStopped = true;
+  }
+
+  // if(!getSharedObject()?.name) {
+  //   isTimerStopped =
+  // }
+  // &&
+  //   !getSharedObject()?.runningTimers.includes(
+  //     getSharedObject()?.name || timers[timers.length - 1]?.name
+  //   ));
+  /* ||
+    (!getSharedObject()?.name &&
+      !getSharedObject().runningTimers.includes(timers[timers.length - 1])); */
+  /* (workingTimersRef.current.includes(getSharedObject().name && timers[timers.length -1].name)) */
+
+  console.log(
+    "chekc",
+    getSharedObject().runningTimers,
+    getSharedObject().isActive,
+    getSharedObject()?.name
+  );
 
   return (
     <>
@@ -68,7 +113,9 @@ export default function TimerInterfaceButtons({ onDelete }) {
             icon='trash'
             color={Colors.primaryTint90}
             onPress={() =>
-              onDelete(getSharedObject().name || timers[timers.length - 1].name)
+              onDelete(
+                getSharedObject()?.name || timers[timers.length - 1].name
+              )
             }
             style={styles.deleteButton}
           />
@@ -81,7 +128,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
             onPress={() => {
               if (
                 workingTimersRef.current.length >= 5 &&
-                !workingTimersRef.current.includes(getSharedObject().name)
+                !workingTimersRef.current.includes(getSharedObject()?.name)
               ) {
                 clearTimeout(createButtonTipTimeoutRef.current);
                 clearTimeout(startButtonTipTimeoutRef.current);
@@ -139,16 +186,16 @@ export default function TimerInterfaceButtons({ onDelete }) {
       {maximumTimersTipCreation && (
         <View style={styles.tipTextContainer}>
           <Text style={styles.tipText}>
-            You already have 5 timers (running or paused). Please stop one
-            before creating another timer
+            You already have 5 timers active (running or paused). Please stop
+            one before creating another timer
           </Text>
         </View>
       )}
       {maximumTimersTipStart && (
         <View style={styles.tipTextContainer}>
           <Text style={styles.tipText}>
-            You already have 5 timers (running or paused). Please stop one
-            before starting another timer
+            You already have 5 timers active (running or paused). Please stop
+            one before starting another timer
           </Text>
         </View>
       )}

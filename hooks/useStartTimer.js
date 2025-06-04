@@ -91,7 +91,9 @@ export function useStartTimer({
           timerStateRef.current = "running";
           updateSharedObject({
             appStateBox: "active",
-            runningTimers: [...getSharedObject().runningTimers, name],
+            runningTimers: [
+              ...new Set([...getSharedObject().runningTimers, name]),
+            ],
           });
 
           if (!workingTimersRef.current?.includes(name)) {

@@ -54,7 +54,7 @@ export function usePauseResume({
         }
 
         setIsPaused(false);
-        updateControlButtons(isActive, false);
+        updateControlButtons(true, false);
         timerStateRef.current = "running";
         isPausedRef.current = false;
         pausedTimeRef.current = null;
@@ -63,7 +63,9 @@ export function usePauseResume({
           pausedTimers: getSharedObject().pausedTimers.filter(
             (timerName) => timerName !== name
           ),
-          runningTimers: [...getSharedObject().runningTimers, name],
+          runningTimers: [
+            ...new Set([...getSharedObject().runningTimers, name]),
+          ],
         });
 
         if (
@@ -105,7 +107,6 @@ export function usePauseResume({
     [
       setIsPaused,
       updateControlButtons,
-      isActive,
       timerStateRef,
       isPausedRef,
       pausedTimeRef,

@@ -19,7 +19,7 @@ import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import MicStatus from "./MicStatus";
 import TimerInterface from "./TimerInterface";
 import TimerInterfaceButtons from "./TimerInterfaceButtons";
-import Levenshtein from "fast-levenshtein";
+import { useLayoutEffect } from "react";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -193,6 +193,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       if (!isReady) return;
       try {
         if (!getSharedObject()?.notificationTap) {
+          updateSharedObject({ name: timers[timers.length - 1]?.name });
           return;
         }
 
@@ -210,7 +211,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         );
       }
     },
-    [activateTimerRef, isReady, containerHeight, workingTimersRef]
+    [activateTimerRef, isReady, containerHeight, workingTimersRef, timers]
   );
 
   function renderTimer({ item, index }) {
@@ -426,11 +427,11 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
                 })}
                 viewabilityConfig={{
                   itemVisiblePercentThreshold: 30,
-                  waitForInteraction: true,
+                  // waitForInteraction: true,
                 }}
-                // onViewableItemsChanged={({ viewableItems, changed }) => {
-                //   console.log("changed", changed);
-                // }}
+                onViewableItemsChanged={({ viewableItems, changed }) => {
+                  // console.log("viewableItems", viewableItems);
+                }}
               />
             }
           </View>
