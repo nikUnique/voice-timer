@@ -1,7 +1,11 @@
 import { useCallback } from "react";
 
 import Time from "../components/Time";
-import { getItemFromStorage, removeItemFromStorage } from "../utils/helpers";
+import {
+  getItemFromStorage,
+  removeItemFromStorage,
+  sleep,
+} from "../utils/helpers";
 import { getSharedObject } from "../utils/sharedVariables";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 

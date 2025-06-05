@@ -92,6 +92,8 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
   const sortedTimers = useMemo(() => timers.slice().reverse(), [timers]);
 
   const handleReadyState = useCallback(async function (isReady = true) {
+    console.log("The app is ready");
+
     setIsReady(isReady);
     await sleep(0.25);
     await SplashScreen.hideAsync();
@@ -386,7 +388,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           <View
             style={[
               styles.timerList,
-              { height: "100%" },
+
               !isReady || (!containerHeight && styles.timerListHidden),
             ]}
             ref={flatListViewRef}
@@ -433,19 +435,9 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
                 }}
               />
             }
+            <TimerInterfaceButtons onDelete={handleDelete} />
           </View>
         )}
-        <TimerInterfaceButtons
-          onDelete={handleDelete}
-          // isActive={isActive}
-          // onDelete={onDelete}
-          // name={name}
-          // isPaused={isPaused}
-          // controlTimer={controlTimer}
-          // startTimer={startTimer}
-          // timerStarted={allState.timerStartedRef.current}
-          // time={time}
-        />
       </View>
     </>
   );

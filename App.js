@@ -54,7 +54,7 @@ export default memo(function App() {
   }
   return (
     <>
-      <StatusBar style='light' />
+      <StatusBar style='light' animated translucent />
       <VoiceRecognizerProvider>
         {/* {<Button title='Super' onPress={handleToggleModal} />} */}
         <NavigationContainer>
@@ -80,7 +80,7 @@ export default memo(function App() {
                 color: Colors.primaryTint90,
               },
               headerTintColor: Colors.primaryTint90,
-              animation: "slide_from_bottom",
+              animation: "fade",
             }}
           >
             <Stack.Screen

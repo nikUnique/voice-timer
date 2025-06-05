@@ -12,7 +12,7 @@ import { useRefsData } from "../context/VoiceRecognizerContext";
 import { setItemInStorage } from "../utils/helpers";
 import { Colors } from "../constants/colors";
 import { emitter } from "../utils/EventEmitter";
-import { getSharedObject } from "../utils/sharedVariables";
+import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 
 export default function TimerNameControl() {
   const { name, modalIsVisible, onModalIsVisible, onLoadDictionary } =
@@ -90,6 +90,7 @@ export default function TimerNameControl() {
 
       setIsCorrect(true);
       setTimerName(lowerCaseName);
+      updateSharedObject({ name: lowerCaseName });
 
       const allListeners = [...emitter.all].filter((listener) =>
         listener[0].includes(name)
