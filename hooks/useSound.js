@@ -1,19 +1,29 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Sound from "react-native-sound";
 import { Vibration } from "react-native";
 
 import {
+  useRefsData,
   useSettingsData,
   useSoundData,
 } from "../context/VoiceRecognizerContext";
 
 function useSound() {
+  const alarmSoundObjectRef = useRef(null);
+  const discoSoundObjectRef = useRef(null);
   const vibrationIntervalRef = useRef(null);
   const { soundRef, shortSoundRef, soundIsPlayingRef, alertTimeoutRef } =
     useSoundData();
+  const { commandsRef } = useRefsData();
+  const { DISCO } = commandsRef?.current ? commandsRef.current : {};
 
-  const { alarmVolume, isVibrating, autoStopAlarmTimeout, successSound } =
-    useSettingsData();
+  const {
+    alarmVolume,
+    isVibrating,
+    autoStopAlarmTimeout,
+    successSound,
+    discoSound,
+  } = useSettingsData();
 
   function startVibration() {
     Vibration.vibrate();
@@ -27,6 +37,10 @@ function useSound() {
     Vibration.cancel();
   }
 
+  // useEffect(function () {
+  //   loadSound(discoSound, false);
+  // }, []);
+
   const loadSound = useCallback(
     async function loadSound(fileName, isLooping) {
       await new Promise((resolve, reject) => {
@@ -38,17 +52,29 @@ function useSound() {
           }
 
           if (isLooping) {
-            soundRef.current = alarm;
+            // soundRef.current = alarm;
+            alarmSoundObjectRef.current = alarm;
           }
           if (!isLooping) {
             shortSoundRef.current = alarm;
           }
 
+          // if (
+          //   fileName.toLowerCase() === discoSound.toLowerCase() /*  &&
+          //   !soundRef.current?.isPlaying() */
+          // ) {
+          //   console.log("Now soundRef takes disco 🥳");
+
+          //   // soundRef.current = alarm;
+          //   // setDiscoSoundObject(alarm);
+          //   discoSoundObjectRef.current = alarm;
+          // }
+
           resolve("success");
         });
       });
     },
-    [shortSoundRef, soundRef]
+    [shortSoundRef]
   );
 
   const playSoundGeneral = useCallback(
@@ -67,8 +93,22 @@ function useSound() {
           Sound.setCategory("Playback", true);
         }
 
-        const alarmSoundLoaded = soundRef.current?.isLoaded?.();
+        // console.log("fileName", fileName, successSound);
+
+        if (
+          fileName.toLowerCase() === "joy.mp3" &&
+          soundRef.current?.isPlaying()
+        ) {
+          console.log("Should stop the sound here");
+
+          await stopSound();
+        }
+
+        const alarmSoundLoaded = alarmSoundObjectRef.current?.isLoaded?.();
         const shortSoundLoaded = shortSoundRef.current?.isLoaded?.();
+        // const discoSoundLoaded = discoSoundObject?.isLoaded?.();
+
+        // console.log("alarmSoundLoaded", alarmSoundLoaded);
 
         if (
           !soundRef.current ||
@@ -77,6 +117,19 @@ function useSound() {
           !shortSoundLoaded
         ) {
           await loadSound(fileName, isLooping);
+        }
+
+        // if (
+        //   fileName.toLowerCase() === discoSound.toLowerCase() &&
+        //   !soundRef.current?.isPlaying()
+        // ) {
+        //   console.log("Does sound really play now?");
+
+        //   soundRef.current = discoSoundObjectRef.current;
+        // }
+
+        if (fileName.toLowerCase() === "joy.mp3") {
+          soundRef.current = alarmSoundObjectRef.current;
         }
 
         if (isLooping && soundRef.current) {
@@ -92,7 +145,7 @@ function useSound() {
 
             if (success) {
               // console.log("Sound started playing");
-
+              console.log("Sound is released", fileName);
               soundRef.current.release();
             } else {
               console.error(
@@ -116,7 +169,40 @@ function useSound() {
         console.error("An error occured in playSound function 🎱", err);
       }
     },
-    [soundRef, shortSoundRef, loadSound]
+    [soundRef, shortSoundRef, stopSound, loadSound]
+  );
+
+  const playSpecial = useCallback(
+    async function ({ fileName }) {
+      Sound.setCategory("Playback", true);
+      await new Promise((resolve, reject) => {
+        const alarm = new Sound(fileName, Sound.MAIN_BUNDLE, (error) => {
+          if (error) {
+            console.error("Error handling sound", error);
+            reject(error);
+            return;
+          }
+
+          if (!soundRef.current?.isPlaying()) {
+            // console.log("Now soundRef takes disco 🥳");
+            soundRef.current = alarm;
+
+            resolve("success");
+          }
+        });
+      });
+
+      soundRef.current?.play((success) => {
+        if (success) {
+          soundRef.current.release();
+        } else {
+          console.error(
+            "Playback of disco sound failed to audio decoding errors 🔈"
+          );
+        }
+      });
+    },
+    [soundRef]
   );
 
   const playSound = useCallback(
@@ -159,29 +245,35 @@ function useSound() {
 
   const stopSound = useCallback(
     async function stopSound() {
-      if (soundRef.current) {
-        stopVibration();
-        clearTimeout(alertTimeoutRef.current);
-        alertTimeoutRef.current = null;
-        soundIsPlayingRef.current = false;
-        // soundRef.current.release();
-        soundRef.current?.stop();
+      try {
+        if (soundRef.current) {
+          console.log("soundRef", soundRef.current);
+
+          stopVibration();
+          clearTimeout(alertTimeoutRef.current);
+          alertTimeoutRef.current = null;
+          soundIsPlayingRef.current = false;
+          // soundRef.current.release();
+          soundRef.current?.stop();
+        }
+
+        // console.log("super");
+        let count = 0;
+
+        // setInterval(function () {
+        //   count++;
+        //   console.log("superCount", count);
+
+        //   playSoundGeneral({ fileName: successSound });
+        // }, 1500);
+      } catch (error) {
+        console.error("Error stopping sound", error);
       }
-
-      // console.log("super");
-      let count = 0;
-
-      // setInterval(function () {
-      //   count++;
-      //   console.log("superCount", count);
-
-      //   playSoundGeneral({ fileName: successSound });
-      // }, 1500);
     },
-    [soundRef, alertTimeoutRef, soundIsPlayingRef, playSound]
+    [soundRef, alertTimeoutRef, soundIsPlayingRef]
   );
 
-  return { playSoundGeneral, playSound, stopSound };
+  return { playSoundGeneral, playSound, stopSound, playSpecial };
 }
 
 export { useSound };

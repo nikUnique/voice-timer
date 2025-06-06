@@ -7,8 +7,6 @@ import IconButton from "../ui/IconButton";
 import { emitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 
-let isTimerStopped = true;
-
 export default function TimerInterfaceButtons({ onDelete }) {
   const navigation = useNavigation();
 
@@ -20,7 +18,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
   const createButtonTipTimeoutRef = useRef(null);
   const startButtonTipTimeoutRef = useRef(null);
 
-  const { timers, workingTimersRef, leastTimeTimerRef } = useRefsData();
+  const { timers, workingTimersRef } = useRefsData();
   const thereAre30Timers = timers.length >= 30;
 
   useEffect(
@@ -33,36 +31,9 @@ export default function TimerInterfaceButtons({ onDelete }) {
     [setStateChanged]
   );
 
-  // useEffect(
-  //   function () {
-  //     if (!getSharedObject().name) {
-  //       const isSelectedTimerPaused = leastTimeTimerRef.current?.isPaused;
-
-  //       if (leastTimeTimerRef.current && !isSelectedTimerPaused) {
-  //         updateSharedObject({ isPaused: false, isActive: true });
-  //       }
-  //     }
-  //   },
-  //   [leastTimeTimerRef, stateChanged]
-  // );
-
-  // console.log("state", stateChanged);
-
-  // useEffect(function () {
-  //   updateSharedObject({ name: timers[timers.length - 1]?.name });
-  //   setStateChanged((prev) => !prev);
-  // }, []);
-
   useEffect(function () {
-    console.log("The name is: ", getSharedObject()?.name, "💣");
-    // if (
-    //   getSharedObject()?.runningTimers.includes(timers[timers.length - 1].name)
-    // ) {
-    //   isTimerStopped = false;
-    // }
-
     return () => {
-      console.log("We should already clean the name 📷");
+      // We do not want any selected timers when we are in the background, so that when we are back and we still didn't scroll - we would use the first thing in the view and we won't get the name which was before we moved to the background
       updateSharedObject({ name: null });
     };
   }, []);
@@ -72,7 +43,6 @@ export default function TimerInterfaceButtons({ onDelete }) {
       clearTimeout(startButtonTipTimeoutRef.current);
       clearTimeout(createButtonTipTimeoutRef.current);
       setMaximumTimersTipStart(false);
-
       setMaximumTimersTipCreation(true);
 
       createButtonTipTimeoutRef.current = setTimeout(function () {
@@ -84,51 +54,6 @@ export default function TimerInterfaceButtons({ onDelete }) {
     !getSharedObject().alertingTimers.length &&
       navigation.push("CreateTimerScreen");
   }
-
-  // if (
-  //   !getSharedObject()?.runningTimers.includes(timers[timers.length - 1]) &&
-  //   !getSharedObject()?.name
-  // ) {
-  //   isTimerStopped = true;
-  // }
-
-  // if (
-  //   getSharedObject()?.runningTimers.includes(timers[timers.length - 1]) &&
-  //   !getSharedObject()?.name
-  // ) {
-  //   isTimerStopped = false;
-  // }
-
-  // if (
-  //   getSharedObject()?.runningTimers.includes(
-  //     timers[timers.length - 1]?.name
-  //   ) /* &&
-  //   !getSharedObject()?.name &&
-  //   getSharedObject()?.isPaused === false */
-  // ) {
-  //   console.log("supa", getSharedObject()?.isPaused);
-
-  //   isTimerStopped = false;
-  // }
-
-  // if(!getSharedObject()?.name) {
-  //   isTimerStopped =
-  // }
-  // &&
-  //   !getSharedObject()?.runningTimers.includes(
-  //     getSharedObject()?.name || timers[timers.length - 1]?.name
-  //   ));
-  /* ||
-    (!getSharedObject()?.name &&
-      !getSharedObject().runningTimers.includes(timers[timers.length - 1])); */
-  /* (workingTimersRef.current.includes(getSharedObject().name && timers[timers.length -1].name)) */
-
-  console.log(
-    "chekc",
-    getSharedObject().runningTimers,
-    getSharedObject().isActive,
-    getSharedObject()?.name
-  );
 
   return (
     <>
@@ -156,7 +81,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
           <IconButton
             size={36}
             icon={
-              // The ultimate solution for the right icon to be displayed: I already found out that if there is no name then it the selected timers is the last one in the array or the first one in the view. And the second condition is to know whether that name is in the runningTimers array or not and if is - then the icon should be paused, otherwise it should be play.
+              // The ultimate solution for the right icon to be displayed: I already found out that if there is no name then it the selected timers is the last one in the array or the first one in the view. And the second condition is to know whether that name is in the runningTimers array or not and if it is - then the icon should be paused, otherwise it should be play.
               !getSharedObject()?.runningTimers.includes(
                 getSharedObject()?.name || timers[timers.length - 1]?.name
               )
@@ -171,9 +96,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
                 clearTimeout(createButtonTipTimeoutRef.current);
                 clearTimeout(startButtonTipTimeoutRef.current);
                 setMaximumTimersTipCreation(false);
-
                 setMaximumTimersTipStart(true);
-
                 setTimeout(function () {
                   setMaximumTimersTipStart(false);
                 }, 5000);

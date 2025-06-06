@@ -1,21 +1,14 @@
 import React, { useRef, useState } from "react";
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  Modal,
-} from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { setItemInStorage } from "../utils/helpers";
 import { Colors } from "../constants/colors";
+import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter } from "../utils/EventEmitter";
+import { setItemInStorage } from "../utils/helpers";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 
 export default function TimerNameControl() {
-  const { name, modalIsVisible, onModalIsVisible, onLoadDictionary } =
+  const { name, onModalIsVisible, onLoadDictionary } =
     getSharedObject().changeTimerNameParams;
   const [timerName, setTimerName] = useState(name);
   const [isCorrect, setIsCorrect] = useState(true);

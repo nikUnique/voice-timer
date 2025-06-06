@@ -17,12 +17,9 @@ import IconButton from "../ui/IconButton";
 
 import { Colors } from "../constants/colors";
 import { useRefsData } from "../context/VoiceRecognizerContext";
-import Time from "./Time";
-import TimerInterfaceButtons from "./TimerInterfaceButtons";
-import TimerNameControl from "./TimerNameControl";
 import { emitter } from "../utils/EventEmitter";
 import { updateSharedObject } from "../utils/sharedVariables";
-import { useIsFocused } from "@react-navigation/native";
+import Time from "./Time";
 
 function TimerInterface({
   time = 1200,
@@ -36,20 +33,11 @@ function TimerInterface({
   onDelete,
   timerHeight,
 }) {
-  const [modalIsVisible, setModalIsVisible] = useState(false);
-  const [isMountedAlready, setIsMountedAlready] = useState(false);
+  const [setModalIsVisible] = useState(false);
 
   const timerInterfaceState = useTimerInterfaceState({ time });
 
-  const { timers, isFocusedRef } = useRefsData();
-
-  // useEffect(
-  //   function () {
-  //     isFocusedRef.current = name;
-  //     console.log("The currently viewed timer is:", name);
-  //   },
-  //   [isFocused, isFocusedRef, name]
-  // );
+  const { timers } = useRefsData();
 
   const allState = {
     name,
@@ -72,7 +60,7 @@ function TimerInterface({
     ...allState,
   });
 
-  console.log("Timer name", name, isActive);
+  console.log("Timer name", name);
 
   const { loadTimerState } = useLoadTimerState(allState);
   const { saveStorage } = useSaveStorage(allState);
@@ -153,12 +141,6 @@ function TimerInterface({
     },
     [controlTimer, index, isActive, isPaused, name, onDelete, startTimer]
   );
-
-  useEffect(function () {
-    setIsMountedAlready(true);
-  }, []);
-
-  // console.log("superHeight", timerHeight);
 
   return (
     <View

@@ -98,7 +98,7 @@ export function useResetTimer({
 
         if (alertingTimerNamesRef.current.length === 0) {
           await notifee.cancelDisplayedNotification("ALARM_NOTIFICATION");
-          await notifee.stopForegroundService();
+          // await notifee.stopForegroundService();
         }
 
         getSharedObject().name === name && updateControlButtons(false, false);
@@ -156,7 +156,7 @@ export function useResetTimer({
         updateTimerLabel();
 
         if (workingTimersRef.current.length === 0) {
-          await notifee.stopForegroundService();
+          // await notifee.stopForegroundService();
           timersTimesRef.current = [];
           leastTimeTimerRef.current = null;
           removeItemFromStorage("workingTimers");
@@ -170,7 +170,7 @@ export function useResetTimer({
         ) {
           await BackgroundService.stop();
           updateSharedObject({ isTaskRunning: false });
-          await notifee.stopForegroundService();
+          // await notifee.stopForegroundService();
         }
 
         await removeItemFromStorage(`timerStarted-${name}`);
@@ -205,7 +205,7 @@ export function useResetTimer({
           await NativeModules.NativeUtilsModule.isPhoneLocked();
 
         if (alertingTimerNamesRef.current.length === 0) {
-          await notifee.stopForegroundService();
+          // await notifee.stopForegroundService();
           await notifee.cancelDisplayedNotification("ALARM_NOTIFICATION");
         }
 

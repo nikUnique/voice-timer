@@ -11,7 +11,7 @@ export const useAppState = () => {
     const appStateListener = AppState.addEventListener(
       "change",
       (nextAppState) => {
-        console.log("Changes in app state");
+        // console.log("Changes in app state");
 
         setAppState(nextAppState);
       }

@@ -65,7 +65,7 @@ export function useNotification() {
               autoCancel: false,
 
               showChronometer: true,
-              asForegroundService: true,
+              // asForegroundService: true,
               ongoing: true,
               lightUpScreen: true,
               smallIcon: "ic_launcher_notification",

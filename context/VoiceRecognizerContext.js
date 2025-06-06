@@ -77,6 +77,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const [screenTimeout, setScreenTimeout] = useState(1000 * 60 * 5);
   const [successSound, setSuccessSound] = useState("success.mp3");
   const [alertSound, setAlertSound] = useState("joy.mp3");
+  const [discoSound, setDiscoSound] = useState("disco.wav");
   const [alarmVolume, setAlarmVolume] = useState(0.1);
   const [autoStopAlarmTimeout, setAutoStopAlarmTimeout] = useState(0);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
@@ -85,7 +86,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const [keepScreenOnMinutes, setKeepScreenOnMinutes] = useState(5);
   const [isVibrating, setIsVibrating] = useState(false);
 
-  const { START, CONTINUE, RESET, PAUSE, REPEAT, RESET_FINISHED } =
+  const { START, CONTINUE, RESET, PAUSE, REPEAT, RESET_FINISHED, DISCO } =
     commandsRef.current ? commandsRef.current : {};
 
   const getCommands = useCallback(async function getCommands(lang) {
@@ -144,10 +145,11 @@ export default function VoiceRecognizerProvider({ children }) {
         ),
         REPEAT,
         RESET_FINISHED,
+        DISCO,
       ]
         .flatMap((command) => command)
         .map((item) => `${item} ${secretIdentifierRef.current}`.trim()),
-    [REPEAT, RESET_FINISHED, allActions, timers]
+    [DISCO, REPEAT, RESET_FINISHED, allActions, timers]
   );
 
   const dynamicGrammar = useMemo(
@@ -266,6 +268,7 @@ export default function VoiceRecognizerProvider({ children }) {
       setKeepScreenOnMinutes,
       isVibrating,
       setIsVibrating,
+      discoSound,
     }),
     [
       screenTimeout,
@@ -278,6 +281,7 @@ export default function VoiceRecognizerProvider({ children }) {
       keepScreenOnCommand,
       keepScreenOnMinutes,
       isVibrating,
+      discoSound,
     ]
   );
 

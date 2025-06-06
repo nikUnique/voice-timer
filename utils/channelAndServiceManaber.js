@@ -44,13 +44,13 @@ export function registerChannelsAndService() {
 
   loadChannel();
 
-  notifee.registerForegroundService(async () => {
-    updateSharedObject({ isTaskRunning: true });
-    while (getSharedObject().isTaskRunning) {
-      console.log("Foreground service is running...");
+  // notifee.registerForegroundService(async () => {
+  //   updateSharedObject({ isTaskRunning: true });
+  //   while (getSharedObject().isTaskRunning) {
+  //     console.log("Foreground service is running...");
 
-      if (!getSharedObject().isTaskRunning) return;
-      await sleep(getSharedObject().foregroundTaskDelay);
-    }
-  });
+  //     if (!getSharedObject().isTaskRunning) return;
+  //     await sleep(getSharedObject().foregroundTaskDelay);
+  //   }
+  // });
 }

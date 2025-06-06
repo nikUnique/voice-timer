@@ -45,7 +45,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     timers,
     setTimers,
     dynamicGrammar,
-    alertingTimers,
   } = useRecognizerData();
 
   const { soundRef } = useSoundData();
@@ -57,15 +56,14 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     activateTimerRef,
     leastTimeTimerRef,
     workingTimersRef,
-    currentlyViewedItemRef,
   } = useRefsData();
 
   const { speak } = useSpeak();
 
-  const { successSound } = useSettingsData();
-  const { playSoundGeneral } = useSound();
+  const { successSound, discoSound } = useSettingsData();
+  const { playSoundGeneral, playSpecial } = useSound();
 
-  const { REPEAT, RESET, RESET_FINISHED } = commandsRef?.current
+  const { REPEAT, RESET, RESET_FINISHED, DISCO } = commandsRef?.current
     ? commandsRef.current
     : {};
 
@@ -92,8 +90,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
   const sortedTimers = useMemo(() => timers.slice().reverse(), [timers]);
 
   const handleReadyState = useCallback(async function (isReady = true) {
-    console.log("The app is ready");
-
     setIsReady(isReady);
     await sleep(0.25);
     await SplashScreen.hideAsync();
@@ -143,7 +139,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
 
         // It will be always less one index than the deletable item was, and in case if the item with index 0 was deleted, the selected item will be undefined because of -1 index, but when that happens the list is automatically scrolled by default to show another item where onScroll callback on the FlatList kicks in and updates the shared object with the name of the currently viewed timer
         let newSelectedTimer = timers[timerToDeleteIndex - 1];
-        // console.log("selected", newSelectedTimer);
 
         updateSharedObject({ name: newSelectedTimer?.name });
 
@@ -176,12 +171,26 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           resetTimerEmitter.emit(`${RESET} ${alertingTimer}`)
         );
       }
+      // console.log("recongized", recognizedCommandRef.current, DISCO);
+
+      if (
+        recognizedCommandRef.current &&
+        recognizedCommandRef.current?.toLowerCase() === DISCO
+      ) {
+        // console.log("discoSound", discoSound);
+        playSpecial({
+          fileName: discoSound,
+        });
+      }
     },
     [
+      DISCO,
       RESET,
       RESET_FINISHED,
       alertingTimerNamesRef,
+      discoSound,
       playSoundGeneral,
+      playSpecial,
       recognizedCommandRef,
       recognizedTime,
       secretIdentifierRef,
@@ -244,17 +253,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       areNamesTheSame || (isRepeatCommand && lastCommandHasTimerName)
         ? { recognizedCommand }
         : undefined;
-
-    // if (
-    //   numberOfRecognizedCommands?.length > 1 &&
-    //   recognizedCommand
-    //     .toLowerCase()
-    //     .trim()
-    //     .split(" ")
-    //     .includes(item.name.toLowerCase().trim())
-    // ) {
-    //   isCommandNew = { recognizedCommand };
-    // }
 
     if (
       numberOfRecognizedCommands.length > 1 &&
@@ -331,10 +329,8 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       if (hasMounted) return;
 
       const { height } = e.nativeEvent.layout;
-      // console.log("onLayout happens 🤥", height);
 
       let heightArr = await getItemFromStorage("timerListHeights");
-      // console.log("heightsArr", heightArr);
 
       if (!heightArr) {
         heightArr = [height];
@@ -428,7 +424,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
                 })}
                 viewabilityConfig={{
                   itemVisiblePercentThreshold: 30,
-                  // waitForInteraction: true,
                 }}
                 onViewableItemsChanged={({ viewableItems, changed }) => {
                   // console.log("viewableItems", viewableItems);
