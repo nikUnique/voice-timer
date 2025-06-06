@@ -1,29 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import Sound from "react-native-sound";
+import { useCallback, useRef } from "react";
 import { Vibration } from "react-native";
+import Sound from "react-native-sound";
 
-import {
-  useRefsData,
-  useSettingsData,
-  useSoundData,
-} from "../context/VoiceRecognizerContext";
+import { useSoundData } from "../context/VoiceRecognizerContext";
 
 function useSound() {
   const alarmSoundObjectRef = useRef(null);
-  const discoSoundObjectRef = useRef(null);
   const vibrationIntervalRef = useRef(null);
   const { soundRef, shortSoundRef, soundIsPlayingRef, alertTimeoutRef } =
     useSoundData();
-  const { commandsRef } = useRefsData();
-  const { DISCO } = commandsRef?.current ? commandsRef.current : {};
-
-  const {
-    alarmVolume,
-    isVibrating,
-    autoStopAlarmTimeout,
-    successSound,
-    discoSound,
-  } = useSettingsData();
 
   function startVibration() {
     Vibration.vibrate();
@@ -37,10 +22,6 @@ function useSound() {
     Vibration.cancel();
   }
 
-  // useEffect(function () {
-  //   loadSound(discoSound, false);
-  // }, []);
-
   const loadSound = useCallback(
     async function loadSound(fileName, isLooping) {
       await new Promise((resolve, reject) => {
@@ -52,23 +33,11 @@ function useSound() {
           }
 
           if (isLooping) {
-            // soundRef.current = alarm;
             alarmSoundObjectRef.current = alarm;
           }
           if (!isLooping) {
             shortSoundRef.current = alarm;
           }
-
-          // if (
-          //   fileName.toLowerCase() === discoSound.toLowerCase() /*  &&
-          //   !soundRef.current?.isPlaying() */
-          // ) {
-          //   console.log("Now soundRef takes disco 🥳");
-
-          //   // soundRef.current = alarm;
-          //   // setDiscoSoundObject(alarm);
-          //   discoSoundObjectRef.current = alarm;
-          // }
 
           resolve("success");
         });
@@ -93,22 +62,15 @@ function useSound() {
           Sound.setCategory("Playback", true);
         }
 
-        // console.log("fileName", fileName, successSound);
-
         if (
           fileName.toLowerCase() === "joy.mp3" &&
           soundRef.current?.isPlaying()
         ) {
-          console.log("Should stop the sound here");
-
           await stopSound();
         }
 
         const alarmSoundLoaded = alarmSoundObjectRef.current?.isLoaded?.();
         const shortSoundLoaded = shortSoundRef.current?.isLoaded?.();
-        // const discoSoundLoaded = discoSoundObject?.isLoaded?.();
-
-        // console.log("alarmSoundLoaded", alarmSoundLoaded);
 
         if (
           !soundRef.current ||
@@ -118,15 +80,6 @@ function useSound() {
         ) {
           await loadSound(fileName, isLooping);
         }
-
-        // if (
-        //   fileName.toLowerCase() === discoSound.toLowerCase() &&
-        //   !soundRef.current?.isPlaying()
-        // ) {
-        //   console.log("Does sound really play now?");
-
-        //   soundRef.current = discoSoundObjectRef.current;
-        // }
 
         if (fileName.toLowerCase() === "joy.mp3") {
           soundRef.current = alarmSoundObjectRef.current;
@@ -141,11 +94,8 @@ function useSound() {
           }
 
           soundRef.current?.play((success) => {
-            // console.log("Sound should have started now 💯");
-
             if (success) {
-              // console.log("Sound started playing");
-              console.log("Sound is released", fileName);
+              // console.log("Sound is released", fileName);
               soundRef.current.release();
             } else {
               console.error(
@@ -159,7 +109,7 @@ function useSound() {
           shortSoundRef.current?.setVolume(volume);
           shortSoundRef.current?.play((success) => {
             if (success) {
-              // shortSoundRef.current.release();
+              shortSoundRef.current.release();
             } else {
               console.error("Playback failed to audio decoding errors 🔈");
             }
@@ -184,7 +134,6 @@ function useSound() {
           }
 
           if (!soundRef.current?.isPlaying()) {
-            // console.log("Now soundRef takes disco 🥳");
             soundRef.current = alarm;
 
             resolve("success");
