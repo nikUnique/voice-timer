@@ -19,6 +19,8 @@ import android.provider.Settings
 import com.asterinet.react.bgactions.RNBackgroundActionsTask
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import android.graphics.Color
+import android.view.View
 
 
 import expo.modules.ReactActivityDelegateWrapper
@@ -32,6 +34,16 @@ class MainActivity : ReactActivity() {
     // This is required for expo-splash-screen.
     setTheme(R.style.AppTheme);
     super.onCreate(null)
+
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      val window = window
+      window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+      window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+
+      window.statusBarColor = Color.TRANSPARENT
+      window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN  or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+    }
+
 
      val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
      val isLocked = keyguardManager.isDeviceLocked

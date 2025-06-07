@@ -18,7 +18,7 @@ import IconButton from "../ui/IconButton";
 import { Colors } from "../constants/colors";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter } from "../utils/EventEmitter";
-import { updateSharedObject } from "../utils/sharedVariables";
+import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import Time from "./Time";
 
 function TimerInterface({
@@ -147,7 +147,7 @@ function TimerInterface({
       style={[
         styles.container,
         {
-          height: timerHeight || 500,
+          height: timerHeight,
         },
 
         isActive && { backgroundColor: Colors.primaryTint8 },

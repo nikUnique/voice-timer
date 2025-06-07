@@ -171,13 +171,11 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           resetTimerEmitter.emit(`${RESET} ${alertingTimer}`)
         );
       }
-      // console.log("recongized", recognizedCommandRef.current, DISCO);
 
       if (
         recognizedCommandRef.current &&
         recognizedCommandRef.current?.toLowerCase() === DISCO
       ) {
-        // console.log("discoSound", discoSound);
         playSpecial({
           fileName: discoSound,
         });
@@ -324,6 +322,17 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     [activateTimerRef, handleReadyState, isReady, leastTimeTimerRef]
   );
 
+  useEffect(function () {
+    async function load() {
+      const minHeight = await getItemFromStorage("calculatedTimerHeight");
+      if (minHeight) {
+        setContainerHeight(minHeight);
+        console.log("In the hook", Date.now());
+      }
+    }
+    load();
+  }, []);
+
   async function onLayoutHandler(e) {
     try {
       if (hasMounted) return;
@@ -356,6 +365,8 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         Object.entries(countElementObj)[0]
       )[0];
 
+      setItemInStorage("calculatedTimerHeight", minHeight);
+
       if (layoutTimeoutRef.current) {
         clearTimeout(layoutTimeoutRef.current);
       }
@@ -363,6 +374,8 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       updateSharedObject({ timerListHeight: height });
 
       setContainerHeight(minHeight);
+      console.log("In the onLayout", Date.now());
+
       layoutTimeoutRef.current = setTimeout(function () {
         setHasMounted(true);
       }, 1000);

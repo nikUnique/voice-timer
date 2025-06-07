@@ -54,7 +54,14 @@ export default memo(function App() {
   }
   return (
     <>
-      <StatusBar style='light' animated translucent />
+      {
+        <StatusBar
+          style='light'
+          animated
+          translucent
+          backgroundColor={Colors.primary}
+        />
+      }
       <VoiceRecognizerProvider>
         {/* {<Button title='Super' onPress={handleToggleModal} />} */}
         <NavigationContainer>

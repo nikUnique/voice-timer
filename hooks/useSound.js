@@ -196,7 +196,7 @@ function useSound() {
     async function stopSound() {
       try {
         if (soundRef.current) {
-          console.log("soundRef", soundRef.current);
+          // console.log("soundRef", soundRef.current);
 
           stopVibration();
           clearTimeout(alertTimeoutRef.current);
@@ -206,7 +206,6 @@ function useSound() {
           soundRef.current?.stop();
         }
 
-        // console.log("super");
         let count = 0;
 
         // setInterval(function () {
