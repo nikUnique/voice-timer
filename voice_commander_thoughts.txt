@@ -1,0 +1,454 @@
+// I need to clear old timeouts, they can be cleaned only inside of callbacks because... Actually the only way to clean them is with async storage
+
+// When I get to the background the storage item is already set, but I need a way to not check for that item when it is in the background, but only when it is in the foreground again
+
+// How to make it so that the label changes in the very beginning of the timer?
+
+// Why the async storage gets an empty arr instead of the value? Just stupid mistake
+
+// The timer just stops the ui activity when I go back to the app, but the code is still running, the question is what code: the updated one or the stale one?
+
+// How do I know that the timer was loaded from the background? Solved 
+
+// Let's solve the problem of duplicate event listeners. Solved
+
+// Stop the vosk during speech and then continue afterwards
+
+// Now I need to introduce notificaitons to the app
+
+// If I am in the app, I don't want a notification
+
+// Create notifee persistent notification
+
+// Make notifications only appear in the background
+
+// How to hide the notification when the timer is alerting?
+
+// How to get the data to pass into temporarily hidden persistent notification? I need to create the title and body that takes into account all timers
+
+// Show the notification label with the least amount of time, for this I need to have all times somewhere together and track the amount of time and get the timer with the least amount of time. When to check for times? After timer started or resumed
+
+// Also I need to sort first running, then paused timers
+
+// One timer - time left
+// One paused timer - paused with time left
+// Two timers - timer with the least time
+// With paused and running - show the least time from running
+// With all paused - show the least from paused
+// After reset - show the least after recomputation
+
+// What do I need to reset timers separately through notification?
+
+// I need to update the leastTimeTimerRef or just update title somehow differently
+
+// How to throttle 2 notification updates?
+
+// Handle pause from the notification
+
+// What is the difference when I close the app and try to pause the timer?
+// Seems that if the timer was paused from background when I go back the timer behaves like it wasn't paused because of loaded time from async storage
+
+// When I come back to the app when the timer is supposed to work - then it just stucks in the ui, but continues in the console
+
+// Without any stops transition is fine
+// With just stop without resuming it also works perfectly fine
+// Pause after background - the backgroundTimeout isn't cleared
+// After resume after background it show the paused ui, while working in the console
+// For now things seem to be all right in terms of pausing and continuing timers through multiple transitions, now let's tackle the adding/removing listeners in a more natural way
+
+// When I should attach/update/remove listeners related to sound? 
+
+// It took 4 pomodoro to find out that I was passing the wrong timer name to pause function because I was doing that using notificaiton, but I do need the least time timer, but the one that is from the notification is the last one that was reset - so, thing didn't go well there.
+
+// If state is lost then this means it is after killing and do one thing, if not lost then do another thing
+
+// I wanna remove all notifications when the app becomes closed, but I don't know when the app becomes closed, so, what to do?
+
+// Problems:
+1) Status bar style - done
+2) Not always listens after synthetic speech
+
+// Make the blocked state, listen only for reset all, reset name
+
+// How to include commands in a config file? 
+
+// Allow notification dismiss only if there are no actively running timers
+
+// I need to elegantly refactor the TimerInterface
+
+// Create a time component
+
+// Update somehow pauseBackground listener
+
+// Make alert notification untappable
+
+// Hide the notification when the user moves to the app
+
+// When there are more then 1 working timer I want to add a name to main label
+
+How to make a dynamic delay in updateTime function?
+
+I cannot just create context because of muiltiple timer instances
+
+let's transfer all functionality to updateTime from backgroundTimer
+
+Get exact start milliseconds, it should calculate the delay so it ends on the same millisecond as starting timer
+
+I want listening to star earlier then it does now
+
+For some reason I don't update the least timer in a way I should.
+
+When I need to disable showWhenLocked?
+
+How to know if the app was the last thing before the phone got locked
+
+That's how - check the last state and the next state and if the last state was active and the next state is background but also locked - then the last screen was exactly of the app and not something different on the phone
+
+Implemented the last part, Now I can successfully to differentiate between closed, minimized and just backgrounded app just after being active.
+
+I need a way to access timeLabelRef.current in useServiceAndSpeechControl or do something different which would result in updating the notification will all required data
+
+When we reset a timer we also need to do: setAlertingTimers()
+
+Update notification when timer finishes
+
+Create a case where we have a notification that reset the timer and also we update ongoing notification
+
+How can I swipe a notification when all timers are paused?
+
+Change the id for the moment and the update it back
+
+Forbids to show the app with locked state, 
+
+How to make it so that expo-speech works nicely even after deep link
+
+Create a funtionality of creating new timers in the app
+
+How to set time in the same way as in android Clock app? 
+
+When I press any number I want it to appear in the seconds and so on, so basically to shift number to the left as press more of them. 2 digits for every time unit
+
+When pressing 0 digits should shift numbers to the left
+
+Keypad and textInput are done, now I need to create start button
+
+After input is ready and it is time to start a new timer I need:
+1) Create and add new timer to timers array
+2) Whenever the app loads it should take timer from the storage
+
+How and when to save timers into storage
+
+if we have timer 1, then we want timer 2
+
+if number includes number++ then avoid that number, if it doesn't then choose that number
+
+How to know the index of the last created timer
+
+How to start checking from 1? How to make sure that we do not have numbers lower then the lowest in the array?
+
+Make the possiblity to update timer name
+
+What rules on changing timer name to impose?
+1) This should be grammatically the right word - find a way to check that
+2) Min length 3 - max length 20
+3) Should be no more than 2 words
+4) Forbid timers with the same name
+
+
+Check every word in every vocabulary
+https://www.npmjs.com/package/react-native-input-validator
+
+Give feedback the wrong input in changing timer name
+
+
+/////////////////////////// - fixing sound problem, it is the condition and success of which defined creation of a new sound which most likely caused the problem, because without it everything works just fabulously.
+2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34, sound stopped/35,36,37
+
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50 - works amazingly
+
+Do I have a better solution than simply hardcode all commands?
+
+Turn off the alarm also by tapping a button on the notification
+
+if the app is active then I do not need an ongoing notification
+
+The problem of disappearing alarm overlay is that alertingTimerNames just assigned to null, because sometimes it try to go to background and listeners acts upon that the second time overwring successfull async storage data retrival.
+
+Test notifications behavior:
+1) App is closed, phone is locked - 5 times - 1, 2, 3 - only label wrong, 4, 5 
+Conslusion - fix label
+
+2) App is closed, phone is unlocked - 5 times - 1, 2, 3, 4, 5
+Conclusion - perfect
+
+3) App is opened, phone is locked - 5 times - 1, 2, 3 - only label wrong, 4, 5
+Conclusion - fix label
+
+4) App is opened, phone is unlocked - 5 times - 1, 2, 3, 4, 5
+Consclusion - perfect
+
+Extra test after fixing:
+3) App is opened, phone is unlocked - 5 times - 1, 2, 3, 4, 5
+Conclusion - perfect
+
+Extra test after fixing:
+1) App is closed, phone is locked - 5 times - 1, 2, 3,  4, 5 - extra notifications appeared, 6
+
+Why the first timer after reopening gets the old time? The time gets updated, but still the function call after that gets the old time, or the listener gets the old value,
+
+What happens when the phone is locked and the app is closed? 
+
+Actually the thing occured where I the alerting timers are different from alerting timers simple object and I guess this is because I didnt' update that object everywhere I updated the alertingTimers. This the problem with alerting timers on the AlarmOverlay is gone, but the timeLeftRef is still wrong for some reason and it messes up the final title.
+
+The actual problem why alertingTimerNamesRef.current loses data is because it actually doesn't lose it, this happens because when the timer gets resumed it gets the data from async storage and it continues to use that data, while alertingTimerNamesRef.current before resuming has the actual data we need, but that process was restarted so all those state and refs from there are lost too, but the shared object is intact, so let's use that and have everything back :).
+
+The problem with missing alerting timers: When the alertingTimerNamesRef was assigned the "Timer Three" and that was set in async storage - then the "Timer Two" was already retrieved from async storage and assigned to alertingTimerNamesRef, but because the useEffect in which that happened didn't run again to also retrieve "Timer Three" from there, the alertingTimerNamesRef stuck with 1 out of 2 alerting timers. And until timers were resumed - it was shown in the console that alertingTimerNamesRef contains exactly all 2 alerting timers, but once they were resumed it showed only one - the one that was captured when the useEffect run and got the one name from async storage. And in all of these the "Timer Two" was successfully skipped and everything finishes by finishing the third timer and showing only 2 names on the alarm screen instead of all 3. The main thing is that the second alerting timer was assigned to the old alertingTimerNamesRef and so was lost afterwards and not retrieved from async storage either. But with sharedObject we solve the problem of stale values.
+
+Waiting 2 seconds to send the notifications affect how alerting timers are showing and also how notifications are showing too. Because after these 2 seconds 2 alerting timers are already retrieved from the memory and just used in the AlarmOverlay, while updatePersistentNotification shows 0 time because it is indeed 0 there because it is the old listener and not the new one yet. 
+
+Without waiting the second timer will be finished in the old timeout, but the notification listener will be a new one with not yet updated time, with default time, that's why I get default time in updatePersistentNotification function.
+
+Settings screen layout planning:
+1) Timer volume
+
+Navigate directly to the createTimerScreen if there are no timers
+
+What else do I need to fix or improve beside styles in the app?
+
+Add voice feedback everywhere
+
+Allow alarming notification in any situation, while limit the ongoing notification
+
+// Solve the problem with not working timer after creating - solved, the problem is that I add a couple of extra timeout cleaner int he useLoadTimerState and because of that it was used when it is not needed and stopping the newly created timer
+
+// Shut the listening when the tts is speaking
+
+// Change notification icon size
+
+// What is the problem? The listener is being cleared and updated so the sound reference is lost. Where do I attach listeners?
+
+title - the last timer state or just the name of the timer - format - Time's up (Short)
+1 timer expired - label - time's up
+2 or more timers expired - 2 timers expired
+
+What else to do with the app except styling? 
+
+Timer is not listening if it was just unblocked when the app was active on the alarm screen
+
+I need a centralized state management
+
+I save state -> getState -> setState
+
+Call handleReadyState somewhere different
+
+"splash": {
+//   "image": "./assets/time_icon.png",
+//   "resizeMode": "contain",
+//   "backgroundColor": "lightblue"
+	duration: 1000
+// },
+
+// Enable when I want to publish to Google Play
+{
+  // "plugins": ["transform-remove-console"]
+}
+
+
+ <service android:name=".RNBackgroundActionsTask" android:foregroundServiceType="specialUse"> <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+      android:value="background_timer"/> </service> 
+
+splash screen uses the png name splashscreen_image - do not know why this name is used.
+
+// bug where I Do not have alerting overlay, something is wrong
+
+// Make it so that when I click the notification it goes automatically to the nearest time to alarm
+
+With notification tap => go to active timer
+Without notification tap => do nothing
+Make the height of the timer the same as the visible area
+Make it so that only 1 timer can be started at the same time with a voice command
+Status bar from expo is the culprit
+//<service android:name=".RNBackgroundActionsTask" android:foregroundServiceType="shortService"/>
+// {
+//   "plugins": ["transform-remove-console"]
+// }
+
+Take 3 numbers from current time - 3 numbers from started time = bad, when the started time is near the end of the second
+if(date.now() < date.started()) {
+take 3 numbers from date.now() + all what is left untill equal 1000 from the date.started()
+
+ I open the modal and usually only one onLayout happens and timerList rerenders, but sometimes there are 2 of them and because of that timerInterfaces are being rerendered and they just overlap an open modal which is still opened but is just under timerInterface and therefore when I tap on the name I just do not see it because it is under timerInterface.
+
+- maybe fix the bug with not appearing alerting timers overlay when I create and start one timer after another - I think the problem is the same as with another modal from TimerNameControl, timer interfaces are above the modal - how to fix it in the unseeming way?
+
+com.handyapps
+com.usefulapps
+com.niceapps
+com.megaapps
+com.helpfulapps
+com.hanapp
+com.usewithjoy
+com.supaaps
+com.handyvibe
+com.shaup
+com.moonnic
+
+
+
+
+
+
+
+// - Show that the timer is active by background
+// - add progress
+// - fix background execution problem
+// ? - fix invisible interface with no timers on
+// - fix flickering interface when returning to the app
+// - fix isListening problem
+// - fix stopping all timers when there are alarming timers, stop only alarming ones
+// - fix strange scrolling of the timers
+// - fix alignment
+// ? - fix not listening label when listening
+// - add automatic scrolling to every command which includes timer
+// - fix multiple timer starting
+// ? - maybe change identifier 
+// - add notification permission in Android 15 and 14
+// - and background execution permisson in Android 15 and 14
+// - permissions for notifications are done
+// - permissions for exact alarm are done
+// - make the layout change callback to execute only on mount
+// - fix the error with automatic scrolling when pressing a notification
+// - fix the problem with layout height
+// - add comment to stopSound listener
+// - fix the fact that success sound plays even if no command was executed
+// - maybe fix the bug with not appearing alerting timers overlay when I create and start one timer after another
+// - fix the bug with renaming
+// - hide the status bar
+// - fix the problem with transparent first timer
+// - fix the problem with stopping modal
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+// Problem: if you press pause when it is already time to remove ongoing notification, then it would cause to update that notification when it is no longer necessary, gotta do something about that.
+
+// Problem: update notification still gets the old workingTimersRef data - solved with updating event handlers
+
+// Problem: fails to remove timer when moving to the foreground - solved with updating Async storage
+
+// Problem: sometimes the general rnba notification just stucks even without working timers
+
+// Problem: after transition from background to foreground we have a resume icon which appears only in paused or in not initialized timer, and also unneeded notification appears - solved with fixing the app state
+
+// Problem: when I pause after being in the background, sometimes the time just continues to go on - solved with the right way to clear previous timer interval
+
+// Problem: sometimes the word one is recognized and it hinder the speech recognition process, sometimes it is even recognized without real input but from some noice like clock ticking and others
+
+// Problem: if the app is on but no timers are actively running and I go to background then appears a notification which show that the timer is on, fix that
+
+// Problem: the notificaiton is showing even if there is a full screen notificaiton already when I didnt' close the app manually
+
+// Problem: the appState listener doesn't listen on mount right away only release mode, in debug it does
+
+// Make the paused timer noticable 
+// Think about how to prevent crashes
+
+adb logcat -d > crashlog.txt
+
+Do wild testing to make the app crash
+
+// Probably save things to storage on timer start
+
+Make the play button unavailable when there are 5 timers on
+To make TimerInterface buttons general I need to:
+1) Somehow have the buttons to do things depending on the current selected timer
+Add a listener to every time to update an obj of the currently viewed item
+
+Finishing the app tasks: 
+1) Create real github repo
+2) Have an apk
+
+Separate context state for the currently viewed timer
+
+Ways to make the general buttons work:
+1) Leverage event listeners
+
+Scrolling emits event that is listened in the TimerInterface, listener in the TimerInterface update the selected timer props, and the onScroll updates inners state which in the end rerenders TimerInterfaceButtons. 
+If I wanna start/pause/resume then I do emit event `controlTimer-${getSharedObject()?.name || timers[timers.length - 1].name}` which is listened in the useTimerInterfaceFunctions of the currently selected timer, so we get right function. 
+With deletion and timer creation I just adjust the index accordingly.
+
+Deletion with general buttons works perfectly in situations when:
+1) I start to delete from the last item in the array
+2) I delete somewhere in the middle
+3) I delete from the index 0, where automatic scroll adjust the currently selected timer accordingly
+
+On May 14 I modfied the render method of TimerList in a bad way
+
+// Next steps: push to a remote repo and test wildly the app
+// Fix the bug when I say "pause two" it change the button from paused state to working state
+// Make it so that background execution stops if all active timers are paused
+// Show users that maximum of working timers at a time is 5
+// Fix the bug with the fact that after I create a new timer the notification shows like that timer wasn't created
+// Clear own timeout as well
+----Hanning----
+// The button doesn't do anything if I started the timer with voice command and then wanted to tap to pause it
+Problem with time opacity after it is being reset
+
+// Problem with play button not showing the right state after it was renamed  and triggered by voice
+Layout glitch on load - need to fix
+
+! Try to recreate the problem in release mode
+
+// If I didn't scroll then I need to know what is the currently selected timer
+// The problem: resume function sends active and running while it is not the first timer to be there
+// Clean up some code
+// Disco
+// Maybe find a way to prevent app rare crashes that lie in the rnba lib
+// Do something about sound sudden stop
+// During vocie command testing the app just crashed and in the error the foreground service from notifee was seen, after that I turned off completely the notifee foreground service, which actually didn't anything helpful at all at that point and now I automatically test the app with recorded audio to check performance and will it crash again with notifee foreground service being fixed or not
+
+// Why soundRef.current.isPlaying() is null
+
+// If disco is currently playing and the alarm arises - then I need to turn off the disco, it should use the playback channel
+
+/* Problem with using playSoundGeneral for disco
+1) Sound should loaded every time, unless I have a variable that holds the loaded sound
+2) When I want to play real alarm it checks if the sound is loaded and it is, but I do need to get the alarm to play
+In the end I just build a new function because there were some difficulties in integrating it into an existing playSoundGeneral function, but with the current knowledge it can be done, but it is simpler and cleaner to just create a new one which I did and it was a breeze to do :)
+*/
+// Layout problem and status bar layout problem
+
+Test the app wildly and in the end just commit it.
+
+Things to test:
+1) Timer pause
+2) Timer resume
+3) Timer reset
+4) Timer delete
+5) Timer create
+Voice commands:
+start 
+pause
+continue
+reset
+reset finished
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

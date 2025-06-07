@@ -327,7 +327,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       const minHeight = await getItemFromStorage("calculatedTimerHeight");
       if (minHeight) {
         setContainerHeight(minHeight);
-        console.log("In the hook", Date.now());
+        // console.log("In the hook", Date.now());
       }
     }
     load();
@@ -374,7 +374,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       updateSharedObject({ timerListHeight: height });
 
       setContainerHeight(minHeight);
-      console.log("In the onLayout", Date.now());
+      // console.log("In the onLayout", Date.now());
 
       layoutTimeoutRef.current = setTimeout(function () {
         setHasMounted(true);
