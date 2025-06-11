@@ -50,6 +50,8 @@ export function usePauseResume({
     async function (reopenedTimer) {
       try {
         if (reopenedTimer) {
+          console.log("Timer was reopened");
+
           timerStartedRef.current = reopenedTimer;
         }
 
@@ -80,12 +82,7 @@ export function usePauseResume({
           name: name,
         });
 
-        setItemInStorage(`timerStarted-${name}`, {
-          timeStarted: timerStartedRef.current,
-          name: name,
-          timePaused:
-            pausedTimeRef.current > 0 ? pausedTimeRef.current : Date.now(),
-        });
+        console.log("timerStarted", timerStartedRef.current);
 
         updateTimers({ name, timerState: timerStateRef.current });
 
@@ -104,6 +101,12 @@ export function usePauseResume({
           timerStartedRef.current =
             Date.now() - (time - timeLeftRef.current) * 1000; // Adjust start time
         }
+        setItemInStorage(`timerStarted-${name}`, {
+          timeStarted: timerStartedRef.current,
+          name: name,
+          timePaused:
+            pausedTimeRef.current > 0 ? pausedTimeRef.current : Date.now(),
+        });
 
         // console.log("We are resuming now", reopenedTimer, name);
         await updateTime("yes");
