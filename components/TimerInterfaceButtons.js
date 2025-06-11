@@ -61,7 +61,9 @@ export default function TimerInterfaceButtons({ onDelete }) {
         <View
           style={[
             styles.sideButtonContainer,
-            getSharedObject().isActive && styles.disabledDeleteBtn,
+            workingTimersRef.current.includes(
+              getSharedObject()?.name || timers[timers.length - 1]?.name
+            ) && styles.disabledDeleteBtn,
           ]}
         >
           <IconButton

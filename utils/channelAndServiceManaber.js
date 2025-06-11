@@ -1,8 +1,5 @@
 import notifee, { AndroidImportance } from "@notifee/react-native";
 
-import { sleep } from "./helpers";
-import { getSharedObject, updateSharedObject } from "./sharedVariables";
-
 export function registerChannelsAndService() {
   // Ensure the channel exists
   async function prepareChannel() {

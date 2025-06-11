@@ -346,7 +346,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         await setItemInStorage("timerListHeights", [height]);
       }
 
-      if (heightArr?.length < 10) {
+      if (heightArr?.length < 20) {
         await setItemInStorage("timerListHeights", [...heightArr, height]);
       }
 
@@ -356,14 +356,14 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       }, {});
 
       const minHeight = Object.entries(countElementObj).reduce(
-        (acc, { key, value }) => {
-          if (acc[1] < value) {
-            return value;
+        (acc, [key, value]) => {
+          if (+acc[1] < +value) {
+            return key;
           }
           return acc;
         },
         Object.entries(countElementObj)[0]
-      )[0];
+      );
 
       setItemInStorage("calculatedTimerHeight", minHeight);
 

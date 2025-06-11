@@ -64,7 +64,7 @@ final public class RNBackgroundActionsTask extends HeadlessJsTaskService {
                 .setContentIntent(contentIntent)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_MIN)
-                .setColor(color);
+                .setColor(color)
 
         final Bundle progressBarBundle = bgOptions.getProgressBar();
         if (progressBarBundle != null) {
@@ -106,9 +106,8 @@ final public class RNBackgroundActionsTask extends HeadlessJsTaskService {
   Log.d("YourTag", "Foreground service type: " + type);
      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
      startForeground(SERVICE_NOTIFICATION_ID, notification, type);
-      } else {
+     } else {
          startForeground(SERVICE_NOTIFICATION_ID, notification);
-
         }
 
         return super.onStartCommand(intent, flags, startId);
