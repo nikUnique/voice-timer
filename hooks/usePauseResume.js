@@ -80,6 +80,13 @@ export function usePauseResume({
           name: name,
         });
 
+        setItemInStorage(`timerStarted-${name}`, {
+          timeStarted: timerStartedRef.current,
+          name: name,
+          timePaused:
+            pausedTimeRef.current > 0 ? pausedTimeRef.current : Date.now(),
+        });
+
         updateTimers({ name, timerState: timerStateRef.current });
 
         await updateLeastTimer();
