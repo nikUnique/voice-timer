@@ -142,8 +142,6 @@ function TimerInterface({
     [controlTimer, index, isActive, isPaused, name, onDelete, startTimer]
   );
 
-  console.log("timerHeight", timerHeight);
-
   return (
     <View
       style={[

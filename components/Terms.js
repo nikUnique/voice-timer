@@ -303,7 +303,7 @@ export default function Terms() {
               value={isRead}
               onValueChange={setIsRead}
               tintColors={{
-                true: isAccepted ? Colors.primaryTint90 : Colors.primaryTint40,
+                true: isAccepted ? Colors.grayTint70 : Colors.primaryTint70,
                 false: Colors.primaryTint90,
               }}
               disabled={isAccepted}
@@ -332,42 +332,6 @@ export default function Terms() {
     </ScrollView>
   );
 }
-
-// function Subtitle({ children }) {
-//   return (
-//     <View>
-//       <Text style={styles.subtitle}>{children}</Text>
-//     </View>
-//   );
-// }
-
-// function Paragraph({ children }) {
-//   return (
-//     <View>
-//       <Text style={styles.paragraph}>{children}</Text>
-//     </View>
-//   );
-// }
-
-// function Label({ children }) {
-//   return (
-//     <View>
-//       <Text style={styles.label}>{children}</Text>
-//     </View>
-//   );
-// }
-
-// function BulletPoint({ children }) {
-//   return (
-//     <View>
-//       <Text style={styles.bulletPoint}>
-//         {"\u2022  "}
-//         {children}
-//         {"\n"}
-//       </Text>
-//     </View>
-//   );
-// }
 
 const styles = StyleSheet.create({
   container: {

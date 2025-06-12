@@ -43,9 +43,9 @@ export function useStartTimer({
   const startTimer = useCallback(
     async function (repeat) {
       try {
-        if (Platform.constants.Release >= 12) {
-          emitter.emit("startForegroundService");
-        }
+        // if (Platform.constants.Release >= 12) {
+        // }
+        emitter.emit("startForegroundService");
 
         if (!AppState.currentState.includes("active")) {
           console.log(
@@ -54,13 +54,6 @@ export function useStartTimer({
           );
           return;
         }
-
-        console.log(
-          "sumba",
-          isActive,
-          timeLeftRef.current,
-          workingTimersRef.current
-        );
 
         if ((!isActive || repeat) && timeLeftRef.current > 0) {
           if (workingTimersRef.current.length >= 5) {

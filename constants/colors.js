@@ -14,4 +14,5 @@ export const Colors = {
   grayShade30: "#24292d",
   grayTint10: "#484e53",
   grayTint20: "#5d6166",
+  grayTint70: "#c2c4c6",
 };
