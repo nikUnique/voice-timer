@@ -297,15 +297,16 @@ export default function Terms() {
           </Paragraph>
         </Section>
 
-        <Pressable onPress={() => setIsRead(!isRead)}>
+        <Pressable onPress={() => setIsRead(!isRead)} disabled={isAccepted}>
           <View style={styles.checkboxContainer}>
             <CheckBox
               value={isRead}
               onValueChange={setIsRead}
               tintColors={{
-                true: Colors.primaryTint40,
+                true: isAccepted ? Colors.primaryTint90 : Colors.primaryTint40,
                 false: Colors.primaryTint90,
               }}
+              disabled={isAccepted}
             />
             <Text style={styles.checkboxLabel}>
               I have read and agree to the Terms and Conditions

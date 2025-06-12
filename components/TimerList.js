@@ -363,7 +363,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           return acc;
         },
         Object.entries(countElementObj)[0]
-      );
+      )[0];
 
       setItemInStorage("calculatedTimerHeight", minHeight);
 
