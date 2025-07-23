@@ -1,6 +1,9 @@
 import Slider from "@react-native-community/slider";
 import { useMemo, useState } from "react";
 import {
+  Alert,
+  Linking,
+  PermissionsAndroid,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -44,6 +47,8 @@ export default function Settings() {
     setKeepScreenOnMinutes,
     isVibrating,
     setIsVibrating,
+    microGranted,
+    setMicroGranted,
   } = useSettingsData();
 
   const settings = useMemo(
@@ -81,6 +86,12 @@ export default function Settings() {
     if (secs >= 60) {
       return `${secs / 60} minutes`;
     }
+  }
+
+  function openSettings() {
+    Linking.openSettings().catch(() => {
+      Alert.alert("Unable to open settings");
+    });
   }
 
   return (
@@ -200,7 +211,46 @@ export default function Settings() {
 
             <Switch
               value={voiceEnabled}
-              onValueChange={(value) => {
+              onValueChange={async (value) => {
+                let localMicroGranted;
+                if (!voiceEnabled && !microGranted) {
+                  localMicroGranted = await PermissionsAndroid.check(
+                    PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+                  );
+                  console.log("micrco", localMicroGranted);
+
+                  let permission;
+                  if (!localMicroGranted) {
+                    // Required manual ask if never ask again was choosen before
+                    permission = await PermissionsAndroid.request(
+                      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+                    );
+                    console.log("permission", permission);
+                  }
+
+                  if (permission === "never_ask_again") {
+                    Alert.alert(
+                      "Microphone Permission Required",
+                      "To use voice commands, please enable microphone permission in the app settings. Navigate to Permissions -> Microphone and select one of the available options.\n\n" +
+                        "Currently, the option 'Do not allow' is selected. Please choose a different option to enable microphone access for the app.",
+                      [
+                        { text: "Cancel", style: "cancel" },
+                        { text: "Settings", onPress: openSettings },
+                      ]
+                    );
+                  }
+
+                  localMicroGranted = await PermissionsAndroid.check(
+                    PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+                  );
+
+                  if (!localMicroGranted) {
+                    return;
+                  }
+
+                  setMicroGranted(localMicroGranted);
+                }
+
                 setVoiceEnabled(value);
                 updateSettingsInStorage("voiceEnabled", value);
               }}

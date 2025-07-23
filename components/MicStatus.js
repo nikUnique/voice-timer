@@ -1,6 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Linking,
+  PermissionsAndroid,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import { Colors } from "../constants/colors";
 import {
@@ -20,6 +28,8 @@ export default function MicStatus() {
     keepScreenOnCommand,
     keepScreenOnMinutes,
     isVibrating,
+    microGranted,
+    setMicroGranted,
   } = useSettingsData();
   const { isListening } = useRecognizerData();
   const { isPhoneLocked } = useIsLocked();
@@ -28,7 +38,54 @@ export default function MicStatus() {
     ? { backgroundColor: Colors.primaryTint70 }
     : { backgroundColor: Colors.primaryTint90 };
 
-  function toggleListening() {
+  function openSettings() {
+    Linking.openSettings().catch(() => {
+      Alert.alert("Unable to open settings");
+    });
+  }
+
+  async function toggleListening() {
+    let localMicroGranted;
+    console.log("microGranted", microGranted);
+
+    if (!voiceEnabled && !microGranted) {
+      localMicroGranted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+      );
+      console.log("micrco", localMicroGranted);
+    }
+
+    let permission;
+    if (!localMicroGranted && !microGranted) {
+      // Required manual ask if never ask again was choosen before
+      permission = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+      );
+      console.log("permission", permission);
+
+      if (permission === "never_ask_again") {
+        Alert.alert(
+          "Microphone Permission Required",
+          "To use voice commands, please enable microphone permission in the app settings. Navigate to Permissions -> Microphone and select one of the available options.\n\n" +
+            "Currently, the option 'Do not allow' is selected. Please choose a different option to enable microphone access for the app.",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Settings", onPress: openSettings },
+          ]
+        );
+      }
+
+      localMicroGranted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+      );
+
+      if (!localMicroGranted && !microGranted) {
+        return;
+      }
+
+      setMicroGranted(localMicroGranted);
+    }
+
     setVoiceEnabled((prevState) => !prevState);
     setItemInStorage("settings", {
       alarmVolume,
@@ -41,6 +98,8 @@ export default function MicStatus() {
       isVibrating,
     });
   }
+
+  console.log("voiceNeable", voiceEnabled);
 
   return (
     <Pressable

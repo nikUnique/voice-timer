@@ -50,6 +50,8 @@ export default memo(function App() {
   }
 
   function handleToggleModal() {
+    console.log("Touched");
+
     setModalIsVisible(!modalIsVisible);
   }
   return (
@@ -105,7 +107,7 @@ export default memo(function App() {
                     // />
 
                     <TouchableOpacity
-                      onPress={handleToggleModal}
+                      onPressOut={handleToggleModal}
                       style={
                         (({ pressed }) => pressed && styles.pressed,
                         styles.pressable)

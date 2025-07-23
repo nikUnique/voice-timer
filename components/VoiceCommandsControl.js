@@ -1,5 +1,11 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { Animated, NativeModules, StyleSheet, Text } from "react-native";
+import {
+  Animated,
+  NativeModules,
+  PermissionsAndroid,
+  StyleSheet,
+  Text,
+} from "react-native";
 import Vosk from "react-native-vosk";
 import RNFS, { readFile } from "react-native-fs";
 
@@ -88,26 +94,48 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
   }, []);
 
   const recordGrammar = useCallback(async () => {
-    if (!isReady) {
-      console.log("The model is not loaded yet 😲");
-      return;
-    }
+    try {
+      if (!isReady) {
+        console.log("The model is not loaded yet 😲");
+        return;
+      }
 
-    await stop();
-    if (!isListening) {
-      console.log("The app is not listening 💣");
-      return;
-    }
+      await stop();
+      if (!isListening) {
+        console.log("The app is not listening 💣");
+        return;
+      }
 
-    vosk
-      .start({ grammar: dynamicGrammar })
-      .then(() => {
-        console.log("Starting recognition with grammar...");
-        setIsRecognizing(true);
-      })
-      .catch((e) =>
-        console.error(`An error occured while initializing vosk`, e)
+      const microGranted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
       );
+
+      // if (!microGranted) {
+      //   await PermissionsAndroid.request(
+      //     PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+      //   );
+      //   console.log("micro", microGranted);
+      // }
+
+      // console.log("perm", );
+
+      if (!microGranted) {
+        console.log("Microphon permission denied by the user");
+        return;
+      }
+
+      vosk
+        .start({ grammar: dynamicGrammar })
+        .then(() => {
+          console.log("Starting recognition with grammar...");
+          setIsRecognizing(true);
+        })
+        .catch((e) =>
+          console.error(`An error occured while initializing vosk`, e)
+        );
+    } catch (error) {
+      console.error("An error occured in the recordGrammar function", error);
+    }
   }, [isReady, stop, isListening, vosk, dynamicGrammar]);
 
   const stop = useCallback(async () => {

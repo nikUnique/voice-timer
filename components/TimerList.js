@@ -172,14 +172,14 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         );
       }
 
-      if (
-        recognizedCommandRef.current &&
-        recognizedCommandRef.current?.toLowerCase() === DISCO
-      ) {
-        playSpecial({
-          fileName: discoSound,
-        });
-      }
+      // if (
+      //   recognizedCommandRef.current &&
+      //   recognizedCommandRef.current?.toLowerCase() === DISCO
+      // ) {
+      //   playSpecial({
+      //     fileName: discoSound,
+      //   });
+      // }
     },
     [
       DISCO,

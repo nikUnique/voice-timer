@@ -210,20 +210,21 @@ export default function Terms() {
         <Subtitle>5. Disclaimer and Limitation of Liability</Subtitle>
         <Section>
           <Paragraph>
-            The Software is provided &quot;as is&quot;, without warranty of any
+            The Software is provided &quot;AS IS&quot;, without warranty of any
             kind, either express or implied, including, without limitation, the
-            implied warranties of merchantability and fitness for a particular
-            purpose.
+            implied warranties of &quot;MERCHANTABILITY&quot; and &quot;FITNESS
+            FOR A PARTICULAR PURPOSE&quot;.
           </Paragraph>
           <Paragraph>
             The Licensor does not warrant that the Software will meet your
-            requirements or that it will be error-free.
+            requirements or that it will be &quot;ERROR-FREE&quot;.
           </Paragraph>
           <Paragraph>
             To the fullest extent permitted by applicable law, the Licensor
-            shall not be liable for any indirect, incidental, special, or
-            consequential damages, including loss of profits, arising out of or
-            related to your use of or inability to use the Software, even if the
+            shall not be liable for any &quot;INDIRECT&quot;,
+            &quot;INCIDENTAL&quot;, &quot;SPECIAL&quot;, or &quot;CONSEQUENTIAL
+            DAMAGES&quot;, including loss of profits, arising out of or related
+            to your use of or inability to use the Software, even if the
             Licensor has been advised of the possibility of such damages.
           </Paragraph>
         </Section>

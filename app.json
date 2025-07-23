@@ -31,9 +31,7 @@
             "enableBackgroundRemoteNotifications": true
           }
         ],
-        {
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
-        },
+
         {
           "notificationsPermission": "Allow $(PRODUCT_NAME) to send you notifications."
         }

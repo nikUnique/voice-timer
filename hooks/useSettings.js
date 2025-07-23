@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { getItemFromStorage, setItemInStorage } from "../utils/helpers";
 import { useSettingsData } from "../context/VoiceRecognizerContext";
-import { NativeModules, Platform } from "react-native";
+import { NativeModules, PermissionsAndroid, Platform } from "react-native";
 
 export function useSettings() {
   const {
@@ -13,6 +13,30 @@ export function useSettings() {
     setKeepScreenOnMinutes,
     setIsVibrating,
   } = useSettingsData();
+
+  async function requestMicrophone() {
+    try {
+      let localMicroGranted;
+      setVoiceEnabled(false);
+      console.log("Is voice disabled :(");
+
+      localMicroGranted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+      );
+
+      if (!localMicroGranted) {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log("beny");
+          setVoiceEnabled(true);
+        }
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+  }
 
   useEffect(
     function () {
@@ -31,6 +55,8 @@ export function useSettings() {
           setKeepScreenOnCommand(retrievedSettings.keepScreenOnCommand);
           setKeepScreenOnMinutes(retrievedSettings.keepScreenOnMinutes);
           setIsVibrating(retrievedSettings.isVibrating);
+
+          requestMicrophone();
         } catch (error) {
           console.error(
             `An error occured in the load settings function`,

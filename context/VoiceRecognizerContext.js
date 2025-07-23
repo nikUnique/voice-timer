@@ -17,13 +17,13 @@ const SettingsContext = createContext();
 export default function VoiceRecognizerProvider({ children }) {
   const [recognizedCommand, setRecognizedCommand] = useState();
   const [recognizedTime, setRecognizedTime] = useState();
-  const [isListening, setIsListening] = useState(true);
+  const [isListening, setIsListening] = useState(false);
   const [isAlarmingScreen, setIsAlarmingScreen] = useState(false);
   const [alertingTimers, setAlertingTimers] = useState([]);
   const [language, setLanguage] = useState("en");
   const [isLocked, setIsLocked] = useState(false);
 
-  const isListeningRef = useRef(true);
+  const isListeningRef = useRef(false);
   const isValidCommandRef = useRef(false);
 
   // Sound
@@ -80,7 +80,8 @@ export default function VoiceRecognizerProvider({ children }) {
   const [discoSound, setDiscoSound] = useState("disco.wav");
   const [alarmVolume, setAlarmVolume] = useState(0.1);
   const [autoStopAlarmTimeout, setAutoStopAlarmTimeout] = useState(0);
-  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [microGranted, setMicroGranted] = useState(false);
   const [isVoiceFeedbackEnabled, setIsVoiceFeedbackEnabled] = useState(true);
   const [keepScreenOnCommand, setKeepScreenOnCommand] = useState(true);
   const [keepScreenOnMinutes, setKeepScreenOnMinutes] = useState(5);
@@ -269,6 +270,8 @@ export default function VoiceRecognizerProvider({ children }) {
       isVibrating,
       setIsVibrating,
       discoSound,
+      microGranted,
+      setMicroGranted,
     }),
     [
       screenTimeout,
@@ -282,6 +285,7 @@ export default function VoiceRecognizerProvider({ children }) {
       keepScreenOnMinutes,
       isVibrating,
       discoSound,
+      microGranted,
     ]
   );
 

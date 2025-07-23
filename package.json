@@ -8,7 +8,9 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "buildInstallRelease": "cd android && ./gradlew assembleRelease && cd .. && adb install -r ./android/app/build/outputs/apk/release/app-release.apk && adb shell am start -n com.moonnic.timer_with_commands/.MainActivity",
-    "adbLog": "adb logcat *:S ReactNative:V ReactNativeJS:V MyApp:D AndroidRuntime:E System.err:W *:F -v color -v long"
+    "stopGradle": "cd android && ./gradlew --stop && cd ..",
+    "adbLog": "adb logcat *:S ReactNative:V ReactNativeJS:V MyApp:D AndroidRuntime:E System.err:W *:F -v color -v long",
+    "gradleClean": "cd android && ./gradlew clean && cd .."
   },
   "dependencies": {
     "@notifee/react-native": "^9.1.8",
@@ -42,6 +44,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@babel/preset-env": "^7.28.0",
+    "@babel/preset-react": "^7.27.1",
     "@types/intl": "^1.2.2",
     "@types/react": "^18.3.18",
     "@types/typo-js": "^1.2.2",

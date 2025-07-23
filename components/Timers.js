@@ -1,6 +1,13 @@
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { AppState, NativeModules, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  AppState,
+  NativeModules,
+  PermissionsAndroid,
+  StyleSheet,
+  View,
+} from "react-native";
 import BackgroundService from "react-native-background-actions";
 
 import {
@@ -37,7 +44,13 @@ export default function Timers({ navigation }) {
     alertingTimers,
   } = useRecognizerData();
 
-  const { keepScreenOnCommand, keepScreenOnMinutes } = useSettingsData();
+  const {
+    keepScreenOnCommand,
+    keepScreenOnMinutes,
+    microGranted,
+    setMicroGranted,
+    setVoiceEnabled,
+  } = useSettingsData();
 
   const { soundRef, soundIsPlayingRef } = useSoundData();
 
@@ -54,6 +67,29 @@ export default function Timers({ navigation }) {
 
   const { playSoundWrapper, stopSoundWrapper, options, backgroundTask } =
     useTimer();
+
+  // useEffect(
+  //   function () {
+  //     async function requestMicrophone() {
+  //       try {
+  //         setVoiceEnabled(false);
+  //         console.log("Is voice disabled :(");
+
+  //         const granted = await PermissionsAndroid.request(
+  //           PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+  //         );
+  //         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+  //           console.log("beny");
+  //           setVoiceEnabled(true);
+  //         }
+  //       } catch (error) {
+  //         console.warn(error);
+  //       }
+  //     }
+  //     requestMicrophone();
+  //   },
+  //   [setVoiceEnabled]
+  // );
 
   useEffect(
     function () {

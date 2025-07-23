@@ -1,3 +1,3 @@
 # Voice Timer App
 
-Voice Timer is a simple and flexible timer app designed for hands-free control.
+Voice Timer is a flexible timer app designed for hands-free control.
