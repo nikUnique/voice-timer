@@ -212,27 +212,18 @@ export default function Settings() {
             <Switch
               value={voiceEnabled}
               onValueChange={async (value) => {
-                let localMicroGranted;
-                if (!voiceEnabled && !microGranted) {
-                  localMicroGranted = await PermissionsAndroid.check(
+                let localMicroGranted, permission;
+                if (/* !localMicroGranted && */ !microGranted) {
+                  permission = await PermissionsAndroid.request(
                     PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
                   );
-                  console.log("micrco", localMicroGranted);
-
-                  let permission;
-                  if (!localMicroGranted) {
-                    // Required manual ask if never ask again was choosen before
-                    permission = await PermissionsAndroid.request(
-                      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
-                    );
-                    console.log("permission", permission);
-                  }
-
+                  // Required manual ask if never ask again was choosen before
                   if (permission === "never_ask_again") {
+                    permission = null;
                     Alert.alert(
                       "Microphone Permission Required",
                       "To use voice commands, please enable microphone permission in the app settings. Navigate to Permissions -> Microphone and select one of the available options.\n\n" +
-                        "Currently, the option 'Do not allow' is selected. Please choose a different option to enable microphone access for the app.",
+                        "Currently, the option that is selected forbids the microphone access. Please choose a different option to enable microphone access for the app.",
                       [
                         { text: "Cancel", style: "cancel" },
                         { text: "Settings", onPress: openSettings },
@@ -244,7 +235,7 @@ export default function Settings() {
                     PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
                   );
 
-                  if (!localMicroGranted) {
+                  if (!localMicroGranted && !microGranted) {
                     return;
                   }
 

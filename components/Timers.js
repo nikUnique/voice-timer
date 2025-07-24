@@ -44,13 +44,7 @@ export default function Timers({ navigation }) {
     alertingTimers,
   } = useRecognizerData();
 
-  const {
-    keepScreenOnCommand,
-    keepScreenOnMinutes,
-    microGranted,
-    setMicroGranted,
-    setVoiceEnabled,
-  } = useSettingsData();
+  const { keepScreenOnCommand, keepScreenOnMinutes } = useSettingsData();
 
   const { soundRef, soundIsPlayingRef } = useSoundData();
 
@@ -67,29 +61,6 @@ export default function Timers({ navigation }) {
 
   const { playSoundWrapper, stopSoundWrapper, options, backgroundTask } =
     useTimer();
-
-  // useEffect(
-  //   function () {
-  //     async function requestMicrophone() {
-  //       try {
-  //         setVoiceEnabled(false);
-  //         console.log("Is voice disabled :(");
-
-  //         const granted = await PermissionsAndroid.request(
-  //           PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
-  //         );
-  //         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-  //           console.log("beny");
-  //           setVoiceEnabled(true);
-  //         }
-  //       } catch (error) {
-  //         console.warn(error);
-  //       }
-  //     }
-  //     requestMicrophone();
-  //   },
-  //   [setVoiceEnabled]
-  // );
 
   useEffect(
     function () {

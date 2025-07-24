@@ -45,29 +45,22 @@ export default function MicStatus() {
   }
 
   async function toggleListening() {
-    let localMicroGranted;
-    console.log("microGranted", microGranted);
-
-    if (!voiceEnabled && !microGranted) {
-      localMicroGranted = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
-      );
-      console.log("micrco", localMicroGranted);
-    }
-
     let permission;
-    if (!localMicroGranted && !microGranted) {
-      // Required manual ask if never ask again was choosen before
+
+    let localMicroGranted;
+
+    if (/* !localMicroGranted && */ !microGranted) {
       permission = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
       );
-      console.log("permission", permission);
 
+      // Required manual ask if never ask again was choosen before
       if (permission === "never_ask_again") {
+        permission = null;
         Alert.alert(
           "Microphone Permission Required",
           "To use voice commands, please enable microphone permission in the app settings. Navigate to Permissions -> Microphone and select one of the available options.\n\n" +
-            "Currently, the option 'Do not allow' is selected. Please choose a different option to enable microphone access for the app.",
+            "Currently, the option that is selected forbids the microphone access. Please choose a different option to enable microphone access for the app.",
           [
             { text: "Cancel", style: "cancel" },
             { text: "Settings", onPress: openSettings },

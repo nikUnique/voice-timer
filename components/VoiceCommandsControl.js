@@ -110,15 +110,6 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
       );
 
-      // if (!microGranted) {
-      //   await PermissionsAndroid.request(
-      //     PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
-      //   );
-      //   console.log("micro", microGranted);
-      // }
-
-      // console.log("perm", );
-
       if (!microGranted) {
         console.log("Microphon permission denied by the user");
         return;

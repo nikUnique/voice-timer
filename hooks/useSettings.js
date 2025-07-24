@@ -1,7 +1,10 @@
 import { useEffect } from "react";
-import { getItemFromStorage, setItemInStorage } from "../utils/helpers";
-import { useSettingsData } from "../context/VoiceRecognizerContext";
-import { NativeModules, PermissionsAndroid, Platform } from "react-native";
+import { PermissionsAndroid } from "react-native";
+import {
+  useRefsData,
+  useSettingsData,
+} from "../context/VoiceRecognizerContext";
+import { getItemFromStorage } from "../utils/helpers";
 
 export function useSettings() {
   const {
@@ -14,11 +17,11 @@ export function useSettings() {
     setIsVibrating,
   } = useSettingsData();
 
+  const { timers } = useRefsData();
+
   async function requestMicrophone() {
     try {
       let localMicroGranted;
-      setVoiceEnabled(false);
-      console.log("Is voice disabled :(");
 
       localMicroGranted = await PermissionsAndroid.check(
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
@@ -29,8 +32,9 @@ export function useSettings() {
           PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log("beny");
           setVoiceEnabled(true);
+        } else {
+          setVoiceEnabled(false);
         }
       }
     } catch (error) {
@@ -44,6 +48,9 @@ export function useSettings() {
         try {
           // console.log("Settings retrieved from storage 🤡");
 
+          if (timers.length > 0) {
+            requestMicrophone();
+          }
           const retrievedSettings = await getItemFromStorage("settings");
 
           if (!retrievedSettings) return;
@@ -55,8 +62,6 @@ export function useSettings() {
           setKeepScreenOnCommand(retrievedSettings.keepScreenOnCommand);
           setKeepScreenOnMinutes(retrievedSettings.keepScreenOnMinutes);
           setIsVibrating(retrievedSettings.isVibrating);
-
-          requestMicrophone();
         } catch (error) {
           console.error(
             `An error occured in the load settings function`,
@@ -75,6 +80,7 @@ export function useSettings() {
       setKeepScreenOnCommand,
       setKeepScreenOnMinutes,
       setVoiceEnabled,
+      timers.length,
     ]
   );
 }
