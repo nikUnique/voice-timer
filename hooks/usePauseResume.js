@@ -1,15 +1,15 @@
 import { useCallback, useEffect } from "react";
 
+import BackgroundService from "react-native-background-actions";
 import { emitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
-import BackgroundService from "react-native-background-actions";
 
 import { AppState } from "react-native";
 import { setItemInStorage } from "../utils/helpers";
 
+import { useUpdateControlButtons } from "./useUpdateControlButtons";
 import { useUpdateLeastTimer } from "./useUpdateLeastTimer";
 import { useUpdateTimers } from "./useUpdateTimers";
-import { useUpdateControlButtons } from "./useUpdateControlButtons";
 
 export function usePauseResume({
   timerStartedRef,
@@ -62,16 +62,16 @@ export function usePauseResume({
         pausedTimeRef.current = null;
 
         updateSharedObject({
-          pausedTimers: getSharedObject().pausedTimers.filter(
-            (timerName) => timerName !== name
+          pausedTimerNames: getSharedObject().pausedTimerNames.filter(
+            (timerName) => timerName !== name,
           ),
-          runningTimers: [
-            ...new Set([...getSharedObject().runningTimers, name]),
+          runningTimerNames: [
+            ...new Set([...getSharedObject().runningTimerNames, name]),
           ],
         });
 
         if (
-          getSharedObject().runningTimers.length > 0 &&
+          getSharedObject().runningTimerNames.length > 0 &&
           !BackgroundService.isRunning()
         ) {
           emitter.emit("startForegroundService");
@@ -129,7 +129,7 @@ export function usePauseResume({
       timeLabelRef,
       time,
       timeLeftRef,
-    ]
+    ],
   );
 
   const pauseTimer = useCallback(
@@ -183,13 +183,13 @@ export function usePauseResume({
         emitter.emit(`pause-${name}`);
         updateSharedObject({
           delay: 10,
-          runningTimers: getSharedObject().runningTimers.filter(
-            (timerName) => timerName !== name
+          runningTimerNames: getSharedObject().runningTimerNames.filter(
+            (timerName) => timerName !== name,
           ),
-          pausedTimers: [...getSharedObject().pausedTimers, name],
+          pausedTimerNames: [...getSharedObject().pausedTimerNames, name],
         });
 
-        if (getSharedObject().runningTimers.length === 0) {
+        if (getSharedObject().runningTimerNames.length === 0) {
           BackgroundService.stop();
         }
 
@@ -226,7 +226,7 @@ export function usePauseResume({
       updatePersitentNotification,
       timeLeftRef,
       timeLabelRef,
-    ]
+    ],
   );
 
   useEffect(
@@ -250,6 +250,6 @@ export function usePauseResume({
       pauseTimerRef,
       name,
       pauseListener,
-    ]
+    ],
   );
 }

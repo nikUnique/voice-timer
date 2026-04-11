@@ -1,13 +1,9 @@
 import { useCallback } from "react";
 
 import Time from "../components/Time";
-import {
-  getItemFromStorage,
-  removeItemFromStorage,
-  sleep,
-} from "../utils/helpers";
-import { getSharedObject } from "../utils/sharedVariables";
 import { useRefsData } from "../context/VoiceRecognizerContext";
+import { getItemFromStorage, removeItemFromStorage } from "../utils/helpers";
+import { getSharedObject } from "../utils/sharedVariables";
 
 export function useLoadTimerState({
   setIsActive,
@@ -24,7 +20,7 @@ export function useLoadTimerState({
   setAppState,
 }) {
   let appStateBoxAlt;
-  const { workingTimersRef } = useRefsData();
+  const { workingTimersRef, setTimersHistory } = useRefsData();
 
   const loadTimerState = useCallback(async function loadTimerState() {
     try {
@@ -34,6 +30,13 @@ export function useLoadTimerState({
       const savedTime = await getItemFromStorage(`timerStarted-${name}`);
 
       const parsedTimerState = await getItemFromStorage(`timerState-${name}`);
+
+      const parsedHistory = await getItemFromStorage("timerHistory");
+      // const parsedHistory = await removeItemFromStorage("timerHistory");
+
+      if (parsedHistory) {
+        setTimersHistory(parsedHistory);
+      }
 
       if (savedTime) {
         const now = Date.now();
@@ -156,7 +159,7 @@ export function useLoadTimerState({
       timerIsActiveRef,
       timerStartedRef,
       timerStateRef,
-    ]
+    ],
   );
 
   return {

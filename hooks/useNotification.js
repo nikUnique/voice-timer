@@ -3,8 +3,8 @@ import notifee, {
   AndroidImportance,
   TriggerType,
 } from "@notifee/react-native";
-import { AppState, NativeModules } from "react-native";
 import { useCallback } from "react";
+import { AppState, NativeModules } from "react-native";
 
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter } from "../utils/EventEmitter";
@@ -40,7 +40,7 @@ export function useNotification() {
         let notificationCategory = AndroidCategory.CALL;
 
         if (
-          getSharedObject().alertingTimers.length > 1 &&
+          getSharedObject().alertingTimerNames.length > 1 &&
           !isPhoneLocked &&
           AppState.currentState === "active"
         ) {
@@ -99,16 +99,16 @@ export function useNotification() {
               timerName,
             },
           },
-          trigger
+          trigger,
         );
       } catch (err) {
         console.error(
           `An error occured in onCreateTriggerNotification function 🔴`,
-          err
+          err,
         );
       }
     },
-    [alertingTimerNamesRef]
+    [alertingTimerNamesRef],
   );
 
   const onUpdateNotification = useCallback(
@@ -228,7 +228,7 @@ export function useNotification() {
       } catch (err) {
         console.error(
           `An error occured in onUpdateNotification function 🔴`,
-          err
+          err,
         );
       }
     },
@@ -237,7 +237,7 @@ export function useNotification() {
       leastTimeTimerRef,
       notificationIdRef,
       workingTimersRef,
-    ]
+    ],
   );
 
   return { onCreateTriggerNotification, onUpdateNotification };

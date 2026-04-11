@@ -49,7 +49,7 @@ export function useTimer() {
       color: "#edf2ff",
       linkingURI: "timer_with_commands://timer", // Optional deep linking URI
     }),
-    []
+    [],
   );
 
   const backgroundTask = useCallback(async () => {
@@ -74,27 +74,27 @@ export function useTimer() {
     async ({ ...properties }) => {
       await playSound({ ...properties });
     },
-    [playSound]
+    [playSound],
   );
 
   const stopSoundWrapper = useCallback(
-    async ({ alertingTimers }) => {
-      if (alertingTimers.length !== 0) {
+    async ({ alertingTimerNames }) => {
+      if (alertingTimerNames.length !== 0) {
         return;
       }
       await stopSound();
     },
-    [stopSound]
+    [stopSound],
   );
 
-  const updateAlertingTimers = useCallback(
+  const updateAlertingTimerNames = useCallback(
     (name) => {
       if (alertingTimerNamesRef.current.includes(name)) return;
 
       alertingTimerNamesRef.current = [...alertingTimerNamesRef.current, name];
       setItemInStorage("alertingTimerNames", alertingTimerNamesRef.current);
     },
-    [alertingTimerNamesRef]
+    [alertingTimerNamesRef],
   );
 
   const startTalking = useCallback(
@@ -102,7 +102,7 @@ export function useTimer() {
       isListeningRef.current = false;
       setIsListening(false);
     },
-    [isListeningRef, setIsListening]
+    [isListeningRef, setIsListening],
   );
 
   const doneTalking = useCallback(
@@ -110,7 +110,7 @@ export function useTimer() {
       isListeningRef.current = true;
       setIsListening(true);
     },
-    [isListeningRef, setIsListening]
+    [isListeningRef, setIsListening],
   );
 
   const errorTalking = useCallback(function errorTalking() {
@@ -127,7 +127,7 @@ export function useTimer() {
       Tts.addEventListener("tts-finish", doneTalking);
       Tts.addEventListener("tts-error", errorTalking);
     },
-    [doneTalking, errorTalking, startTalking]
+    [doneTalking, errorTalking, startTalking],
   );
 
   useEffect(
@@ -146,7 +146,7 @@ export function useTimer() {
       }
       load();
     },
-    [isFullScreenNotificationRef]
+    [isFullScreenNotificationRef],
   );
 
   const transitionToActive = useCallback(
@@ -194,7 +194,7 @@ export function useTimer() {
       } catch (error) {
         console.error(
           `An error occured in appStateListener in useTimer`,
-          error
+          error,
         );
       }
     },
@@ -204,7 +204,7 @@ export function useTimer() {
       notificationIdRef,
       previousLockedRef,
       wasActiveBeforeLockRef,
-    ]
+    ],
   );
 
   useEffect(
@@ -212,7 +212,7 @@ export function useTimer() {
       transitionToActive();
       const appStateListener = AppState.addEventListener(
         "change",
-        transitionToActive
+        transitionToActive,
       );
 
       return () => appStateListener.remove();
@@ -223,7 +223,7 @@ export function useTimer() {
       previousLockedRef,
       transitionToActive,
       wasActiveBeforeLockRef,
-    ]
+    ],
   );
 
   useEffect(
@@ -242,13 +242,13 @@ export function useTimer() {
         } catch (error) {
           console.error(
             `An error occured in the loading of timers from async storage`,
-            error
+            error,
           );
         }
       }
       load();
     },
-    [allTimersRef, navigation, setEditableTimers, setTimers]
+    [allTimersRef, navigation, setEditableTimers, setTimers],
   );
 
   return {
@@ -256,6 +256,6 @@ export function useTimer() {
     backgroundTask,
     playSoundWrapper,
     stopSoundWrapper,
-    updateAlertingTimers,
+    updateAlertingTimerNames,
   };
 }

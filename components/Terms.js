@@ -1,4 +1,7 @@
 /* eslint-disable react-native/no-raw-text */
+import CheckBox from "@react-native-community/checkbox";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   BackHandler,
@@ -9,14 +12,11 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import { Colors } from "../constants/colors";
-import Section from "./Section";
-import CheckBox from "@react-native-community/checkbox";
-import { useNavigation } from "@react-navigation/native";
 import IconButton from "../ui/IconButton";
 import { getItemFromStorage, setItemInStorage } from "../utils/helpers";
-import { Subtitle, Paragraph, BulletPoint, Label } from "./TextUnits";
+import Section from "./Section";
+import { BulletPoint, Label, Paragraph, Subtitle } from "./TextUnits";
 
 export default function Terms() {
   const [isAccepted, setIsAccepted] = useState(false);
@@ -43,13 +43,13 @@ export default function Terms() {
           Alert.alert(
             "User Agreement",
             "Please read and accept the Terms and Conditions to continue",
-            [{ text: "OK" }]
+            [{ text: "OK" }],
           );
       }
 
       load();
     },
-    [navigation]
+    [navigation],
   );
 
   useEffect(
@@ -74,7 +74,21 @@ export default function Terms() {
         });
       }
     },
-    [isAccepted, navigation]
+    [isAccepted, navigation],
+  );
+
+  useFocusEffect(
+    useCallback
+    (() => {
+      const onBackPress = () => true;
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, []),
   );
 
   return (
@@ -298,7 +312,10 @@ export default function Terms() {
           </Paragraph>
         </Section>
 
-        <Pressable onPress={() => setIsRead(!isRead)} disabled={isAccepted}>
+        <Pressable
+          onPress={() => setIsRead(!isRead)}
+          disabled={isAccepted}
+        >
           <View style={styles.checkboxContainer}>
             <CheckBox
               value={isRead}

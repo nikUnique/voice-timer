@@ -10,8 +10,8 @@ import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import BackgroundService from "react-native-background-actions";
 import { removeItemFromStorage, setItemInStorage } from "../utils/helpers";
 import { useNotification } from "./useNotification";
-import { useUpdateTimers } from "./useUpdateTimers";
 import { useUpdateControlButtons } from "./useUpdateControlButtons";
+import { useUpdateTimers } from "./useUpdateTimers";
 
 export function useResetTimer({
   name,
@@ -33,7 +33,7 @@ export function useResetTimer({
 }) {
   const {
     alertingTimerNamesRef,
-    setAlertingTimers,
+    setAlertingTimerNames,
     workingTimersRef,
     setIsAlarmingScreen,
     notificationTitleRef,
@@ -44,6 +44,7 @@ export function useResetTimer({
     currentActivityRef,
     wasActiveBeforeLockRef,
     ongoingNotificationLabelRef,
+    setTimersHistory,
   } = useRefsData();
 
   const { updateControlButtons } = useUpdateControlButtons({
@@ -65,35 +66,38 @@ export function useResetTimer({
 
   const getLeastTimer = useCallback(
     function () {
-      const onlyRunningTimers = timersTimesRef.current?.filter(
-        (timer) => timer.isPaused !== true
+      const onlyrunningTimerNames = timersTimesRef.current?.filter(
+        (timer) => timer.isPaused !== true,
       );
 
-      const onlyPausedTimers = timersTimesRef.current?.filter(
-        (timer) => timer.isPaused === true
+      const onlypausedTimerNames = timersTimesRef.current?.filter(
+        (timer) => timer.isPaused === true,
       );
 
-      const pausedRunningTimers = onlyRunningTimers.length
-        ? onlyRunningTimers
-        : onlyPausedTimers;
+      const pausedrunningTimerNames = onlyrunningTimerNames.length
+        ? onlyrunningTimerNames
+        : onlypausedTimerNames;
 
-      leastTimeTimerRef.current = pausedRunningTimers.reduce((min, number) => {
-        return number.timeLeft < min.timeLeft ? number : min;
-      }, timersTimesRef.current[0]);
+      leastTimeTimerRef.current = pausedrunningTimerNames.reduce(
+        (min, number) => {
+          return number.timeLeft < min.timeLeft ? number : min;
+        },
+        timersTimesRef.current[0],
+      );
     },
-    [timersTimesRef, leastTimeTimerRef]
+    [timersTimesRef, leastTimeTimerRef],
   );
 
   const resetTimer = useCallback(
     async function () {
       try {
         const playingSoundTimerName = alertingTimerNamesRef.current?.find(
-          (item) => item === name
+          (item) => item === name,
         );
 
         alertingTimerNamesRef.current =
           alertingTimerNamesRef.current?.filter(
-            (timerName) => timerName !== playingSoundTimerName
+            (timerName) => timerName !== playingSoundTimerName,
           ) || [];
 
         if (alertingTimerNamesRef.current.length === 0) {
@@ -103,23 +107,74 @@ export function useResetTimer({
 
         getSharedObject().name === name && updateControlButtons(false, false);
 
-        updateSharedObject({
-          alertingTimers: alertingTimerNamesRef.current,
-          index: workingTimersRef.current.length === 0 && 0,
-          runningTimers: getSharedObject().runningTimers.filter(
-            (timerName) => timerName !== name
-          ),
+        console.log(getSharedObject().timers, "spas");
+
+        const updatableTimer = getSharedObject().timers.find((timer) => {
+          console.log(timer, "update");
+          console.log(
+            timer?.label.toLowerCase() === name.toLowerCase() && !timer.endTime,
+            "mega",
+          );
+
+          return (
+            timer?.label?.toLowerCase() === name.toLowerCase() && !timer.endTime
+          );
         });
 
-        if (getSharedObject().runningTimers.length === 0) {
+        console.log(alertingTimerNamesRef.current, "djfi");
+
+        updateSharedObject({
+          alertingTimerNames: alertingTimerNamesRef.current,
+          index: workingTimersRef.current.length === 0 && 0,
+          runningTimerNames: getSharedObject().runningTimerNames.filter(
+            (timerName) => timerName !== name,
+          ),
+          timers: getSharedObject().timers.map((timer) => {
+            return timer?.label === updatableTimer?.label && !timer.endTime
+              ? {
+                  ...updatableTimer,
+                  duration: time - timeLeftRef.current,
+                  endTime: new Date(),
+                }
+              : timer;
+          }),
+        });
+
+        setTimersHistory((cur) =>
+          cur.map((timer) => {
+            console.log(timer, "timerdf");
+
+            return timer?.label === updatableTimer?.label && !timer.endTime
+              ? {
+                  ...updatableTimer,
+                  duration: time - timeLeftRef.current,
+                  endTime: new Date(),
+                }
+              : timer;
+          }),
+        );
+
+        updateSharedObject({
+          timers: getSharedObject().timers.map((timer) => {
+            return timer?.label === updatableTimer?.label && !timer.endTime
+              ? {
+                  ...updatableTimer,
+                  duration: time - timeLeftRef.current,
+                  endTime: new Date(),
+                }
+              : timer;
+          }),
+        });
+
+        if (getSharedObject().runningTimerNames.length === 0) {
           BackgroundService.stop();
         }
 
-        setAlertingTimers(alertingTimerNamesRef.current);
+        setAlertingTimerNames(alertingTimerNamesRef.current);
         setItemInStorage("alertingTimerNames", alertingTimerNamesRef.current);
 
         workingTimersRef.current = workingTimersRef.current?.filter(
-          (timerName) => timerName !== name
+          (timerName) => timerName !== name,
         );
         setItemInStorage("workingTimers", workingTimersRef.current);
 
@@ -146,11 +201,11 @@ export function useResetTimer({
         pausedTimeRef.current = null;
 
         emitter?.emit("stopSound", {
-          alertingTimers: alertingTimerNamesRef.current || [],
+          alertingTimerNames: alertingTimerNamesRef.current || [],
         });
 
         timersTimesRef.current = timersTimesRef.current?.filter(
-          (timer) => timer?.timerName !== name
+          (timer) => timer?.timerName !== name,
         );
         getLeastTimer();
         updateTimerLabel();
@@ -186,7 +241,7 @@ export function useResetTimer({
         emitter.all.delete(`pause-${name}`);
 
         timersTimesRef.current = timersTimesRef.current?.filter(
-          (timer) => timer?.timerName !== name
+          (timer) => timer?.timerName !== name,
         );
 
         if (
@@ -197,7 +252,7 @@ export function useResetTimer({
           onUpdateNotification(
             ongoingNotificationLabelRef?.current,
             getSharedObject().timersLabel,
-            name
+            name,
           );
         }
 
@@ -240,12 +295,13 @@ export function useResetTimer({
     },
     [
       alertingTimerNamesRef,
+      name,
       updateControlButtons,
       workingTimersRef,
-      setAlertingTimers,
+      setTimersHistory,
+      setAlertingTimerNames,
       setIsActive,
       setIsReset,
-      name,
       time,
       timeLeftRef,
       setIsAlarmingScreen,
@@ -265,7 +321,7 @@ export function useResetTimer({
       leastTimeTimerRef,
       onUpdateNotification,
       ongoingNotificationLabelRef,
-    ]
+    ],
   );
 
   useEffect(
@@ -280,7 +336,7 @@ export function useResetTimer({
       resetTimerRef,
       isFullScreenNotificationRef,
       alertingTimerNamesRef,
-    ]
+    ],
   );
 
   return { resetTimer };

@@ -1,5 +1,4 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useRef } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { Colors } from "../constants/colors";
@@ -11,11 +10,14 @@ export default function ContextMenu({ onToggleModal, modalIsVisible }) {
   return (
     <>
       {modalIsVisible && (
-        <Pressable onPress={onToggleModal} style={styles.wrapper}>
+        <Pressable
+          onPress={onToggleModal}
+          style={styles.wrapper}
+        >
           <View style={[styles.menu, { top: "9.8%", right: "3%" }]}>
             <Pressable
               onPress={() => {
-                !getSharedObject().alertingTimers.length &&
+                !getSharedObject().alertingTimerNames.length &&
                   navigation.navigate("CommandsScreen");
                 onToggleModal();
               }}
@@ -24,7 +26,7 @@ export default function ContextMenu({ onToggleModal, modalIsVisible }) {
             </Pressable>
             <Pressable
               onPress={() => {
-                !getSharedObject().alertingTimers.length &&
+                !getSharedObject().alertingTimerNames.length &&
                   navigation.navigate("SettingsScreen");
                 onToggleModal();
               }}
@@ -33,7 +35,7 @@ export default function ContextMenu({ onToggleModal, modalIsVisible }) {
             </Pressable>
             <Pressable
               onPress={() => {
-                !getSharedObject().alertingTimers.length &&
+                !getSharedObject().alertingTimerNames.length &&
                   navigation.navigate("TermsScreen");
                 onToggleModal();
               }}
@@ -42,22 +44,22 @@ export default function ContextMenu({ onToggleModal, modalIsVisible }) {
             </Pressable>
             <Pressable
               onPress={() => {
-                !getSharedObject().alertingTimers.length &&
+                !getSharedObject().alertingTimerNames.length &&
                   navigation.navigate("AboutScreen");
                 onToggleModal();
               }}
             >
               <Text style={styles.menuItem}>About</Text>
             </Pressable>
-
-            {/* <Pressable
+            <Pressable
               onPress={() => {
-                navigation.navigate("AttributionScreen");
+                !getSharedObject().alertingTimerNames.length &&
+                  navigation.navigate("HistoryScreen");
                 onToggleModal();
               }}
             >
-              <Text style={styles.menuItem}>Attributions</Text>
-            </Pressable> */}
+              <Text style={styles.menuItem}>History</Text>
+            </Pressable>
           </View>
         </Pressable>
       )}

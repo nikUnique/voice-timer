@@ -1,17 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Dimensions,
-  InteractionManager,
-  Modal,
   NativeModules,
   Pressable,
-  StatusBar,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 
-import { useNavigationState } from "@react-navigation/native";
 import { Colors } from "../constants/colors";
 import {
   useRecognizerData,
@@ -20,24 +16,29 @@ import {
 import IconButton from "../ui/IconButton";
 import { resetTimerEmitter } from "../utils/EventEmitter";
 import { getSharedObject } from "../utils/sharedVariables";
-import { sleep } from "../utils/helpers";
 
 const { width, height } = Dimensions.get("window");
 
 const AlarmOverlay = ({ navigation }) => {
   const [currentActivity, setCurrentActivity] = useState("");
 
-  const { alertingTimers } = useRecognizerData();
+  const { alertingTimerNames } = useRecognizerData();
 
   const { currentActivityRef } = useRefsData();
 
+  console.log(
+    getSharedObject().alertingTimerNames,
+    "fkdjfk",
+    alertingTimerNames,
+  );
+
   useEffect(
     function () {
-      if (alertingTimers.length === 0) {
+      if (alertingTimerNames.length === 0) {
         navigation.goBack();
       }
     },
-    [alertingTimers, navigation]
+    [alertingTimerNames, navigation],
   );
 
   // useEffect(function () {
@@ -51,8 +52,8 @@ const AlarmOverlay = ({ navigation }) => {
   // }, []);
 
   const onDismiss = useCallback(function () {
-    getSharedObject().alertingTimers.map((alertingTimer) =>
-      resetTimerEmitter.emit(`reset ${alertingTimer}`)
+    getSharedObject().alertingTimerNames.map((alertingTimer) =>
+      resetTimerEmitter.emit(`reset ${alertingTimer}`),
     );
     navigation.goBack();
   }, []);
@@ -67,7 +68,7 @@ const AlarmOverlay = ({ navigation }) => {
       }
       load();
     },
-    [currentActivity, currentActivityRef]
+    [currentActivity, currentActivityRef],
   );
 
   return (
@@ -75,19 +76,22 @@ const AlarmOverlay = ({ navigation }) => {
     <>
       <View
         style={{
-          opacity: getSharedObject().alertingTimers?.length > 0 ? 0 : 100,
+          opacity: getSharedObject().alertingTimerNames?.length > 0 ? 0 : 100,
         }}
       ></View>
       <View
         style={[
           styles.wrapper,
-          !getSharedObject().alertingTimers.length === 0 && { opaicty: 1 },
+          !getSharedObject().alertingTimerNames.length === 0 && { opaicty: 1 },
         ]}
         pointerEvents='auto'
       >
         <View style={styles.overlay}>
-          {getSharedObject().alertingTimers?.map((timer) => (
-            <View key={Math.random()} style={styles.timerContainer}>
+          {getSharedObject().alertingTimerNames?.map((timer) => (
+            <View
+              key={Math.random()}
+              style={styles.timerContainer}
+            >
               <View style={styles.titleBox}>
                 <Text style={styles.title}>
                   {timer}
@@ -104,7 +108,7 @@ const AlarmOverlay = ({ navigation }) => {
             </View>
           ))}
 
-          {getSharedObject().alertingTimers.length > 0 && (
+          {getSharedObject().alertingTimerNames.length > 0 && (
             <Pressable
               style={styles.button}
               onPress={() => {

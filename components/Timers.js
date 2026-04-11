@@ -1,13 +1,6 @@
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-  Alert,
-  AppState,
-  NativeModules,
-  PermissionsAndroid,
-  StyleSheet,
-  View,
-} from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AppState, NativeModules, StyleSheet, View } from "react-native";
 import BackgroundService from "react-native-background-actions";
 
 import {
@@ -41,14 +34,14 @@ export default function Timers({ navigation }) {
     recognizedCommand,
     recognizedTime,
     isValidCommandRef,
-    alertingTimers,
+    alertingTimerNames,
   } = useRecognizerData();
 
   const { keepScreenOnCommand, keepScreenOnMinutes } = useSettingsData();
 
   const { soundRef, soundIsPlayingRef } = useSoundData();
 
-  const { setAlertingTimers, commandsRef, workingTimersRef, timers } =
+  const { setAlertingTimerNames, commandsRef, workingTimersRef, timers } =
     useRefsData();
 
   const { defaultTimers } = useDefaultTimers();
@@ -70,9 +63,9 @@ export default function Timers({ navigation }) {
             (command) =>
               typeof command !== "object" &&
               timers.find((timer) =>
-                command.toLowerCase().includes(timer.name.toLowerCase())
+                command.toLowerCase().includes(timer.name.toLowerCase()),
               ) &&
-              recognizedCommand?.includes(command?.toLowerCase())
+              recognizedCommand?.includes(command?.toLowerCase()),
           );
 
           if (isTimerSpecificCommand) {
@@ -83,7 +76,7 @@ export default function Timers({ navigation }) {
           const command = dynamicGrammar
             .filter((item) => typeof item !== "object")
             .find((item) =>
-              recognizedCommand?.toLowerCase().includes(item?.toLowerCase())
+              recognizedCommand?.toLowerCase().includes(item?.toLowerCase()),
             );
 
           if (!command) {
@@ -109,11 +102,11 @@ export default function Timers({ navigation }) {
               } catch (error) {
                 console.error(
                   `An error occured in the active screen function`,
-                  error
+                  error,
                 );
               }
             },
-            keepScreenOnMinutes * 60 * 1000
+            keepScreenOnMinutes * 60 * 1000,
           );
         } catch (err) {
           console.error("Error occured", err);
@@ -135,10 +128,10 @@ export default function Timers({ navigation }) {
       timers,
       keepScreenOnCommand,
       keepScreenOnMinutes,
-    ]
+    ],
   );
 
-  const prepareAlertingTimers = useCallback(
+  const prepareAlertingTimerNames = useCallback(
     async function (nextAppState) {
       try {
         if (
@@ -152,26 +145,35 @@ export default function Timers({ navigation }) {
         let parsedValue = await getItemFromStorage("alertingTimerNames");
 
         if (!parsedValue) {
-          alertingTimerNamesRef.current = getSharedObject().alertingTimers;
-          setAlertingTimers(alertingTimerNamesRef.curent);
+          alertingTimerNamesRef.current = getSharedObject().alertingTimerNames;
+          setAlertingTimerNames(alertingTimerNamesRef.curent);
         }
 
-        if (parsedValue?.length && getSharedObject()?.alertingTimers?.length) {
+        if (
+          parsedValue?.length &&
+          getSharedObject()?.alertingTimerNames?.length
+        ) {
           alertingTimerNamesRef.current = [
-            ...new Set([...parsedValue, ...getSharedObject().alertingTimers]),
+            ...new Set([
+              ...parsedValue,
+              ...getSharedObject().alertingTimerNames,
+            ]),
           ];
         }
 
-        if (parsedValue?.length && !getSharedObject()?.alertingTimers?.length) {
+        if (
+          parsedValue?.length &&
+          !getSharedObject()?.alertingTimerNames?.length
+        ) {
           alertingTimerNamesRef.current = [...new Set([...parsedValue])];
         }
 
         if (parsedValue?.length) {
           updateSharedObject({
-            alertingTimers: alertingTimerNamesRef.current,
+            alertingTimerNames: alertingTimerNamesRef.current,
           });
 
-          setAlertingTimers(alertingTimerNamesRef.current);
+          setAlertingTimerNames(alertingTimerNamesRef.current);
         }
 
         // await removeItemFromStorage("alertingTimerNames");
@@ -183,31 +185,31 @@ export default function Timers({ navigation }) {
           if (isPhoneLocked) return;
 
           // alertingTimerNamesRef.current = [];
-          // setAlertingTimers(alertingTimerNamesRef.current);
+          // setAlertingTimerNames(alertingTimerNamesRef.current);
         }
       } catch (error) {
         console.error(
-          "An error occured in the prepareAlertingTimers function: ",
-          error
+          "An error occured in the prepareAlertingTimerNames function: ",
+          error,
         );
       }
     },
-    [alertingTimerNamesRef, setAlertingTimers]
+    [alertingTimerNamesRef, setAlertingTimerNames],
   );
 
   useEffect(
     function () {
-      prepareAlertingTimers(true);
+      prepareAlertingTimerNames(true);
       const appStateListener = AppState.addEventListener(
         "change",
-        prepareAlertingTimers
+        prepareAlertingTimerNames,
       );
 
       return () => {
         appStateListener.remove();
       };
     },
-    [alertingTimerNamesRef, prepareAlertingTimers, setAlertingTimers]
+    [alertingTimerNamesRef, prepareAlertingTimerNames, setAlertingTimerNames],
   );
 
   useEffect(function () {
@@ -268,7 +270,7 @@ export default function Timers({ navigation }) {
       playSoundWrapper,
       stopSoundWrapper,
       workingTimersRef,
-    ]
+    ],
   );
 
   useEffect(
@@ -283,16 +285,16 @@ export default function Timers({ navigation }) {
         navigation.goBack();
       });
     },
-    [navigation]
+    [navigation],
   );
 
   useEffect(
     function () {
-      if (alertingTimers?.length > 0) {
+      if (alertingTimerNames?.length > 0) {
         emitter.emit("navigation", { screen: "ModalScreen" });
       }
     },
-    [alertingTimers]
+    [alertingTimerNames],
   );
 
   return (

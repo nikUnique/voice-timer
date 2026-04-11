@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../constants/colors";
 import { useRefsData } from "../context/VoiceRecognizerContext";
@@ -28,7 +28,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
         setStateChanged((prev) => !prev);
       });
     },
-    [setStateChanged]
+    [setStateChanged],
   );
 
   useEffect(function () {
@@ -51,7 +51,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
       return;
     }
 
-    !getSharedObject().alertingTimers.length &&
+    !getSharedObject().alertingTimerNames.length &&
       navigation.push("CreateTimerScreen");
   }
 
@@ -62,7 +62,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
           style={[
             styles.sideButtonContainer,
             workingTimersRef.current.includes(
-              getSharedObject()?.name || timers[timers.length - 1]?.name
+              getSharedObject()?.name || timers[timers.length - 1]?.name,
             ) && styles.disabledDeleteBtn,
           ]}
         >
@@ -72,7 +72,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
             color={Colors.primaryTint90}
             onPress={() =>
               onDelete(
-                getSharedObject()?.name || timers[timers.length - 1].name
+                getSharedObject()?.name || timers[timers.length - 1].name,
               )
             }
             style={styles.deleteButton}
@@ -83,9 +83,9 @@ export default function TimerInterfaceButtons({ onDelete }) {
           <IconButton
             size={36}
             icon={
-              // The ultimate solution for the right icon to be displayed: I already found out that if there is no name then it the selected timers is the last one in the array or the first one in the view. And the second condition is to know whether that name is in the runningTimers array or not and if it is - then the icon should be paused, otherwise it should be play.
-              !getSharedObject()?.runningTimers.includes(
-                getSharedObject()?.name || timers[timers.length - 1]?.name
+              // The ultimate solution for the right icon to be displayed: I already found out that if there is no name then it the selected timers is the last one in the array or the first one in the view. And the second condition is to know whether that name is in the runningTimerNames array or not and if it is - then the icon should be paused, otherwise it should be play.
+              !getSharedObject()?.runningTimerNames.includes(
+                getSharedObject()?.name || timers[timers.length - 1]?.name,
               )
                 ? "play"
                 : "pause"
@@ -106,7 +106,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
               }
 
               emitter.emit(
-                `controlTimer-${getSharedObject()?.name || timers[timers.length - 1].name}`
+                `controlTimer-${getSharedObject()?.name || timers[timers.length - 1].name}`,
               );
             }}
             color={Colors.primaryTint90}

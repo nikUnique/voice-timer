@@ -19,7 +19,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const [recognizedTime, setRecognizedTime] = useState();
   const [isListening, setIsListening] = useState(false);
   const [isAlarmingScreen, setIsAlarmingScreen] = useState(false);
-  const [alertingTimers, setAlertingTimers] = useState([]);
+  const [alertingTimerNames, setAlertingTimerNames] = useState([]);
   const [language, setLanguage] = useState("en");
   const [isLocked, setIsLocked] = useState(false);
 
@@ -62,6 +62,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const { defaultTimers } = useDefaultTimers();
   const [timers, setTimers] = useState([]);
   const [editableTimers, setEditableTimers] = useState([]);
+  const [timersHistory, setTimersHistory] = useState([]);
   const [timerHeight, setTimerHeight] = useState(0);
   const allTimersRef = useRef(timers);
   const freshlyCreatedTimerRef = useRef(null);
@@ -102,7 +103,7 @@ export default function VoiceRecognizerProvider({ children }) {
     function () {
       getCommands(language);
     },
-    [language, getCommands]
+    [language, getCommands],
   );
 
   const voiceOptions = useMemo(
@@ -128,21 +129,21 @@ export default function VoiceRecognizerProvider({ children }) {
         console.error("An error occured during speech utterance");
       },
     }),
-    []
+    [],
   );
 
   const allTimers = timers.map((timer) => timer.name);
 
   const allActions = useMemo(
     () => [START, CONTINUE, RESET, PAUSE],
-    [CONTINUE, PAUSE, RESET, START]
+    [CONTINUE, PAUSE, RESET, START],
   );
 
   const dynamicGrammarFirst = useMemo(
     () =>
       [
         ...timers.map((timer) =>
-          allActions.map((action) => `${action} ${timer.name}`.toLowerCase())
+          allActions.map((action) => `${action} ${timer.name}`.toLowerCase()),
         ),
         REPEAT,
         RESET_FINISHED,
@@ -150,12 +151,12 @@ export default function VoiceRecognizerProvider({ children }) {
       ]
         .flatMap((command) => command)
         .map((item) => `${item} ${secretIdentifierRef.current}`.trim()),
-    [DISCO, REPEAT, RESET_FINISHED, allActions, timers]
+    [DISCO, REPEAT, RESET_FINISHED, allActions, timers],
   );
 
   const dynamicGrammar = useMemo(
     () => [...dynamicGrammarFirst, ["unk"]],
-    [dynamicGrammarFirst]
+    [dynamicGrammarFirst],
   );
 
   const value = useMemo(
@@ -164,10 +165,12 @@ export default function VoiceRecognizerProvider({ children }) {
       setRecognizedCommand,
       dynamicGrammar,
       isListening,
-      alertingTimers,
+      alertingTimerNames,
       timers,
       allActions,
       allTimers,
+      timersHistory,
+      setTimersHistory,
       setTimers,
       isAlarmingScreen,
       recognizedTime,
@@ -182,15 +185,16 @@ export default function VoiceRecognizerProvider({ children }) {
       recognizedCommand,
       dynamicGrammar,
       isListening,
-      alertingTimers,
+      alertingTimerNames,
       timers,
       allActions,
       allTimers,
+      timersHistory,
       isAlarmingScreen,
       recognizedTime,
       isLocked,
       editableTimers,
-    ]
+    ],
   );
 
   const soundData = useMemo(
@@ -201,7 +205,7 @@ export default function VoiceRecognizerProvider({ children }) {
       soundIsPlayingRef,
       alertTimeoutRef,
     }),
-    []
+    [],
   );
 
   const refsData = useMemo(
@@ -210,7 +214,8 @@ export default function VoiceRecognizerProvider({ children }) {
       secretIdentifierRef,
       setIsListening,
       setIsAlarmingScreen,
-      setAlertingTimers,
+      setTimersHistory,
+      setAlertingTimerNames,
       setIsLocked,
       setTimers,
       timers,
@@ -244,7 +249,7 @@ export default function VoiceRecognizerProvider({ children }) {
       currentlyViewedItemRef,
       isFocusedRef,
     }),
-    [editableTimers, timerHeight, timers, voiceOptions]
+    [editableTimers, timerHeight, timers, voiceOptions],
   );
 
   const settingsData = useMemo(
@@ -286,7 +291,7 @@ export default function VoiceRecognizerProvider({ children }) {
       isVibrating,
       discoSound,
       microGranted,
-    ]
+    ],
   );
 
   return (
@@ -306,7 +311,7 @@ export function useRecognizerData() {
   const context = useContext(VoiceRecognizerContext);
   if (context === undefined) {
     throw new Error(
-      "Voice recognizer context was used outside of VoiceRecognizerProvider"
+      "Voice recognizer context was used outside of VoiceRecognizerProvider",
     );
   }
   return context;
@@ -316,7 +321,7 @@ export function useSoundData() {
   const context = useContext(SoundContext);
   if (context === undefined) {
     throw new Error(
-      "Sound context was used outside of VoiceRecognizerProvider"
+      "Sound context was used outside of VoiceRecognizerProvider",
     );
   }
   return context;
@@ -333,7 +338,7 @@ export function useSettingsData() {
   const context = useContext(SettingsContext);
   if (context === undefined) {
     throw new Error(
-      "Settings context was used outside of VoiceRecognizerProvider"
+      "Settings context was used outside of VoiceRecognizerProvider",
     );
   }
   return context;

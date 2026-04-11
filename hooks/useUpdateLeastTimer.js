@@ -15,7 +15,7 @@ export function useUpdateLeastTimer({
   const updateLeastTimer = useCallback(
     async function () {
       try {
-        let pausedRunningTimers, allTimers;
+        let pausedrunningTimerNames, allTimers;
 
         const newTimer = {
           timerName: name,
@@ -32,7 +32,7 @@ export function useUpdateLeastTimer({
 
         if (timersTimesRef.current?.length) {
           const alreadyAddedTimer = timersTimesRef.current?.find(
-            (timer) => timer?.timerName === name
+            (timer) => timer?.timerName === name,
           );
 
           if (!alreadyAddedTimer) {
@@ -52,27 +52,30 @@ export function useUpdateLeastTimer({
             });
           }
 
-          const onlyRunningTimers = allTimers.filter(
-            (timer) => timer.isPaused !== true
+          const onlyrunningTimerNames = allTimers.filter(
+            (timer) => timer.isPaused !== true,
           );
 
-          const onlyPausedTimers = allTimers.filter(
-            (timer) => timer.isPaused === true
+          const onlypausedTimerNames = allTimers.filter(
+            (timer) => timer.isPaused === true,
           );
 
-          timersTimesRef.current = [...onlyRunningTimers, ...onlyPausedTimers];
+          timersTimesRef.current = [
+            ...onlyrunningTimerNames,
+            ...onlypausedTimerNames,
+          ];
 
-          pausedRunningTimers = onlyRunningTimers?.length
-            ? onlyRunningTimers
-            : onlyPausedTimers;
+          pausedrunningTimerNames = onlyrunningTimerNames?.length
+            ? onlyrunningTimerNames
+            : onlypausedTimerNames;
         }
 
         if (timersTimesRef.current?.length === 0) {
           timersTimesRef.current = [newTimer];
-          pausedRunningTimers = timersTimesRef?.current;
+          pausedrunningTimerNames = timersTimesRef?.current;
         }
 
-        leastTimeTimerRef.current = pausedRunningTimers
+        leastTimeTimerRef.current = pausedrunningTimerNames
           .filter((timer) => timer.timeLeft >= 0)
           .slice()
           .sort((a, b) => b?.timerStarted - a?.timerStarted)
@@ -81,7 +84,7 @@ export function useUpdateLeastTimer({
           }, timersTimesRef?.current[0]);
 
         timersTimesRef.current = timersTimesRef.current.filter(
-          (timer) => timer.timeLeft > 0
+          (timer) => timer.timeLeft > 0,
         );
 
         updateSharedObject({ leastTimer: leastTimeTimerRef.current });
@@ -98,7 +101,7 @@ export function useUpdateLeastTimer({
       index,
       timersTimesRef,
       leastTimeTimerRef,
-    ]
+    ],
   );
 
   return { updateLeastTimer };

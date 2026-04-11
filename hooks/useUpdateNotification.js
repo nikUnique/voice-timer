@@ -6,7 +6,6 @@ import { useRefsData } from "../context/VoiceRecognizerContext";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 
 import { useNotification } from "./useNotification";
-import { emitter } from "../utils/EventEmitter";
 
 let timersLabel;
 
@@ -38,7 +37,7 @@ export function useUpdateNotification({
       isPausedRef.current = true;
       timeoutRef.current = null;
     },
-    [isPausedRef, timeoutRef]
+    [isPausedRef, timeoutRef],
   );
 
   const updatePersitentNotification = useCallback(
@@ -54,8 +53,8 @@ export function useUpdateNotification({
         if (/* (isPhoneLocked && isTimeUp) || */ isTimeUp) {
           let newBody = `${name} is complete.`;
 
-          if (getSharedObject().alertingTimers.length > 1) {
-            newBody = `${getSharedObject().alertingTimers.length} timers expired`;
+          if (getSharedObject().alertingTimerNames.length > 1) {
+            newBody = `${getSharedObject().alertingTimerNames.length} timers expired`;
           }
 
           if (isPhoneLocked) {
@@ -73,7 +72,7 @@ export function useUpdateNotification({
           await notifee.getDisplayedNotifications();
 
         const isNotificationActive = displayedNotifications.some(
-          (not) => not.id === "92901"
+          (not) => not.id === "92901",
         );
 
         let canUpdateNotification =
@@ -90,7 +89,7 @@ export function useUpdateNotification({
       } catch (err) {
         console.error(
           `An error occured in updatePersistentNotification function 🔴`,
-          err
+          err,
         );
       }
     },
@@ -99,7 +98,7 @@ export function useUpdateNotification({
       notificationTitleRef,
       onCreateTriggerNotification,
       onUpdateNotification,
-    ]
+    ],
   );
 
   const updateTimerLabel = useCallback(
@@ -186,7 +185,7 @@ export function useUpdateNotification({
       ongoingNotificationLabelRef,
       timeLabelRef,
       workingTimersRef,
-    ]
+    ],
   );
 
   return {

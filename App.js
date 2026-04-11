@@ -1,30 +1,28 @@
+import { Ionicons } from "@expo/vector-icons";
 import notifee, { AuthorizationStatus } from "@notifee/react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { memo, useEffect, useState } from "react";
 import {
-  Button,
   Platform,
   StatusBar,
   StyleSheet,
   TouchableOpacity,
-  View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
+import AgreementAlert from "./components/AgreementAlert";
 import AlarmOverlay from "./components/AlarmOverlay";
 import ContextMenu from "./components/ContextMenu";
+import TimerNameControl from "./components/TimerNameControl";
 import { Colors } from "./constants/colors";
 import VoiceRecognizerProvider from "./context/VoiceRecognizerContext";
 import AboutScreen from "./screens/AboutScreen";
 import CommandsScreen from "./screens/CommandsScreen";
 import CreateTimerScreen from "./screens/CreateTimerScreen";
+import HistoryScreen from "./screens/HistoryScreen";
 import SettingsScreen from "./screens/SettingsScreen";
-import TimersScreen from "./screens/TimersScreen";
-import IconButton from "./ui/IconButton";
 import TermsScreen from "./screens/TermsScreen";
-import TimerNameControl from "./components/TimerNameControl";
-import AgreementAlert from "./components/AgreementAlert";
+import TimersScreen from "./screens/TimersScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -170,6 +168,13 @@ export default memo(function App() {
               }}
             />
             <Stack.Screen
+              name='HistoryScreen'
+              component={HistoryScreen}
+              options={{
+                title: "History",
+              }}
+            />
+            <Stack.Screen
               name='ModalScreen'
               component={AlarmOverlay}
               options={{
@@ -177,13 +182,6 @@ export default memo(function App() {
                 headerShown: false,
               }}
             />
-            {/* <Stack.Screen
-              name='AttributionScreen'
-              component={AttributionScreen}
-              options={{
-                title: "Attributions",
-              }}
-            /> */}
           </Stack.Navigator>
         </NavigationContainer>
       </VoiceRecognizerProvider>

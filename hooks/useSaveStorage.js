@@ -1,7 +1,8 @@
 import { AppState } from "react-native";
-import { setItemInStorage } from "../utils/helpers";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { useUpdateTimers } from "../hooks/useUpdateTimers";
+import { setItemInStorage } from "../utils/helpers";
+import { getSharedObject } from "../utils/sharedVariables";
 
 export function useSaveStorage({
   name,
@@ -50,6 +51,10 @@ export function useSaveStorage({
         });
 
         setItemInStorage(`timeout-${name}`, timeoutRef.current);
+
+        console.log(getSharedObject().timers, "Hooobabg");
+
+        setItemInStorage("timerHistory", getSharedObject().timers);
       }
 
       return appStateBoxAlt;

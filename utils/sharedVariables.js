@@ -4,14 +4,15 @@ let sharedObject = {
   foregroundTaskDelay: 900,
   appStateBox: "",
   isTaskRunning: false,
-  alertingTimers: [],
+  alertingTimerNames: [],
   index: 0,
   notificationTap: false,
   timerListHeight: 0,
   resetAllFinishedFromApp: false,
   changeTimerNameParams: {},
-  runningTimers: [],
-  pausedTimers: [],
+  runningTimerNames: [],
+  pausedTimerNames: [],
+  timers: [],
 };
 
 export function getSharedObject() {

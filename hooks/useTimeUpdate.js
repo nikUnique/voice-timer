@@ -12,7 +12,6 @@ import { emitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 
 import { useTimeUpdateFunctions } from "./useTimeUpdateFunctions";
-import { useNavigation, useNavigationState } from "@react-navigation/native";
 
 export function useTimeUpdate({
   timeLeftRef,
@@ -30,10 +29,11 @@ export function useTimeUpdate({
     leastTimeTimerRef,
     setIsAlarmingScreen,
     alertingTimerNamesRef,
-    setAlertingTimers,
+    setAlertingTimerNames,
     notificationIdRef,
     timersTimesRef,
     workingTimersRef,
+    setTimersHistory,
   } = useRefsData();
   // const routes = useNavigationState((state) => state.routes);
 
@@ -44,16 +44,18 @@ export function useTimeUpdate({
 
   let isPhoneLocked;
 
-  const { assignAlertingTimers } = useTimeUpdateFunctions(
+  const { assignAlertingTimersNames } = useTimeUpdateFunctions(
     name,
-    setAlertingTimers
+    setAlertingTimerNames,
   );
 
   const prepareForAlarm = useCallback(
     async function () {
-      await assignAlertingTimers();
+      await assignAlertingTimersNames();
 
-      setAlertingTimers(alertingTimerNamesRef.current);
+      setAlertingTimerNames(alertingTimerNamesRef.current);
+
+      console.log(alertingTimerNamesRef.current, "jfdkjf");
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
       isPhoneLocked = await NativeModules.NativeUtilsModule.isPhoneLocked();
@@ -63,6 +65,42 @@ export function useTimeUpdate({
       if (alertingTimerNamesRef.current?.length > 0) {
         notifee.cancelDisplayedNotification("92901");
       }
+
+      const updatableTimer = getSharedObject().timers.find((timer) => {
+        console.log(timer, "update");
+        console.log(
+          timer.label.toLowerCase() === name.toLowerCase() && !timer.endTime,
+          "mega",
+        );
+
+        return (
+          timer.label.toLowerCase() === name.toLowerCase() && !timer.endTime
+        );
+      });
+      updateSharedObject({
+        timers: getSharedObject().timers.map((timer) => {
+          return timer.label === updatableTimer.label && !timer.endTime
+            ? {
+                ...updatableTimer,
+                duration: time - timeLeftRef.current,
+                endTime: new Date(),
+              }
+            : timer;
+        }),
+      });
+      setTimersHistory((cur) =>
+        cur.map((timer) => {
+          console.log(timer, "timerdf");
+
+          return timer.label === updatableTimer.label && !timer.endTime
+            ? {
+                ...updatableTimer,
+                duration: time - timeLeftRef.current,
+                endTime: new Date(),
+              }
+            : timer;
+        }),
+      );
 
       // console.log("Ended", Date.now(), Date.now() - timerStartedRef.current);
 
@@ -83,10 +121,10 @@ export function useTimeUpdate({
       name,
       alertingTimerNamesRef,
       alarmVolume,
-      setAlertingTimers,
+      setAlertingTimerNames,
       autoStopAlarmTimeout,
       isVibrating,
-    ]
+    ],
   );
 
   const sendNotification = useCallback(
@@ -103,7 +141,7 @@ export function useTimeUpdate({
         fromWhom: "updateTime",
       });
     },
-    [leastTimeTimerRef, name, timeLabelRef, timeLeftRef]
+    [leastTimeTimerRef, name, timeLabelRef, timeLeftRef],
   );
 
   const calculateLeftTime = useCallback(
@@ -118,7 +156,7 @@ export function useTimeUpdate({
       console.log(`New time comes-${name}`, timeLeftRef.current);
       Time[`setTimeLeft-${name}`](timeLeftRef.current);
     },
-    [name, time, timeLeftRef, timerStartedRef]
+    [name, time, timeLeftRef, timerStartedRef],
   );
 
   const updateDelayAndLeastTimer = useCallback(
@@ -130,7 +168,7 @@ export function useTimeUpdate({
         leastTimeTimerRef.current = await updateLeastTimer();
 
         timersTimesRef.current = timersTimesRef.current.filter(
-          (timer) => timer.timerName !== name
+          (timer) => timer.timerName !== name,
         );
       }
 
@@ -151,13 +189,13 @@ export function useTimeUpdate({
       //   await updateLeastTimer();
       // }
     },
-    [leastTimeTimerRef, name, timeLeftRef, timersTimesRef, updateLeastTimer]
+    [leastTimeTimerRef, name, timeLeftRef, timersTimesRef, updateLeastTimer],
   );
 
   const updateTime = useCallback(
     async function () {
       try {
-        if (getSharedObject().alertingTimers?.includes(name)) {
+        if (getSharedObject().alertingTimerNames?.includes(name)) {
           console.log(`This timer is alredy finished 🪃`, name);
 
           return;
@@ -228,7 +266,7 @@ export function useTimeUpdate({
         ) {
           improvedTime = Math.abs(
             Date.now().toString().slice(-3) -
-              timerStartedRef.current.toString().slice(-3)
+              timerStartedRef.current.toString().slice(-3),
           );
         }
 
@@ -245,7 +283,7 @@ export function useTimeUpdate({
         if (timeLeftRef.current > 0) {
           timeoutRef.current = setTimeout(
             /* updateTime */ updateTimeCallbackRef.current,
-            1000 - improvedTime
+            1000 - improvedTime,
           );
           updateSharedObject({ [`timeoutId-${name}`]: timeoutRef.current });
         }
@@ -269,14 +307,14 @@ export function useTimeUpdate({
       updateLeastTimer,
       updateTimerLabel,
       sendNotification,
-    ]
+    ],
   );
 
   useEffect(
     function () {
       updateTimeCallbackRef.current = updateTime;
     },
-    [updateTime]
+    [updateTime],
   );
 
   return { updateTime };

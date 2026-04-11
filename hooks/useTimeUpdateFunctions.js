@@ -1,40 +1,44 @@
 import { useCallback } from "react";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { setItemInStorage } from "../utils/helpers";
+import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 
-export function useTimeUpdateFunctions(name, setAlertingTimers) {
+export function useTimeUpdateFunctions(name, setAlertingTimersNames) {
   const { alertingTimerNamesRef } = useRefsData();
 
-  const assignAlertingTimers = useCallback(
+  const assignAlertingTimersNames = useCallback(
     async function () {
       alertingTimerNamesRef.current = [
         ...new Set([...alertingTimerNamesRef.current, name]),
       ];
-      setAlertingTimers(alertingTimerNamesRef.current);
+      setAlertingTimersNames(alertingTimerNamesRef.current);
+
+      console.log(getSharedObject().alertingTimerNames, "mdi");
 
       // Exactly this way because we want to preserve what is in the sharedObject and also want to get the fresh update from new ref
-      if (getSharedObject().alertingTimers?.length) {
+      if (getSharedObject().alertingTimerNames?.length) {
         updateSharedObject({
-          alertingTimers: [
+          alertingTimerNames: [
             ...new Set([
               ...alertingTimerNamesRef.current,
-              ...getSharedObject().alertingTimers,
+              ...getSharedObject().alertingTimerNames,
             ]),
           ],
         });
       }
 
-      if (!getSharedObject().alertingTimers?.length) {
+      if (!getSharedObject().alertingTimerNames?.length) {
         updateSharedObject({
-          alertingTimers: [...new Set([...alertingTimerNamesRef.current])],
+          alertingTimerNames: [...new Set([...alertingTimerNamesRef.current])],
         });
       }
 
       setItemInStorage("alertingTimerNames", alertingTimerNamesRef.current);
+
+      console.log(getSharedObject().alertingTimerNames, "fudfu");
     },
-    [alertingTimerNamesRef, name]
+    [alertingTimerNamesRef, name, setAlertingTimersNames],
   );
 
-  return { assignAlertingTimers };
+  return { assignAlertingTimersNames };
 }

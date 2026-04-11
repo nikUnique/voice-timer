@@ -1,6 +1,6 @@
 import notifee, { EventType } from "@notifee/react-native";
 import { useCallback, useEffect } from "react";
-import { Linking, NativeModules } from "react-native";
+import { NativeModules } from "react-native";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter, resetTimerEmitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
@@ -19,12 +19,12 @@ export function useBackgroundActions() {
         resetTimerEmitter.emit(`reset ${timerName}`);
       });
     },
-    [workingTimersRef]
+    [workingTimersRef],
   );
 
   const resetAllFinishedTimers = useCallback(function resetAllTimers() {
     updateSharedObject({ resetAllFinishedFromApp: true });
-    getSharedObject()?.alertingTimers?.map((timerName) => {
+    getSharedObject()?.alertingTimerNames?.map((timerName) => {
       resetTimerEmitter.emit(`reset ${timerName}`);
     });
   }, []);
@@ -33,14 +33,14 @@ export function useBackgroundActions() {
     async function pauseTimer() {
       emitter.emit(`pauseBackground-${leastTimeTimerRef.current?.timerName}`);
     },
-    [leastTimeTimerRef]
+    [leastTimeTimerRef],
   );
 
   const resumeTimer = useCallback(
     function resumeTimer() {
       emitter.emit(`resumeBackground-${leastTimeTimerRef.current?.timerName}`);
     },
-    [leastTimeTimerRef]
+    [leastTimeTimerRef],
   );
 
   useEffect(
@@ -70,7 +70,7 @@ export function useBackgroundActions() {
                   break;
               }
             }
-          }
+          },
         );
 
         notifee.onBackgroundEvent(async ({ type, detail }) => {
@@ -124,7 +124,7 @@ export function useBackgroundActions() {
           } catch (err) {
             console.error(
               `An error occured in onBackgroundEvent handler 🔴`,
-              err
+              err,
             );
           }
         });
@@ -138,6 +138,6 @@ export function useBackgroundActions() {
     },
     [
       /* currentActivityRef, pauseTimer, resetAllTimers, resetTimer, resumeTimer */
-    ]
+    ],
   );
 }

@@ -42,14 +42,14 @@ export function useServiceAndSpeechControl() {
 
             // await BackgroundService.start(backgroundTask, options);
             console.log(
-              "The app is no longer listening to commands as it moved to background 🤐"
+              "The app is no longer listening to commands as it moved to background 🤐",
             );
           }
 
           const areThereNotCompletedTimers =
             workingTimersRef.current.length &&
             workingTimersRef.current.length -
-              getSharedObject()?.alertingTimers.length >
+              getSharedObject()?.alertingTimerNames.length >
               0;
 
           if (
@@ -64,7 +64,7 @@ export function useServiceAndSpeechControl() {
             await onUpdateNotification(
               ongoingNotificationLabelRef.current,
               getSharedObject()?.timersLabel,
-              "AppStateListener in useServiceAndSpeechControl"
+              "AppStateListener in useServiceAndSpeechControl",
             );
           }
 
@@ -78,10 +78,10 @@ export function useServiceAndSpeechControl() {
         } catch (error) {
           console.error(
             `An error happened in appStateListener where background service and setIsListening work`,
-            error
+            error,
           );
         }
-      }
+      },
     );
 
     return () => {

@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react";
-import { AppState, Platform } from "react-native";
+import { AppState } from "react-native";
 
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter } from "../utils/EventEmitter";
@@ -32,8 +32,12 @@ export function useStartTimer({
   updateTime,
   isPaused,
 }) {
-  const { workingTimersRef, freshlyCreatedTimerRef, lastTimerStartedRef } =
-    useRefsData();
+  const {
+    workingTimersRef,
+    freshlyCreatedTimerRef,
+    lastTimerStartedRef,
+    setTimersHistory,
+  } = useRefsData();
 
   const { updateControlButtons } = useUpdateControlButtons({
     isActive,
@@ -50,7 +54,7 @@ export function useStartTimer({
         if (!AppState.currentState.includes("active")) {
           console.log(
             "The app is already in the background 🐈‍⬛",
-            AppState.currentState
+            AppState.currentState,
           );
           return;
         }
@@ -58,7 +62,7 @@ export function useStartTimer({
         if ((!isActive || repeat) && timeLeftRef.current > 0) {
           if (workingTimersRef.current.length >= 5) {
             console.log(
-              "You have reached maximum of working timers at the same time :)"
+              "You have reached maximum of working timers at the same time :)",
             );
             return;
           }
@@ -67,6 +71,15 @@ export function useStartTimer({
           setIsReset(false);
           updateControlButtons(true, false);
           setIsPaused(false);
+          setTimersHistory((cur) => [
+            ...cur,
+            {
+              id: Math.random() + Date.now(),
+              label: name,
+              duration: time - timeLeftRef.current,
+              startTime: new Date(),
+            },
+          ]);
 
           timerIsActiveRef.current = true;
 
@@ -84,8 +97,17 @@ export function useStartTimer({
           timerStateRef.current = "running";
           updateSharedObject({
             appStateBox: "active",
-            runningTimers: [
-              ...new Set([...getSharedObject().runningTimers, name]),
+            runningTimerNames: [
+              ...new Set([...getSharedObject().runningTimerNames, name]),
+            ],
+            timers: [
+              ...getSharedObject().timers,
+              {
+                id: Math.random() + Date.now(),
+                label: name,
+                duration: time - timeLeftRef.current,
+                startTime: new Date(),
+              },
             ],
           });
 
@@ -160,7 +182,7 @@ export function useStartTimer({
       index,
       timerStartedRef,
       lastTimerStartedRef,
-    ]
+    ],
   );
 
   useEffect(
@@ -185,7 +207,7 @@ export function useStartTimer({
 
       load();
     },
-    [freshlyCreatedTimerRef, name, startTimer]
+    [freshlyCreatedTimerRef, name, startTimer],
   );
 
   return { startTimer };
