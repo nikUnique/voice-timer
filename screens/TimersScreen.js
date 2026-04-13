@@ -1,9 +1,7 @@
 /* eslint-disable react-native/no-raw-text */
-import { memo, useEffect, useState } from "react";
+import { memo } from "react";
+import { StyleSheet } from "react-native";
 import Timers from "../components/Timers";
-import { getItemFromStorage } from "../utils/helpers";
-import { Alert, BackHandler, Button, StyleSheet, View } from "react-native";
-import Dialog from "react-native-dialog";
 
 function TimersScreen({ navigation }) {
   return (

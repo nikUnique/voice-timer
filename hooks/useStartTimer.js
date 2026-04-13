@@ -2,6 +2,7 @@ import { useCallback, useEffect } from "react";
 import { AppState } from "react-native";
 
 import { useRefsData } from "../context/VoiceRecognizerContext";
+import { MAX_HISTORY } from "../utils/config";
 import { emitter } from "../utils/EventEmitter";
 import { setItemInStorage } from "../utils/helpers";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
@@ -71,14 +72,16 @@ export function useStartTimer({
           setIsReset(false);
           updateControlButtons(true, false);
           setIsPaused(false);
+
           setTimersHistory((cur) => [
-            ...cur,
             {
               id: Math.random() + Date.now(),
               label: name,
-              duration: time - timeLeftRef.current,
+              time,
+              duration: timeLeftRef.current,
               startTime: new Date(),
             },
+            ...cur,
           ]);
 
           timerIsActiveRef.current = true;
@@ -101,15 +104,26 @@ export function useStartTimer({
               ...new Set([...getSharedObject().runningTimerNames, name]),
             ],
             timers: [
-              ...getSharedObject().timers,
               {
                 id: Math.random() + Date.now(),
                 label: name,
-                duration: time - timeLeftRef.current,
+                duration: timeLeftRef.current,
+                time,
                 startTime: new Date(),
               },
+              ...getSharedObject().timers,
             ],
           });
+
+          if (getSharedObject().timers.length > MAX_HISTORY) {
+            console.log("What is our time");
+
+            updateSharedObject({
+              timers: getSharedObject().timers.slice(0, MAX_HISTORY),
+            });
+
+            setTimersHistory(getSharedObject().timers.slice(0, MAX_HISTORY));
+          }
 
           if (!workingTimersRef.current?.includes(name)) {
             workingTimersRef.current = [...workingTimersRef.current, name];
@@ -163,6 +177,7 @@ export function useStartTimer({
       setIsReset,
       updateControlButtons,
       setIsPaused,
+      setTimersHistory,
       timerIsActiveRef,
       freshlyCreatedTimerRef,
       name,

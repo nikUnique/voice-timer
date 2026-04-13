@@ -15,4 +15,19 @@ export const Colors = {
   grayTint10: "#484e53",
   grayTint20: "#5d6166",
   grayTint70: "#c2c4c6",
+
+  // card backgrounds
+  primaryShade50: "#0d3d4a",
+  pausedShade: "#3b2a0a",
+  doneShade: "#1a2a1a",
+  resetShade: "#1a1d2e",
+
+  // paused (amber)
+  pausedColor: "#EF9F27",
+  pausedAlpha15: "rgba(186, 117, 23, 0.15)",
+  pausedAlpha20: "rgba(186, 117, 23, 0.2)",
+
+  // reset (slate/indigo)
+  resetColor: "#8b9ecf",
+  resetAlpha15: "rgba(100, 120, 200, 0.15)",
 };

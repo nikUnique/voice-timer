@@ -7,6 +7,7 @@ import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import { AppState } from "react-native";
 import { setItemInStorage } from "../utils/helpers";
 
+import { useRefsData } from "../context/VoiceRecognizerContext";
 import { useUpdateControlButtons } from "./useUpdateControlButtons";
 import { useUpdateLeastTimer } from "./useUpdateLeastTimer";
 import { useUpdateTimers } from "./useUpdateTimers";
@@ -46,6 +47,8 @@ export function usePauseResume({
 
   const { updateTimers } = useUpdateTimers();
 
+  const { setTimersHistory } = useRefsData();
+
   const resumeTimer = useCallback(
     async function (reopenedTimer) {
       try {
@@ -54,6 +57,35 @@ export function usePauseResume({
 
           timerStartedRef.current = reopenedTimer;
         }
+
+        const updatableTimer = getSharedObject().timers.find((timer) => {
+          return (
+            timer?.label.toLowerCase() === name.toLowerCase() && !timer?.endTime
+          );
+        });
+
+        updateSharedObject({
+          timers: getSharedObject().timers.map((timer) => {
+            return timer?.label === updatableTimer?.label && !timer?.endTime
+              ? {
+                  ...updatableTimer,
+                  isPaused: false,
+                  duration: time - timeLeftRef.current,
+                }
+              : timer;
+          }),
+        });
+        setTimersHistory((cur) =>
+          cur.map((timer) => {
+            return timer?.label === updatableTimer?.label && !timer?.endTime
+              ? {
+                  ...updatableTimer,
+                  isPaused: false,
+                  duration: time - timeLeftRef.current,
+                }
+              : timer;
+          }),
+        );
 
         setIsPaused(false);
         updateControlButtons(true, false);
@@ -114,22 +146,7 @@ export function usePauseResume({
         console.error("An error occured ⛑️", err);
       }
     },
-    [
-      setIsPaused,
-      updateControlButtons,
-      timerStateRef,
-      isPausedRef,
-      pausedTimeRef,
-      name,
-      updateTimers,
-      updateLeastTimer,
-      updateTimerLabel,
-      updateTime,
-      timerStartedRef,
-      timeLabelRef,
-      time,
-      timeLeftRef,
-    ],
+    [setTimersHistory, setIsPaused, updateControlButtons, timerStateRef, isPausedRef, pausedTimeRef, name, timerStartedRef, updateTimers, updateLeastTimer, updateTimerLabel, updateTime, time, timeLeftRef, timeLabelRef],
   );
 
   const pauseTimer = useCallback(
@@ -138,6 +155,36 @@ export function usePauseResume({
         // console.log("I am pausing now :)", timeoutRef.current);
 
         setIsPaused(true);
+
+        const updatableTimer = getSharedObject().timers.find((timer) => {
+          return (
+            timer?.label.toLowerCase() === name.toLowerCase() && !timer?.endTime
+          );
+        });
+
+        updateSharedObject({
+          timers: getSharedObject().timers.map((timer) => {
+            return timer?.label === updatableTimer?.label && !timer?.endTime
+              ? {
+                  ...updatableTimer,
+                  isPaused: true,
+                  duration: time - timeLeftRef.current,
+                }
+              : timer;
+          }),
+        });
+        setTimersHistory((cur) =>
+          cur.map((timer) => {
+            return timer?.label === updatableTimer?.label && !timer?.endTime
+              ? {
+                  ...updatableTimer,
+                  isPaused: true,
+                  duration: time - timeLeftRef.current,
+
+                }
+              : timer;
+          }),
+        );
 
         updateControlButtons(isActive, true);
         isPausedRef.current = true;
@@ -210,23 +257,7 @@ export function usePauseResume({
         console.error("An error occured in pauseTimer function:" + err + "💣");
       }
     },
-    [
-      timeoutRef,
-      setIsPaused,
-      updateControlButtons,
-      isActive,
-      isPausedRef,
-      pausedTimeRef,
-      timerStateRef,
-      name,
-      timerStartedRef,
-      updateTimers,
-      updateLeastTimer,
-      updateTimerLabel,
-      updatePersitentNotification,
-      timeLeftRef,
-      timeLabelRef,
-    ],
+    [setIsPaused, setTimersHistory, updateControlButtons, isActive, isPausedRef, pausedTimeRef, timerStateRef, name, timerStartedRef, updateTimers, updateLeastTimer, updateTimerLabel, timeoutRef, updatePersitentNotification, timeLeftRef, time, timeLabelRef],
   );
 
   useEffect(

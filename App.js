@@ -48,8 +48,6 @@ export default memo(function App() {
   }
 
   function handleToggleModal() {
-    console.log("Touched");
-
     setModalIsVisible(!modalIsVisible);
   }
   return (

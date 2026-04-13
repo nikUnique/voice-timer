@@ -52,8 +52,6 @@ export function useSaveStorage({
 
         setItemInStorage(`timeout-${name}`, timeoutRef.current);
 
-        console.log(getSharedObject().timers, "Hooobabg");
-
         setItemInStorage("timerHistory", getSharedObject().timers);
       }
 

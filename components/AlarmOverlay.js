@@ -26,11 +26,7 @@ const AlarmOverlay = ({ navigation }) => {
 
   const { currentActivityRef } = useRefsData();
 
-  console.log(
-    getSharedObject().alertingTimerNames,
-    "fkdjfk",
-    alertingTimerNames,
-  );
+
 
   useEffect(
     function () {

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, InteractionManager, StyleSheet, Text } from "react-native";
-import { formatTime } from "../utils/helpers";
+import { Animated, StyleSheet, Text } from "react-native";
 import { Colors } from "../constants/colors";
 import { useRefsData } from "../context/VoiceRecognizerContext";
+import { emitter } from "../utils/EventEmitter";
+import { formatTime } from "../utils/helpers";
 
 export default function Time({
   time,
@@ -38,7 +39,7 @@ export default function Time({
         }),
       ]).start();
     },
-    [fadeAnimationRefCur]
+    [fadeAnimationRefCur],
   );
 
   useEffect(
@@ -54,33 +55,36 @@ export default function Time({
         clearInterval(animationInterval);
 
         fadeAnimationRefCur.stopAnimation(() =>
-          fadeAnimationRefCur.setValue(1)
+          fadeAnimationRefCur.setValue(1),
         );
       }
 
       return () => clearInterval(animationInterval);
     },
-    [fadeAnimationRefCur, fadeInAndOut, isPaused, isActive]
+    [fadeAnimationRefCur, fadeInAndOut, isPaused, isActive],
   );
 
   useEffect(
     function () {
       async function endOfTimer() {
-        // if (timeLeft <= 0 && currentlyViewedItemRef.current === index) {
-        //   setTimeout(function () {
-        //     console.log("Scrolled");
-        //     // activateTimerRef.current(index - 1);
-        //     activateTimerRef.current(index);
-        //   }, 1500);
-        // }
-
         if (timeLeft <= 0) {
           setIsActive(false);
         }
       }
       endOfTimer();
+      /*  getSharedObject().timers.find(
+        (timer) =>
+          timer.label.toLowerCase() === name.toLowerCase() && !timer.end,
+      ) && */ emitter.emit(`timeItem-${name}`, timeLeft);
     },
-    [timeLeft, activateTimerRef, index, setIsActive, currentlyViewedItemRef]
+    [
+      timeLeft,
+      activateTimerRef,
+      index,
+      setIsActive,
+      currentlyViewedItemRef,
+      name,
+    ],
   );
 
   return (

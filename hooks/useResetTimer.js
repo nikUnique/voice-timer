@@ -66,19 +66,19 @@ export function useResetTimer({
 
   const getLeastTimer = useCallback(
     function () {
-      const onlyrunningTimerNames = timersTimesRef.current?.filter(
+      const onlyRunningTimerNames = timersTimesRef.current?.filter(
         (timer) => timer.isPaused !== true,
       );
 
-      const onlypausedTimerNames = timersTimesRef.current?.filter(
+      const onlyPausedTimerNames = timersTimesRef.current?.filter(
         (timer) => timer.isPaused === true,
       );
 
-      const pausedrunningTimerNames = onlyrunningTimerNames.length
-        ? onlyrunningTimerNames
-        : onlypausedTimerNames;
+      const pausedRunningTimerNames = onlyRunningTimerNames.length
+        ? onlyRunningTimerNames
+        : onlyPausedTimerNames;
 
-      leastTimeTimerRef.current = pausedrunningTimerNames.reduce(
+      leastTimeTimerRef.current = pausedRunningTimerNames.reduce(
         (min, number) => {
           return number.timeLeft < min.timeLeft ? number : min;
         },
@@ -107,21 +107,11 @@ export function useResetTimer({
 
         getSharedObject().name === name && updateControlButtons(false, false);
 
-        console.log(getSharedObject().timers, "spas");
-
         const updatableTimer = getSharedObject().timers.find((timer) => {
-          console.log(timer, "update");
-          console.log(
-            timer?.label.toLowerCase() === name.toLowerCase() && !timer.endTime,
-            "mega",
-          );
-
           return (
             timer?.label?.toLowerCase() === name.toLowerCase() && !timer.endTime
           );
         });
-
-        console.log(alertingTimerNamesRef.current, "djfi");
 
         updateSharedObject({
           alertingTimerNames: alertingTimerNamesRef.current,
@@ -133,8 +123,9 @@ export function useResetTimer({
             return timer?.label === updatableTimer?.label && !timer.endTime
               ? {
                   ...updatableTimer,
-                  duration: time - timeLeftRef.current,
+                  duration: timeLeftRef.current,
                   endTime: new Date(),
+                  reset: true,
                 }
               : timer;
           }),
@@ -142,29 +133,16 @@ export function useResetTimer({
 
         setTimersHistory((cur) =>
           cur.map((timer) => {
-            console.log(timer, "timerdf");
-
             return timer?.label === updatableTimer?.label && !timer.endTime
               ? {
                   ...updatableTimer,
-                  duration: time - timeLeftRef.current,
+                  duration: timeLeftRef.current,
                   endTime: new Date(),
+                  reset: true,
                 }
               : timer;
           }),
         );
-
-        updateSharedObject({
-          timers: getSharedObject().timers.map((timer) => {
-            return timer?.label === updatableTimer?.label && !timer.endTime
-              ? {
-                  ...updatableTimer,
-                  duration: time - timeLeftRef.current,
-                  endTime: new Date(),
-                }
-              : timer;
-          }),
-        });
 
         if (getSharedObject().runningTimerNames.length === 0) {
           BackgroundService.stop();

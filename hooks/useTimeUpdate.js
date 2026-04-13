@@ -55,8 +55,6 @@ export function useTimeUpdate({
 
       setAlertingTimerNames(alertingTimerNamesRef.current);
 
-      console.log(alertingTimerNamesRef.current, "jfdkjf");
-
       // eslint-disable-next-line react-hooks/exhaustive-deps
       isPhoneLocked = await NativeModules.NativeUtilsModule.isPhoneLocked();
 
@@ -67,19 +65,22 @@ export function useTimeUpdate({
       }
 
       const updatableTimer = getSharedObject().timers.find((timer) => {
-        console.log(timer, "update");
         console.log(
-          timer.label.toLowerCase() === name.toLowerCase() && !timer.endTime,
-          "mega",
+          "fjdkfjdkj",
+          timer?.label.toLowerCase(),
+          name.toLowerCase(),
+          !timer?.endTime,
         );
 
         return (
-          timer.label.toLowerCase() === name.toLowerCase() && !timer.endTime
+          timer?.label.toLowerCase() === name.toLowerCase() && !timer?.endTime
         );
       });
       updateSharedObject({
         timers: getSharedObject().timers.map((timer) => {
-          return timer.label === updatableTimer.label && !timer.endTime
+          console.log(timer, "jfdj", updatableTimer);
+
+          return timer?.label === updatableTimer?.label && !timer?.endTime
             ? {
                 ...updatableTimer,
                 duration: time - timeLeftRef.current,
@@ -90,9 +91,7 @@ export function useTimeUpdate({
       });
       setTimersHistory((cur) =>
         cur.map((timer) => {
-          console.log(timer, "timerdf");
-
-          return timer.label === updatableTimer.label && !timer.endTime
+          return timer?.label === updatableTimer?.label && !timer?.endTime
             ? {
                 ...updatableTimer,
                 duration: time - timeLeftRef.current,

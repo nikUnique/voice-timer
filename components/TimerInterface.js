@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useExecuteCommand } from "../hooks/useExecuteCommand";
@@ -15,10 +15,11 @@ import { useUpdateLeastTimer } from "../hooks/useUpdateLeastTimer";
 import { useUpdateNotification } from "../hooks/useUpdateNotification";
 import IconButton from "../ui/IconButton";
 
+import { useNavigation } from "@react-navigation/native";
 import { Colors } from "../constants/colors";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter } from "../utils/EventEmitter";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
+import { updateSharedObject } from "../utils/sharedVariables";
 import Time from "./Time";
 
 function TimerInterface({
@@ -33,6 +34,7 @@ function TimerInterface({
   onDelete,
   timerHeight,
 }) {
+  const navigation = useNavigation();
   const [setModalIsVisible] = useState(false);
 
   const timerInterfaceState = useTimerInterfaceState({ time });
@@ -118,7 +120,7 @@ function TimerInterface({
     function () {
       executeCommand();
     },
-    [recognizedCommand, lastCommandRef, executeCommand]
+    [recognizedCommand, lastCommandRef, executeCommand],
   );
 
   const { controlTimer, startChangeNameHandler } = useTimerInterfaceFunctions({
@@ -138,8 +140,23 @@ function TimerInterface({
           name,
         });
       });
+
+      return () => {
+        emitter.all.delete(`timerSelected-${index}`);
+      };
     },
-    [controlTimer, index, isActive, isPaused, name, onDelete, startTimer]
+    [controlTimer, index, isActive, isPaused, name, onDelete, startTimer],
+  );
+
+  useEffect(
+    function () {
+      navigation.setOptions({
+        headerStyle: {
+          backgroundColor: isActive ? Colors.primaryTint8 : Colors.primary,
+        },
+      });
+    },
+    [isActive, navigation],
   );
 
   return (

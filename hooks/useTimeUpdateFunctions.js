@@ -13,8 +13,6 @@ export function useTimeUpdateFunctions(name, setAlertingTimersNames) {
       ];
       setAlertingTimersNames(alertingTimerNamesRef.current);
 
-      console.log(getSharedObject().alertingTimerNames, "mdi");
-
       // Exactly this way because we want to preserve what is in the sharedObject and also want to get the fresh update from new ref
       if (getSharedObject().alertingTimerNames?.length) {
         updateSharedObject({
@@ -35,7 +33,6 @@ export function useTimeUpdateFunctions(name, setAlertingTimersNames) {
 
       setItemInStorage("alertingTimerNames", alertingTimerNamesRef.current);
 
-      console.log(getSharedObject().alertingTimerNames, "fudfu");
     },
     [alertingTimerNamesRef, name, setAlertingTimersNames],
   );
