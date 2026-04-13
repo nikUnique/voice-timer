@@ -1,9 +1,10 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
-
 import { Colors } from "../constants/colors";
 import { emitter } from "../utils/EventEmitter";
+
 import { memo, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 function formatDuration(seconds) {
   const h = Math.floor(seconds / 3600);

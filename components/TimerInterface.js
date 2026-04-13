@@ -148,16 +148,20 @@ function TimerInterface({
     [controlTimer, index, isActive, isPaused, name, onDelete, startTimer],
   );
 
-  useEffect(
-    function () {
-      navigation.setOptions({
-        headerStyle: {
-          backgroundColor: isActive ? Colors.primaryTint8 : Colors.primary,
-        },
-      });
-    },
-    [isActive, navigation],
-  );
+  // useEffect(
+  //   function () {
+  //     navigation.setOptions({
+  //       headerStyle: {
+  //         backgroundColor: isActive ? Colors.primaryTint8 : Colors.primary,
+  //       },
+  //     });
+
+  //     StatusBar.setBackgroundColor(
+  //       isActive ? Colors.primaryTint8 : Colors.primary,
+  //     );
+  //   },
+  //   [isActive, navigation],
+  // );
 
   return (
     <View
@@ -167,7 +171,7 @@ function TimerInterface({
           height: timerHeight,
         },
 
-        isActive && { backgroundColor: Colors.primaryTint8 },
+        // isActive && { backgroundColor: Colors.primaryTint8 },
         !timerHeight && styles.hiddenTimer,
       ]}
     >
