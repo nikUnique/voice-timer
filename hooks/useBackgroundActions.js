@@ -75,8 +75,6 @@ export function useBackgroundActions() {
 
         notifee.onBackgroundEvent(async ({ type, detail }) => {
           try {
-            console.log("Brumi");
-
             const activity =
               await NativeModules.NativeUtilsModule.getCurrentActivityName();
 

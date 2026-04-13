@@ -1,4 +1,5 @@
 import Slider from "@react-native-community/slider";
+
 import { useMemo, useState } from "react";
 import {
   Alert,

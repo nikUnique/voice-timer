@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
 import {
   Alert,
   Linking,
@@ -31,6 +30,7 @@ export default function MicStatus() {
     microGranted,
     setMicroGranted,
   } = useSettingsData();
+
   const { isListening } = useRecognizerData();
   const { isPhoneLocked } = useIsLocked();
 
@@ -49,9 +49,9 @@ export default function MicStatus() {
 
     let localMicroGranted;
 
-    if (/* !localMicroGranted && */ !microGranted) {
+    if (!microGranted) {
       permission = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
       );
 
       // Required manual ask if never ask again was choosen before
@@ -64,12 +64,12 @@ export default function MicStatus() {
           [
             { text: "Cancel", style: "cancel" },
             { text: "Settings", onPress: openSettings },
-          ]
+          ],
         );
       }
 
       localMicroGranted = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
       );
 
       if (!localMicroGranted && !microGranted) {
@@ -92,8 +92,6 @@ export default function MicStatus() {
     });
   }
 
-  console.log("voiceNeable", voiceEnabled);
-
   return (
     <Pressable
       onPress={() => {
@@ -106,9 +104,7 @@ export default function MicStatus() {
           <Ionicons
             name={voiceEnabled && isListening ? "mic" : "mic-outline"}
             size={24}
-            color={
-              /* voiceEnabled ? Colors.primary : Colors.grayShade20 */ Colors.primary
-            }
+            color={Colors.primary}
           />
           <Text style={styles.isListeningText}>
             {voiceEnabled && isListening && !isPhoneLocked
@@ -117,9 +113,6 @@ export default function MicStatus() {
             (Tap to change)
           </Text>
         </View>
-        {/* <View style={styles.listeningStatusSwitch}>
-          <Text style={styles.tapToChange}>Tap to change</Text>
-        </View> */}
       </View>
     </Pressable>
   );
@@ -146,13 +139,5 @@ const styles = StyleSheet.create({
 
   isListeningStatus: {
     flexDirection: "row",
-  },
-
-  listeningStatusSwitch: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  tapToChange: {
-    color: Colors.grayShade20,
   },
 });

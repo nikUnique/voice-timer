@@ -1,5 +1,4 @@
-import { Linking, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import { Linking, StyleSheet, Text } from "react-native";
 
 export default function Attribution() {
   return (

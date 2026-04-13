@@ -1,10 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import toWords from "number-to-words/src/toWords";
-import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
 import SimpleKeypad from "react-native-simple-keypad";
 import wordsToNumbers from "words-to-numbers";
+
+import { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
 import { Colors } from "../constants/colors";
 import {
@@ -13,9 +14,7 @@ import {
 } from "../context/VoiceRecognizerContext";
 import IconButton from "../ui/IconButton";
 import { setItemInStorage } from "../utils/helpers";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
-import { emitter } from "../utils/EventEmitter";
-import { useUpdateControlButtons } from "../hooks/useUpdateControlButtons";
+import { updateSharedObject } from "../utils/sharedVariables";
 
 function CreateTimer() {
   const { timers, setTimers } = useRecognizerData();
@@ -23,7 +22,6 @@ function CreateTimer() {
     useRefsData();
   const navigation = useNavigation();
   const [inputValue, setInputValue] = useState("------");
-  const { updateControlButtons } = useUpdateControlButtons();
 
   function handleDelete() {
     if (inputValue[5] !== "-") {
@@ -110,16 +108,16 @@ function CreateTimer() {
       const finalTime = hours * 3600 + minutes * 60 + seconds;
 
       if (finalTime <= 0) {
-        console.log(`Timer should have at least 1 second time`);
+        console.log(`Timer should have at least 1 second of time`);
         return;
       }
 
       const startsWithNumberTimers = timers.filter(
-        (timer) => typeof wordsToNumbers(timer.name.toLowerCase()) === "number"
+        (timer) => typeof wordsToNumbers(timer.name.toLowerCase()) === "number",
       );
 
       const allTimerNumbers = startsWithNumberTimers.map((timer) => {
-        return wordsToNumbers(timer.name./* slice(6). */ trim());
+        return wordsToNumbers(timer.name.trim());
       });
 
       const anotherNextNumber = allTimerNumbers.reduce((acc, _, i, arr) => {
@@ -146,12 +144,6 @@ function CreateTimer() {
 
       const sortedTimers = newTimerArray.slice();
 
-      // let shiftedName;
-      // if(workingTimersRef.current.length >=5) {
-      //   const currentTimerIndex = timers.findIndex(timer => timer.name === getSharedObject().name)
-      // }
-      // workingTimersRef.current.length >=5 && updateSharedObject({name: shiftedName})
-
       workingTimersRef.current.length < 5 &&
         updateSharedObject({ name: newName });
 
@@ -165,7 +157,6 @@ function CreateTimer() {
       if (sortedTimers.length > 1) {
         navigation.goBack();
       }
-      // emitter.emit("toggleModal");
     } catch (error) {
       console.error(`An error occured in the onCreateTimer function`, error);
     }
@@ -207,7 +198,6 @@ function CreateTimer() {
               onPress={onCreateTimer}
               size={30}
               style={styles.icon}
-              // disabled={workingTimersRef.current.length >= 5}
             />
           </View>
         </View>

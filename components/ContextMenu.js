@@ -70,8 +70,6 @@ export default function ContextMenu({ onToggleModal, modalIsVisible }) {
 const styles = StyleSheet.create({
   menu: {
     position: "absolute",
-    // top: 80,
-    // right: 10,
     backgroundColor: Colors.primaryShade30,
     borderRadius: 8,
     width: 170,

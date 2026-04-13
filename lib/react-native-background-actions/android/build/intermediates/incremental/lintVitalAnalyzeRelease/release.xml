@@ -1,7 +1,7 @@
 <variant
     name="release"
     package="com.asterinet.react.bgactions"
-    minSdkVersion="21"
+    minSdkVersion="24"
     targetSdkVersion="34"
     mergedManifest="build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml"
     proguardFiles="build/intermediates/default_proguard_files/global/proguard-android.txt-8.6.0"

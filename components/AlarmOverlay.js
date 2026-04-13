@@ -26,8 +26,6 @@ const AlarmOverlay = ({ navigation }) => {
 
   const { currentActivityRef } = useRefsData();
 
-
-
   useEffect(
     function () {
       if (alertingTimerNames.length === 0) {
@@ -36,16 +34,6 @@ const AlarmOverlay = ({ navigation }) => {
     },
     [alertingTimerNames, navigation],
   );
-
-  // useEffect(function () {
-  //   setTimeout(function () {
-  //     StatusBar.setHidden(true, "fade");
-  //   }, 200);
-
-  //   return () => {
-  //     StatusBar.setHidden(false, "fade");
-  //   };
-  // }, []);
 
   const onDismiss = useCallback(function () {
     getSharedObject().alertingTimerNames.map((alertingTimer) =>
@@ -68,7 +56,6 @@ const AlarmOverlay = ({ navigation }) => {
   );
 
   return (
-    // <Modal visible={isModalVisible} animationType='slide' transparent>
     <>
       <View
         style={{
@@ -117,7 +104,6 @@ const AlarmOverlay = ({ navigation }) => {
         </View>
       </View>
     </>
-    // </Modal>
   );
 };
 
@@ -131,7 +117,6 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    // backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -143,7 +128,6 @@ const styles = StyleSheet.create({
     width: "80%",
     elevation: 10,
   },
-
   title: {
     fontSize: 18,
     fontWeight: "bold",
