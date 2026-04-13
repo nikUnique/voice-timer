@@ -75,6 +75,8 @@ export function useBackgroundActions() {
 
         notifee.onBackgroundEvent(async ({ type, detail }) => {
           try {
+            console.log("Brumi");
+
             const activity =
               await NativeModules.NativeUtilsModule.getCurrentActivityName();
 
@@ -123,7 +125,7 @@ export function useBackgroundActions() {
             }
           } catch (err) {
             console.error(
-              `An error occured in onBackgroundEvent handler 🔴`,
+              `An error occurred in onBackgroundEvent handler 🔴`,
               err,
             );
           }
@@ -132,7 +134,7 @@ export function useBackgroundActions() {
 
       load();
       return () => {
-        unsubcsribeForeground();
+        // unsubcsribeForeground();
         // unsubcsribeBackground();
       };
     },

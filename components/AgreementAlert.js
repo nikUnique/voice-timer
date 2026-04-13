@@ -1,10 +1,12 @@
 /* eslint-disable react-native/no-raw-text */
-import { BackHandler, StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { getItemFromStorage, setItemInStorage } from "../utils/helpers";
 import Dialog from "react-native-dialog";
+
+import { useEffect, useState } from "react";
+import { BackHandler, StyleSheet, Text, View } from "react-native";
+
 import { Colors } from "../constants/colors";
+import { getItemFromStorage, setItemInStorage } from "../utils/helpers";
 
 export default function AgreementAlert() {
   const navigation = useNavigation();
@@ -37,7 +39,7 @@ export default function AgreementAlert() {
       }
       load();
     },
-    [navigation]
+    [navigation],
   );
   return (
     <>
@@ -60,7 +62,10 @@ export default function AgreementAlert() {
                 </Text>
               </Text>
             </Dialog.Title>
-            <Dialog.Button label='Cancel' onPress={hideDialog} />
+            <Dialog.Button
+              label='Cancel'
+              onPress={hideDialog}
+            />
             <Dialog.Button
               label='I agree'
               onPress={async () => {

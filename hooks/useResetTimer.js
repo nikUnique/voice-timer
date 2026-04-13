@@ -144,6 +144,8 @@ export function useResetTimer({
           }),
         );
 
+        setItemInStorage("timerHistory", getSharedObject().timers);
+
         if (getSharedObject().runningTimerNames.length === 0) {
           BackgroundService.stop();
         }

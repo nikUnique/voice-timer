@@ -1,7 +1,7 @@
 <variant
     name="release"
     package="com.asterinet.react.bgactions"
-    minSdkVersion="29"
+    minSdkVersion="21"
     targetSdkVersion="34"
     mergedManifest="build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml"
     manifestMergeReport="build/outputs/logs/manifest-merger-release-report.txt"

@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-raw-text */
-import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+
 import { Colors } from "../constants/colors";
 import Section from "./Section";
 import { BulletPoint, Label, Paragraph, Subtitle } from "./TextUnits";
@@ -31,10 +31,7 @@ export default function About() {
         Use your voice to start, stop, and control the timer without needing to
         touch the screen.
       </Text>
-      {/* <Text style={styles.paragraph}>
-        It works offline and helps you stay in the flow — whatever you&apos;re
-        doing.
-      </Text> */}
+
       <Text style={styles.paragraph}>
         No tracking, no accounts, just a helpful timer.
       </Text>
