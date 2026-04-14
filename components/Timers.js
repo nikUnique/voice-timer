@@ -1,3 +1,4 @@
+import * as Brightness from "expo-brightness";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import BackgroundService from "react-native-background-actions";
 
@@ -24,6 +25,7 @@ export default function Timers({ navigation }) {
   const [isTaskStopped, setIsTaskStopped] = useState(false);
 
   const activeTimeRef = useRef(null);
+  const dimScreenRef = useRef(null);
   const lastCommandRef = useRef(null);
 
   const {
@@ -55,6 +57,17 @@ export default function Timers({ navigation }) {
   const { playSoundWrapper, stopSoundWrapper, options, backgroundTask } =
     useTimer();
 
+  // useEffect(function () {
+  //   (async () => {
+  //     // const { status } = await Brightness.requestPermissionsAsync();
+  //     // if (status === "granted") {
+  //     //   Brightness.setBrightnessAsync(0.2);
+  //     // }
+  //     Brightness.setBrightnessAsync(0.2);
+  //     // await Brightness.restoreSystemBrightnessAsync();
+  //   })();
+  // }, []);
+
   useEffect(
     function () {
       async function confirmCommand() {
@@ -85,7 +98,9 @@ export default function Timers({ navigation }) {
           isValidCommandRef.current = recognizedCommand;
 
           if (activeTimeRef.current) {
+            await Brightness.restoreSystemBrightnessAsync();
             clearTimeout(activeTimeRef.current);
+            clearTimeout(dimScreenRef.current);
           }
 
           if (!keepScreenOnCommand) {
@@ -107,6 +122,17 @@ export default function Timers({ navigation }) {
             },
             keepScreenOnMinutes * 60 * 1000,
           );
+
+          dimScreenRef.current = setTimeout(async function () {
+            try {
+              await Brightness.setBrightnessAsync(0.1);
+            } catch (error) {
+              console.error(
+                `An error occurred in the dimScreenRef timeout`,
+                error,
+              );
+            }
+          }, 60 * 1000);
         } catch (err) {
           console.error("Error occurred", err);
           throw new Error(err);
@@ -131,7 +157,7 @@ export default function Timers({ navigation }) {
   );
 
   const prepareAlertingTimerNames = useCallback(
-    async function (nextAppState) {
+    async function () {
       try {
         if (
           AppState.currentState !== "active" ||

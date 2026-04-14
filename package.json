@@ -43,7 +43,8 @@
     "react-native-tts": "^4.1.1",
     "react-native-vosk": "^0.3.2",
     "typo-js": "^1.2.5",
-    "words-to-numbers": "^1.5.1"
+    "words-to-numbers": "^1.5.1",
+    "expo-brightness": "~13.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
