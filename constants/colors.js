@@ -43,9 +43,11 @@ export const Colors = {
   resetAlpha15: "rgba(145,167,255,0.15)",
 
   // --- Danger (red) palette ---
-  // oc-red-4 (#ff6b6b) — https://yeun.github.io/open-color
+  // oc-red-5 (#ff6b6b) — https://yeun.github.io/open-color
   dangerColor: "#ff6b6b",
-  // oc-red-4 at 12% opacity (icon box bg)
+  // oc-teal-3 @ 12% — maketintsandshades.com
+  doneIconBg: "rgba(99,230,190,0.12)",
+  // oc-red-5 at 12% opacity (icon box bg)
   dangerIconBg: "rgba(255,107,107,0.12)",
   // oc-red-7 (#e03131) at 20% opacity (confirm button bg)
   dangerBg: "rgba(224,49,49,0.20)",

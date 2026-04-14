@@ -57,7 +57,7 @@ export function useSaveStorage({
 
       return appStateBoxAlt;
     } catch (error) {
-      console.error("An error occured in saveStorage function 🩹", error);
+      console.error("An error occurred in saveStorage function 🩹", error);
     }
   }
 

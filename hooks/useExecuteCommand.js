@@ -8,7 +8,6 @@ import { sleep } from "../utils/helpers";
 
 import { useSound } from "./useSound";
 import { useSpeak } from "./useSpeak";
-import { useUpdateControlButtons } from "./useUpdateControlButtons";
 
 export function useExecuteCommand({
   recognizedCommand,
@@ -51,8 +50,8 @@ export function useExecuteCommand({
           isCommandValid = availableCommands.some(
             (command) =>
               recognizedCommand?.recognizedCommand.includes(
-                command
-              ) /* startsWith(command) */
+                command,
+              ) /* startsWith(command) */,
           );
         }
 
@@ -98,7 +97,7 @@ export function useExecuteCommand({
           lowerCommand.includes(
             `${START} ${name} ${secretIdentifierRef.current}`
               .toLocaleLowerCase()
-              .trim()
+              .trim(),
           )
         ) {
           startTimer();
@@ -112,7 +111,7 @@ export function useExecuteCommand({
           lowerCommand.includes(
             `${PAUSE} ${name} ${secretIdentifierRef.current}`
               .toLocaleLowerCase()
-              .trim()
+              .trim(),
           )
         ) {
           pauseTimerRef.current();
@@ -125,7 +124,7 @@ export function useExecuteCommand({
           lowerCommand.includes(
             `${CONTINUE} ${name} ${secretIdentifierRef.current}`
               .toLocaleLowerCase()
-              .trim()
+              .trim(),
           )
         ) {
           resumeTimerRef.current();
@@ -138,7 +137,7 @@ export function useExecuteCommand({
           lowerCommand.includes(
             `${RESET} ${name} ${secretIdentifierRef.current}`
               .toLocaleLowerCase()
-              .trim()
+              .trim(),
           ) &&
           ((isActive && isPaused) || timeLeftRef.current <= 0)
         ) {
@@ -175,7 +174,7 @@ export function useExecuteCommand({
           });
         }
       } catch (error) {
-        console.error(`An error occured in executeCommand function 🦸`, error);
+        console.error(`An error occurred in executeCommand function 🦸`, error);
       } finally {
         clearCommand("");
       }
@@ -205,7 +204,7 @@ export function useExecuteCommand({
       resetTimerRef,
       playSoundGeneral,
       successSound,
-    ]
+    ],
   );
 
   return { executeCommand };

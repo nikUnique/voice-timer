@@ -158,7 +158,7 @@ function CreateTimer() {
         navigation.goBack();
       }
     } catch (error) {
-      console.error(`An error occured in the onCreateTimer function`, error);
+      console.error(`An error occurred in the onCreateTimer function`, error);
     }
   }
 

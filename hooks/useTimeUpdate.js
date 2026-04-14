@@ -282,7 +282,7 @@ export function useTimeUpdate({
           updateSharedObject({ [`timeoutId-${name}`]: timeoutRef.current });
         }
       } catch (err) {
-        console.error("An error occured in updateTime function 🔺", err);
+        console.error("An error occurred in updateTime function 🔺", err);
       }
     },
     [

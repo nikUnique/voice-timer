@@ -7,15 +7,14 @@ import {
   Text,
 } from "react-native";
 import Vosk from "react-native-vosk";
-import RNFS, { readFile } from "react-native-fs";
 
+import { Colors } from "../constants/colors";
 import {
   useRecognizerData,
   useRefsData,
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
 import { useIsLocked } from "../hooks/useIsLocked";
-import { Colors } from "../constants/colors";
 
 export default memo(function VoiceCommandsControl({ setCommand }) {
   const [isReady, setIsReady] = useState(false);
@@ -60,14 +59,14 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         }),
       ]).start();
     },
-    [fadeAnimationRefCur, recognizedCommand, recognizedTime]
+    [fadeAnimationRefCur, recognizedCommand, recognizedTime],
   );
 
   useEffect(
     function () {
       fadeInAndOut();
     },
-    [fadeAnimationRefCur, fadeInAndOut]
+    [fadeAnimationRefCur, fadeInAndOut],
   );
 
   const load = useCallback(async () => {
@@ -75,7 +74,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       await vosk.loadModel("vosk-model-small-en-us-0.15");
       setIsReady(true);
     } catch (error) {
-      console.error(`An error occured in the load vosk function`, error);
+      console.error(`An error occurred in the load vosk function`, error);
     }
   }, [vosk]);
 
@@ -107,7 +106,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       }
 
       const microGranted = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
       );
 
       if (!microGranted) {
@@ -122,10 +121,10 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
           setIsRecognizing(true);
         })
         .catch((e) =>
-          console.error(`An error occured while initializing vosk`, e)
+          console.error(`An error occurred while initializing vosk`, e),
         );
     } catch (error) {
-      console.error("An error occured in the recordGrammar function", error);
+      console.error("An error occurred in the recordGrammar function", error);
     }
   }, [isReady, stop, isListening, vosk, dynamicGrammar]);
 
@@ -140,7 +139,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       setIsListening(true);
       isListeningRef.current = true;
     },
-    [isListeningRef, setIsListening]
+    [isListeningRef, setIsListening],
   );
 
   useEffect(
@@ -170,7 +169,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       vosk,
       voiceEnabled,
       isPhoneLocked,
-    ]
+    ],
   );
 
   useEffect(() => {
@@ -178,7 +177,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       console.log(
         "An onResult event has been caught: " + res,
         isListening,
-        isListeningRef.current
+        isListeningRef.current,
       );
       const isPhoneLocked =
         await NativeModules.NativeUtilsModule.isPhoneLocked();

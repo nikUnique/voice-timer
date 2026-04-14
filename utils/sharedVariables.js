@@ -25,6 +25,6 @@ export function updateSharedObject(newData) {
 
     return { ...sharedObject, ...newData };
   } catch (error) {
-    console.error(`An error occured 💣`, error);
+    console.error(`An error occurred 💣`, error);
   }
 }

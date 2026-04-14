@@ -88,7 +88,7 @@ export function useUpdateNotification({
         }
       } catch (err) {
         console.error(
-          `An error occured in updatePersistentNotification function 🔴`,
+          `An error occurred in updatePersistentNotification function 🔴`,
           err,
         );
       }
@@ -174,7 +174,7 @@ export function useUpdateNotification({
           ongoingNotificationLabelRef.current = timeLabelRef?.current;
         }
       } catch (error) {
-        console.error(`An error occured in updateTimerLabel function`, error);
+        console.error(`An error occurred in updateTimerLabel function`, error);
       }
     },
     [

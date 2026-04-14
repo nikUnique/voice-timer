@@ -84,9 +84,6 @@ export default memo(function HistoryItem({ item }) {
           setTimeLeft(() => timeLeft);
         });
 
-      // console.log(
-      //   [...emitter.all.keys()].map((k, i) => `${i + 1}. ${k}`).join("\n"),
-      // );
       return () => {
         emitter.all.delete(`timeItem-${item.label}`);
       };
@@ -137,7 +134,7 @@ export default memo(function HistoryItem({ item }) {
       </View>
 
       <View style={styles.info}>
-        <Text style={styles.label}>
+        <Text style={[styles.label, isCompleted && styles.labelDone]}>
           {item.label + ` (${formatDuration(item.time)})`}
         </Text>
         <Text style={styles.time}>
@@ -151,9 +148,10 @@ export default memo(function HistoryItem({ item }) {
       </View>
 
       <View style={styles.right}>
-        <Text style={styles.duration}>
-          <Text style={styles.duration}>{formatDuration(displayDuration)}</Text>
+        <Text style={[styles.duration, isCompleted && styles.durationDone]}>
+          {formatDuration(displayDuration)}
         </Text>
+
         {isRunning || isPaused ? (
           <View
             style={[
@@ -191,9 +189,18 @@ const styles = StyleSheet.create({
     gap: 14,
     width: "100%",
   },
-  cardRunning: { backgroundColor: Colors.primaryShade50 },
+  // Running card — add a subtle border so it feels "live"
+  cardRunning: {
+    backgroundColor: Colors.primaryShade50,
+    borderWidth: 1,
+    borderColor: Colors.primaryTint40,
+  },
   cardPaused: { backgroundColor: Colors.pausedShade },
-  cardDone: { backgroundColor: Colors.doneShade },
+  cardDone: {
+    backgroundColor: Colors.doneShade,
+    borderWidth: 1,
+    borderColor: Colors.blackAlpha20,
+  },
   cardReset: { backgroundColor: Colors.resetShade },
 
   iconBox: {
@@ -206,8 +213,11 @@ const styles = StyleSheet.create({
   },
   iconBoxRunning: { backgroundColor: Colors.primaryShade30 },
   iconBoxPaused: { backgroundColor: Colors.pausedAlpha15 },
-  iconBoxDone: { backgroundColor: Colors.blackAlpha20 },
+  iconBoxDone: { backgroundColor: "rgba(99,230,190,0.12)" }, // oc-teal-3 @ 12%
   iconBoxReset: { backgroundColor: Colors.resetAlpha15 },
+
+  labelDone: { color: Colors.primaryTint70 },
+  durationDone: { color: Colors.primaryTint70 },
 
   info: { flex: 1 },
   label: { fontSize: 15, fontWeight: "600", color: Colors.primaryTint90 },

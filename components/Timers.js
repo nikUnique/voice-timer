@@ -101,7 +101,7 @@ export default function Timers({ navigation }) {
                 // console.log("KeepScreenOnMinutes", keepScreenOnMinutes * 60);
               } catch (error) {
                 console.error(
-                  `An error occured in the active screen function`,
+                  `An error occurred in the active screen function`,
                   error,
                 );
               }
@@ -109,7 +109,7 @@ export default function Timers({ navigation }) {
             keepScreenOnMinutes * 60 * 1000,
           );
         } catch (err) {
-          console.error("Error occured", err);
+          console.error("Error occurred", err);
           throw new Error(err);
         }
       }
@@ -189,7 +189,7 @@ export default function Timers({ navigation }) {
         }
       } catch (error) {
         console.error(
-          "An error occured in the prepareAlertingTimerNames function: ",
+          "An error occurred in the prepareAlertingTimerNames function: ",
           error,
         );
       }

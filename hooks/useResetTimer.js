@@ -274,7 +274,7 @@ export function useResetTimer({
 
         // console.log("The end of reset function", name);
       } catch (error) {
-        console.error(`An error occured in resetTimer function ❎`, error);
+        console.error(`An error occurred in resetTimer function ❎`, error);
       }
     },
     [

@@ -1,4 +1,6 @@
+import { useNavigation } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppState, FlatList, StyleSheet, View } from "react-native";
 
@@ -12,20 +14,16 @@ import { useSound } from "../hooks/useSound";
 import { emitter, resetTimerEmitter } from "../utils/EventEmitter";
 import { getItemFromStorage, setItemInStorage, sleep } from "../utils/helpers";
 
-import { useNavigation } from "@react-navigation/native";
 import { Colors } from "../constants/colors";
 import { useSpeak } from "../hooks/useSpeak";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import MicStatus from "./MicStatus";
 import TimerInterface from "./TimerInterface";
 import TimerInterfaceButtons from "./TimerInterfaceButtons";
-import { useLayoutEffect } from "react";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
-  console.log("This is timerList");
-
   const navigation = useNavigation();
   const [isReady, setIsReady] = useState(false);
   const [updateList, setUpdateList] = useState(false);
@@ -84,7 +82,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         }, 1000);
       });
     },
-    [updateList]
+    [updateList],
   );
 
   const sortedTimers = useMemo(() => timers.slice().reverse(), [timers]);
@@ -99,7 +97,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     function () {
       setRecognizedCommand(" ");
     },
-    [setRecognizedCommand]
+    [setRecognizedCommand],
   );
 
   activateTimerRef.current = function activateTimer(index) {
@@ -107,10 +105,9 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       flatListRef?.current?.scrollToIndex({
         index,
         animated: true,
-        // viewPosition: 0.5,
       });
     } catch (error) {
-      console.error(`An error occured during automatic scrolling`, error);
+      console.error(`An error occurred during automatic scrolling`, error);
     }
   };
 
@@ -118,23 +115,17 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     function handleDelete(timerName) {
       try {
         const timerToDelete = timers.find(
-          (timer) => timer?.name.toLowerCase() === timerName.toLowerCase()
+          (timer) => timer?.name.toLowerCase() === timerName.toLowerCase(),
         );
 
         let initialIndex = timers.findIndex(
-          (timer) => timer?.name?.toLowerCase() === timerName.toLowerCase()
+          (timer) => timer?.name?.toLowerCase() === timerName.toLowerCase(),
         );
 
         let timerToDeleteIndex = initialIndex;
 
-        // console.log("initialIndex", initialIndex);
-
-        // console.log("timerToDelete", timerToDelete);
-        // console.log("Index", timerToDeleteIndex);
-        // console.log("timers", timers);
-
         const newTimersArray = timers.filter(
-          (timer) => timer?.name !== timerToDelete?.name
+          (timer) => timer?.name !== timerToDelete?.name,
         );
 
         // It will be always less one index than the deletable item was, and in case if the item with index 0 was deleted, the selected item will be undefined because of -1 index, but when that happens the list is automatically scrolled by default to show another item where onScroll callback on the FlatList kicks in and updates the shared object with the name of the currently viewed timer
@@ -149,10 +140,10 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           navigation.replace("CreateTimerScreen");
         }
       } catch (error) {
-        console.error(`An error occured in the handleDelete function`, error);
+        console.error(`An error occurred in the handleDelete function`, error);
       }
     },
-    [navigation, setTimers, timers]
+    [navigation, setTimers, timers],
   );
 
   useEffect(
@@ -168,7 +159,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         speak("Completed timers reset");
 
         alertingTimerNamesRef?.current?.map((alertingTimer) =>
-          resetTimerEmitter.emit(`${RESET} ${alertingTimer}`)
+          resetTimerEmitter.emit(`${RESET} ${alertingTimer}`),
         );
       }
 
@@ -194,7 +185,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       secretIdentifierRef,
       speak,
       successSound,
-    ]
+    ],
   );
 
   useEffect(
@@ -214,12 +205,12 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         }
       } catch (error) {
         console.error(
-          `An error occured in calling activateTimerRef.current on mount: `,
-          error
+          `An error occurred in calling activateTimerRef.current on mount: `,
+          error,
         );
       }
     },
-    [activateTimerRef, isReady, containerHeight, workingTimersRef, timers]
+    [activateTimerRef, isReady, containerHeight, workingTimersRef, timers],
   );
 
   function renderTimer({ item, index }) {
@@ -267,14 +258,14 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       if (
         item.name.trim().split(" ").length === 1 &&
         !numberOfRecognizedCommands.filter(
-          (timer) => timer.split(" ").length > 2
+          (timer) => timer.split(" ").length > 2,
         ).length
       ) {
         const longestCommand = numberOfRecognizedCommands.reduce(
           (acc, command) => {
             return acc.length > command.length ? acc : command;
           },
-          numberOfRecognizedCommands[0]
+          numberOfRecognizedCommands[0],
         );
 
         isCommandNew = { recognizedCommand: longestCommand };
@@ -314,12 +305,12 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           ) {
             handleReadyState(false);
           }
-        }
+        },
       );
 
       return () => appStateListener.remove();
     },
-    [activateTimerRef, handleReadyState, isReady, leastTimeTimerRef]
+    [activateTimerRef, handleReadyState, isReady, leastTimeTimerRef],
   );
 
   useEffect(function () {
@@ -362,7 +353,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           }
           return acc;
         },
-        Object.entries(countElementObj)[0]
+        Object.entries(countElementObj)[0],
       )[0];
 
       setItemInStorage("calculatedTimerHeight", minHeight);
@@ -380,7 +371,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         setHasMounted(true);
       }, 1000);
     } catch (error) {
-      console.error("An error occured in the onLayoutHandler", error);
+      console.error("An error occurred in the onLayoutHandler", error);
     }
   }
 

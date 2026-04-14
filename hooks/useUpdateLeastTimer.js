@@ -90,7 +90,7 @@ export function useUpdateLeastTimer({
         updateSharedObject({ leastTimer: leastTimeTimerRef.current });
         return leastTimeTimerRef.current;
       } catch (err) {
-        console.error("An error occured in updateLeastTimer function ❌", err);
+        console.error("An error occurred in updateLeastTimer function ❌", err);
       }
     },
     [

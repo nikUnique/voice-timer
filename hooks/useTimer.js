@@ -114,7 +114,7 @@ export function useTimer() {
   );
 
   const errorTalking = useCallback(function errorTalking() {
-    console.error("An error occured during speech utterance");
+    console.error("An error occurred during speech utterance");
   }, []);
 
   useEffect(
@@ -193,7 +193,7 @@ export function useTimer() {
         }
       } catch (error) {
         console.error(
-          `An error occured in appStateListener in useTimer`,
+          `An error occurred in appStateListener in useTimer`,
           error,
         );
       }
@@ -241,7 +241,7 @@ export function useTimer() {
           }
         } catch (error) {
           console.error(
-            `An error occured in the loading of timers from async storage`,
+            `An error occurred in the loading of timers from async storage`,
             error,
           );
         }

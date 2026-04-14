@@ -33,7 +33,7 @@ export function useTimerInterfaceFunctions({
         resumeTimerRef.current();
       }
     },
-    [isActive, isPaused, pauseTimerRef, resumeTimerRef, startTimer]
+    [isActive, isPaused, pauseTimerRef, resumeTimerRef, startTimer],
   );
 
   useEffect(
@@ -42,7 +42,7 @@ export function useTimerInterfaceFunctions({
       emitter.all.delete(`controlTimer-${name}`);
       emitter.on(`controlTimer-${name}`, controlTimer);
     },
-    [controlTimer, name]
+    [controlTimer, name],
   );
 
   async function createDictionary(affData, dicData) {
@@ -55,7 +55,7 @@ export function useTimerInterfaceFunctions({
       resolve(dictionary);
       if (!dictionary)
         reject(
-          `An error occured in createDictionary function while creating dictionary`
+          `An error occurred in createDictionary function while creating dictionary`,
         );
     });
   }

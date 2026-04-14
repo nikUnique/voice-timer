@@ -103,7 +103,7 @@ export function useNotification() {
         );
       } catch (err) {
         console.error(
-          `An error occured in onCreateTriggerNotification function 🔴`,
+          `An error occurred in onCreateTriggerNotification function 🔴`,
           err,
         );
       }
@@ -227,7 +227,7 @@ export function useNotification() {
         });
       } catch (err) {
         console.error(
-          `An error occured in onUpdateNotification function 🔴`,
+          `An error occurred in onUpdateNotification function 🔴`,
           err,
         );
       }

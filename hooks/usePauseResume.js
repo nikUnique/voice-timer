@@ -22,7 +22,6 @@ export function usePauseResume({
   updateTimerLabel,
   timeLabelRef,
   time,
-  index,
   timeLeftRef,
   updateTime,
   resumeTimerRef,
@@ -30,7 +29,6 @@ export function usePauseResume({
   timeoutRef,
   updatePersitentNotification,
   pauseListener,
-  activateTimerRef,
   isActive,
   isPaused,
 }) {
@@ -53,8 +51,6 @@ export function usePauseResume({
     async function (reopenedTimer) {
       try {
         if (reopenedTimer) {
-          console.log("Timer was reopened");
-
           timerStartedRef.current = reopenedTimer;
         }
 
@@ -118,8 +114,6 @@ export function usePauseResume({
           name: name,
         });
 
-        console.log("timerStarted", timerStartedRef.current);
-
         updateTimers({ name, timerState: timerStateRef.current });
 
         await updateLeastTimer();
@@ -144,10 +138,9 @@ export function usePauseResume({
             pausedTimeRef.current > 0 ? pausedTimeRef.current : Date.now(),
         });
 
-        // console.log("We are resuming now", reopenedTimer, name);
         await updateTime("yes");
       } catch (err) {
-        console.error("An error occured ⛑️", err);
+        console.error("An error occurred ⛑️", err);
       }
     },
     [
@@ -172,8 +165,6 @@ export function usePauseResume({
   const pauseTimer = useCallback(
     async function () {
       try {
-        // console.log("I am pausing now :)", timeoutRef.current);
-
         setIsPaused(true);
 
         const updatableTimer = getSharedObject().timers.find((timer) => {
@@ -194,7 +185,6 @@ export function usePauseResume({
               : timer;
           }),
         });
-        console.log(time, timeLeftRef.current + "🦸");
 
         setTimersHistory((cur) =>
           cur.map((timer) => {
@@ -240,15 +230,9 @@ export function usePauseResume({
 
         clearTimeout(timeoutRef.current);
         clearTimeout(getSharedObject()[`timeoutId-${name}`]);
-        // console.log(
-        //   "Timeout is cleared!",
-        //   timeoutRef.current,
-        //   getSharedObject()[`timeoutId-${name}`]
-        // );
 
         setTimeout(function () {
           clearTimeout(timeoutRef.current);
-          // getSharedObject()[`timeoutId-${name}`];
           timeoutRef.current = null;
         }, 100);
 
@@ -279,7 +263,7 @@ export function usePauseResume({
           });
         }
       } catch (err) {
-        console.error("An error occured in pauseTimer function:" + err + "💣");
+        console.error("An error occurred in pauseTimer function:" + err + "💣");
       }
     },
     [

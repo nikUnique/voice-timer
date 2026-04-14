@@ -33,10 +33,6 @@ export default function HistoryScreen() {
     removeItemFromStorage("timerHistory");
   }
 
-  timersHistory.forEach((timer) => {
-    console.log(timer.label + " " + timer.duration + " " + "\n");
-  });
-
   const renderItem = ({ item }) => <HistoryItem item={item} />;
 
   return (

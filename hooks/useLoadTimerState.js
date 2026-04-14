@@ -131,7 +131,7 @@ export function useLoadTimerState({
           timerIsActiveRef.current = true;
         }
       } catch (error) {
-        console.error(`An error occured 🚗`, error);
+        console.error(`An error occurred 🚗`, error);
       }
     },
     [

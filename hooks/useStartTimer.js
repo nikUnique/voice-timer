@@ -118,8 +118,6 @@ export function useStartTimer({
           setItemInStorage("timerHistory", getSharedObject().timers);
 
           if (getSharedObject().timers.length > MAX_HISTORY) {
-            console.log("What is our time");
-
             updateSharedObject({
               timers: getSharedObject().timers.slice(0, MAX_HISTORY),
             });
@@ -209,14 +207,6 @@ export function useStartTimer({
           Date.now() - freshlyCreatedTimerRef.current?.createdAt < 3000 &&
           name === freshlyCreatedTimerRef.current?.name
         ) {
-          // console.log(
-          //   "time gap",
-          //   Date.now() - freshlyCreatedTimerRef.current?.createdAt
-          // );
-
-          // freshlyCreatedTimerRef.current = null;
-          // setTimeout(async function () {
-          // }, 800)
           startTimer();
           freshlyCreatedTimerRef.current = null;
         }

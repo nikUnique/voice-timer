@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { Colors } from "../constants/colors";
@@ -52,7 +52,7 @@ export default function TimerNameControl() {
       if (!areBothWordsCorrect || lowerCaseName.split(" ").length > 2) {
         console.log(
           "Please check your spelling and try again.",
-          lowerCaseName.split(" ").length
+          lowerCaseName.split(" ").length,
         );
         setIsCorrect(false);
         return;
@@ -67,14 +67,15 @@ export default function TimerNameControl() {
 
       if (!areOnlyLetters) {
         console.log(
-          `The timerName ${lowerCaseName} contains other characters except letters, but only letters are allowed, please change your timer name to follow this rule 🚅`
+          `The timerName ${lowerCaseName} contains other characters except letters, but only letters are allowed, please change your timer name to follow this rule 🚅`,
         );
         return;
       }
 
       const timerWithSameName = timers.find(
         (timer) =>
-          timer.name.trim().toLowerCase() === lowerCaseName.trim().toLowerCase()
+          timer.name.trim().toLowerCase() ===
+          lowerCaseName.trim().toLowerCase(),
       );
       if (timerWithSameName && timerWithSameName.name !== name) {
         console.log("Timer with this name already exists, try another name ⛹️‍♂️");
@@ -86,14 +87,14 @@ export default function TimerNameControl() {
       updateSharedObject({ name: lowerCaseName });
 
       const allListeners = [...emitter.all].filter((listener) =>
-        listener[0].includes(name)
+        listener[0].includes(name),
       );
       allListeners.forEach((listener) => {
         emitter.all.delete(`${listener[0]}`);
       });
 
       const newTimersArr = timers.map((timer) =>
-        timer.name === name ? { ...timer, name: lowerCaseName } : timer
+        timer.name === name ? { ...timer, name: lowerCaseName } : timer,
       );
 
       setTimers(newTimersArr);
@@ -102,7 +103,7 @@ export default function TimerNameControl() {
       // onModalIsVisible();
       emitter.emit("goBack");
     } catch (error) {
-      console.error(`An error occured in the changeTimerName handler`, error);
+      console.error(`An error occurred in the changeTimerName handler`, error);
     }
   }
 
@@ -117,7 +118,7 @@ export default function TimerNameControl() {
   const includesName = timers.find(
     (timer) =>
       timer.name?.trim().toLowerCase() !== name?.trim?.().toLowerCase() &&
-      timer.name?.trim().toLowerCase() === timerName?.trim().toLowerCase()
+      timer.name?.trim().toLowerCase() === timerName?.trim().toLowerCase(),
   );
 
   const textInputsStyle = {

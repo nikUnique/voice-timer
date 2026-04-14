@@ -24,12 +24,12 @@ export function useSettings() {
       let localMicroGranted;
 
       localMicroGranted = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
       );
 
       if (!localMicroGranted) {
         const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           setVoiceEnabled(true);
@@ -64,8 +64,8 @@ export function useSettings() {
           setIsVibrating(retrievedSettings.isVibrating);
         } catch (error) {
           console.error(
-            `An error occured in the load settings function`,
-            error
+            `An error occurred in the load settings function`,
+            error,
           );
         }
       }
@@ -81,6 +81,6 @@ export function useSettings() {
       setKeepScreenOnMinutes,
       setVoiceEnabled,
       timers.length,
-    ]
+    ],
   );
 }

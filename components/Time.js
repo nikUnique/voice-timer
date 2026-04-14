@@ -72,10 +72,7 @@ export default function Time({
         }
       }
       endOfTimer();
-      /*  getSharedObject().timers.find(
-        (timer) =>
-          timer.label.toLowerCase() === name.toLowerCase() && !timer.end,
-      ) && */ emitter.emit(`timeItem-${name}`, timeLeft);
+      emitter.emit(`timeItem-${name}`, timeLeft);
     },
     [
       timeLeft,

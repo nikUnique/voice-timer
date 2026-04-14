@@ -43,7 +43,7 @@ function useSound() {
         });
       });
     },
-    [shortSoundRef]
+    [shortSoundRef],
   );
 
   const playSoundGeneral = useCallback(
@@ -99,7 +99,7 @@ function useSound() {
               soundRef.current.release();
             } else {
               console.error(
-                "Playback of alarm sound failed to audio decoding errors 🔈"
+                "Playback of alarm sound failed to audio decoding errors 🔈",
               );
             }
           });
@@ -116,10 +116,10 @@ function useSound() {
           });
         }
       } catch (err) {
-        console.error("An error occured in playSound function 🎱", err);
+        console.error("An error occurred in playSound function 🎱", err);
       }
     },
-    [soundRef, shortSoundRef, stopSound, loadSound]
+    [soundRef, shortSoundRef, stopSound, loadSound],
   );
 
   const playSpecial = useCallback(
@@ -146,12 +146,12 @@ function useSound() {
           soundRef.current.release();
         } else {
           console.error(
-            "Playback of disco sound failed to audio decoding errors 🔈"
+            "Playback of disco sound failed to audio decoding errors 🔈",
           );
         }
       });
     },
-    [soundRef]
+    [soundRef],
   );
 
   const playSound = useCallback(
@@ -189,7 +189,7 @@ function useSound() {
         console.error("Error loading sound: 🏸", e);
       }
     },
-    [soundIsPlayingRef, playSoundGeneral, alertTimeoutRef, stopSound]
+    [soundIsPlayingRef, playSoundGeneral, alertTimeoutRef, stopSound],
   );
 
   const stopSound = useCallback(
@@ -218,7 +218,7 @@ function useSound() {
         console.error("Error stopping sound", error);
       }
     },
-    [soundRef, alertTimeoutRef, soundIsPlayingRef]
+    [soundRef, alertTimeoutRef, soundIsPlayingRef],
   );
 
   return { playSoundGeneral, playSound, stopSound, playSpecial };

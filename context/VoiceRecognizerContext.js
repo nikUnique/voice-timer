@@ -135,7 +135,7 @@ export default function VoiceRecognizerProvider({ children }) {
         setIsListening(true);
       },
       onError: () => {
-        console.error("An error occured during speech utterance");
+        console.error("An error occurred during speech utterance");
       },
     }),
     [],
