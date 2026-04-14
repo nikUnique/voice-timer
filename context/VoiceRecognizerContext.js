@@ -129,8 +129,6 @@ export default function VoiceRecognizerProvider({ children }) {
         console.log("Speech stopped");
       },
       onDone: () => {
-        // console.log("said");
-
         isListeningRef.current = true;
         setIsListening(true);
       },

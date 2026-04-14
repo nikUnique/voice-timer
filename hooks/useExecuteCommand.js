@@ -47,11 +47,8 @@ export function useExecuteCommand({
 
         if (!isActive) {
           availableCommands = [START, REPEAT, RESET];
-          isCommandValid = availableCommands.some(
-            (command) =>
-              recognizedCommand?.recognizedCommand.includes(
-                command,
-              ) /* startsWith(command) */,
+          isCommandValid = availableCommands.some((command) =>
+            recognizedCommand?.recognizedCommand.includes(command),
           );
         }
 

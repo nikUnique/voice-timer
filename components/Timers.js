@@ -1,7 +1,8 @@
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
+import BackgroundService from "react-native-background-actions";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState, NativeModules, StyleSheet, View } from "react-native";
-import BackgroundService from "react-native-background-actions";
 
 import {
   useRecognizerData,
@@ -15,7 +16,6 @@ import { useTimer } from "../hooks/useTimer";
 import { emitter } from "../utils/EventEmitter";
 import { getItemFromStorage, removeItemFromStorage } from "../utils/helpers";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
-
 import TimerList from "./TimerList";
 import VoiceCommandsControl from "./VoiceCommandsControl";
 
@@ -69,7 +69,6 @@ export default function Timers({ navigation }) {
           );
 
           if (isTimerSpecificCommand) {
-            // lastCommandRef.current = recognizedCommand;
             lastCommandRef.current = isTimerSpecificCommand;
           }
 
@@ -176,16 +175,11 @@ export default function Timers({ navigation }) {
           setAlertingTimerNames(alertingTimerNamesRef.current);
         }
 
-        // await removeItemFromStorage("alertingTimerNames");
-
         if (!parsedValue) {
           const isPhoneLocked =
             await NativeModules.NativeUtilsModule?.isPhoneLocked();
 
           if (isPhoneLocked) return;
-
-          // alertingTimerNamesRef.current = [];
-          // setAlertingTimerNames(alertingTimerNamesRef.current);
         }
       } catch (error) {
         console.error(
@@ -236,12 +230,10 @@ export default function Timers({ navigation }) {
     function () {
       async function load() {
         const parsedValue = await getItemFromStorage("workingTimers");
-
         workingTimersRef.current = parsedValue || [];
 
         if (workingTimersRef.current.length === 0) {
           console.log("All listeners are cleared");
-
           // emitter.all.clear();
         }
 

@@ -318,7 +318,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       const minHeight = await getItemFromStorage("calculatedTimerHeight");
       if (minHeight) {
         setContainerHeight(minHeight);
-        // console.log("In the hook", Date.now());
       }
     }
     load();
@@ -363,9 +362,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       }
 
       updateSharedObject({ timerListHeight: height });
-
       setContainerHeight(minHeight);
-      // console.log("In the onLayout", Date.now());
 
       layoutTimeoutRef.current = setTimeout(function () {
         setHasMounted(true);
@@ -401,7 +398,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
                 extraData={sortedTimers}
                 renderItem={renderTimer}
                 keyExtractor={(item) => item?.id}
-                // scrollEnabled={!isAlarmingScreen}
                 pagingEnabled={true}
                 snapToAlignment='start'
                 keyboardShouldPersistTaps='handled'
@@ -413,7 +409,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
                   const yPosition = e.nativeEvent.contentOffset.y;
 
                   const newIndex = Math.round(yPosition / totalHeight);
-                  // console.log("newIndex", newIndex);
 
                   emitter.emit(`timerSelected-${newIndex}`);
                   if (newIndex !== currentIndex) {
@@ -428,9 +423,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
                 })}
                 viewabilityConfig={{
                   itemVisiblePercentThreshold: 30,
-                }}
-                onViewableItemsChanged={({ viewableItems, changed }) => {
-                  // console.log("viewableItems", viewableItems);
                 }}
               />
             }

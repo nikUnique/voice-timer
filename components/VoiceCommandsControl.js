@@ -1,3 +1,5 @@
+import Vosk from "react-native-vosk";
+
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
@@ -6,7 +8,6 @@ import {
   StyleSheet,
   Text,
 } from "react-native";
-import Vosk from "react-native-vosk";
 
 import { Colors } from "../constants/colors";
 import {
@@ -20,7 +21,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
   const [isReady, setIsReady] = useState(false);
   const [isRecognizing, setIsRecognizing] = useState(false);
   const [result, setResult] = useState();
-  const [imporovedResult, setImprovedResult] = useState("");
+  const [improvedResult, setImprovedResult] = useState("");
 
   const vosk = useRef(new Vosk()).current;
 
@@ -110,7 +111,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       );
 
       if (!microGranted) {
-        console.log("Microphon permission denied by the user");
+        console.log("Microphone permission denied by the user");
         return;
       }
 
@@ -215,7 +216,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     };
   }, [
     dynamicGrammar,
-    imporovedResult,
+    improvedResult,
     setCommand,
     setRecognizedCommand,
     recognizedCommand,

@@ -1,10 +1,11 @@
-import { useCallback } from "react";
 import Tts from "react-native-tts";
+
+import { useCallback } from "react";
+
 import {
   useRefsData,
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
-import { sleep } from "../utils/helpers";
 
 export function useSpeak() {
   const { isVoiceFeedbackEnabled } = useSettingsData();
@@ -20,7 +21,6 @@ export function useSpeak() {
         if (text.trim()) {
           setIsListening(false);
           isListeningRef.current = false;
-          await sleep(0.5);
           Tts.speak(text, voiceOptions);
         }
       } catch (error) {
