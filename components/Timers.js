@@ -253,7 +253,7 @@ export default function Timers({ navigation }) {
           console.log("We add new listener :)");
           emitter.all.delete("playSound");
           emitter.all.delete("stopSound");
-          // emitter.on("playSound", playSoundWrapper);
+          emitter.on("playSound", playSoundWrapper);
           emitter.on("stopSound", stopSoundWrapper);
         }
 

@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import {
   FlatList,
   Modal,
@@ -33,7 +33,11 @@ export default function HistoryScreen() {
     removeItemFromStorage("timerHistory");
   }
 
-  const renderItem = useCallback(({ item }) => <HistoryItem item={item} />, []);
+  timersHistory.forEach((timer) => {
+    console.log(timer.label + " " + timer.duration + " " + "\n");
+  });
+
+  const renderItem = ({ item }) => <HistoryItem item={item} />;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -75,7 +79,7 @@ export default function HistoryScreen() {
               <Ionicons
                 name='trash-outline'
                 size={26}
-                color='#ff6b6b'
+                color={Colors.dangerColor}
               />
             </View>
             <Text style={styles.modalTitle}>Clear all history?</Text>
@@ -107,7 +111,6 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.grayShade30,
     paddingHorizontal: 16,
     paddingTop: 24,
     paddingBottom: 24,
@@ -135,7 +138,7 @@ const styles = StyleSheet.create({
   // modal
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.6)",
+    backgroundColor: Colors.blackAlpha60,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -153,7 +156,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 16,
-    backgroundColor: "rgba(255,80,80,0.12)",
+    backgroundColor: Colors.dangerIconBg,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,
@@ -192,12 +195,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   confirmBtn: {
-    backgroundColor: "rgba(224,49,49,0.2)",
+    backgroundColor: Colors.dangerBg,
     borderWidth: 0.5,
-    borderColor: "rgba(224,49,49,0.35)",
+    borderColor: Colors.dangerBorder,
   },
   confirmText: {
-    color: "#ff6b6b",
+    color: Colors.dangerColor,
     fontSize: 14,
     fontWeight: "600",
   },

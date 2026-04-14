@@ -50,7 +50,7 @@ function formatDay(date) {
 }
 
 export default memo(function HistoryItem({ item }) {
-  const [timeLeft, setTimeLeft] = useState(item.duration || item.time);
+  const [timeLeft, setTimeLeft] = useState(item.time - item.duration);
 
   const isReset = !!item.reset;
   const isCompleted = !isReset && !!item.endTime;
@@ -63,7 +63,7 @@ export default memo(function HistoryItem({ item }) {
 
   let displayDuration;
   if (isReset) {
-    displayDuration = item.time - timeLeft;
+    displayDuration = item.duration;
   }
   if (isPaused) {
     displayDuration = item.time - item.duration;
@@ -91,7 +91,7 @@ export default memo(function HistoryItem({ item }) {
         emitter.all.delete(`timeItem-${item.label}`);
       };
     },
-    [isPaused, isRunning, item.duration, item.label],
+    [isPaused, isRunning, item.label],
   );
 
   return (

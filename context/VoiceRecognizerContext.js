@@ -73,11 +73,6 @@ export default function VoiceRecognizerProvider({ children }) {
   const dictionaryTypoRef = useRef(null);
   const currentlyViewedItemRef = useRef(null);
   const isFocusedRef = useRef(null);
-  const [timersLiveTime, setTimersLiveTime] = useState({});
-
-  const updateLiveTime = useCallback(function (id, timeLeft) {
-    setTimersLiveTime((prev) => ({ ...prev, [id]: timeLeft }));
-  }, []);
 
   // Settings
   const [screenTimeout, setScreenTimeout] = useState(1000 * 60 * 5);
@@ -103,6 +98,15 @@ export default function VoiceRecognizerProvider({ children }) {
         commandsRef.current = await import("../utils/en_commands");
     }
   }, []);
+
+  useEffect(
+    function () {
+      timersHistory.forEach((el) =>
+        console.log(`${el.label} ${el.duration} context`),
+      );
+    },
+    [timersHistory],
+  );
 
   useEffect(
     function () {
@@ -185,8 +189,6 @@ export default function VoiceRecognizerProvider({ children }) {
       isLocked,
       editableTimers,
       setEditableTimers,
-      setTimersLiveTime,
-      timersLiveTime,
     }),
     [
       recognizedCommand,
@@ -201,7 +203,6 @@ export default function VoiceRecognizerProvider({ children }) {
       recognizedTime,
       isLocked,
       editableTimers,
-      timersLiveTime,
     ],
   );
 
@@ -256,10 +257,8 @@ export default function VoiceRecognizerProvider({ children }) {
       setTimerHeight,
       currentlyViewedItemRef,
       isFocusedRef,
-      setTimersLiveTime,
-      updateLiveTime,
     }),
-    [editableTimers, timerHeight, timers, updateLiveTime, voiceOptions],
+    [editableTimers, timerHeight, timers, voiceOptions],
   );
 
   const settingsData = useMemo(

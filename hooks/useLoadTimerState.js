@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import Time from "../components/Time";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { getItemFromStorage, removeItemFromStorage } from "../utils/helpers";
-import { getSharedObject } from "../utils/sharedVariables";
+import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 
 export function useLoadTimerState({
   setIsActive,
@@ -20,7 +20,7 @@ export function useLoadTimerState({
   setAppState,
 }) {
   let appStateBoxAlt;
-  const { workingTimersRef, setTimersHistory } = useRefsData();
+  const { setTimersHistory } = useRefsData();
 
   const loadTimerState = useCallback(async function loadTimerState() {
     try {
@@ -36,6 +36,7 @@ export function useLoadTimerState({
 
       if (parsedHistory) {
         setTimersHistory(parsedHistory);
+        updateSharedObject({ timers: parsedHistory });
       }
 
       if (savedTime) {
@@ -50,18 +51,9 @@ export function useLoadTimerState({
         const remainingTime = Math.floor(time - elapsedSeconds);
 
         if (remainingTime < 0) {
-          console.log("Time is already less then 0 ⏲️");
           return;
         }
       }
-
-      // If the app crashes then the time will be saved there because it is saved from the very beginning
-      // if (!savedTime) {
-      //   workingTimersRef.current = workingTimersRef.current.filter(
-      //     (workingTimer) => workingTimer !== name
-      //   );
-      //   // console.log("We should clean", name, workingTimersRef.current);
-      // }
 
       if (
         parsedTimerState?.timerState === "running" &&
@@ -79,7 +71,6 @@ export function useLoadTimerState({
         parsedTimerState?.timerState === "paused" &&
         parsedTimerState?.name === name
       ) {
-        console.log("This should be paused right heres");
         setIsActive(true);
         setIsPaused(true);
       }
@@ -119,9 +110,7 @@ export function useLoadTimerState({
 
           pausedTimeRef.current = storageTime.timePaused;
 
-          console.log("Timer was actually paused :)");
-
-          /* await */ removeItemFromStorage(`background-${name}`);
+          removeItemFromStorage(`background-${name}`);
 
           timerIsActiveRef.current = true;
         }
@@ -135,11 +124,6 @@ export function useLoadTimerState({
 
         // Paused here
         if (timerStateRef.current === "running") {
-          // console.log(
-          //   "Timeout cleared",
-          //   getSharedObject()[`timeoutId-${name}`]
-          // );
-
           clearTimeout(getSharedObject()[`timeoutId-${name}`]);
 
           resumeTimerRef.current(storageTime.timeStarted);

@@ -66,7 +66,8 @@ export function usePauseResume({
 
         updateSharedObject({
           timers: getSharedObject().timers.map((timer) => {
-            return timer?.label === updatableTimer?.label && !timer?.endTime
+            return timer?.label.toLowerCase() ===
+              updatableTimer?.label.toLowerCase() && !timer?.endTime
               ? {
                   ...updatableTimer,
                   isPaused: false,
@@ -77,7 +78,8 @@ export function usePauseResume({
         });
         setTimersHistory((cur) =>
           cur.map((timer) => {
-            return timer?.label === updatableTimer?.label && !timer?.endTime
+            return timer?.label.toLowerCase() ===
+              updatableTimer?.label.toLowerCase() && !timer?.endTime
               ? {
                   ...updatableTimer,
                   isPaused: false,
@@ -86,6 +88,8 @@ export function usePauseResume({
               : timer;
           }),
         );
+
+        setItemInStorage("timerHistory", getSharedObject().timers);
 
         setIsPaused(false);
         updateControlButtons(true, false);
@@ -146,7 +150,23 @@ export function usePauseResume({
         console.error("An error occured ⛑️", err);
       }
     },
-    [setTimersHistory, setIsPaused, updateControlButtons, timerStateRef, isPausedRef, pausedTimeRef, name, timerStartedRef, updateTimers, updateLeastTimer, updateTimerLabel, updateTime, time, timeLeftRef, timeLabelRef],
+    [
+      setTimersHistory,
+      setIsPaused,
+      updateControlButtons,
+      timerStateRef,
+      isPausedRef,
+      pausedTimeRef,
+      name,
+      timerStartedRef,
+      updateTimers,
+      updateLeastTimer,
+      updateTimerLabel,
+      updateTime,
+      time,
+      timeLeftRef,
+      timeLabelRef,
+    ],
   );
 
   const pauseTimer = useCallback(
@@ -164,7 +184,8 @@ export function usePauseResume({
 
         updateSharedObject({
           timers: getSharedObject().timers.map((timer) => {
-            return timer?.label === updatableTimer?.label && !timer?.endTime
+            return timer?.label.toLowerCase() ===
+              updatableTimer?.label.toLowerCase() && !timer?.endTime
               ? {
                   ...updatableTimer,
                   isPaused: true,
@@ -173,18 +194,22 @@ export function usePauseResume({
               : timer;
           }),
         });
+        console.log(time, timeLeftRef.current + "🦸");
+
         setTimersHistory((cur) =>
           cur.map((timer) => {
-            return timer?.label === updatableTimer?.label && !timer?.endTime
+            return timer?.label.toLowerCase() ===
+              updatableTimer?.label.toLowerCase() && !timer?.endTime
               ? {
                   ...updatableTimer,
                   isPaused: true,
                   duration: time - timeLeftRef.current,
-
                 }
               : timer;
           }),
         );
+
+        setItemInStorage("timerHistory", getSharedObject().timers);
 
         updateControlButtons(isActive, true);
         isPausedRef.current = true;
@@ -257,7 +282,25 @@ export function usePauseResume({
         console.error("An error occured in pauseTimer function:" + err + "💣");
       }
     },
-    [setIsPaused, setTimersHistory, updateControlButtons, isActive, isPausedRef, pausedTimeRef, timerStateRef, name, timerStartedRef, updateTimers, updateLeastTimer, updateTimerLabel, timeoutRef, updatePersitentNotification, timeLeftRef, time, timeLabelRef],
+    [
+      setIsPaused,
+      setTimersHistory,
+      updateControlButtons,
+      isActive,
+      isPausedRef,
+      pausedTimeRef,
+      timerStateRef,
+      name,
+      timerStartedRef,
+      updateTimers,
+      updateLeastTimer,
+      updateTimerLabel,
+      timeoutRef,
+      updatePersitentNotification,
+      timeLeftRef,
+      time,
+      timeLabelRef,
+    ],
   );
 
   useEffect(

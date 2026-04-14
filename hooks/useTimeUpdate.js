@@ -11,6 +11,7 @@ import {
 import { emitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 
+import { setItemInStorage } from "../utils/helpers";
 import { useTimeUpdateFunctions } from "./useTimeUpdateFunctions";
 
 export function useTimeUpdate({
@@ -65,21 +66,12 @@ export function useTimeUpdate({
       }
 
       const updatableTimer = getSharedObject().timers.find((timer) => {
-        console.log(
-          "fjdkfjdkj",
-          timer?.label.toLowerCase(),
-          name.toLowerCase(),
-          !timer?.endTime,
-        );
-
         return (
           timer?.label.toLowerCase() === name.toLowerCase() && !timer?.endTime
         );
       });
       updateSharedObject({
         timers: getSharedObject().timers.map((timer) => {
-          console.log(timer, "jfdj", updatableTimer);
-
           return timer?.label === updatableTimer?.label && !timer?.endTime
             ? {
                 ...updatableTimer,
@@ -91,6 +83,7 @@ export function useTimeUpdate({
       });
       setTimersHistory((cur) =>
         cur.map((timer) => {
+          console.log(timer.duration + "🈂️" + "timeUpdate");
           return timer?.label === updatableTimer?.label && !timer?.endTime
             ? {
                 ...updatableTimer,
@@ -100,6 +93,8 @@ export function useTimeUpdate({
             : timer;
         }),
       );
+
+      setItemInStorage("timerHistory", getSharedObject().timers);
 
       // console.log("Ended", Date.now(), Date.now() - timerStartedRef.current);
 

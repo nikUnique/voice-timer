@@ -113,6 +113,8 @@ export function useResetTimer({
           );
         });
 
+        const localDuration = time - timeLeftRef.current;
+
         updateSharedObject({
           alertingTimerNames: alertingTimerNamesRef.current,
           index: workingTimersRef.current.length === 0 && 0,
@@ -120,10 +122,11 @@ export function useResetTimer({
             (timerName) => timerName !== name,
           ),
           timers: getSharedObject().timers.map((timer) => {
-            return timer?.label === updatableTimer?.label && !timer.endTime
+            return timer?.label.trim().toLowerCase() ===
+              updatableTimer?.label.trim().toLowerCase() && !timer.endTime
               ? {
                   ...updatableTimer,
-                  duration: timeLeftRef.current,
+                  duration: localDuration,
                   endTime: new Date(),
                   reset: true,
                 }
@@ -133,10 +136,11 @@ export function useResetTimer({
 
         setTimersHistory((cur) =>
           cur.map((timer) => {
-            return timer?.label === updatableTimer?.label && !timer.endTime
+            return timer?.label.trim().toLowerCase() ===
+              updatableTimer?.label.trim().toLowerCase() && !timer.endTime
               ? {
                   ...updatableTimer,
-                  duration: timeLeftRef.current,
+                  duration: localDuration,
                   endTime: new Date(),
                   reset: true,
                 }

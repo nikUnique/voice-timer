@@ -78,7 +78,7 @@ export function useStartTimer({
               id: Math.random() + Date.now(),
               label: name,
               time,
-              duration: timeLeftRef.current,
+              duration: time - timeLeftRef.current,
               startTime: new Date(),
             },
             ...cur,
@@ -107,13 +107,15 @@ export function useStartTimer({
               {
                 id: Math.random() + Date.now(),
                 label: name,
-                duration: timeLeftRef.current,
+                duration: time - timeLeftRef.current,
                 time,
                 startTime: new Date(),
               },
               ...getSharedObject().timers,
             ],
           });
+
+          setItemInStorage("timerHistory", getSharedObject().timers);
 
           if (getSharedObject().timers.length > MAX_HISTORY) {
             console.log("What is our time");
