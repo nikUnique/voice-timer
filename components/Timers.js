@@ -1,9 +1,15 @@
-import * as Brightness from "expo-brightness";
+// import * as Brightness from "expo-brightness";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import BackgroundService from "react-native-background-actions";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AppState, NativeModules, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  AppState,
+  NativeModules,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import {
   useRecognizerData,
@@ -98,9 +104,9 @@ export default function Timers({ navigation }) {
           isValidCommandRef.current = recognizedCommand;
 
           if (activeTimeRef.current) {
-            await Brightness.restoreSystemBrightnessAsync();
+            // await Brightness.restoreSystemBrightnessAsync();
             clearTimeout(activeTimeRef.current);
-            clearTimeout(dimScreenRef.current);
+            // clearTimeout(dimScreenRef.current);
           }
 
           if (!keepScreenOnCommand) {
@@ -123,16 +129,16 @@ export default function Timers({ navigation }) {
             keepScreenOnMinutes * 60 * 1000,
           );
 
-          dimScreenRef.current = setTimeout(async function () {
-            try {
-              await Brightness.setBrightnessAsync(0.1);
-            } catch (error) {
-              console.error(
-                `An error occurred in the dimScreenRef timeout`,
-                error,
-              );
-            }
-          }, 60 * 1000);
+          // dimScreenRef.current = setTimeout(async function () {
+          //   try {
+          //     await Brightness.setBrightnessAsync(0.1);
+          //   } catch (error) {
+          //     console.error(
+          //       `An error occurred in the dimScreenRef timeout`,
+          //       error,
+          //     );
+          //   }
+          // }, 60 * 1000);
         } catch (err) {
           console.error("Error occurred", err);
           throw new Error(err);
@@ -319,12 +325,11 @@ export default function Timers({ navigation }) {
     <View style={styles.container}>
       {
         <TouchableOpacity onPress={restoreBrightness}>
-
-        <TimerList
-          lastCommandRef={lastCommandRef}
-          setIsTaskStopped={setIsTaskStopped}
+          <TimerList
+            lastCommandRef={lastCommandRef}
+            setIsTaskStopped={setIsTaskStopped}
           />
-          </TouchableOpacity>
+        </TouchableOpacity>
       }
 
       <View style={styles.voiceRecognizerContainer}>
