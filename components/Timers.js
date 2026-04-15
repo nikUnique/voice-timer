@@ -3,7 +3,7 @@ import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import BackgroundService from "react-native-background-actions";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AppState, NativeModules, StyleSheet, View } from "react-native";
+import { AppState, NativeModules, StyleSheet, TouchableOpacity, View } from "react-native";
 
 import {
   useRecognizerData,
@@ -318,10 +318,13 @@ export default function Timers({ navigation }) {
   return (
     <View style={styles.container}>
       {
+        <TouchableOpacity onPress={restoreBrightness}>
+
         <TimerList
           lastCommandRef={lastCommandRef}
           setIsTaskStopped={setIsTaskStopped}
-        />
+          />
+          </TouchableOpacity>
       }
 
       <View style={styles.voiceRecognizerContainer}>
