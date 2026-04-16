@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "timerwithcommands.app"
-               BlueprintName = "timerwithcommands"
-               ReferencedContainer = "container:timerwithcommands.xcodeproj">
+               BuildableName = "timer_with_commands.app"
+               BlueprintName = "timer_with_commands"
+               ReferencedContainer = "container:timer_with_commands.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "timerwithcommandsTests.xctest"
-               BlueprintName = "timerwithcommandsTests"
-               ReferencedContainer = "container:timerwithcommands.xcodeproj">
+               BuildableName = "timer_with_commandsTests.xctest"
+               BlueprintName = "timer_with_commandsTests"
+               ReferencedContainer = "container:timer_with_commands.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "timerwithcommands.app"
-            BlueprintName = "timerwithcommands"
-            ReferencedContainer = "container:timerwithcommands.xcodeproj">
+            BuildableName = "timer_with_commands.app"
+            BlueprintName = "timer_with_commands"
+            ReferencedContainer = "container:timer_with_commands.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "timerwithcommands.app"
-            BlueprintName = "timerwithcommands"
-            ReferencedContainer = "container:timerwithcommands.xcodeproj">
+            BuildableName = "timer_with_commands.app"
+            BlueprintName = "timer_with_commands"
+            ReferencedContainer = "container:timer_with_commands.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
