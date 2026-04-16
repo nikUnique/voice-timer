@@ -88,9 +88,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.moonnic.timer_with_commands'
+    namespace 'com.moonnic.timerwithcommands'
     defaultConfig {
-        applicationId 'com.moonnic.timer_with_commands'
+        applicationId 'com.moonnic.timerwithcommands'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -133,6 +133,7 @@ android {
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
     }
+
 
     //   compileOptions {
     //     sourceCompatibility JavaVersion.VERSION_17
