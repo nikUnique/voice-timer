@@ -101,15 +101,6 @@ export default function VoiceRecognizerProvider({ children }) {
 
   useEffect(
     function () {
-      timersHistory.forEach((el) =>
-        console.log(`${el.label} ${el.duration} context`),
-      );
-    },
-    [timersHistory],
-  );
-
-  useEffect(
-    function () {
       getCommands(language);
     },
     [language, getCommands],

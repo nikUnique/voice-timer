@@ -1,4 +1,4 @@
-// import * as Brightness from "expo-brightness";
+import * as Brightness from "expo-brightness";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import BackgroundService from "react-native-background-actions";
 
@@ -14,6 +14,7 @@ import {
 import { useDefaultTimers } from "../hooks/useDefaultTimers";
 import { useServiceAndSpeechControl } from "../hooks/useServiceAndSpeechControl";
 import { useTimer } from "../hooks/useTimer";
+import { DIM_PERCENTAGE, DIM_TIMEOUT } from "../utils/config";
 import { emitter } from "../utils/EventEmitter";
 import { getItemFromStorage, removeItemFromStorage } from "../utils/helpers";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
@@ -57,17 +58,6 @@ export default function Timers({ navigation }) {
   const { playSoundWrapper, stopSoundWrapper, options, backgroundTask } =
     useTimer();
 
-  // useEffect(function () {
-  //   (async () => {
-  //     // const { status } = await Brightness.requestPermissionsAsync();
-  //     // if (status === "granted") {
-  //     //   Brightness.setBrightnessAsync(0.2);
-  //     // }
-  //     Brightness.setBrightnessAsync(0.2);
-  //     // await Brightness.restoreSystemBrightnessAsync();
-  //   })();
-  // }, []);
-
   useEffect(
     function () {
       async function confirmCommand() {
@@ -98,9 +88,9 @@ export default function Timers({ navigation }) {
           isValidCommandRef.current = recognizedCommand;
 
           if (activeTimeRef.current) {
-            // await Brightness.restoreSystemBrightnessAsync();
+            await Brightness.restoreSystemBrightnessAsync();
             clearTimeout(activeTimeRef.current);
-            // clearTimeout(dimScreenRef.current);
+            clearTimeout(dimScreenRef.current);
           }
 
           if (!keepScreenOnCommand) {
@@ -120,19 +110,19 @@ export default function Timers({ navigation }) {
                 );
               }
             },
-            keepScreenOnMinutes * 60 * 1000,
+            keepScreenOnMinutes * DIM_TIMEOUT * 1000,
           );
 
-          // dimScreenRef.current = setTimeout(async function () {
-          //   try {
-          //     await Brightness.setBrightnessAsync(0.1);
-          //   } catch (error) {
-          //     console.error(
-          //       `An error occurred in the dimScreenRef timeout`,
-          //       error,
-          //     );
-          //   }
-          // }, 60 * 1000);
+          dimScreenRef.current = setTimeout(async function () {
+            try {
+              await Brightness.setBrightnessAsync(DIM_PERCENTAGE);
+            } catch (error) {
+              console.error(
+                `An error occurred in the dimScreenRef timeout`,
+                error,
+              );
+            }
+          }, DIM_TIMEOUT * 1000);
         } catch (err) {
           console.error("Error occurred", err);
           throw new Error(err);
@@ -316,30 +306,24 @@ export default function Timers({ navigation }) {
   );
 
   return (
-    <View style={styles.container}>
+    <>
       {
         <TimerList
           lastCommandRef={lastCommandRef}
           setIsTaskStopped={setIsTaskStopped}
         />
       }
-
       <View style={styles.voiceRecognizerContainer}>
         <VoiceCommandsControl
           actionsDefault={allActions}
           timersDefault={allTimers}
         />
       </View>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    height: "100%",
-  },
-
   voiceRecognizerContainer: {
     position: "absolute",
     top: "15%",

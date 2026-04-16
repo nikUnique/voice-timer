@@ -2,12 +2,15 @@ import { Ionicons } from "@expo/vector-icons";
 import notifee, { AuthorizationStatus } from "@notifee/react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { memo, useEffect, useState } from "react";
+import * as Brightness from "expo-brightness";
+
+import { memo, useEffect, useRef, useState } from "react";
 import {
   Platform,
   StatusBar,
   StyleSheet,
   TouchableOpacity,
+  View,
 } from "react-native";
 
 import AgreementAlert from "./components/AgreementAlert";
@@ -23,14 +26,26 @@ import HistoryScreen from "./screens/HistoryScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import TermsScreen from "./screens/TermsScreen";
 import TimersScreen from "./screens/TimersScreen";
+import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
 
 const Stack = createNativeStackNavigator();
 
 export default memo(function App() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
+  const dimScreenRef = useRef(null);
+
+  function restoreBrightness() {
+    Brightness.restoreSystemBrightnessAsync();
+
+    clearTimeout(dimScreenRef.current);
+    dimScreenRef.current = setTimeout(function () {
+      Brightness.setBrightnessAsync(DIM_PERCENTAGE);
+    }, DIM_TIMEOUT * 1000);
+  }
 
   useEffect(function () {
     checkNotificationPermission();
+    restoreBrightness();
   }, []);
 
   async function checkNotificationPermission() {
@@ -52,163 +67,134 @@ export default memo(function App() {
   }
   return (
     <>
-      {
-        <StatusBar
-          style='light'
-          animated
-          translucent
-          backgroundColor={Colors.primary}
-        />
-      }
-      <VoiceRecognizerProvider>
-        {/* {<Button title='Super' onPress={handleToggleModal} />} */}
-        <NavigationContainer>
-          <ContextMenu
-            modalIsVisible={modalIsVisible}
-            onToggleModal={handleToggleModal}
+      <View
+        style={styles.container}
+        onStartShouldSetResponderCapture={() => {
+          restoreBrightness();
+        }}
+      >
+        {
+          <StatusBar
+            style='light'
+            animated
+            translucent
+            backgroundColor={Colors.primary}
           />
-          <AgreementAlert />
+        }
+        <VoiceRecognizerProvider>
+          <NavigationContainer>
+            <ContextMenu
+              modalIsVisible={modalIsVisible}
+              onToggleModal={handleToggleModal}
+            />
+            <AgreementAlert />
 
-          {}
-
-          <Stack.Navigator
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: Colors.primary,
-                // backgroundColor: "green",
-                // height: 150,
-              },
-              contentStyle: {
-                backgroundColor: Colors.primary,
-              },
-              headerTitleStyle: {
-                color: Colors.primaryTint90,
-              },
-              headerTintColor: Colors.primaryTint90,
-              animation: "fade",
-            }}
-          >
-            <Stack.Screen
-              name='TimersScreen'
-              component={TimersScreen}
-              options={{
-                title: "Timer",
-                headerRight: () => {
-                  return (
-                    // <IconButton
-                    //   icon='ellipsis-vertical'
-                    //   color={Colors.primaryTint90}
-                    //   size={24}
-                    //   onPress={handleToggleModal}
-                    // />
-
-                    <TouchableOpacity
-                      onPressOut={handleToggleModal}
-                      style={
-                        (({ pressed }) => pressed && styles.pressed,
-                        styles.pressable)
-                      }
-                    >
-                      {/* <View> */}
-                      <Ionicons
-                        name='ellipsis-vertical'
-                        color={Colors.primaryTint90}
-                        size={24}
-                      />
-                      {/* </View> */}
-                    </TouchableOpacity>
-                  );
+            <Stack.Navigator
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: Colors.primary,
                 },
+                contentStyle: {
+                  backgroundColor: Colors.primary,
+                },
+                headerTitleStyle: {
+                  color: Colors.primaryTint90,
+                },
+                headerTintColor: Colors.primaryTint90,
+                animation: "fade",
               }}
-            />
-            <Stack.Screen
-              name='CreateTimerScreen'
-              component={CreateTimerScreen}
-              options={{
-                title: "Create new timer",
-              }}
-            />
-            <Stack.Screen
-              name='ChangeTimerNameScreen'
-              component={TimerNameControl}
-              options={{
-                // title: "Create new timer",
-                // presentation: "modal",
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name='CommandsScreen'
-              component={CommandsScreen}
-              options={{
-                title: "Commands",
-              }}
-            />
-            <Stack.Screen
-              name='SettingsScreen'
-              component={SettingsScreen}
-              options={{
-                title: "Settings",
-              }}
-            />
-            <Stack.Screen
-              name='AboutScreen'
-              component={AboutScreen}
-              options={{
-                title: "About",
-              }}
-            />
-            <Stack.Screen
-              name='TermsScreen'
-              component={TermsScreen}
-              options={{
-                title: "User Agreement",
-              }}
-            />
-            <Stack.Screen
-              name='HistoryScreen'
-              component={HistoryScreen}
-              options={{
-                title: "History",
-              }}
-            />
-            <Stack.Screen
-              name='ModalScreen'
-              component={AlarmOverlay}
-              options={{
-                presentation: "fullScreenModal",
-                headerShown: false,
-              }}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </VoiceRecognizerProvider>
+            >
+              <Stack.Screen
+                name='TimersScreen'
+                component={TimersScreen}
+                options={{
+                  title: "Timer",
+                  headerRight: () => {
+                    return (
+                      <TouchableOpacity
+                        onPressOut={handleToggleModal}
+                        style={
+                          (({ pressed }) => pressed && styles.pressed,
+                          styles.pressable)
+                        }
+                      >
+                        <Ionicons
+                          name='ellipsis-vertical'
+                          color={Colors.primaryTint90}
+                          size={24}
+                        />
+                      </TouchableOpacity>
+                    );
+                  },
+                }}
+              />
+              <Stack.Screen
+                name='CreateTimerScreen'
+                component={CreateTimerScreen}
+                options={{
+                  title: "Create new timer",
+                }}
+              />
+              <Stack.Screen
+                name='ChangeTimerNameScreen'
+                component={TimerNameControl}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name='CommandsScreen'
+                component={CommandsScreen}
+                options={{
+                  title: "Commands",
+                }}
+              />
+              <Stack.Screen
+                name='SettingsScreen'
+                component={SettingsScreen}
+                options={{
+                  title: "Settings",
+                }}
+              />
+              <Stack.Screen
+                name='AboutScreen'
+                component={AboutScreen}
+                options={{
+                  title: "About",
+                }}
+              />
+              <Stack.Screen
+                name='TermsScreen'
+                component={TermsScreen}
+                options={{
+                  title: "User Agreement",
+                }}
+              />
+              <Stack.Screen
+                name='HistoryScreen'
+                component={HistoryScreen}
+                options={{
+                  title: "History",
+                }}
+              />
+              <Stack.Screen
+                name='ModalScreen'
+                component={AlarmOverlay}
+                options={{
+                  presentation: "fullScreenModal",
+                  headerShown: false,
+                }}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </VoiceRecognizerProvider>
+      </View>
     </>
   );
 });
 
 const styles = StyleSheet.create({
-  menu: {
-    position: "absolute",
-    top: 80,
-    right: 10,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    width: 150,
-    elevation: 5,
-    padding: 10,
-  },
-  menuItem: {
-    padding: 10,
-    fontSize: 16,
-    // textAlign: "center",
-  },
-
-  wrapper: {
-    zIndex: 1000,
-    // backgroundColor: "rgba(0, 0, 0, 0.5)",
-    position: "absolute",
-    width: "100%",
-    height: "100%",
+  container: {
+    flex: 1,
   },
 });
