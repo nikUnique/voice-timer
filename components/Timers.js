@@ -26,7 +26,7 @@ export default function Timers({ navigation }) {
   const [isTaskStopped, setIsTaskStopped] = useState(false);
 
   const activeTimeRef = useRef(null);
-  const dimScreenRef = useRef(null);
+  const { dimScreenRef } = useSettingsData();
   const lastCommandRef = useRef(null);
 
   const {
@@ -143,6 +143,7 @@ export default function Timers({ navigation }) {
       timers,
       keepScreenOnCommand,
       keepScreenOnMinutes,
+      dimScreenRef,
     ],
   );
 

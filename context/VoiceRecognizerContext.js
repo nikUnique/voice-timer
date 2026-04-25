@@ -87,6 +87,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const [keepScreenOnCommand, setKeepScreenOnCommand] = useState(true);
   const [keepScreenOnMinutes, setKeepScreenOnMinutes] = useState(5);
   const [isVibrating, setIsVibrating] = useState(false);
+  const dimScreenRef = useRef(null);
 
   const { START, CONTINUE, RESET, PAUSE, REPEAT, RESET_FINISHED, DISCO } =
     commandsRef.current ? commandsRef.current : {};
@@ -275,6 +276,7 @@ export default function VoiceRecognizerProvider({ children }) {
       discoSound,
       microGranted,
       setMicroGranted,
+      dimScreenRef,
     }),
     [
       screenTimeout,
