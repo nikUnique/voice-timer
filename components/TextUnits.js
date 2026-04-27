@@ -61,8 +61,4 @@ const styles = StyleSheet.create({
     color: Colors.primaryTint90,
     fontSize: 16,
   },
-
-  bulletPointContainer: {
-    // marginBottom: 8,
-  },
 });

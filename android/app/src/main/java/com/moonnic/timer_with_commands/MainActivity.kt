@@ -49,10 +49,17 @@ class MainActivity : ReactActivity() {
      val isLocked = keyguardManager.isDeviceLocked
     
 
-    if(isLocked) {
-     setShowWhenLocked(true)
-     setTurnScreenOn(true)
+   if (isLocked) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+        setShowWhenLocked(true)
+        setTurnScreenOn(true)
+    } else {
+        window.addFlags(
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+        )
     }
+}
 
      
 

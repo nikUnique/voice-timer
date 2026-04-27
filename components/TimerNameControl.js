@@ -244,6 +244,7 @@ const styles = StyleSheet.create({
   textBox: {
     transform: `translateX(0) translateY(-40%)`,
     position: "absolute",
+    bottom: 24,
   },
 
   errorText: {

@@ -4,6 +4,7 @@ import { Colors } from "../constants/colors";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter } from "../utils/EventEmitter";
 import { formatTime } from "../utils/helpers";
+import { useResponsive } from "../hooks/useResponsive";
 
 export default function Time({
   time,
@@ -15,6 +16,7 @@ export default function Time({
   isActive,
 }) {
   const [timeLeft, setTimeLeft] = useState(time);
+  const { width, breakpoint, t, scale } = useResponsive();
   const fadeAnimationRefCur = useRef(new Animated.Value(1)).current;
 
   const { currentlyViewedItemRef } = useRefsData();
@@ -86,21 +88,20 @@ export default function Time({
 
   return (
     <Animated.View style={{ opacity: fadeAnimationRefCur }}>
-      <Text style={[styles.time, moreThen10Hours && styles.smallerTimeFont]}>
+      <Text
+        style={[
+          {
+            fontSize: t.timeText,
+            fontWeight: "bold",
+            color: Colors.primaryTint90,
+          },
+          moreThen10Hours && {
+            fontSize: t.timeSmallerText,
+          },
+        ]}
+      >
         {formatTime(timeLeft)}
       </Text>
     </Animated.View>
   );
 }
-
-const styles = StyleSheet.create({
-  time: {
-    fontSize: 80,
-    fontWeight: "bold",
-    color: Colors.primaryTint90,
-  },
-
-  smallerTimeFont: {
-    fontSize: 64,
-  },
-});

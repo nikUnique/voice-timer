@@ -158,43 +158,46 @@ function TimerInterface({
       <Text style={styles.paginationLabel}>
         {index + 1 + "/" + timers.length}
       </Text>
-      <Pressable
-        onPress={!isActive ? startChangeNameHandler : () => {}}
-        style={styles.timerLabel}
-      >
-        <Text style={styles.name}>{name}</Text>
 
-        <IconButton
-          icon='create'
-          size={24}
-          color={Colors.primaryTint90}
+      <View style={styles.centerItems}>
+        <Pressable
           onPress={!isActive ? startChangeNameHandler : () => {}}
-          style={isActive && styles.disabled}
-        />
-      </Pressable>
+          style={styles.timerLabel}
+        >
+          <Text style={styles.name}>{name}</Text>
 
-      <Time
-        time={time}
-        activateTimerRef={activateTimerRef}
-        index={index}
-        setIsActive={setIsActive}
-        name={name}
-        startTimer={startTimer}
-        isPaused={isPaused}
-        isActive={isActive}
-      />
-
-      {
-        <View style={(!isPaused || !isActive) && styles.hiddenTimer}>
           <IconButton
-            size={36}
-            icon='refresh-outline'
+            icon='create'
+            size={24}
             color={Colors.primaryTint90}
-            onPress={resetTimerRef.current}
-            style={styles.refreshButton}
+            onPress={!isActive ? startChangeNameHandler : () => {}}
+            style={isActive && styles.disabled}
           />
-        </View>
-      }
+        </Pressable>
+
+        <Time
+          time={time}
+          activateTimerRef={activateTimerRef}
+          index={index}
+          setIsActive={setIsActive}
+          name={name}
+          startTimer={startTimer}
+          isPaused={isPaused}
+          isActive={isActive}
+        />
+
+        {
+          <View style={(!isPaused || !isActive) && styles.hiddenTimer}>
+            <IconButton
+              size={36}
+              icon='refresh-outline'
+              color={Colors.primaryTint90}
+              onPress={resetTimerRef.current}
+              style={styles.refreshButton}
+            />
+          </View>
+        }
+      </View>
       <View>
         {!isActive && timeLeftRef.current <= 0 && (
           <IconButton
@@ -224,6 +227,13 @@ const styles = StyleSheet.create({
     zIndex: -1,
   },
 
+  centerItems: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    marginBottom: 48,
+  },
+
   hiddenTimer: {
     opacity: 0,
     pointerEvents: "none",
@@ -237,8 +247,6 @@ const styles = StyleSheet.create({
   },
 
   timerLabel: {
-    position: "absolute",
-    bottom: "67%",
     textAlign: "center",
     alignItems: "center",
     flexDirection: "row",
@@ -255,16 +263,6 @@ const styles = StyleSheet.create({
     borderRadius: "50%",
     padding: 24,
     backgroundColor: Colors.whiteAlpha20,
-  },
-
-  resetButton: {
-    borderRadius: "50%",
-    padding: 24,
-    backgroundColor: Colors.whiteAlpha20,
-    position: "absolute",
-    bottom: "-50%",
-    left: "50%",
-    transform: "translate(-50%, 0)",
   },
 
   resetHiddenButton: {

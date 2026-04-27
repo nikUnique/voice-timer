@@ -20,6 +20,7 @@ import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import MicStatus from "./MicStatus";
 import TimerInterface from "./TimerInterface";
 import TimerInterfaceButtons from "./TimerInterfaceButtons";
+import { FlashList } from "@shopify/flash-list";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -314,13 +315,17 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
   );
 
   useEffect(function () {
+    let isMounted = true;
     async function load() {
       const minHeight = await getItemFromStorage("calculatedTimerHeight");
-      if (minHeight) {
+      if (minHeight && isMounted) {
         setContainerHeight(minHeight);
       }
     }
     load();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   async function onLayoutHandler(e) {
@@ -381,7 +386,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       >
         {<MicStatus />}
 
-        {timers?.length > 0 && (
+        {sortedTimers?.length > 0 && (
           <View
             style={[
               styles.timerList,
@@ -391,42 +396,48 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
             ref={flatListViewRef}
             onLayout={onLayoutHandler}
           >
-            {
-              <FlatList
-                contentContainerStyle={[{ paddingTop: 0, flexGrow: 1 }]}
-                data={sortedTimers}
-                extraData={sortedTimers}
-                renderItem={renderTimer}
-                keyExtractor={(item) => item?.id}
-                pagingEnabled={true}
-                snapToAlignment='start'
-                keyboardShouldPersistTaps='handled'
-                decelerationRate='fast'
-                showsVerticalScrollIndicator={true}
-                initialNumToRender={30}
-                onScroll={(e) => {
-                  const totalHeight = e.nativeEvent.layoutMeasurement.height;
-                  const yPosition = e.nativeEvent.contentOffset.y;
+            <FlatList
+              contentContainerStyle={{ paddingTop: 0 }}
+              data={sortedTimers}
+              extraData={sortedTimers}
+              renderItem={renderTimer}
+              keyExtractor={(item) => item?.id}
+              pagingEnabled={true}
+              removeClippedSubviews={false}
+              // snapToAlignment='start'
+              keyboardShouldPersistTaps='handled'
+              decelerationRate='fast'
+              estimatedItemSize={containerHeight}
+              showsVerticalScrollIndicator={true}
+              initialNumToRender={30}
+              onScroll={(e) => {
+                const totalHeight = e.nativeEvent.layoutMeasurement.height;
+                const yPosition = e.nativeEvent.contentOffset.y;
 
-                  const newIndex = Math.round(yPosition / totalHeight);
+                const newIndex = Math.round(yPosition / totalHeight);
 
-                  emitter.emit(`timerSelected-${newIndex}`);
-                  if (newIndex !== currentIndex) {
-                    setCurrentIndex(newIndex);
-                  }
-                }}
-                ref={flatListRef}
-                getItemLayout={(data, index) => ({
-                  length: containerHeight,
-                  offset: containerHeight * index,
-                  index,
-                })}
-                viewabilityConfig={{
-                  itemVisiblePercentThreshold: 30,
-                }}
-              />
-            }
-            <TimerInterfaceButtons onDelete={handleDelete} />
+                emitter.emit(`timerSelected-${newIndex}`);
+                if (newIndex !== currentIndex) {
+                  setCurrentIndex(newIndex);
+                }
+              }}
+              ref={flatListRef}
+              // getItemLayout={(data, index) => ({
+              //   length: containerHeight,
+              //   offset: containerHeight * index,
+              //   index,
+              // })}
+              overrideItemLayout={(layout) => {
+                layout.size = containerHeight;
+              }}
+              viewabilityConfig={{
+                itemVisiblePercentThreshold: 30,
+              }}
+            />
+
+            {sortedTimers?.length > 0 && (
+              <TimerInterfaceButtons onDelete={handleDelete} />
+            )}
           </View>
         )}
       </View>

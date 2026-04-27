@@ -1,10 +1,9 @@
-import { Ionicons } from "@expo/vector-icons";
-import notifee, { AuthorizationStatus } from "@notifee/react-native";
-import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as Brightness from "expo-brightness";
+import notifee from "@notifee/react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-import { memo, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import {
   Platform,
   StatusBar,
@@ -13,14 +12,16 @@ import {
   View,
 } from "react-native";
 
+import VoiceRecognizerProvider, {
+  useSettingsData,
+} from "./context/VoiceRecognizerContext";
+import { NavigationContainer } from "@react-navigation/native";
+import { AuthorizationStatus } from "@notifee/react-native";
+import { Colors } from "./constants/colors";
 import AgreementAlert from "./components/AgreementAlert";
 import AlarmOverlay from "./components/AlarmOverlay";
 import ContextMenu from "./components/ContextMenu";
 import TimerNameControl from "./components/TimerNameControl";
-import { Colors } from "./constants/colors";
-import VoiceRecognizerProvider, {
-  useSettingsData,
-} from "./context/VoiceRecognizerContext";
 import { useAppState } from "./hooks/useAppState";
 import AboutScreen from "./screens/AboutScreen";
 import CommandsScreen from "./screens/CommandsScreen";
@@ -30,29 +31,46 @@ import SettingsScreen from "./screens/SettingsScreen";
 import TermsScreen from "./screens/TermsScreen";
 import TimersScreen from "./screens/TimersScreen";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const Stack = createNativeStackNavigator();
 
 function AppWithContext() {
+  // return (
+  //   <View
+  //     style={{
+  //       alignItems: "center",
+  //       justifyContent: "center",
+  //       display: "flex",
+  //       height: "100%",
+  //     }}
+  //   >
+  //     <Text style={{ fontSize: 20 }}>Hello, Android 7</Text>
+  //   </View>
+  // );
+
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const dimScreenRef = useSettingsData();
   const { appState } = useAppState();
 
-  function restoreBrightness() {
-    Brightness.restoreSystemBrightnessAsync();
+  const restoreBrightness = useCallback(
+    function () {
+      Brightness.restoreSystemBrightnessAsync();
 
-    clearTimeout(dimScreenRef.current);
-    dimScreenRef.current = setTimeout(function () {
-      Brightness.setBrightnessAsync(DIM_PERCENTAGE);
-    }, DIM_TIMEOUT * 1000);
-  }
+      clearTimeout(dimScreenRef.current);
+      dimScreenRef.current = setTimeout(function () {
+        Brightness.setBrightnessAsync(DIM_PERCENTAGE);
+      }, DIM_TIMEOUT * 1000);
+    },
+    [dimScreenRef],
+  );
 
   useEffect(
     function () {
       checkNotificationPermission();
       restoreBrightness();
     },
-    [appState],
+    [appState, restoreBrightness],
   );
 
   async function checkNotificationPermission() {
@@ -73,7 +91,7 @@ function AppWithContext() {
     setModalIsVisible(!modalIsVisible);
   }
   return (
-    <View
+    <GestureHandlerRootView
       style={styles.container}
       onStartShouldSetResponderCapture={() => {
         restoreBrightness();
@@ -87,6 +105,7 @@ function AppWithContext() {
           backgroundColor={Colors.primary}
         />
       }
+
       <NavigationContainer>
         <ContextMenu
           modalIsVisible={modalIsVisible}
@@ -109,44 +128,50 @@ function AppWithContext() {
             animation: "fade",
           }}
         >
-          <Stack.Screen
-            name='TimersScreen'
-            component={TimersScreen}
-            options={{
-              title: "Timer",
-              headerRight: () => {
-                return (
-                  <TouchableOpacity
-                    onPressOut={handleToggleModal}
-                    style={
-                      (({ pressed }) => pressed && styles.pressed,
-                      styles.pressable)
-                    }
-                  >
-                    <Ionicons
-                      name='ellipsis-vertical'
-                      color={Colors.primaryTint90}
-                      size={24}
-                    />
-                  </TouchableOpacity>
-                );
-              },
-            }}
-          />
-          <Stack.Screen
-            name='CreateTimerScreen'
-            component={CreateTimerScreen}
-            options={{
-              title: "Create new timer",
-            }}
-          />
-          <Stack.Screen
-            name='ChangeTimerNameScreen'
-            component={TimerNameControl}
-            options={{
-              headerShown: false,
-            }}
-          />
+          {
+            <Stack.Screen
+              name='TimersScreen'
+              component={TimersScreen}
+              options={{
+                title: "Timer",
+                headerRight: () => {
+                  return (
+                    <TouchableOpacity
+                      onPressOut={handleToggleModal}
+                      style={
+                        (({ pressed }) => pressed && styles.pressed,
+                        styles.pressable)
+                      }
+                    >
+                      <Ionicons
+                        name='ellipsis-vertical'
+                        color={Colors.primaryTint90}
+                        size={24}
+                      />
+                    </TouchableOpacity>
+                  );
+                },
+              }}
+            />
+          }
+          {
+            <Stack.Screen
+              name='CreateTimerScreen'
+              component={CreateTimerScreen}
+              options={{
+                title: "Create new timer",
+              }}
+            />
+          }
+          {
+            <Stack.Screen
+              name='ChangeTimerNameScreen'
+              component={TimerNameControl}
+              options={{
+                headerShown: false,
+              }}
+            />
+          }
           <Stack.Screen
             name='CommandsScreen'
             component={CommandsScreen}
@@ -182,17 +207,19 @@ function AppWithContext() {
               title: "History",
             }}
           />
-          <Stack.Screen
-            name='ModalScreen'
-            component={AlarmOverlay}
-            options={{
-              presentation: "fullScreenModal",
-              headerShown: false,
-            }}
-          />
+          {
+            <Stack.Screen
+              name='ModalScreen'
+              component={AlarmOverlay}
+              options={{
+                presentation: "fullScreenModal",
+                headerShown: false,
+              }}
+            />
+          }
         </Stack.Navigator>
       </NavigationContainer>
-    </View>
+    </GestureHandlerRootView>
   );
 }
 

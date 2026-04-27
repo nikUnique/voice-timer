@@ -5,7 +5,6 @@ import android.content.res.Configuration
 
 import com.moonnic.timer_with_commands.NativeUtilsPackage
 import com.rnfs.RNFSPackage
-import com.moonnic.timer_with_commands.SpellCheckerPackage
 
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication

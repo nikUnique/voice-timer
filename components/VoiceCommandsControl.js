@@ -16,6 +16,7 @@ import {
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
 import { useIsLocked } from "../hooks/useIsLocked";
+import { useResponsive } from "../hooks/useResponsive";
 
 export default memo(function VoiceCommandsControl({ setCommand }) {
   const [isReady, setIsReady] = useState(false);
@@ -27,6 +28,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
 
   const fadeAnimationRefCur = useRef(new Animated.Value(0)).current;
 
+  const { t } = useResponsive();
   const {
     recognizedCommand,
     setRecognizedCommand,
@@ -230,7 +232,16 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
 
   return (
     <Animated.View style={{ opacity: fadeAnimationRefCur }}>
-      <Text style={styles.improvedText}>{result}</Text>
+      <Text
+        style={{
+          marginTop: 24,
+          color: Colors.primaryTint90,
+          fontWeight: "bold",
+          fontSize: t.speechResText,
+        }}
+      >
+        {result}
+      </Text>
     </Animated.View>
   );
 });
@@ -256,9 +267,9 @@ const styles = StyleSheet.create({
   resultText: {
     backgroundColor: "orange",
   },
-  improvedText: {
-    color: Colors.primaryTint90,
-    fontWeight: "bold",
-    fontSize: 24,
-  },
+  // improvedText: {
+  //   color: Colors.primaryTint90,
+  //   fontWeight: "bold",
+  //   fontSize: 24,
+  // },
 });

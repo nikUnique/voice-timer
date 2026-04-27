@@ -5,6 +5,7 @@ import {
   FlatList,
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -20,6 +21,7 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { removeItemFromStorage } from "../utils/helpers";
 import { updateSharedObject } from "../utils/sharedVariables";
+import { FlashList } from "@shopify/flash-list";
 
 export default function HistoryScreen() {
   const { timersHistory } = useRecognizerData();
@@ -33,18 +35,17 @@ export default function HistoryScreen() {
     removeItemFromStorage("timerHistory");
   }
 
-  const renderItem = ({ item }) => <HistoryItem item={item} />;
-
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <View style={styles.container}>
         <FlatList
           data={timersHistory ?? []}
+          removeClippedSubviews={false}
           keyExtractor={(item) => item.id}
-          renderItem={renderItem}
+          renderItem={({ item }) => <HistoryItem item={item} />}
           ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
           ListEmptyComponent={<Text style={styles.empty}>No sessions yet</Text>}
-          style={{ width: "100%" }}
+          estimatedItemSize={60}
           contentContainerStyle={{ paddingBottom: 40 }}
         />
         {timersHistory?.length > 0 && (
@@ -100,7 +101,7 @@ export default function HistoryScreen() {
           </Pressable>
         </Pressable>
       </Modal>
-    </GestureHandlerRootView>
+    </View>
   );
 }
 

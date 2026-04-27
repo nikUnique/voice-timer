@@ -14,34 +14,41 @@ import android.provider.Settings
 import android.net.Uri;
 import android.app.AlarmManager;
 import android.os.DeadObjectException;
+import android.view.WindowManager;
+
 
 
 
 
 class NativeUtilsModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+
    override fun getName(): String {
     return "NativeUtilsModule"
    }
 
-   @ReactMethod
-   fun getCurrentActivityName(promise: Promise) {
+ @ReactMethod
+fun getCurrentActivityName(promise: Promise) {
     val activity = currentActivity
-    if(activity !== null && activity  is MainActivity) {
-      promise.resolve("MainActivity")
+    if (activity != null && activity is MainActivity) {
+        promise.resolve("MainActivity")
     } else {
-      promise.resolve("No activity")
+        promise.resolve("No activity")
     }
-   }
+}
 
-      @ReactMethod
-    fun checkExactAlarmPermission(promise: Promise) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val alarmManager = reactContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-           promise.resolve(alarmManager.canScheduleExactAlarms())
-        }
+
+@ReactMethod
+fun checkExactAlarmPermission(promise: Promise) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val alarmManager = reactApplicationContext
+            .getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        promise.resolve(alarmManager.canScheduleExactAlarms())
+    } else {
+        promise.resolve(true)
     }
+}
 
-    @ReactMethod
+  @ReactMethod
     fun requestExactAlarmPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val alarmManager = reactContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -55,20 +62,29 @@ class NativeUtilsModule(private val reactContext: ReactApplicationContext) : Rea
         }
     }
 
-    @ReactMethod
-    fun openNotificationChannel (channelId: String) {
-    val intent = Intent().apply {
-      action = Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS
-      putExtra(Settings.EXTRA_APP_PACKAGE, reactApplicationContext.packageName)
-      putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
-      addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-     }
-
-    reactApplicationContext.startActivity(intent)
-
+@ReactMethod
+fun openNotificationChannel(channelId: String) {
+    val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        Intent().apply {
+            action = Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS
+            putExtra(Settings.EXTRA_APP_PACKAGE, reactApplicationContext.packageName)
+            putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+    } else {
+        // API 24–25: no channel settings screen, fall back to app notification settings
+        Intent().apply {
+            action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+            putExtra("app_package", reactApplicationContext.packageName)
+            putExtra("app_uid", reactApplicationContext.applicationInfo.uid)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
     }
 
-    @ReactMethod
+    reactApplicationContext.startActivity(intent)
+}
+
+   @ReactMethod
     fun permitShowingWhenLocked() {
     val activity = currentActivity
 
@@ -84,20 +100,27 @@ class NativeUtilsModule(private val reactContext: ReactApplicationContext) : Rea
     fun forbidShowingWhenLocked() {
     val activity = currentActivity
 
-    if(activity !== null && activity is MainActivity) {
-    activity?.run {
-    setShowWhenLocked(false)
-    setTurnScreenOn(false)
-     }
+    activity?.runOnUiThread {
+    if(activity !== null && activity is MainActivity && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+    activity.setShowWhenLocked(false)
+    activity.setTurnScreenOn(false)
+    }
+    else if(activity !== null && activity is MainActivity ) {
+      activity.window.clearFlags(
+        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+      )
     }
     }
-
+ }
     @ReactMethod
     fun closeMainActivity() {
     val activity = currentActivity
-    if(activity !== null && activity is MainActivity) {
-      activity?.moveTaskToBack(true)
-    }
+   // ✅ clean version
+  if (activity != null && activity is MainActivity) {
+     activity?.runOnUiThread {
+    activity.moveTaskToBack(true)
+}
+  }
     }
 
     @ReactMethod
@@ -108,18 +131,20 @@ class NativeUtilsModule(private val reactContext: ReactApplicationContext) : Rea
 
     val isLocked = keyguardManager.isDeviceLocked
     if(activity !== null && activity is MainActivity && isLocked) {
+  activity?.runOnUiThread {
     activity.moveTaskToBack(true)
+}
     }
     }
 
 
-    @ReactMethod
-    fun isDeviceLocked(callback: Callback) {
-    val keyguardManager = reactApplicationContext?.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+@ReactMethod
+fun isDeviceLocked(callback: Callback) {
+    val keyguardManager = reactApplicationContext
+        .getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
 
-    val isLocked = keyguardManager.isDeviceLocked
-    callback.invoke(null, isLocked)
-    }
+    callback.invoke(null, keyguardManager.isDeviceLocked)
+}
 
     @ReactMethod
     fun isPhoneLocked(promise: Promise) {

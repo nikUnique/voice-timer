@@ -15,6 +15,7 @@ import {
 import IconButton from "../ui/IconButton";
 import { setItemInStorage } from "../utils/helpers";
 import { updateSharedObject } from "../utils/sharedVariables";
+import { useResponsive } from "../hooks/useResponsive";
 
 function CreateTimer() {
   const { timers, setTimers } = useRecognizerData();
@@ -22,6 +23,7 @@ function CreateTimer() {
     useRefsData();
   const navigation = useNavigation();
   const [inputValue, setInputValue] = useState("------");
+  const { t } = useResponsive();
 
   function handleDelete() {
     if (inputValue[5] !== "-") {
@@ -162,12 +164,31 @@ function CreateTimer() {
     }
   }
 
+  const buttonStyle = {
+    fontWeight: "600",
+    fontSize: t.numberBtnFontSize,
+    color: Colors.primaryTint90,
+    backgroundColor: Colors.whiteAlpha20,
+    width: t.numberBtnDimens,
+    height: t.numberBtnDimens,
+    textAlign: "center",
+    textAlignVertical: "center",
+    borderRadius: 45,
+    marginBottom: 10,
+  };
+
+  const inputValueSt = {
+    color: Colors.primaryTint90,
+    fontSize: t.inputValueFontSize,
+    alignSelf: "center",
+  };
+
   return (
     <>
       {
         <View style={styles.container}>
           <View style={styles.inputValueContainer}>
-            <Text style={styles.inputValue}>
+            <Text style={inputValueSt}>
               {String(improvedInputValue.slice(0, 2)).padStart(2, "0")}
               <Text style={styles.unit}>h</Text>{" "}
               {String(improvedInputValue.slice(2, 4)).padStart(2, "0")}
@@ -180,25 +201,25 @@ function CreateTimer() {
           <View style={styles.keypadContainer}>
             <SimpleKeypad
               onKeyPress={handleKeyPress}
-              textStyle={styles.buttonStyle}
+              textStyle={buttonStyle}
               backspaceIcon={
                 <Ionicons
                   name='backspace'
                   color={Colors.primaryTint90}
                   size={30}
-                  style={styles.buttonStyle}
+                  style={buttonStyle}
                 />
               }
             />
-          </View>
-          <View style={styles.iconContainer}>
-            <IconButton
-              icon='play'
-              color={Colors.primaryTint90}
-              onPress={onCreateTimer}
-              size={30}
-              style={styles.icon}
-            />
+            <View style={styles.iconContainer}>
+              <IconButton
+                icon='play'
+                color={Colors.primaryTint90}
+                onPress={onCreateTimer}
+                size={30}
+                style={styles.icon}
+              />
+            </View>
           </View>
         </View>
       }
@@ -215,11 +236,11 @@ const styles = StyleSheet.create({
   },
 
   keypadContainer: {
-    flex: 3,
+    // flex: 3,
   },
 
   iconContainer: {
-    bottom: 64,
+    marginBottom: 32,
     alignItems: "center",
   },
 
@@ -229,29 +250,29 @@ const styles = StyleSheet.create({
     borderRadius: "50%",
   },
 
-  buttonStyle: {
-    fontWeight: "600",
-    fontSize: 44,
-    color: Colors.primaryTint90,
-    backgroundColor: Colors.whiteAlpha20,
-    width: 85,
-    height: 85,
-    textAlign: "center",
-    textAlignVertical: "center",
-    borderRadius: 45,
-    marginBottom: 10,
-  },
+  // buttonStyle: {
+  //   fontWeight: "600",
+  //   fontSize: 44,
+  //   color: Colors.primaryTint90,
+  //   backgroundColor: Colors.whiteAlpha20,
+  //   width: 85,
+  //   height: 85,
+  //   textAlign: "center",
+  //   textAlignVertical: "center",
+  //   borderRadius: 45,
+  //   marginBottom: 10,
+  // },
 
   inputValueContainer: {
     flex: 1,
     justifyContent: "center",
   },
 
-  inputValue: {
-    color: Colors.primaryTint90,
-    fontSize: 44,
-    alignSelf: "center",
-  },
+  // inputValue: {
+  //   color: Colors.primaryTint90,
+  //   fontSize: 48,
+  //   alignSelf: "center",
+  // },
 
   unit: {
     fontSize: 18,

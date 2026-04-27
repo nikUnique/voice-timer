@@ -1,3 +1,4 @@
+import Tts from "react-native-tts";
 import {
   createContext,
   useCallback,
@@ -107,9 +108,34 @@ export default function VoiceRecognizerProvider({ children }) {
     [language, getCommands],
   );
 
+  function pickBestVoice(voices) {
+    const enUs = voices.filter(
+      (v) => v.language === "en-US" && !v.notInstalled,
+    );
+    // offline first, then by quality desc
+    const sorted = enUs.sort((a, b) => {
+      if (a.networkConnectionRequired !== b.networkConnectionRequired)
+        return a.networkConnectionRequired ? 1 : -1; // offline first
+      return b.quality - a.quality; // higher quality first
+    });
+    return sorted[0] ?? null;
+  }
+  useEffect(() => {
+    Tts.getInitStatus().then(async () => {
+      Tts.setDefaultLanguage("en-US");
+      const available = await Tts.voices();
+      console.log(available);
+
+      const bestVoice = pickBestVoice(available);
+      // console.log(bestVoice.name + "The best voice 📹");
+      // console.log(bestVoice.quality + "Quality");
+
+      await Tts.setDefaultVoice(bestVoice);
+    });
+  }, []);
+
   const voiceOptions = useMemo(
     () => ({
-      voice: "en-us-x-sfg#female_2-local",
       onStart: () => {
         console.log("Started talking...");
         isListeningRef.current = false;

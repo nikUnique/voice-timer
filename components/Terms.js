@@ -78,8 +78,7 @@ export default function Terms() {
   );
 
   useFocusEffect(
-    useCallback
-    (() => {
+    useCallback(() => {
       const onBackPress = () => true;
 
       const subscription = BackHandler.addEventListener(
@@ -364,29 +363,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 8,
     fontSize: 18,
-  },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 12,
-    color: Colors.primaryTint90,
-  },
-
-  paragraph: {
-    color: Colors.primaryTint90,
-    fontSize: 16,
-    marginBottom: 12,
-  },
-
-  label: {
-    color: Colors.primaryTint90,
-    marginBottom: 8,
-    fontSize: 16,
-  },
-
-  bulletPoint: {
-    color: Colors.primaryTint90,
-    fontSize: 16,
   },
 
   content: {
