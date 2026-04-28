@@ -119,7 +119,6 @@ export function useResponsive() {
   console.log(breakpoint + " size");
 
   const t = useMemo(() => TOKENS[breakpoint], [TOKENS, breakpoint]);
-  // Just to commit
   const scale = useMemo(
     () =>
       (xs, sm = xs, md = sm, lg = md) => {
