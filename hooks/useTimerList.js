@@ -3,14 +3,30 @@ import * as SplashScreen from "expo-splash-screen";
 import { updateSharedObject } from "../utils/sharedVariables";
 import { setItemInStorage, sleep } from "../utils/helpers";
 import { useNavigation } from "@react-navigation/native";
+import {
+  useRecognizerData,
+  useRefsData,
+  useSoundData,
+} from "../context/VoiceRecognizerContext";
+import TimerInterface from "../components/TimerInterface";
 
 export function useTimerList({
   timers,
   setTimers,
   setIsReady,
   setRecognizedCommand,
+  flatListRef,
+  REPEAT,
+  lastCommandRef,
+  containerHeight,
+  setIsTaskStopped,
 }) {
   const navigation = useNavigation();
+  const { recognizedCommand, dynamicGrammar, alertingTimerNamesRef } =
+    useRecognizerData();
+  const { activateTimerRef, secretIdentifierRef } = useRefsData();
+  const { soundRef } = useSoundData();
+
   const handleDelete = useCallback(
     function handleDelete(timerName) {
       try {
@@ -55,5 +71,97 @@ export function useTimerList({
   const clearCommand = useCallback(function () {
     setRecognizedCommand(" ");
   }, []);
-  return { handleDelete, handleReadyState, clearCommand };
+
+  activateTimerRef.current = function activateTimer(index) {
+    try {
+      flatListRef?.current?.scrollToIndex({
+        index,
+        animated: true,
+      });
+    } catch (error) {
+      console.error(`An error occurred during automatic scrolling`, error);
+    }
+  };
+
+  function renderTimer({ item, index }) {
+    // If the command is new then the goal is to rerender the corresponding to the command child
+    const nameBasedOnSecret = secretIdentifierRef.current
+      ? recognizedCommand?.split(" ").slice(1, -1)
+      : recognizedCommand?.split(" ").slice(1);
+
+    const numberOfRecognizedCommands = dynamicGrammar.filter((command) => {
+      return (
+        typeof command !== "object" && recognizedCommand?.includes(command)
+      );
+    });
+
+    const areNamesTheSame = nameBasedOnSecret
+      ?.join(" ")
+      ?.toLowerCase()
+      .includes(item.name?.toLowerCase());
+
+    const isRepeatCommand =
+      recognizedCommand?.toLowerCase() ===
+      `${REPEAT} ${secretIdentifierRef.current}`.trim();
+
+    const lastCommandHasTimerName = lastCommandRef.current
+      ?.toLowerCase()
+      .includes(item.name?.toLowerCase());
+
+    let isCommandNew =
+      areNamesTheSame || (isRepeatCommand && lastCommandHasTimerName)
+        ? { recognizedCommand }
+        : undefined;
+
+    if (
+      numberOfRecognizedCommands.length > 1 &&
+      recognizedCommand
+        .toLowerCase()
+        .trim()
+        .includes(item.name.toLowerCase().trim())
+    ) {
+      isCommandNew =
+        item.name.trim().split(" ").length > 1
+          ? { recognizedCommand }
+          : undefined;
+
+      if (
+        item.name.trim().split(" ").length === 1 &&
+        !numberOfRecognizedCommands.filter(
+          (timer) => timer.split(" ").length > 2,
+        ).length
+      ) {
+        const longestCommand = numberOfRecognizedCommands.reduce(
+          (acc, command) => {
+            return acc.length > command.length ? acc : command;
+          },
+          numberOfRecognizedCommands[0],
+        );
+
+        isCommandNew = { recognizedCommand: longestCommand };
+      }
+    }
+
+    // console.log("isCommandNew", isCommandNew, numberOfRecognizedCommands);
+
+    return (
+      <TimerInterface
+        time={item.time}
+        name={item.name}
+        recognizedCommand={isCommandNew}
+        lastCommandRef={lastCommandRef}
+        index={index}
+        timerHeight={containerHeight}
+        activateTimerRef={activateTimerRef}
+        clearCommand={clearCommand}
+        handleReadyState={handleReadyState}
+        soundRef={soundRef}
+        alertingTimerNamesRef={alertingTimerNamesRef}
+        setIsTaskStopped={setIsTaskStopped}
+        onDelete={handleDelete}
+      />
+    );
+  }
+
+  return { handleDelete, handleReadyState, clearCommand, renderTimer };
 }
