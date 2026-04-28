@@ -24,7 +24,7 @@ export default function Time({
   Time[`timeLeft${name}`] = timeLeft;
   Time[`setTimeLeft-${name}`] = setTimeLeft;
 
-  const moreThen10Hours = timeLeft / 3600 >= 100;
+  const moreThenHour = timeLeft / 3600 >= 1;
 
   const fadeInAndOut = useCallback(
     function () {
@@ -95,7 +95,7 @@ export default function Time({
             fontWeight: "bold",
             color: Colors.primaryTint90,
           },
-          moreThen10Hours && {
+          moreThenHour && {
             fontSize: t.timeSmallerText,
           },
         ]}

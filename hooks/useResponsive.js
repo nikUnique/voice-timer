@@ -1,58 +1,116 @@
 import { useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 
-// const DEV_WIDTH_OVERRIDE = __DEV__ ? 359 : null; // change this to test xs/sm/md/lg
-// const DEV_HEIGHT_OVERRIDE = __DEV__ ? 640 : null; // simulate short device
-const TOKENS = {
-  xs: {
-    labelText: 12,
-    timeText: 72,
-    timeSmallerText: 52,
-    titleText: 62,
-    padding: 10,
-    radius: 8,
-    gap: 8,
-  },
-  sm: {
-    timeText: 62,
-    timeSmallerText: 52,
-    speechResText: 20,
-    numberBtnFontSize: 30,
-    numberBtnDimens: 80,
-    inputValueFontSize: 36,
-  },
-  md: {
-    labelText: 15,
-    timeText: 30,
-    titleText: 19,
-    padding: 16,
-    radius: 12,
-    gap: 14,
-  },
-  lg: {
-    labelText: 16,
-    timeText: 30,
-    titleText: 20,
-    padding: 20,
-    radius: 14,
-    gap: 16,
-  },
-};
-
 export function useResponsive() {
-  const { width: rawWidth, height: rawHeight } = useWindowDimensions();
+  const { width: rawWidth } = useWindowDimensions();
   const width = rawWidth;
-  // const height = rawHeight;
-
-  console.log(width + ` is the phone's width`);
-  // console.log(height + ` is the phone's height`);
 
   const breakpoint = useMemo(
-    () => (width < 360 ? "xs" : width < 414 ? "sm" : width < 480 ? "md" : "lg"),
+    () => (width < 360 ? "xs" : width < 410 ? "sm" : width < 480 ? "md" : "lg"),
     [width],
   );
 
-  const t = useMemo(() => TOKENS[breakpoint], [breakpoint]);
+  const sm = breakpoint === "xs";
+
+  const fontSize = {
+    xs: sm ? 11 : 12,
+    sm: sm ? 13 : 14,
+    md: sm ? 15 : 16,
+    lg: sm ? 17 : 18,
+    xl: sm ? 20 : 22,
+    xxl: sm ? 26 : 28,
+    xxxl: sm ? 32 : 36,
+  };
+
+  const TOKENS = useMemo(
+    () => ({
+      xs: {
+        timeText: 98,
+        timeSmallerText: 74,
+        speechResText: 24,
+        numberBtnFontSize: 30,
+        numberBtnDimens: 80,
+        inputValueFontSize: 36,
+        createBtnPadding: 24,
+        playBtnPad: 20,
+        sidesButtonsPad: 16,
+        iconBoxSize: 44,
+
+        display: fontSize.xxxl,
+        title: fontSize.xxl,
+        heading: fontSize.xl,
+        subheading: fontSize.lg,
+        body: fontSize.md,
+        caption: fontSize.sm,
+        label: fontSize.xs,
+      },
+      sm: {
+        timeText: 110,
+        timeSmallerText: 86,
+        speechResText: 30,
+        numberBtnFontSize: 30,
+        numberBtnDimens: 94,
+        inputValueFontSize: 36,
+        createBtnPadding: 32,
+        playBtnPad: 24,
+        sidesButtonsPad: 16,
+
+        iconBoxSize: 44,
+        display: fontSize.xxxl,
+        title: fontSize.xxl,
+        heading: fontSize.xl,
+        subheading: fontSize.lg,
+        body: fontSize.md,
+        caption: fontSize.sm,
+        label: fontSize.xs,
+      },
+      md: {
+        timeText: 134,
+        timeSmallerText: 98,
+        speechResText: 30,
+        numberBtnFontSize: 44,
+        numberBtnDimens: 98,
+        inputValueFontSize: 62,
+        createBtnPadding: 34,
+        playBtnPad: 32,
+        sidesButtonsPad: 24,
+        display: fontSize.xxxl,
+        title: fontSize.xxl,
+        heading: fontSize.xl,
+        subheading: fontSize.lg,
+        body: fontSize.md,
+        caption: fontSize.sm,
+        label: fontSize.xs,
+        iconBoxSize: 44,
+      },
+      lg: {
+        timeText: 134,
+        timeSmallerText: 110,
+        speechResText: 30,
+        numberBtnFontSize: 44,
+        numberBtnDimens: 124,
+        inputValueFontSize: 62,
+        createBtnPadding: 48,
+        playBtnPad: 40,
+        sidesButtonsPad: 28,
+        display: fontSize.xxxl,
+        title: fontSize.xxl,
+        heading: fontSize.xl,
+        subheading: fontSize.lg,
+        body: fontSize.md,
+        caption: fontSize.sm,
+        label: fontSize.xs,
+
+        iconBoxSize: 52,
+      },
+    }),
+    [fontSize.lg, fontSize.md, fontSize.sm, fontSize.xl, fontSize.xs, fontSize.xxl, fontSize.xxxl],
+  );
+
+  console.log(width + ` is the phone's width`);
+  console.log(breakpoint + " size");
+
+  const t = useMemo(() => TOKENS[breakpoint], [TOKENS, breakpoint]);
 
   const scale = useMemo(
     () =>

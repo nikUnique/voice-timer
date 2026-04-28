@@ -6,6 +6,7 @@ import { useRefsData } from "../context/VoiceRecognizerContext";
 import IconButton from "../ui/IconButton";
 import { emitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
+import { useResponsive } from "../hooks/useResponsive";
 
 export default function TimerInterfaceButtons({ onDelete }) {
   const navigation = useNavigation();
@@ -19,6 +20,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
   const startButtonTipTimeoutRef = useRef(null);
 
   const { timers, workingTimersRef } = useRefsData();
+  const { t } = useResponsive();
   const thereAre30Timers = timers.length >= 30;
 
   useEffect(
@@ -55,6 +57,18 @@ export default function TimerInterfaceButtons({ onDelete }) {
       navigation.push("CreateTimerScreen");
   }
 
+  const playButton = {
+    borderRadius: "50%",
+    backgroundColor: Colors.whiteAlpha20,
+    padding: t.playBtnPad,
+  };
+
+  const sideBtn = {
+    borderRadius: "50%",
+    backgroundColor: Colors.whiteAlpha20,
+    padding: t.sidesButtonsPad,
+  };
+
   return (
     <>
       <View style={styles.btnsContainer}>
@@ -75,7 +89,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
                 getSharedObject()?.name || timers[timers.length - 1].name,
               )
             }
-            style={styles.deleteButton}
+            style={sideBtn}
           />
         </View>
 
@@ -111,7 +125,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
             }}
             color={Colors.primaryTint90}
             style={[
-              styles.playButton,
+              playButton,
               workingTimersRef.current.length >= 5 &&
                 !getSharedObject().isActive &&
                 styles.disabledDeleteBtn,
@@ -132,7 +146,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
               color={Colors.primaryTint90}
               onPress={onPress}
               size={36}
-              style={styles.icon}
+              style={sideBtn}
             />
           </View>
         }
@@ -167,11 +181,11 @@ export default function TimerInterfaceButtons({ onDelete }) {
 }
 
 const styles = StyleSheet.create({
-  deleteButton: {
-    borderRadius: "50%",
-    backgroundColor: Colors.whiteAlpha20,
-    padding: 16,
-  },
+  // deleteButton: {
+  //   borderRadius: "50%",
+  //   backgroundColor: Colors.whiteAlpha20,
+  //   padding: 24,
+  // },
 
   disabledDeleteBtn: {
     opacity: 0.5,
@@ -182,11 +196,11 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
 
-  playButton: {
-    borderRadius: "50%",
-    backgroundColor: Colors.whiteAlpha20,
-    padding: 24,
-  },
+  // playButton: {
+  //   borderRadius: "50%",
+  //   backgroundColor: Colors.whiteAlpha20,
+  //   padding: 32,
+  // },
 
   hiddenButton: {
     opacity: 0,
@@ -200,12 +214,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "absolute",
     bottom: 48,
-  },
-
-  icon: {
-    padding: 16,
-    backgroundColor: Colors.whiteAlpha20,
-    borderRadius: "50%",
   },
 
   iconContainer: {

@@ -32,6 +32,7 @@ import TermsScreen from "./screens/TermsScreen";
 import TimersScreen from "./screens/TimersScreen";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useResponsive } from "./hooks/useResponsive";
 
 const Stack = createNativeStackNavigator();
 
@@ -52,6 +53,7 @@ function AppWithContext() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const dimScreenRef = useSettingsData();
   const { appState } = useAppState();
+  const { t } = useResponsive();
 
   const restoreBrightness = useCallback(
     function () {
@@ -123,6 +125,8 @@ function AppWithContext() {
             },
             headerTitleStyle: {
               color: Colors.primaryTint90,
+
+              fontSize: t.title,
             },
             headerTintColor: Colors.primaryTint90,
             animation: "fade",
@@ -134,6 +138,7 @@ function AppWithContext() {
               component={TimersScreen}
               options={{
                 title: "Timer",
+
                 headerRight: () => {
                   return (
                     <TouchableOpacity
@@ -146,7 +151,7 @@ function AppWithContext() {
                       <Ionicons
                         name='ellipsis-vertical'
                         color={Colors.primaryTint90}
-                        size={24}
+                        size={t.heading}
                       />
                     </TouchableOpacity>
                   );

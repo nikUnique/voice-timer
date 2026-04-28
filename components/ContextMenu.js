@@ -3,10 +3,17 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { Colors } from "../constants/colors";
 import { getSharedObject } from "../utils/sharedVariables";
+import { useResponsive } from "../hooks/useResponsive";
 
 export default function ContextMenu({ onToggleModal, modalIsVisible }) {
   const navigation = useNavigation();
+  const { t } = useResponsive();
 
+  const menuItem = {
+    padding: 10,
+    fontSize: t.heading,
+    color: Colors.primaryTint90,
+  };
   return (
     <>
       {modalIsVisible && (
@@ -22,7 +29,7 @@ export default function ContextMenu({ onToggleModal, modalIsVisible }) {
                 onToggleModal();
               }}
             >
-              <Text style={styles.menuItem}>Commands</Text>
+              <Text style={menuItem}>Commands</Text>
             </Pressable>
             <Pressable
               onPress={() => {
@@ -31,7 +38,7 @@ export default function ContextMenu({ onToggleModal, modalIsVisible }) {
                 onToggleModal();
               }}
             >
-              <Text style={styles.menuItem}>Settings</Text>
+              <Text style={menuItem}>Settings</Text>
             </Pressable>
             <Pressable
               onPress={() => {
@@ -40,7 +47,7 @@ export default function ContextMenu({ onToggleModal, modalIsVisible }) {
                 onToggleModal();
               }}
             >
-              <Text style={styles.menuItem}>User Agreement</Text>
+              <Text style={menuItem}>User Agreement</Text>
             </Pressable>
             <Pressable
               onPress={() => {
@@ -49,7 +56,7 @@ export default function ContextMenu({ onToggleModal, modalIsVisible }) {
                 onToggleModal();
               }}
             >
-              <Text style={styles.menuItem}>About</Text>
+              <Text style={menuItem}>About</Text>
             </Pressable>
             <Pressable
               onPress={() => {
@@ -58,7 +65,7 @@ export default function ContextMenu({ onToggleModal, modalIsVisible }) {
                 onToggleModal();
               }}
             >
-              <Text style={styles.menuItem}>History</Text>
+              <Text style={menuItem}>History</Text>
             </Pressable>
           </View>
         </Pressable>
@@ -75,11 +82,6 @@ const styles = StyleSheet.create({
     width: 170,
     elevation: 5,
     padding: 10,
-  },
-  menuItem: {
-    padding: 10,
-    fontSize: 16,
-    color: Colors.primaryTint90,
   },
 
   wrapper: {

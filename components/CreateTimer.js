@@ -173,7 +173,7 @@ function CreateTimer() {
     height: t.numberBtnDimens,
     textAlign: "center",
     textAlignVertical: "center",
-    borderRadius: 45,
+    borderRadius: 1000,
     marginBottom: 10,
   };
 
@@ -181,6 +181,12 @@ function CreateTimer() {
     color: Colors.primaryTint90,
     fontSize: t.inputValueFontSize,
     alignSelf: "center",
+  };
+
+  const icon = {
+    padding: t.createBtnPadding,
+    backgroundColor: Colors.whiteAlpha20,
+    borderRadius: "50%",
   };
 
   return (
@@ -217,7 +223,7 @@ function CreateTimer() {
                 color={Colors.primaryTint90}
                 onPress={onCreateTimer}
                 size={30}
-                style={styles.icon}
+                style={icon}
               />
             </View>
           </View>
@@ -232,6 +238,7 @@ const styles = StyleSheet.create({
     flex: 1,
     zIndex: -1,
     justifyContent: "center",
+    alignItems: "center",
     width: "80%",
   },
 
@@ -244,11 +251,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  icon: {
-    padding: 28,
-    backgroundColor: Colors.whiteAlpha20,
-    borderRadius: "50%",
-  },
+  // icon: {
+  //   padding: 32,
+  //   backgroundColor: Colors.whiteAlpha20,
+  //   borderRadius: "50%",
+  // },
 
   // buttonStyle: {
   //   fontWeight: "600",

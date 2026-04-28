@@ -124,7 +124,7 @@ export default function VoiceRecognizerProvider({ children }) {
     Tts.getInitStatus().then(async () => {
       Tts.setDefaultLanguage("en-US");
       const available = await Tts.voices();
-      console.log(available);
+      // console.log(available);
 
       const bestVoice = pickBestVoice(available);
       // console.log(bestVoice.name + "The best voice 📹");

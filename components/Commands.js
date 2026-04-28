@@ -1,12 +1,64 @@
 import { Ionicons } from "@expo/vector-icons";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../constants/colors";
+import { useResponsive } from "../hooks/useResponsive";
 
 export default function Commands() {
+  const { t } = useResponsive();
+
+  const title = {
+    fontSize: t.title,
+    fontWeight: "600",
+    color: Colors.primaryTint90,
+    marginBottom: 16,
+  };
+  const subtitle = {
+    fontSize: t.heading,
+    color: Colors.primaryTint70,
+    marginBottom: 20,
+  };
+  const badgeText = {
+    fontSize: t.label,
+    fontWeight: "700",
+    color: Colors.primaryTint70,
+    letterSpacing: 0.5,
+  };
+
+  const commandText = {
+    fontSize: t.subheading,
+    fontWeight: "600",
+    color: Colors.primaryTint90,
+    marginBottom: 3,
+  };
+
+  const exampleText = {
+    fontSize: t.body,
+    fontStyle: "italic",
+    color: Colors.primaryTint40,
+    marginBottom: 4,
+  };
+
+  const descriptionText = {
+    fontSize: t.body,
+    color: Colors.grayTint20,
+    lineHeight: 18,
+  };
+
+  const iconBox = {
+    width: t.iconBoxSize,
+    height: t.iconBoxSize,
+    borderRadius: 10,
+    backgroundColor: Colors.primaryShade30,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 2,
+    flexShrink: 0,
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Voice Commands</Text>
-      <Text style={styles.subtitle}>
+      <Text style={title}>Voice Commands</Text>
+      <Text style={subtitle}>
         Use the following voice commands to control the timer hands-free.
       </Text>
       <ScrollView
@@ -19,7 +71,7 @@ export default function Commands() {
               key={index}
               style={styles.commandItem}
             >
-              <View style={styles.iconBox}>
+              <View style={iconBox}>
                 <Ionicons
                   name={icon}
                   size={20}
@@ -28,11 +80,11 @@ export default function Commands() {
               </View>
               <View style={styles.textContainer}>
                 <View style={styles.badgeWrap}>
-                  <Text style={styles.badge}>{badge}</Text>
+                  <Text style={badgeText}>{badge}</Text>
                 </View>
-                <Text style={styles.command}>{command}</Text>
-                {example && <Text style={styles.example}>"{example}"</Text>}
-                <Text style={styles.description}>{description}</Text>
+                <Text style={commandText}>{command}</Text>
+                {example && <Text style={exampleText}>"{example}"</Text>}
+                <Text style={descriptionText}>{description}</Text>
               </View>
             </View>
           ),
@@ -93,20 +145,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    // backgroundColor: Colors.grayShade30,
   },
-  header: {
-    fontSize: 22,
-    fontWeight: "600",
-    color: Colors.primaryTint90,
-    marginBottom: 6,
-  },
-  subtitle: {
-    fontSize: 13,
-    color: Colors.primaryTint70,
-    marginBottom: 20,
-    lineHeight: 19,
-  },
+
   list: {
     flex: 1,
   },
@@ -121,16 +161,16 @@ const styles = StyleSheet.create({
     borderColor: Colors.whiteAlpha10,
     gap: 12,
   },
-  iconBox: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: Colors.primaryShade30,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 2,
-    flexShrink: 0,
-  },
+  // iconBox: {
+  //   width: 36,
+  //   height: 36,
+  //   borderRadius: 10,
+  //   backgroundColor: Colors.primaryShade30,
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   marginTop: 2,
+  //   flexShrink: 0,
+  // },
   textContainer: {
     flex: 1,
   },
@@ -142,27 +182,27 @@ const styles = StyleSheet.create({
     paddingVertical: 1,
     marginBottom: 6,
   },
-  badge: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: Colors.primaryTint70,
-    letterSpacing: 0.5,
-  },
-  command: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: Colors.primaryTint90,
-    marginBottom: 3,
-  },
-  example: {
-    fontSize: 12,
-    fontStyle: "italic",
-    color: Colors.primaryTint40,
-    marginBottom: 4,
-  },
-  description: {
-    fontSize: 12,
-    color: Colors.grayTint20,
-    lineHeight: 18,
-  },
+  // badge: {
+  //   fontSize: 10,
+  //   fontWeight: "700",
+  //   color: Colors.primaryTint70,
+  //   letterSpacing: 0.5,
+  // },
+  // command: {
+  //   fontSize: 18,
+  //   fontWeight: "600",
+  //   color: Colors.primaryTint90,
+  //   marginBottom: 3,
+  // },
+  // example: {
+  //   fontSize: 14,
+  //   fontStyle: "italic",
+  //   color: Colors.primaryTint40,
+  //   marginBottom: 4,
+  // },
+  // description: {
+  //   fontSize: 14,
+  //   color: Colors.grayTint20,
+  //   lineHeight: 18,
+  // },
 });

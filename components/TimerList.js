@@ -341,7 +341,12 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         await setItemInStorage("timerListHeights", [height]);
       }
 
-      if (heightArr?.length < 20) {
+      if (heightArr?.length >= 2) {
+        heightArr = [];
+        heightArr = [height];
+      }
+
+      if (heightArr?.length < 2) {
         await setItemInStorage("timerListHeights", [...heightArr, height]);
       }
 
@@ -350,7 +355,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         return acc;
       }, {});
 
-      const minHeight = Object.entries(countElementObj).reduce(
+      const avgHeight = Object.entries(countElementObj).reduce(
         (acc, [key, value]) => {
           if (+acc[1] < +value) {
             return key;
@@ -360,14 +365,14 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         Object.entries(countElementObj)[0],
       )[0];
 
-      setItemInStorage("calculatedTimerHeight", minHeight);
+      setItemInStorage("calculatedTimerHeight", avgHeight);
 
       if (layoutTimeoutRef.current) {
         clearTimeout(layoutTimeoutRef.current);
       }
 
       updateSharedObject({ timerListHeight: height });
-      setContainerHeight(minHeight);
+      setContainerHeight(avgHeight);
 
       layoutTimeoutRef.current = setTimeout(function () {
         setHasMounted(true);

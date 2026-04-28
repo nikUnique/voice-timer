@@ -19,6 +19,7 @@ import {
   setItemInStorage,
 } from "../utils/helpers";
 import { Colors } from "../constants/colors";
+import { useResponsive } from "../hooks/useResponsive";
 
 export default function Settings() {
   const [showAutoStopOptions, setShowAutoStopOptions] = useState(false);
@@ -52,6 +53,8 @@ export default function Settings() {
     setMicroGranted,
   } = useSettingsData();
 
+  const { t } = useResponsive();
+
   const settings = useMemo(
     () => ({
       alarmVolume,
@@ -70,7 +73,7 @@ export default function Settings() {
       keepScreenOnCommand,
       keepScreenOnMinutes,
       voiceEnabled,
-    ]
+    ],
   );
 
   function updateSettingsInStorage(key, value) {
@@ -95,14 +98,48 @@ export default function Settings() {
     });
   }
 
+  const heading = {
+    fontSize: t.title,
+    fontWeight: "bold",
+    marginBottom: 32,
+    color: Colors.primaryTint90,
+    marginTop: 16,
+  };
+
+  const settingLabel = {
+    color: Colors.primaryTint90,
+    fontSize: t.heading,
+    width: "90%",
+  };
+
+  const notificationText = {
+    color: Colors.primaryTint90,
+    fontSize: t.heading,
+  };
+
+  const optionView = {
+    fontSize: t.heading,
+    padding: 4,
+    margin: 4,
+    marginLeft: 0,
+    backgroundColor: Colors.whiteAlpha20,
+    borderRadius: 8,
+    borderBottomColor: Colors.primaryTint90,
+    borderBottomWidth: 1,
+  };
+
+  const optionText = {
+    color: Colors.primaryTint90,
+    fontSize: t.subheading,
+  };
   return (
     <View style={styles.settingsContainer}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.settingPart}>
-          <Text style={styles.title}>Sound</Text>
+          <Text style={heading}>Sound</Text>
 
           <View style={styles.setting}>
-            <Text style={[styles.settingLabel, styles.setting]}>
+            <Text style={[settingLabel, styles.setting]}>
               Alarm Volume: {Math.round(alarmVolume * 100)}%
             </Text>
 
@@ -124,7 +161,7 @@ export default function Settings() {
         </View>
 
         <View style={styles.settingPart}>
-          <Text style={styles.title}>Timer Behavior</Text>
+          <Text style={heading}>Timer Behavior</Text>
           <View style={styles.setting}>
             <Pressable
               onPress={() => {
@@ -133,7 +170,7 @@ export default function Settings() {
             >
               <Text
                 style={[
-                  styles.settingLabel,
+                  settingLabel,
                   styles.settingBtn,
                   showAutoStopOptions && styles.unfoldedBtn,
                 ]}
@@ -171,24 +208,24 @@ export default function Settings() {
                       setShowAutoStopOptions(false);
                       updateSettingsInStorage(
                         "autoStopAlarmTimeout",
-                        finalTimeout
+                        finalTimeout,
                       );
                     }}
                   >
                     <View
                       style={[
-                        styles.option,
+                        optionView,
                         i === arr.length - 1 && styles.lastOption,
                       ]}
                     >
-                      <Text style={styles.optionText}>{option}</Text>
+                      <Text style={optionText}>{option}</Text>
                     </View>
                   </Pressable>
                 ))}
             </View>
           </View>
           <View style={[styles.switchBox, styles.setting]}>
-            <Text style={styles.settingLabel}>Timer Vibrate</Text>
+            <Text style={settingLabel}>Timer Vibrate</Text>
 
             <Switch
               value={isVibrating}
@@ -205,10 +242,10 @@ export default function Settings() {
         </View>
 
         <View style={styles.settingPart}>
-          <Text style={styles.title}>Voice Control</Text>
+          <Text style={heading}>Voice Control</Text>
 
           <View style={[styles.switchBox, styles.setting]}>
-            <Text style={styles.settingLabel}>Enable Voice Commands</Text>
+            <Text style={settingLabel}>Enable Voice Commands</Text>
 
             <Switch
               value={voiceEnabled}
@@ -216,7 +253,7 @@ export default function Settings() {
                 let localMicroGranted, permission;
                 if (/* !localMicroGranted && */ !microGranted) {
                   permission = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+                    PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
                   );
                   // Required manual ask if never ask again was choosen before
                   if (permission === "never_ask_again") {
@@ -228,12 +265,12 @@ export default function Settings() {
                       [
                         { text: "Cancel", style: "cancel" },
                         { text: "Settings", onPress: openSettings },
-                      ]
+                      ],
                     );
                   }
 
                   localMicroGranted = await PermissionsAndroid.check(
-                    PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+                    PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
                   );
 
                   if (!localMicroGranted && !microGranted) {
@@ -254,7 +291,7 @@ export default function Settings() {
           </View>
 
           <View style={[styles.switchBox, styles.setting]}>
-            <Text style={styles.settingLabel}>Enable Voice Feedback</Text>
+            <Text style={settingLabel}>Enable Voice Feedback</Text>
 
             <Switch
               value={isVoiceFeedbackEnabled}
@@ -271,12 +308,10 @@ export default function Settings() {
         </View>
 
         <View style={styles.settingPart}>
-          <Text style={styles.title}>App Behavior</Text>
+          <Text style={heading}>App Behavior</Text>
 
           <View style={[styles.switchBox, styles.setting]}>
-            <Text style={styles.settingLabel}>
-              Keep Screen On After Voice Command
-            </Text>
+            <Text style={settingLabel}>Keep Screen On After Voice Command</Text>
 
             <Switch
               value={keepScreenOnCommand}
@@ -293,7 +328,7 @@ export default function Settings() {
 
           {keepScreenOnCommand && (
             <View style={styles.setting}>
-              <Text style={[styles.settingLabel, styles.setting]}>
+              <Text style={[settingLabel, styles.setting]}>
                 Keep Screen On For: {keepScreenOnMinutes} minute
                 {keepScreenOnMinutes !== 1 ? "s" : ""}
               </Text>
@@ -319,7 +354,7 @@ export default function Settings() {
         <View
           style={[styles.settingPart, styles.lastSettingPart, styles.setting]}
         >
-          <Text style={styles.title}>Notification Settings</Text>
+          <Text style={heading}>Notification Settings</Text>
 
           <Pressable
             onPress={async () => {
@@ -327,11 +362,11 @@ export default function Settings() {
             }}
           >
             <View style={[styles.settingBtn, styles.setting]}>
-              <Text style={styles.notificationText}>
+              <Text style={notificationText}>
                 Hide Background Service Notification
               </Text>
             </View>
-            <Text style={styles.notificationText}>
+            <Text style={notificationText}>
               Why remove the notification? Because it is not useful at all, but
               it appears when the app is in the background and without the
               user&apos;s permission it cannot be removed. So, in the beginning
@@ -374,22 +409,10 @@ const styles = StyleSheet.create({
     color: Colors.primaryTint90,
   },
 
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 32,
-    color: Colors.primaryTint90,
-    marginTop: 16,
-  },
-
-  settingLabel: {
-    color: Colors.primaryTint90,
-    fontSize: 16,
-  },
-
   settingBtn: {
     backgroundColor: Colors.whiteAlpha20,
     padding: 8,
+    width: "100%",
     borderRadius: 8,
   },
 
@@ -397,29 +420,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
-  notificationText: {
-    color: Colors.primaryTint90,
-    fontSize: 16,
-  },
-
-  option: {
-    fontSize: 16,
-    padding: 8,
-    marging: 8,
-    marginLeft: 0,
-    backgroundColor: Colors.whiteAlpha20,
-    borderRadius: 8,
-    borderBottomColor: Colors.primaryTint90,
-    borderBottomWidth: 1,
-  },
-
   lastOption: {
     borderBottomWidth: 0,
-  },
-
-  optionText: {
-    color: Colors.primaryTint90,
-    fontSize: 16,
   },
 
   switchBox: {

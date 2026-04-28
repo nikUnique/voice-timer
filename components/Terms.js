@@ -17,11 +17,13 @@ import IconButton from "../ui/IconButton";
 import { getItemFromStorage, setItemInStorage } from "../utils/helpers";
 import Section from "./Section";
 import { BulletPoint, Label, Paragraph, Subtitle } from "./TextUnits";
+import { useResponsive } from "../hooks/useResponsive";
 
 export default function Terms() {
   const [isAccepted, setIsAccepted] = useState(false);
   const [isRead, setIsRead] = useState(false);
   const navigation = useNavigation();
+  const { t } = useResponsive();
 
   function handleAccept(hasAccepted) {
     setIsAccepted(!isAccepted);
@@ -90,10 +92,28 @@ export default function Terms() {
     }, []),
   );
 
+  const title = {
+    marginBottom: 24,
+    color: Colors.primaryTint90,
+    fontWeight: "bold",
+    marginTop: 8,
+    fontSize: t.title,
+  };
+
+  const checkboxLabel = {
+    color: Colors.primaryTint90,
+    fontSize: t.subheading,
+  };
+
+  const acceptedText = {
+    color: Colors.primaryTint90,
+    fontSize: t.subheading,
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>
+        <Text style={title}>
           End User License Agreement (EULA) – Voice Timer
         </Text>
 
@@ -325,7 +345,7 @@ export default function Terms() {
               }}
               disabled={isAccepted}
             />
-            <Text style={styles.checkboxLabel}>
+            <Text style={checkboxLabel}>
               I have read and agree to the Terms and Conditions
             </Text>
           </View>
@@ -343,7 +363,7 @@ export default function Terms() {
         }
 
         {isAccepted && (
-          <Text style={styles.acceptedText}>You have accepted the terms.</Text>
+          <Text style={acceptedText}>You have accepted the terms.</Text>
         )}
       </View>
     </ScrollView>
@@ -357,13 +377,6 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 32,
   },
-  title: {
-    marginBottom: 24,
-    color: Colors.primaryTint90,
-    fontWeight: "bold",
-    marginTop: 8,
-    fontSize: 18,
-  },
 
   content: {
     justifyContent: "center",
@@ -372,22 +385,13 @@ const styles = StyleSheet.create({
 
   checkboxContainer: {
     flexDirection: "row",
-    width: "100%",
+    width: "90%",
     alignItems: "center",
     marginLeft: "-1.6%",
     marginBottom: 12,
   },
 
-  checkboxLabel: {
-    color: Colors.primaryTint90,
-    fontSize: 16,
-  },
-
   acceptButton: {
     marginBottom: 16,
-  },
-  acceptedText: {
-    color: Colors.primaryTint90,
-    fontSize: 16,
   },
 });

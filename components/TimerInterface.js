@@ -19,6 +19,7 @@ import IconButton from "../ui/IconButton";
 import { emitter } from "../utils/EventEmitter";
 import { updateSharedObject } from "../utils/sharedVariables";
 import Time from "./Time";
+import { useResponsive } from "../hooks/useResponsive";
 
 function TimerInterface({
   time = 1200,
@@ -111,6 +112,8 @@ function TimerInterface({
     startTimer,
   });
 
+  const { t } = useResponsive();
+
   useEffect(
     function () {
       executeCommand();
@@ -143,6 +146,12 @@ function TimerInterface({
     [controlTimer, index, isActive, isPaused, name, onDelete, startTimer],
   );
 
+  const nameText = {
+    fontWeight: 600,
+    fontSize: t.title,
+    color: Colors.primaryTint90,
+  };
+
   return (
     <View
       style={[
@@ -164,7 +173,7 @@ function TimerInterface({
           onPress={!isActive ? startChangeNameHandler : () => {}}
           style={styles.timerLabel}
         >
-          <Text style={styles.name}>{name}</Text>
+          <Text style={nameText}>{name}</Text>
 
           <IconButton
             icon='create'
@@ -223,7 +232,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: Colors.primaryShade30,
-    padding: 20,
+    // padding: 20,
     zIndex: -1,
   },
 
@@ -248,16 +257,17 @@ const styles = StyleSheet.create({
 
   timerLabel: {
     textAlign: "center",
+    justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
     gap: 8,
   },
 
-  name: {
-    fontWeight: 600,
-    fontSize: 24,
-    color: Colors.primaryTint90,
-  },
+  // name: {
+  //   fontWeight: 600,
+  //   fontSize: t.body,
+  //   color: Colors.primaryTint90,
+  // },
 
   refreshButton: {
     borderRadius: "50%",

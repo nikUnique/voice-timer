@@ -16,6 +16,7 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { useIsLocked } from "../hooks/useIsLocked";
 import { setItemInStorage } from "../utils/helpers";
+import { useResponsive } from "../hooks/useResponsive";
 
 export default function MicStatus() {
   const {
@@ -33,6 +34,7 @@ export default function MicStatus() {
 
   const { isListening } = useRecognizerData();
   const { isPhoneLocked } = useIsLocked();
+  const { t } = useResponsive();
 
   const toggleListeningBackground = voiceEnabled
     ? { backgroundColor: Colors.primaryTint70 }
@@ -92,6 +94,12 @@ export default function MicStatus() {
     });
   }
 
+  const isListeningText = {
+    marginLeft: 8,
+    fontSize: t.heading,
+    color: Colors.grayShade20,
+  };
+
   return (
     <Pressable
       onPress={() => {
@@ -103,10 +111,10 @@ export default function MicStatus() {
         <View style={styles.isListeningStatus}>
           <Ionicons
             name={voiceEnabled && isListening ? "mic" : "mic-outline"}
-            size={24}
+            size={t.title}
             color={Colors.primary}
           />
-          <Text style={styles.isListeningText}>
+          <Text style={isListeningText}>
             {voiceEnabled && isListening && !isPhoneLocked
               ? "Listening..."
               : "Not Listening"}{" "}
@@ -131,13 +139,15 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
 
-  isListeningText: {
-    marginLeft: 8,
-    fontSize: 16,
-    color: Colors.grayShade20,
-  },
+  // isListeningText: {
+  //   marginLeft: 8,
+  //   fontSize: 16,
+  //   color: Colors.grayShade20,
+  // },
 
   isListeningStatus: {
     flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
