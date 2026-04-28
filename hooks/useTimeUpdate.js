@@ -38,8 +38,6 @@ export function useTimeUpdate({
   } = useRefsData();
   // const routes = useNavigationState((state) => state.routes);
 
-  // const navigation = useNavigation();
-
   const { alertSound, autoStopAlarmTimeout, alarmVolume, isVibrating } =
     useSettingsData();
 
