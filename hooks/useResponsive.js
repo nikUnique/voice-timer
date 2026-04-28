@@ -104,14 +104,22 @@ export function useResponsive() {
         iconBoxSize: 52,
       },
     }),
-    [fontSize.lg, fontSize.md, fontSize.sm, fontSize.xl, fontSize.xs, fontSize.xxl, fontSize.xxxl],
+    [
+      fontSize.lg,
+      fontSize.md,
+      fontSize.sm,
+      fontSize.xl,
+      fontSize.xs,
+      fontSize.xxl,
+      fontSize.xxxl,
+    ],
   );
 
   console.log(width + ` is the phone's width`);
   console.log(breakpoint + " size");
 
   const t = useMemo(() => TOKENS[breakpoint], [TOKENS, breakpoint]);
-
+  // Just to commit
   const scale = useMemo(
     () =>
       (xs, sm = xs, md = sm, lg = md) => {
