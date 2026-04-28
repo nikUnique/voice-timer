@@ -25,8 +25,8 @@ export function useResponsive() {
   const TOKENS = useMemo(
     () => ({
       xs: {
-        timeText: 98,
-        timeSmallerText: 74,
+        timeText: 74,
+        timeSmallerText: 44,
         speechResText: 24,
         numberBtnFontSize: 30,
         numberBtnDimens: 80,

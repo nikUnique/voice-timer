@@ -96,7 +96,7 @@ export default function MicStatus() {
 
   const isListeningText = {
     marginLeft: 8,
-    fontSize: t.heading,
+    fontSize: t.subheading,
     color: Colors.grayShade20,
   };
 

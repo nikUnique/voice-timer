@@ -212,7 +212,9 @@ export function useNotification() {
             // }),
 
             autoCancel: false,
-            smallIcon: "ic_launcher_notification",
+            smallIcon: title?.toLowerCase()?.includes("pause")
+              ? "ic_launcher_notification_pause"
+              : "ic_launcher_notification",
 
             ...(actions && { actions }),
 
