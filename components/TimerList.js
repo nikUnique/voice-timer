@@ -20,7 +20,7 @@ import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import MicStatus from "./MicStatus";
 import TimerInterface from "./TimerInterface";
 import TimerInterfaceButtons from "./TimerInterfaceButtons";
-import { FlashList } from "@shopify/flash-list";
+import { useTimerList } from "../hooks/useTimerList";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -61,17 +61,25 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
 
   const { successSound, discoSound } = useSettingsData();
   const { playSoundGeneral, playSpecial } = useSound();
+  const { handleDelete, handleReadyState, clearCommand } = useTimerList({
+    timers,
+    setTimers,
+    setIsReady,
+    setRecognizedCommand,
+  });
 
   const { REPEAT, RESET, RESET_FINISHED, DISCO } = commandsRef?.current
     ? commandsRef.current
     : {};
 
-  useEffect(function () {
-    if (timers?.length === 0) {
-      handleReadyState(true);
-    }
-  }),
-    [];
+  useEffect(
+    function () {
+      if (timers?.length === 0) {
+        handleReadyState(true);
+      }
+    },
+    [handleReadyState, timers?.length],
+  );
 
   useEffect(
     function () {
@@ -88,18 +96,18 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
 
   const sortedTimers = useMemo(() => timers.slice().reverse(), [timers]);
 
-  const handleReadyState = useCallback(async function (isReady = true) {
-    setIsReady(isReady);
-    await sleep(0.25);
-    await SplashScreen.hideAsync();
-  }, []);
+  // const handleReadyState = useCallback(async function (isReady = true) {
+  //   setIsReady(isReady);
+  //   await sleep(0.25);
+  //   await SplashScreen.hideAsync();
+  // }, []);
 
-  const clearCommand = useCallback(
-    function () {
-      setRecognizedCommand(" ");
-    },
-    [setRecognizedCommand],
-  );
+  // const clearCommand = useCallback(
+  //   function () {
+  //     setRecognizedCommand(" ");
+  //   },
+  //   [setRecognizedCommand],
+  // );
 
   activateTimerRef.current = function activateTimer(index) {
     try {
@@ -112,40 +120,40 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     }
   };
 
-  const handleDelete = useCallback(
-    function handleDelete(timerName) {
-      try {
-        const timerToDelete = timers.find(
-          (timer) => timer?.name.toLowerCase() === timerName.toLowerCase(),
-        );
+  // const handleDelete = useCallback(
+  //   function handleDelete(timerName) {
+  //     try {
+  //       const timerToDelete = timers.find(
+  //         (timer) => timer?.name.toLowerCase() === timerName.toLowerCase(),
+  //       );
 
-        let initialIndex = timers.findIndex(
-          (timer) => timer?.name?.toLowerCase() === timerName.toLowerCase(),
-        );
+  //       let initialIndex = timers.findIndex(
+  //         (timer) => timer?.name?.toLowerCase() === timerName.toLowerCase(),
+  //       );
 
-        let timerToDeleteIndex = initialIndex;
+  //       let timerToDeleteIndex = initialIndex;
 
-        const newTimersArray = timers.filter(
-          (timer) => timer?.name !== timerToDelete?.name,
-        );
+  //       const newTimersArray = timers.filter(
+  //         (timer) => timer?.name !== timerToDelete?.name,
+  //       );
 
-        // It will be always less one index than the deletable item was, and in case if the item with index 0 was deleted, the selected item will be undefined because of -1 index, but when that happens the list is automatically scrolled by default to show another item where onScroll callback on the FlatList kicks in and updates the shared object with the name of the currently viewed timer
-        let newSelectedTimer = timers[timerToDeleteIndex - 1];
+  //       // It will be always less one index than the deletable item was, and in case if the item with index 0 was deleted, the selected item will be undefined because of -1 index, but when that happens the list is automatically scrolled by default to show another item where onScroll callback on the FlatList kicks in and updates the shared object with the name of the currently viewed timer
+  //       let newSelectedTimer = timers[timerToDeleteIndex - 1];
 
-        updateSharedObject({ name: newSelectedTimer?.name });
+  //       updateSharedObject({ name: newSelectedTimer?.name });
 
-        setTimers(newTimersArray);
-        setItemInStorage("timers", newTimersArray);
+  //       setTimers(newTimersArray);
+  //       setItemInStorage("timers", newTimersArray);
 
-        if (!newTimersArray?.length) {
-          navigation.replace("CreateTimerScreen");
-        }
-      } catch (error) {
-        console.error(`An error occurred in the handleDelete function`, error);
-      }
-    },
-    [navigation, setTimers, timers],
-  );
+  //       if (!newTimersArray?.length) {
+  //         navigation.replace("CreateTimerScreen");
+  //       }
+  //     } catch (error) {
+  //       console.error(`An error occurred in the handleDelete function`, error);
+  //     }
+  //   },
+  //   [navigation, setTimers, timers],
+  // );
 
   useEffect(
     function () {
@@ -163,15 +171,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           resetTimerEmitter.emit(`${RESET} ${alertingTimer}`),
         );
       }
-
-      // if (
-      //   recognizedCommandRef.current &&
-      //   recognizedCommandRef.current?.toLowerCase() === DISCO
-      // ) {
-      //   playSpecial({
-      //     fileName: discoSound,
-      //   });
-      // }
     },
     [
       DISCO,
@@ -432,9 +431,9 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
               //   offset: containerHeight * index,
               //   index,
               // })}
-              overrideItemLayout={(layout) => {
-                layout.size = containerHeight;
-              }}
+              // overrideItemLayout={(layout) => {
+              //   layout.size = containerHeight;
+              // }}
               viewabilityConfig={{
                 itemVisiblePercentThreshold: 30,
               }}
