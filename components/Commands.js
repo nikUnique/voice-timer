@@ -7,13 +7,13 @@ export default function Commands() {
   const { t } = useResponsive();
 
   const title = {
-    fontSize: t.title,
+    fontSize: t.heading,
     fontWeight: "600",
     color: Colors.primaryTint90,
     marginBottom: 16,
   };
   const subtitle = {
-    fontSize: t.heading,
+    fontSize: t.subheading,
     color: Colors.primaryTint70,
     marginBottom: 20,
   };
@@ -25,28 +25,28 @@ export default function Commands() {
   };
 
   const commandText = {
-    fontSize: t.subheading,
+    fontSize: t.body,
     fontWeight: "600",
     color: Colors.primaryTint90,
     marginBottom: 3,
   };
 
   const exampleText = {
-    fontSize: t.body,
+    fontSize: t.caption,
     fontStyle: "italic",
     color: Colors.primaryTint40,
     marginBottom: 4,
   };
 
   const descriptionText = {
-    fontSize: t.body,
+    fontSize: t.caption,
     color: Colors.grayTint20,
     lineHeight: 18,
   };
 
   const iconBox = {
-    width: t.iconBoxSize,
-    height: t.iconBoxSize,
+    width: 48,
+    height: 48,
     borderRadius: 10,
     backgroundColor: Colors.primaryShade30,
     alignItems: "center",

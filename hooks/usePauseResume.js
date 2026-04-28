@@ -245,9 +245,9 @@ export function usePauseResume({
           pausedTimerNames: [...getSharedObject().pausedTimerNames, name],
         });
 
-        if (getSharedObject().runningTimerNames.length === 0) {
-          BackgroundService.stop();
-        }
+        // if (getSharedObject().runningTimerNames.length === 0) {
+        //   BackgroundService.stop();
+        // }
 
         emitter.all.delete(`updateNotification-${name}`);
         emitter.on(`updateNotification-${name}`, updatePersitentNotification);

@@ -6,7 +6,6 @@ import { useRefsData } from "../context/VoiceRecognizerContext";
 import IconButton from "../ui/IconButton";
 import { emitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
-import { useResponsive } from "../hooks/useResponsive";
 
 export default function TimerInterfaceButtons({ onDelete }) {
   const navigation = useNavigation();
@@ -20,7 +19,6 @@ export default function TimerInterfaceButtons({ onDelete }) {
   const startButtonTipTimeoutRef = useRef(null);
 
   const { timers, workingTimersRef } = useRefsData();
-  const { t } = useResponsive();
   const thereAre30Timers = timers.length >= 30;
 
   useEffect(
@@ -60,13 +58,13 @@ export default function TimerInterfaceButtons({ onDelete }) {
   const playButton = {
     borderRadius: "50%",
     backgroundColor: Colors.whiteAlpha20,
-    padding: t.playBtnPad,
+    padding: 24,
   };
 
   const sideBtn = {
     borderRadius: "50%",
     backgroundColor: Colors.whiteAlpha20,
-    padding: t.sidesButtonsPad,
+    padding: 20,
   };
 
   return (

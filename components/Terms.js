@@ -97,17 +97,17 @@ export default function Terms() {
     color: Colors.primaryTint90,
     fontWeight: "bold",
     marginTop: 8,
-    fontSize: t.title,
+    fontSize: t.heading,
   };
 
   const checkboxLabel = {
     color: Colors.primaryTint90,
-    fontSize: t.subheading,
+    fontSize: t.body,
   };
 
   const acceptedText = {
     color: Colors.primaryTint90,
-    fontSize: t.subheading,
+    fontSize: t.body,
   };
 
   return (

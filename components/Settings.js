@@ -99,7 +99,7 @@ export default function Settings() {
   }
 
   const heading = {
-    fontSize: t.title,
+    fontSize: t.heading,
     fontWeight: "bold",
     marginBottom: 32,
     color: Colors.primaryTint90,
@@ -108,17 +108,17 @@ export default function Settings() {
 
   const settingLabel = {
     color: Colors.primaryTint90,
-    fontSize: t.heading,
+    fontSize: t.subheading,
     width: "90%",
   };
 
   const notificationText = {
     color: Colors.primaryTint90,
-    fontSize: t.heading,
+    fontSize: t.subheading,
   };
 
   const optionView = {
-    fontSize: t.heading,
+    fontSize: t.subheading,
     padding: 4,
     margin: 4,
     marginLeft: 0,
@@ -130,7 +130,7 @@ export default function Settings() {
 
   const optionText = {
     color: Colors.primaryTint90,
-    fontSize: t.subheading,
+    fontSize: t.body,
   };
   return (
     <View style={styles.settingsContainer}>

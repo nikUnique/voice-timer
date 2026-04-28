@@ -53,7 +53,6 @@ function AppWithContext() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const dimScreenRef = useSettingsData();
   const { appState } = useAppState();
-  const { t } = useResponsive();
 
   const restoreBrightness = useCallback(
     function () {
@@ -126,7 +125,7 @@ function AppWithContext() {
             headerTitleStyle: {
               color: Colors.primaryTint90,
 
-              fontSize: t.title,
+              fontSize: 18,
             },
             headerTintColor: Colors.primaryTint90,
             animation: "fade",
@@ -151,7 +150,7 @@ function AppWithContext() {
                       <Ionicons
                         name='ellipsis-vertical'
                         color={Colors.primaryTint90}
-                        size={t.heading}
+                        size={24}
                       />
                     </TouchableOpacity>
                   );

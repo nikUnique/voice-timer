@@ -15,7 +15,6 @@ import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import { useSettings } from "./useSettings";
 import { useSound } from "./useSound";
 
-let isTaskRunning;
 let delay = 900;
 
 export function useTimer() {

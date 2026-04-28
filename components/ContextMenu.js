@@ -11,7 +11,7 @@ export default function ContextMenu({ onToggleModal, modalIsVisible }) {
 
   const menuItem = {
     padding: 10,
-    fontSize: t.heading,
+    fontSize: t.subheading,
     color: Colors.primaryTint90,
   };
   return (

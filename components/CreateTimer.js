@@ -15,7 +15,6 @@ import {
 import IconButton from "../ui/IconButton";
 import { setItemInStorage } from "../utils/helpers";
 import { updateSharedObject } from "../utils/sharedVariables";
-import { useResponsive } from "../hooks/useResponsive";
 
 function CreateTimer() {
   const { timers, setTimers } = useRecognizerData();
@@ -23,7 +22,6 @@ function CreateTimer() {
     useRefsData();
   const navigation = useNavigation();
   const [inputValue, setInputValue] = useState("------");
-  const { t } = useResponsive();
 
   function handleDelete() {
     if (inputValue[5] !== "-") {
@@ -166,11 +164,11 @@ function CreateTimer() {
 
   const buttonStyle = {
     fontWeight: "600",
-    fontSize: t.numberBtnFontSize,
+    fontSize: 30,
     color: Colors.primaryTint90,
     backgroundColor: Colors.whiteAlpha20,
-    width: t.numberBtnDimens,
-    height: t.numberBtnDimens,
+    width: 64,
+    height: 64,
     textAlign: "center",
     textAlignVertical: "center",
     borderRadius: 1000,
@@ -179,12 +177,12 @@ function CreateTimer() {
 
   const inputValueSt = {
     color: Colors.primaryTint90,
-    fontSize: t.inputValueFontSize,
+    fontSize: 36,
     alignSelf: "center",
   };
 
   const icon = {
-    padding: t.createBtnPadding,
+    padding: 24,
     backgroundColor: Colors.whiteAlpha20,
     borderRadius: "50%",
   };
