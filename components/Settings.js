@@ -1,6 +1,6 @@
 import Slider from "@react-native-community/slider";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Alert,
   Linking,
@@ -20,6 +20,8 @@ import {
 } from "../utils/helpers";
 import { Colors } from "../constants/colors";
 import { useResponsive } from "../hooks/useResponsive";
+import Sound from "./Sound";
+import useSettingsFunctions from "../hooks/useSettingsFunctions";
 
 export default function Settings() {
   const [showAutoStopOptions, setShowAutoStopOptions] = useState(false);
@@ -55,32 +57,14 @@ export default function Settings() {
 
   const { t } = useResponsive();
 
-  const settings = useMemo(
-    () => ({
-      alarmVolume,
-      autoStopAlarmTimeout,
-      voiceEnabled,
-      isVoiceFeedbackEnabled,
-      keepScreenOnCommand,
-      keepScreenOnMinutes,
-      isVibrating,
-    }),
-    [
-      alarmVolume,
-      autoStopAlarmTimeout,
-      isVibrating,
-      isVoiceFeedbackEnabled,
-      keepScreenOnCommand,
-      keepScreenOnMinutes,
-      voiceEnabled,
-    ],
-  );
-
-  function updateSettingsInStorage(key, value) {
-    const updatedSettings = { ...settings, [key]: value };
-    setItemInStorage("settings", updatedSettings);
-    console.log("Settings updated 🫴");
-  }
+  // const updateSettingsInStorage = useCallback(
+  //   function (key, value) {
+  //     const updatedSettings = { ...settings, [key]: value };
+  //     setItemInStorage("settings", updatedSettings);
+  //     console.log("Settings updated 🫴");
+  //   },
+  //   [settings],
+  // );
 
   function autoStopTimeoutLabel(secs) {
     if (secs < 60) {
@@ -97,20 +81,6 @@ export default function Settings() {
       Alert.alert("Unable to open settings");
     });
   }
-
-  const heading = {
-    fontSize: t.heading,
-    fontWeight: "bold",
-    marginBottom: 32,
-    color: Colors.primaryTint90,
-    marginTop: 16,
-  };
-
-  const settingLabel = {
-    color: Colors.primaryTint90,
-    fontSize: t.subheading,
-    width: "90%",
-  };
 
   const notificationText = {
     color: Colors.primaryTint90,
@@ -135,7 +105,8 @@ export default function Settings() {
   return (
     <View style={styles.settingsContainer}>
       <ScrollView style={styles.scrollView}>
-        <View style={styles.settingPart}>
+        <Sound />
+        {/* <View style={styles.settingPart}>
           <Text style={heading}>Sound</Text>
 
           <View style={styles.setting}>
@@ -158,8 +129,8 @@ export default function Settings() {
               style={styles.slider}
             />
           </View>
-        </View>
-
+        </View> */}
+        {/* 
         <View style={styles.settingPart}>
           <Text style={heading}>Timer Behavior</Text>
           <View style={styles.setting}>
@@ -239,9 +210,9 @@ export default function Settings() {
               }}
             />
           </View>
-        </View>
+        </View> */}
 
-        <View style={styles.settingPart}>
+        {/* <View style={styles.settingPart}>
           <Text style={heading}>Voice Control</Text>
 
           <View style={[styles.switchBox, styles.setting]}>
@@ -251,7 +222,7 @@ export default function Settings() {
               value={voiceEnabled}
               onValueChange={async (value) => {
                 let localMicroGranted, permission;
-                if (/* !localMicroGranted && */ !microGranted) {
+                if ( !microGranted) {
                   permission = await PermissionsAndroid.request(
                     PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
                   );
@@ -305,9 +276,9 @@ export default function Settings() {
               }}
             />
           </View>
-        </View>
+        </View> */}
 
-        <View style={styles.settingPart}>
+        {/* <View style={styles.settingPart}>
           <Text style={heading}>App Behavior</Text>
 
           <View style={[styles.switchBox, styles.setting]}>
@@ -349,9 +320,9 @@ export default function Settings() {
               />
             </View>
           )}
-        </View>
+        </View> */}
 
-        <View
+        {/* <View
           style={[styles.settingPart, styles.lastSettingPart, styles.setting]}
         >
           <Text style={heading}>Notification Settings</Text>
@@ -373,7 +344,7 @@ export default function Settings() {
               after installing the app there will be 2 notifications by default.
             </Text>
           </Pressable>
-        </View>
+        </View> */}
       </ScrollView>
     </View>
   );
@@ -401,12 +372,6 @@ const styles = StyleSheet.create({
 
   lastSettingPart: {
     borderBottomWidth: 0,
-  },
-
-  slider: {
-    marginLeft: -10,
-    marginRight: -10,
-    color: Colors.primaryTint90,
   },
 
   settingBtn: {

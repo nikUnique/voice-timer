@@ -1,0 +1,48 @@
+import { StyleSheet, Text, View } from "react-native";
+
+import useSettingsStyles from "../hooks/useSettingsStyles";
+import { useSettingsData } from "../context/VoiceRecognizerContext";
+import useSettingsFunctions from "../hooks/useSettingsFunctions";
+import Slider from "@react-native-community/slider";
+import { Colors } from "../constants/colors";
+
+export default function Sound() {
+  const { settingPart, setting, heading, settingLabel } = useSettingsStyles();
+  const { alarmVolume, setAlarmVolume } = useSettingsData();
+  const { updateSettingsInStorage } = useSettingsFunctions();
+
+  return (
+    <View style={settingPart}>
+      <Text style={heading}>Sound</Text>
+
+      <View style={setting}>
+        <Text style={[settingLabel, setting]}>
+          Alarm Volume: {Math.round(alarmVolume * 100)}%
+        </Text>
+
+        <Slider
+          value={alarmVolume}
+          onSlidingComplete={(value) => {
+            setAlarmVolume(Math.round(value * 100) / 100);
+            updateSettingsInStorage("alarmVolume", value);
+          }}
+          step={0.01}
+          minimumValue={0.01}
+          maximumValue={1}
+          minimumTrackTintColor={Colors.primaryTint90}
+          maximumTrackTintColor={Colors.primaryTint90}
+          thumbTintColor={Colors.primaryTint90}
+          style={styles.slider}
+        />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  slider: {
+    marginLeft: -10,
+    marginRight: -10,
+    color: Colors.primaryTint90,
+  },
+});

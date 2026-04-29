@@ -1,7 +1,10 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import * as Brightness from "expo-brightness";
-import notifee from "@notifee/react-native";
 import { Ionicons } from "@expo/vector-icons";
+import notifee from "@notifee/react-native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { NavigationContainer } from "@react-navigation/native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { AuthorizationStatus } from "@notifee/react-native";
+import * as Brightness from "expo-brightness";
 
 import React, { memo, useCallback, useEffect, useState } from "react";
 import {
@@ -9,19 +12,16 @@ import {
   StatusBar,
   StyleSheet,
   TouchableOpacity,
-  View,
 } from "react-native";
 
-import VoiceRecognizerProvider, {
-  useSettingsData,
-} from "./context/VoiceRecognizerContext";
-import { NavigationContainer } from "@react-navigation/native";
-import { AuthorizationStatus } from "@notifee/react-native";
-import { Colors } from "./constants/colors";
 import AgreementAlert from "./components/AgreementAlert";
 import AlarmOverlay from "./components/AlarmOverlay";
 import ContextMenu from "./components/ContextMenu";
 import TimerNameControl from "./components/TimerNameControl";
+import { Colors } from "./constants/colors";
+import VoiceRecognizerProvider, {
+  useSettingsData,
+} from "./context/VoiceRecognizerContext";
 import { useAppState } from "./hooks/useAppState";
 import AboutScreen from "./screens/AboutScreen";
 import CommandsScreen from "./screens/CommandsScreen";
@@ -31,25 +31,10 @@ import SettingsScreen from "./screens/SettingsScreen";
 import TermsScreen from "./screens/TermsScreen";
 import TimersScreen from "./screens/TimersScreen";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useResponsive } from "./hooks/useResponsive";
 
 const Stack = createNativeStackNavigator();
 
 function AppWithContext() {
-  // return (
-  //   <View
-  //     style={{
-  //       alignItems: "center",
-  //       justifyContent: "center",
-  //       display: "flex",
-  //       height: "100%",
-  //     }}
-  //   >
-  //     <Text style={{ fontSize: 20 }}>Hello, Android 7</Text>
-  //   </View>
-  // );
-
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const { dimScreenRef } = useSettingsData();
   const { appState } = useAppState();
