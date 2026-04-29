@@ -1,52 +1,42 @@
-import { useNavigation } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AppState, FlatList, StyleSheet, View } from "react-native";
 
 import {
   useRecognizerData,
   useRefsData,
   useSettingsData,
-  useSoundData,
 } from "../context/VoiceRecognizerContext";
 import { useSound } from "../hooks/useSound";
 import { emitter, resetTimerEmitter } from "../utils/EventEmitter";
-import { getItemFromStorage, setItemInStorage, sleep } from "../utils/helpers";
+import { getItemFromStorage } from "../utils/helpers";
 
 import { Colors } from "../constants/colors";
 import { useSpeak } from "../hooks/useSpeak";
+import { useTimerList } from "../hooks/useTimerList";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import MicStatus from "./MicStatus";
-import TimerInterface from "./TimerInterface";
 import TimerInterfaceButtons from "./TimerInterfaceButtons";
-import { useTimerList } from "../hooks/useTimerList";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
-  const navigation = useNavigation();
   const [isReady, setIsReady] = useState(false);
   const [updateList, setUpdateList] = useState(false);
   const [containerHeight, setContainerHeight] = useState();
-  const [hasMounted, setHasMounted] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const layoutTimeoutRef = useRef(null);
 
   const flatListRef = useRef(null);
   const flatListViewRef = useRef(null);
 
   const {
-    recognizedCommand,
     recognizedTime,
     setRecognizedCommand,
     alertingTimerNamesRef,
     timers,
     setTimers,
-    dynamicGrammar,
   } = useRecognizerData();
-
-  const { soundRef } = useSoundData();
 
   const {
     secretIdentifierRef,
@@ -64,17 +54,19 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
 
   const { successSound, discoSound } = useSettingsData();
   const { playSoundGeneral, playSpecial } = useSound();
-  const { handleDelete, handleReadyState, renderTimer } = useTimerList({
-    timers,
-    setTimers,
-    setIsReady,
-    setRecognizedCommand,
-    flatListRef,
-    REPEAT,
-    lastCommandRef,
-    containerHeight,
-    setIsTaskStopped,
-  });
+  const { handleDelete, handleReadyState, renderTimer, onLayoutHandler } =
+    useTimerList({
+      timers,
+      setTimers,
+      setIsReady,
+      setRecognizedCommand,
+      flatListRef,
+      REPEAT,
+      lastCommandRef,
+      containerHeight,
+      setIsTaskStopped,
+      setContainerHeight,
+    });
 
   const sortedTimers = useMemo(() => timers.slice().reverse(), [timers]);
 
@@ -191,60 +183,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       isMounted = false;
     };
   }, []);
-
-  async function onLayoutHandler(e) {
-    try {
-      if (hasMounted) return;
-
-      const { height } = e.nativeEvent.layout;
-
-      let heightArr = await getItemFromStorage("timerListHeights");
-
-      if (!heightArr) {
-        heightArr = [height];
-        await setItemInStorage("timerListHeights", [height]);
-      }
-
-      if (heightArr?.length >= 2) {
-        heightArr = [];
-        heightArr = [height];
-      }
-
-      if (heightArr?.length < 2) {
-        await setItemInStorage("timerListHeights", [...heightArr, height]);
-      }
-
-      let countElementObj = heightArr.reduce((acc, element) => {
-        acc[element] = (acc[element] || 0) + 1;
-        return acc;
-      }, {});
-
-      const avgHeight = Object.entries(countElementObj).reduce(
-        (acc, [key, value]) => {
-          if (+acc[1] < +value) {
-            return key;
-          }
-          return acc;
-        },
-        Object.entries(countElementObj)[0],
-      )[0];
-
-      setItemInStorage("calculatedTimerHeight", avgHeight);
-
-      if (layoutTimeoutRef.current) {
-        clearTimeout(layoutTimeoutRef.current);
-      }
-
-      updateSharedObject({ timerListHeight: height });
-      setContainerHeight(avgHeight);
-
-      layoutTimeoutRef.current = setTimeout(function () {
-        setHasMounted(true);
-      }, 1000);
-    } catch (error) {
-      console.error("An error occurred in the onLayoutHandler", error);
-    }
-  }
 
   return (
     <>

@@ -51,7 +51,7 @@ function AppWithContext() {
   // );
 
   const [modalIsVisible, setModalIsVisible] = useState(false);
-  const dimScreenRef = useSettingsData();
+  const { dimScreenRef } = useSettingsData();
   const { appState } = useAppState();
 
   const restoreBrightness = useCallback(

@@ -88,6 +88,8 @@ export default function Timers({ navigation }) {
           isValidCommandRef.current = recognizedCommand;
 
           if (activeTimeRef.current) {
+            console.log("Timeout cleared 🎬");
+
             await Brightness.restoreSystemBrightnessAsync();
             clearTimeout(activeTimeRef.current);
             clearTimeout(dimScreenRef.current);

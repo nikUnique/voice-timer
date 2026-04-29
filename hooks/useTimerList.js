@@ -1,7 +1,7 @@
-import { useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import { updateSharedObject } from "../utils/sharedVariables";
-import { setItemInStorage, sleep } from "../utils/helpers";
+import { getItemFromStorage, setItemInStorage, sleep } from "../utils/helpers";
 import { useNavigation } from "@react-navigation/native";
 import {
   useRecognizerData,
@@ -20,8 +20,11 @@ export function useTimerList({
   lastCommandRef,
   containerHeight,
   setIsTaskStopped,
+  setContainerHeight,
 }) {
   const navigation = useNavigation();
+  const [hasMounted, setHasMounted] = useState(false);
+  const layoutTimeoutRef = useRef(null);
   const { recognizedCommand, dynamicGrammar, alertingTimerNamesRef } =
     useRecognizerData();
   const { activateTimerRef, secretIdentifierRef } = useRefsData();
@@ -163,5 +166,65 @@ export function useTimerList({
     );
   }
 
-  return { handleDelete, handleReadyState, clearCommand, renderTimer };
+  async function onLayoutHandler(e) {
+    try {
+      if (hasMounted) return;
+
+      const { height } = e.nativeEvent.layout;
+
+      let heightArr = await getItemFromStorage("timerListHeights");
+
+      if (!heightArr) {
+        heightArr = [height];
+        await setItemInStorage("timerListHeights", [height]);
+      }
+
+      if (heightArr?.length >= 2) {
+        heightArr = [];
+        heightArr = [height];
+      }
+
+      if (heightArr?.length < 2) {
+        await setItemInStorage("timerListHeights", [...heightArr, height]);
+      }
+
+      let countElementObj = heightArr.reduce((acc, element) => {
+        acc[element] = (acc[element] || 0) + 1;
+        return acc;
+      }, {});
+
+      const avgHeight = Object.entries(countElementObj).reduce(
+        (acc, [key, value]) => {
+          if (+acc[1] < +value) {
+            return key;
+          }
+          return acc;
+        },
+        Object.entries(countElementObj)[0],
+      )[0];
+
+      setItemInStorage("calculatedTimerHeight", avgHeight);
+
+      if (layoutTimeoutRef.current) {
+        clearTimeout(layoutTimeoutRef.current);
+      }
+
+      updateSharedObject({ timerListHeight: height });
+      setContainerHeight(avgHeight);
+
+      layoutTimeoutRef.current = setTimeout(function () {
+        setHasMounted(true);
+      }, 1000);
+    } catch (error) {
+      console.error("An error occurred in the onLayoutHandler", error);
+    }
+  }
+
+  return {
+    handleDelete,
+    handleReadyState,
+    clearCommand,
+    renderTimer,
+    onLayoutHandler,
+  };
 }
