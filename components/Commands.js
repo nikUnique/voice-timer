@@ -139,6 +139,13 @@ const commands = [
     icon: "checkmark-done-outline",
     badge: "BULK",
   },
+  {
+    command: "Time",
+    example: "Time",
+    description: "Tells you the exact time.",
+    icon: "time-outline",
+    badge: "TIME",
+  },
 ];
 
 const styles = StyleSheet.create({

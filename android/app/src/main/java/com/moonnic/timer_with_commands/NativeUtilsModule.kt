@@ -84,17 +84,26 @@ fun openNotificationChannel(channelId: String) {
     reactApplicationContext.startActivity(intent)
 }
 
-   @ReactMethod
-    fun permitShowingWhenLocked() {
-    val activity = currentActivity
+  @ReactMethod
+fun permitShowingWhenLocked() {
+  val activity = currentActivity
 
-    if(activity !== null && activity is MainActivity) {
-    activity?.run {
-    setShowWhenLocked(true)
-    setTurnScreenOn(true)
+  if (activity != null && activity is MainActivity) {
+    activity.run {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+        // Android 8.1+
+        setShowWhenLocked(true)
+        setTurnScreenOn(true)
+      } else {
+        // Android 7 and below
+        window.addFlags(
+          WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+          WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+        )
       }
-     }
     }
+  }
+}
 
     @ReactMethod
     fun forbidShowingWhenLocked() {

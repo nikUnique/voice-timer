@@ -40,11 +40,11 @@ function AppWithContext() {
   const { appState } = useAppState();
 
   const restoreBrightness = useCallback(
-    function () {
+    async function () {
       Brightness.restoreSystemBrightnessAsync();
 
       clearTimeout(dimScreenRef.current);
-      dimScreenRef.current = setTimeout(function () {
+      dimScreenRef.current = setTimeout(async function () {
         Brightness.setBrightnessAsync(DIM_PERCENTAGE);
       }, DIM_TIMEOUT * 1000);
     },

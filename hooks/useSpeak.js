@@ -21,7 +21,6 @@ export function useSpeak() {
         if (text.trim()) {
           setIsListening(false);
           isListeningRef.current = false;
-          console.log(speed);
           await Tts.setDefaultRate(speed || 0.5);
           Tts.speak(text, { ...voiceOptions });
         }

@@ -51,6 +51,7 @@ class MainActivity : ReactActivity() {
 
    if (isLocked) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+      System.out.println("Do you see me?")
         setShowWhenLocked(true)
         setTurnScreenOn(true)
     } else {

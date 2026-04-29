@@ -265,9 +265,4 @@ const styles = StyleSheet.create({
   resultText: {
     backgroundColor: "orange",
   },
-  // improvedText: {
-  //   color: Colors.primaryTint90,
-  //   fontWeight: "bold",
-  //   fontSize: 24,
-  // },
 });
