@@ -1,10 +1,10 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
-import useSettingsStyles from "../hooks/useSettingsStyles";
-import { useSettingsData } from "../context/VoiceRecognizerContext";
-import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import Slider from "@react-native-community/slider";
 import { Colors } from "../constants/colors";
+import { useSettingsData } from "../context/VoiceRecognizerContext";
+import useSettingsFunctions from "../hooks/useSettingsFunctions";
+import useSettingsStyles from "../hooks/useSettingsStyles";
 
 export default function Sound() {
   const { settingPart, setting, heading, settingLabel, slider } =

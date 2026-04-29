@@ -1,8 +1,9 @@
 import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { useState } from "react";
+
 import { useSettingsData } from "../context/VoiceRecognizerContext";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import useSettingsStyles from "../hooks/useSettingsStyles";
-import { useState } from "react";
 import { Colors } from "../constants/colors";
 import { useResponsive } from "../hooks/useResponsive";
 
