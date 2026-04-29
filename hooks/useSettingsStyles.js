@@ -1,31 +1,81 @@
+import { useMemo } from "react";
 import { Colors } from "../constants/colors";
 import { useResponsive } from "./useResponsive";
 
 export default function useSettingsStyles() {
   const { t } = useResponsive();
-  const settingPart = {
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.primaryTint70,
-    borderStyle: "dotted",
-    padding: 8,
-  };
-  const setting = {
-    marginBottom: 16,
-  };
+  const settingPart = useMemo(
+    () => ({
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.primaryTint70,
+      borderStyle: "dotted",
+      padding: 8,
+    }),
+    [],
+  );
 
-  const heading = {
-    fontSize: t.heading,
-    fontWeight: "bold",
-    marginBottom: 32,
-    color: Colors.primaryTint90,
-    marginTop: 16,
-  };
+  const setting = useMemo(
+    () => ({
+      marginBottom: 16,
+    }),
+    [],
+  );
 
-  const settingLabel = {
-    color: Colors.primaryTint90,
-    fontSize: t.subheading,
-    width: "90%",
-  };
+  const heading = useMemo(
+    () => ({
+      fontSize: t.heading,
+      fontWeight: "bold",
+      marginBottom: 32,
+      color: Colors.primaryTint90,
+      marginTop: 16,
+    }),
+    [t.heading],
+  );
 
-  return { settingPart, setting, heading, settingLabel };
+  const settingLabel = useMemo(
+    () => ({
+      color: Colors.primaryTint90,
+      fontSize: t.subheading,
+      width: "90%",
+    }),
+    [t.subheading],
+  );
+
+  const switchBox = useMemo(
+    () => ({
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    }),
+    [],
+  );
+
+  const settingBtn = useMemo(
+    () => ({
+      backgroundColor: Colors.whiteAlpha20,
+      padding: 8,
+      width: "100%",
+      borderRadius: 8,
+    }),
+    [],
+  );
+
+  const slider = useMemo(
+    () => ({
+      marginLeft: -10,
+      marginRight: -10,
+      color: Colors.primaryTint90,
+    }),
+    [],
+  );
+
+  return {
+    settingPart,
+    setting,
+    heading,
+    settingLabel,
+    settingBtn,
+    switchBox,
+    slider,
+  };
 }

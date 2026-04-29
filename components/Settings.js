@@ -22,20 +22,11 @@ import { Colors } from "../constants/colors";
 import { useResponsive } from "../hooks/useResponsive";
 import Sound from "./Sound";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
+import TimerBehavior from "./TimerBehavior";
+import VoiceControl from "./VoiceControl";
+import AppBehavior from "./AppBehavior";
 
 export default function Settings() {
-  const [showAutoStopOptions, setShowAutoStopOptions] = useState(false);
-
-  const autoStopOptions = [
-    "15 seconds",
-    "30 seconds",
-    "1 minute",
-    "3 minutes",
-    "5 minutes",
-    "10 minutes",
-    "Never",
-  ];
-
   const {
     alarmVolume,
     setAlarmVolume,
@@ -66,46 +57,35 @@ export default function Settings() {
   //   [settings],
   // );
 
-  function autoStopTimeoutLabel(secs) {
-    if (secs < 60) {
-      return `${secs} seconds`;
-    }
+  // function autoStopTimeoutLabel(secs) {
+  //   if (secs < 60) {
+  //     return `${secs} seconds`;
+  //   }
 
-    if (secs >= 60) {
-      return `${secs / 60} minutes`;
-    }
-  }
+  //   if (secs >= 60) {
+  //     return `${secs / 60} minutes`;
+  //   }
+  // }
 
-  function openSettings() {
-    Linking.openSettings().catch(() => {
-      Alert.alert("Unable to open settings");
-    });
-  }
+  // function openSettings() {
+  //   Linking.openSettings().catch(() => {
+  //     Alert.alert("Unable to open settings");
+  //   });
+  // }
 
   const notificationText = {
     color: Colors.primaryTint90,
     fontSize: t.subheading,
   };
 
-  const optionView = {
-    fontSize: t.subheading,
-    padding: 4,
-    margin: 4,
-    marginLeft: 0,
-    backgroundColor: Colors.whiteAlpha20,
-    borderRadius: 8,
-    borderBottomColor: Colors.primaryTint90,
-    borderBottomWidth: 1,
-  };
-
-  const optionText = {
-    color: Colors.primaryTint90,
-    fontSize: t.body,
-  };
   return (
     <View style={styles.settingsContainer}>
       <ScrollView style={styles.scrollView}>
         <Sound />
+        <TimerBehavior />
+        <VoiceControl />
+        <AppBehavior />
+
         {/* <View style={styles.settingPart}>
           <Text style={heading}>Sound</Text>
 
@@ -372,26 +352,5 @@ const styles = StyleSheet.create({
 
   lastSettingPart: {
     borderBottomWidth: 0,
-  },
-
-  settingBtn: {
-    backgroundColor: Colors.whiteAlpha20,
-    padding: 8,
-    width: "100%",
-    borderRadius: 8,
-  },
-
-  unfoldedBtn: {
-    marginBottom: 16,
-  },
-
-  lastOption: {
-    borderBottomWidth: 0,
-  },
-
-  switchBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
   },
 });

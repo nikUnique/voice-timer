@@ -7,7 +7,8 @@ import Slider from "@react-native-community/slider";
 import { Colors } from "../constants/colors";
 
 export default function Sound() {
-  const { settingPart, setting, heading, settingLabel } = useSettingsStyles();
+  const { settingPart, setting, heading, settingLabel, slider } =
+    useSettingsStyles();
   const { alarmVolume, setAlarmVolume } = useSettingsData();
   const { updateSettingsInStorage } = useSettingsFunctions();
 
@@ -32,17 +33,9 @@ export default function Sound() {
           minimumTrackTintColor={Colors.primaryTint90}
           maximumTrackTintColor={Colors.primaryTint90}
           thumbTintColor={Colors.primaryTint90}
-          style={styles.slider}
+          style={slider}
         />
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  slider: {
-    marginLeft: -10,
-    marginRight: -10,
-    color: Colors.primaryTint90,
-  },
-});

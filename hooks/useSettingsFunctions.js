@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { setItemInStorage } from "../utils/helpers";
 import { useSettingsData } from "../context/VoiceRecognizerContext";
+import { Alert, Linking } from "react-native";
 
 export default function useSettingsFunctions() {
   const {
@@ -12,7 +13,7 @@ export default function useSettingsFunctions() {
     keepScreenOnMinutes,
     isVibrating,
   } = useSettingsData();
-  
+
   const settings = useMemo(
     () => ({
       alarmVolume,
@@ -42,5 +43,21 @@ export default function useSettingsFunctions() {
     [settings],
   );
 
-  return { updateSettingsInStorage };
+  const autoStopTimeoutLabel = useCallback(function (secs) {
+    if (secs < 60) {
+      return `${secs} seconds`;
+    }
+
+    if (secs >= 60) {
+      return `${secs / 60} minutes`;
+    }
+  }, []);
+
+  const openSettings = useCallback(function () {
+    Linking.openSettings().catch(() => {
+      Alert.alert("Unable to open settings");
+    });
+  }, []);
+
+  return { updateSettingsInStorage, autoStopTimeoutLabel, openSettings };
 }
