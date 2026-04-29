@@ -10,7 +10,7 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { useSound } from "../hooks/useSound";
 import { emitter, resetTimerEmitter } from "../utils/EventEmitter";
-import { getItemFromStorage } from "../utils/helpers";
+import { getItemFromStorage, getTimePhrase } from "../utils/helpers";
 
 import { Colors } from "../constants/colors";
 import { useSpeak } from "../hooks/useSpeak";
@@ -48,7 +48,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
   } = useRefsData();
 
   const { speak } = useSpeak();
-  const { REPEAT, RESET, RESET_FINISHED, DISCO } = commandsRef?.current
+  const { REPEAT, RESET, RESET_FINISHED, DISCO, TIME } = commandsRef?.current
     ? commandsRef.current
     : {};
 
@@ -108,11 +108,16 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           resetTimerEmitter.emit(`${RESET} ${alertingTimer}`),
         );
       }
+
+      if (recognizedCommandRef.current?.toLowerCase().trim() === TIME && TIME) {
+        speak(getTimePhrase(), 0.3);
+      }
     },
     [
       DISCO,
       RESET,
       RESET_FINISHED,
+      TIME,
       alertingTimerNamesRef,
       discoSound,
       playSoundGeneral,

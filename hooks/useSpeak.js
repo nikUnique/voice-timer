@@ -12,7 +12,7 @@ export function useSpeak() {
   const { setIsListening, isListeningRef, voiceOptions } = useRefsData();
 
   const speak = useCallback(
-    async function speak(text) {
+    async function speak(text, speed) {
       try {
         if (!isVoiceFeedbackEnabled) {
           return;
@@ -21,7 +21,9 @@ export function useSpeak() {
         if (text.trim()) {
           setIsListening(false);
           isListeningRef.current = false;
-          Tts.speak(text, voiceOptions);
+          console.log(speed);
+          await Tts.setDefaultRate(speed || 0.5);
+          Tts.speak(text, { ...voiceOptions });
         }
       } catch (error) {
         console.error("An error occurred in the speak function 🤯", error);

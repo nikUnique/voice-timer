@@ -118,7 +118,7 @@ export function useTimer() {
 
   useEffect(
     function () {
-      Tts.setDefaultRate(0.5);
+      // Tts.setDefaultRate(0.5);
       Tts.removeAllListeners("tts-start");
       Tts.removeAllListeners("tts-finish");
       Tts.removeAllListeners("tts-error");

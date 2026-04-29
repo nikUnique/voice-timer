@@ -90,7 +90,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const [isVibrating, setIsVibrating] = useState(false);
   const dimScreenRef = useRef(null);
 
-  const { START, CONTINUE, RESET, PAUSE, REPEAT, RESET_FINISHED, DISCO } =
+  const { START, CONTINUE, RESET, PAUSE, REPEAT, RESET_FINISHED, DISCO, TIME } =
     commandsRef.current ? commandsRef.current : {};
 
   const getCommands = useCallback(async function getCommands(lang) {
@@ -173,10 +173,11 @@ export default function VoiceRecognizerProvider({ children }) {
         REPEAT,
         RESET_FINISHED,
         DISCO,
+        TIME,
       ]
         .flatMap((command) => command)
         .map((item) => `${item} ${secretIdentifierRef.current}`.trim()),
-    [DISCO, REPEAT, RESET_FINISHED, allActions, timers],
+    [DISCO, REPEAT, RESET_FINISHED, TIME, allActions, timers],
   );
 
   const dynamicGrammar = useMemo(
