@@ -43,15 +43,20 @@ function AppWithContext() {
   const { appState } = useAppState();
 
   useEffect(() => {
-    const finish = Tts.addEventListener("tts-finish", () =>
-      NativeModules.AudioFocusModule.releaseAudioFocus(),
-    );
-    const cancel = Tts.addEventListener("tts-cancel", () =>
-      NativeModules.AudioFocusModule.releaseAudioFocus(),
-    );
-    const error = Tts.addEventListener("tts-error", () =>
-      NativeModules.AudioFocusModule.releaseAudioFocus(),
-    );
+    const finish = Tts.addEventListener("tts-finish", () => {
+      NativeModules.AudioFocusModule.releaseAudioFocus();
+
+      // NativeModules.AudioFocusModule?.startBluetoothSco();
+      // NativeModules.AudioFocusModule?.stopBluetoothSco();
+    });
+    const cancel = Tts.addEventListener("tts-cancel", () => {
+      NativeModules.AudioFocusModule.releaseAudioFocus();
+      // NativeModules.AudioFocusModule?.stopBluetoothSco();
+    });
+    const error = Tts.addEventListener("tts-error", () => {
+      NativeModules.AudioFocusModule.releaseAudioFocus();
+      // NativeModules.AudioFocusModule?.stopBluetoothSco();
+    });
 
     return () => {
       finish.remove();

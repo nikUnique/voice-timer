@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
-import { useState } from "react";
+import { memo, useState } from "react";
 
 import { useSettingsData } from "../context/VoiceRecognizerContext";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
@@ -7,7 +7,7 @@ import useSettingsStyles from "../hooks/useSettingsStyles";
 import { Colors } from "../constants/colors";
 import { useResponsive } from "../hooks/useResponsive";
 
-export default function TimerBehavior() {
+export default memo(function TimerBehavior() {
   const [showAutoStopOptions, setShowAutoStopOptions] = useState(false);
 
   const autoStopOptions = [
@@ -127,7 +127,7 @@ export default function TimerBehavior() {
       </View>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   unfoldedBtn: {

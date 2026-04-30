@@ -65,6 +65,7 @@ export default function useSettingsStyles() {
       marginLeft: -10,
       marginRight: -10,
       color: Colors.primaryTint90,
+      flex: 1,
     }),
     [],
   );

@@ -21,6 +21,7 @@ export function useSpeak() {
         }
 
         if (text.trim()) {
+          // NativeModules.AudioFocusModule?.stopBluetoothSco();
           NativeModules.AudioFocusModule.requestAudioFocus();
           setIsListening(false);
           isListeningRef.current = false;

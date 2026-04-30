@@ -102,7 +102,7 @@ export default function Timers({ navigation }) {
             async function () {
               try {
                 await deactivateKeepAwake();
-                // console.log("KeepScreenOnMinutes", keepScreenOnMinutes * 60);
+                console.log("KeepScreenOnMinutes", keepScreenOnMinutes * 60);
               } catch (error) {
                 console.error(
                   `An error occurred in the active screen function`,
@@ -110,7 +110,7 @@ export default function Timers({ navigation }) {
                 );
               }
             },
-            keepScreenOnMinutes * DIM_TIMEOUT * 1000,
+            keepScreenOnMinutes * 60 * 1000,
           );
 
           dimScreenRef.current = setTimeout(async function () {

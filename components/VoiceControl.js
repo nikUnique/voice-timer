@@ -4,8 +4,9 @@ import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import useSettingsStyles from "../hooks/useSettingsStyles";
 import { useSettingsData } from "../context/VoiceRecognizerContext";
 import { Colors } from "../constants/colors";
+import { memo } from "react";
 
-export default function VoiceControl() {
+export default memo(function VoiceControl() {
   const { settingPart, setting, heading, settingLabel, switchBox } =
     useSettingsStyles();
   const { updateSettingsInStorage, openSettings } = useSettingsFunctions();
@@ -85,4 +86,4 @@ export default function VoiceControl() {
       </View>
     </View>
   );
-}
+});

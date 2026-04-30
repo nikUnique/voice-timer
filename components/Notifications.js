@@ -4,8 +4,9 @@ import { Colors } from "../constants/colors";
 import { useResponsive } from "../hooks/useResponsive";
 import useSettingsStyles from "../hooks/useSettingsStyles";
 import { openNotificationChannelSettings } from "../utils/helpers";
+import { memo } from "react";
 
-export default function Notifications() {
+export default memo(function Notifications() {
   const { settingPart, setting, heading, settingBtn } = useSettingsStyles();
 
   const { t } = useResponsive();
@@ -37,7 +38,7 @@ export default function Notifications() {
       </Pressable>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   lastSettingPart: {

@@ -1,13 +1,28 @@
-import { Switch, Text, View } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import useSettingsStyles from "../hooks/useSettingsStyles";
 import { useSettingsData } from "../context/VoiceRecognizerContext";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import { Colors } from "../constants/colors";
 import Slider from "@react-native-community/slider";
+import { memo } from "react";
 
-export default function AppBehavior() {
-  const { settingPart, setting, heading, settingLabel, switchBox, slider } =
-    useSettingsStyles();
+export default memo(function AppBehavior() {
+  const {
+    settingPart,
+    setting,
+    heading,
+    settingLabel,
+    switchBox,
+    slider,
+    settingBtn,
+  } = useSettingsStyles();
   const {
     keepScreenOnCommand,
     setKeepScreenOnCommand,
@@ -42,22 +57,62 @@ export default function AppBehavior() {
             {keepScreenOnMinutes !== 1 ? "s" : ""}
           </Text>
 
-          <Slider
-            value={keepScreenOnMinutes}
-            onSlidingComplete={(value) => {
-              setKeepScreenOnMinutes(value);
-              updateSettingsInStorage("keepScreenOnMinutes", value);
-            }}
-            step={1}
-            minimumTrackTintColor={Colors.primaryTint90}
-            maximumTrackTintColor={Colors.primaryTint90}
-            thumbTintColor={Colors.primaryTint90}
-            minimumValue={1}
-            maximumValue={30}
-            style={slider}
-          />
+          <View style={styles.row}>
+            <Pressable
+              onPress={() => {
+                setKeepScreenOnMinutes((prev) => (prev > 1 ? prev - 1 : prev));
+              }}
+              style={[({ pressed }) => ({ opacity: pressed }), styles.stepBtn]}
+            >
+              <Text style={styles.textBtn}>−</Text>
+            </Pressable>
+            <Slider
+              value={keepScreenOnMinutes}
+              onSlidingComplete={(value) => {
+                setKeepScreenOnMinutes(value);
+                updateSettingsInStorage("keepScreenOnMinutes", value);
+              }}
+              step={1}
+              minimumTrackTintColor={Colors.primaryTint90}
+              maximumTrackTintColor={Colors.primaryTint90}
+              thumbTintColor={Colors.primaryTint90}
+              minimumValue={1}
+              maximumValue={300}
+              style={slider}
+            />
+            <Pressable
+              onPress={() => {
+                setKeepScreenOnMinutes((prev) =>
+                  prev < 300 ? prev + 1 : prev,
+                );
+              }}
+              style={styles.stepBtn}
+            >
+              <Text style={styles.textBtn}>+</Text>
+            </Pressable>
+          </View>
         </View>
       )}
     </View>
   );
-}
+});
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  stepBtn: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 36,
+    height: 36,
+    backgroundColor: Colors.primaryTint90,
+    borderRadius: "50%",
+  },
+  textBtn: {
+    color: Colors.primary,
+    fontSize: 18,
+  },
+});

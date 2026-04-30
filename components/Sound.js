@@ -5,8 +5,9 @@ import { Colors } from "../constants/colors";
 import { useSettingsData } from "../context/VoiceRecognizerContext";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import useSettingsStyles from "../hooks/useSettingsStyles";
+import { memo } from "react";
 
-export default function Sound() {
+export default memo(function Sound() {
   const { settingPart, setting, heading, settingLabel, slider } =
     useSettingsStyles();
   const { alarmVolume, setAlarmVolume } = useSettingsData();
@@ -38,4 +39,4 @@ export default function Sound() {
       </View>
     </View>
   );
-}
+});
