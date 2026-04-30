@@ -7,18 +7,15 @@
     "icon": "./assets/time_icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-
     "androidStatusBar": {
       "barStyle": "light-content",
       "backgroundColor": "#0b7285",
       "translucent": true
     },
-
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.moonnic.timer-with-commands"
     },
-
     "android": {
       "plugins": [
         [
@@ -31,7 +28,14 @@
             "enableBackgroundRemoteNotifications": true
           }
         ],
-
+        [
+          "expo-audio",
+          {
+            "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone.",
+            "enableBackgroundPlayback": true,
+            "enableBackgroundRecording": false
+          }
+        ],
         {
           "notificationsPermission": "Allow $(PRODUCT_NAME) to send you notifications."
         }
@@ -51,6 +55,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["./lib/withNotifeeAndroidFix"]
+    "plugins": ["./lib/withNotifeeAndroidFix", "expo-audio"]
   }
 }

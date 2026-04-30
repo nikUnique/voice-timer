@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.res.Configuration
 
 import com.moonnic.timer_with_commands.NativeUtilsPackage
+import com.moonnic.timer_with_commands.AudioFocusPackage
 import com.rnfs.RNFSPackage
 
 import com.facebook.react.PackageList
@@ -31,6 +32,7 @@ class MainApplication : Application(), ReactApplication {
 
             packages.add(NativeUtilsPackage())
             packages.add(RNFSPackage())
+            packages.add(AudioFocusPackage())
             // packages.add(SpellCheckerPackage())
 
            

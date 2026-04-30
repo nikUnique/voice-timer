@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "react";
-import { Vibration } from "react-native";
+import { NativeModules, Vibration } from "react-native";
 import Sound from "react-native-sound";
 
 import { useSoundData } from "../context/VoiceRecognizerContext";
@@ -95,7 +95,6 @@ function useSound() {
 
           soundRef.current?.play((success) => {
             if (success) {
-              // console.log("Sound is released", fileName);
               soundRef.current.release();
             } else {
               console.error(
@@ -184,6 +183,8 @@ function useSound() {
           soundIsPlayingRef.current = true;
         }
 
+        NativeModules.AudioFocusModule.requestAudioFocus();
+
         await playSoundGeneral({ fileName, isLooping, volume, isVibrating });
       } catch (e) {
         console.error("Error loading sound: 🏸", e);
@@ -196,24 +197,13 @@ function useSound() {
     async function stopSound() {
       try {
         if (soundRef.current) {
-          // console.log("soundRef", soundRef.current);
-
+          NativeModules.AudioFocusModule.releaseAudioFocus();
           stopVibration();
           clearTimeout(alertTimeoutRef.current);
           alertTimeoutRef.current = null;
           soundIsPlayingRef.current = false;
-          // soundRef.current.release();
           soundRef.current?.stop();
         }
-
-        let count = 0;
-
-        // setInterval(function () {
-        //   count++;
-        //   console.log("superCount", count);
-
-        //   playSoundGeneral({ fileName: successSound });
-        // }, 1500);
       } catch (error) {
         console.error("Error stopping sound", error);
       }

@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { useDefaultTimers } from "../hooks/useDefaultTimers";
+import { NativeModules } from "react-native";
 
 const VoiceRecognizerContext = createContext();
 const SoundContext = createContext();

@@ -6,6 +6,8 @@ import {
   useRefsData,
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
+import Sound from "react-native-sound";
+import { NativeModules } from "react-native";
 
 export function useSpeak() {
   const { isVoiceFeedbackEnabled } = useSettingsData();
@@ -19,10 +21,12 @@ export function useSpeak() {
         }
 
         if (text.trim()) {
+          NativeModules.AudioFocusModule.requestAudioFocus();
           setIsListening(false);
           isListeningRef.current = false;
           await Tts.setDefaultRate(speed || 0.5);
-          Tts.speak(text, { ...voiceOptions });
+
+          Tts.speak(text, voiceOptions);
         }
       } catch (error) {
         console.error("An error occurred in the speak function 🤯", error);

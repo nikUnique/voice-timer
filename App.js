@@ -8,6 +8,7 @@ import * as Brightness from "expo-brightness";
 
 import React, { memo, useCallback, useEffect, useState } from "react";
 import {
+  NativeModules,
   Platform,
   StatusBar,
   StyleSheet,
@@ -31,6 +32,8 @@ import SettingsScreen from "./screens/SettingsScreen";
 import TermsScreen from "./screens/TermsScreen";
 import TimersScreen from "./screens/TimersScreen";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
+import * as Audio from "expo-audio";
+import Tts from "react-native-tts";
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +41,24 @@ function AppWithContext() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const { dimScreenRef } = useSettingsData();
   const { appState } = useAppState();
+
+  useEffect(() => {
+    const finish = Tts.addEventListener("tts-finish", () =>
+      NativeModules.AudioFocusModule.releaseAudioFocus(),
+    );
+    const cancel = Tts.addEventListener("tts-cancel", () =>
+      NativeModules.AudioFocusModule.releaseAudioFocus(),
+    );
+    const error = Tts.addEventListener("tts-error", () =>
+      NativeModules.AudioFocusModule.releaseAudioFocus(),
+    );
+
+    return () => {
+      finish.remove();
+      cancel.remove();
+      error.remove();
+    };
+  }, []);
 
   const restoreBrightness = useCallback(
     async function () {

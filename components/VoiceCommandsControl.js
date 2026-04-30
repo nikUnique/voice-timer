@@ -118,6 +118,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       vosk
         .start({ grammar: dynamicGrammar })
         .then(() => {
+          // NativeModules.AudioFocusModule?.startBluetoothSco();
           console.log("Starting recognition with grammar...");
           setIsRecognizing(true);
         })
@@ -131,6 +132,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
 
   const stop = useCallback(async () => {
     vosk.stop();
+    // NativeModules.AudioFocusModule?.stopBluetoothSco();
     console.log("Stoping recognition..." /* , result */);
     setIsRecognizing(false);
   }, [vosk]);

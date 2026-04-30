@@ -81,7 +81,6 @@ export function useTimeUpdate({
       });
       setTimersHistory((cur) =>
         cur.map((timer) => {
-          console.log(timer.duration + "🈂️" + "timeUpdate");
           return timer?.label === updatableTimer?.label && !timer?.endTime
             ? {
                 ...updatableTimer,
