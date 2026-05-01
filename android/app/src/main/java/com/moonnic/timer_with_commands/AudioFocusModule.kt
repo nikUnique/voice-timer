@@ -13,8 +13,14 @@ import android.content.Context
 import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.IntentFilter
+import com.facebook.react.bridge.Callback
+import android.os.Handler
+import android.os.Looper
 
 private val TAG = "AudioFocusModule"
+private var hasFocus = false
+
+
 
 
 class AudioFocusModule(private val reactContext: ReactApplicationContext) :
@@ -29,10 +35,9 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
 
 
     @ReactMethod
-    fun requestAudioFocus() {
-           Log.d(TAG, "requestAudioFocus called")
-       
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    fun requestAudioFocus(callback: Callback) {
+        
+        val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
                 .setAudioAttributes(
                     AudioAttributes.Builder()
@@ -44,12 +49,23 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
             audioManager?.requestAudioFocus(focusRequest!!)
         } else {
             @Suppress("DEPRECATION")
-            audioManager?.requestAudioFocus(
-                null,
-                AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
-            )
+            audioManager?.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
         }
+
+        val granted = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+        val delay = if (granted && isWiredHeadsetConnected()) 400L else 0L
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            callback(granted)
+        }, delay)
+    }
+
+    private fun isWiredHeadsetConnected(): Boolean {
+        val devices = audioManager?.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+        return devices?.any {
+            it.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES ||
+            it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET
+        } ?: false
     }
 
     @ReactMethod
@@ -80,5 +96,11 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
         audioManager.stopBluetoothSco()
         audioManager.isBluetoothScoOn = false
         Log.d(TAG, "Bluetooth SCO stopped")
+    }
+
+    @ReactMethod
+    fun toggleMedia(callback: Callback) {
+        hasFocus = !hasFocus
+        callback(hasFocus)  // true = take focus, false = give it away
     }
 }

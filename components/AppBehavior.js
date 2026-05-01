@@ -1,28 +1,18 @@
-import {
-  Pressable,
-  StyleSheet,
-  Switch,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import useSettingsStyles from "../hooks/useSettingsStyles";
+import { Slider } from "@miblanchard/react-native-slider";
+import { useNavigation } from "@react-navigation/native";
+
+import { memo, useEffect, useRef, useState } from "react";
+import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
+
+import { Colors } from "../constants/colors";
 import { useSettingsData } from "../context/VoiceRecognizerContext";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
-import { Colors } from "../constants/colors";
-import Slider from "@react-native-community/slider";
-import { memo } from "react";
+import useSettingsStyles from "../hooks/useSettingsStyles";
 
 export default memo(function AppBehavior() {
-  const {
-    settingPart,
-    setting,
-    heading,
-    settingLabel,
-    switchBox,
-    slider,
-    settingBtn,
-  } = useSettingsStyles();
+  const { settingPart, setting, heading, settingLabel, switchBox, slider } =
+    useSettingsStyles();
+
   const {
     keepScreenOnCommand,
     setKeepScreenOnCommand,
@@ -30,6 +20,34 @@ export default memo(function AppBehavior() {
     setKeepScreenOnMinutes,
   } = useSettingsData();
   const { updateSettingsInStorage } = useSettingsFunctions();
+  const [minutes, setMinutes] = useState(keepScreenOnMinutes);
+  const lastUpdatedRef = useRef(0);
+  const navigation = useNavigation();
+
+  const minutesRef = useRef(minutes);
+  minutesRef.current = minutes; // always latest, no re-subscribe
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("blur", () => {
+      clearTimeout(lastUpdatedRef.current);
+      setKeepScreenOnMinutes(minutesRef.current);
+    });
+    return () => {
+      setTimeout(unsubscribe, 100);
+    };
+  }, [navigation, setKeepScreenOnMinutes]);
+
+  useEffect(() => {
+    clearTimeout(lastUpdatedRef.current);
+    lastUpdatedRef.current = setTimeout(() => {
+      setKeepScreenOnMinutes(minutes);
+    }, 3000);
+    return () => {
+      clearTimeout(lastUpdatedRef.current);
+    };
+  }, [minutes, setKeepScreenOnMinutes]);
+
+  const steps = [1, 2, 3, 5, 10, 15, 30, 60, 90, 120, 180, 240, 300];
   return (
     <View style={settingPart}>
       <Text style={heading}>App Behavior</Text>
@@ -53,38 +71,40 @@ export default memo(function AppBehavior() {
       {keepScreenOnCommand && (
         <View style={setting}>
           <Text style={[settingLabel, setting]}>
-            Keep Screen On For: {keepScreenOnMinutes} minute
-            {keepScreenOnMinutes !== 1 ? "s" : ""}
+            Keep Screen On For: {minutes} minute
+            {minutes !== 1 ? "s" : ""}
           </Text>
 
           <View style={styles.row}>
             <Pressable
               onPress={() => {
-                setKeepScreenOnMinutes((prev) => (prev > 1 ? prev - 1 : prev));
+                const i = steps.indexOf(minutes);
+                setMinutes((prev) => (prev > 1 ? steps[i - 1] : prev));
               }}
               style={[({ pressed }) => ({ opacity: pressed }), styles.stepBtn]}
             >
               <Text style={styles.textBtn}>−</Text>
             </Pressable>
             <Slider
-              value={keepScreenOnMinutes}
-              onSlidingComplete={(value) => {
-                setKeepScreenOnMinutes(value);
-                updateSettingsInStorage("keepScreenOnMinutes", value);
+              containerStyle={{ flex: 1 }}
+              value={[steps.indexOf(minutes)]}
+              onSlidingComplete={([i]) => {
+                setMinutes(steps[i]);
+                updateSettingsInStorage("keepScreenOnMinutes", steps[i]);
               }}
               step={1}
               minimumTrackTintColor={Colors.primaryTint90}
               maximumTrackTintColor={Colors.primaryTint90}
               thumbTintColor={Colors.primaryTint90}
               minimumValue={1}
-              maximumValue={300}
+              maximumValue={steps.length - 1}
               style={slider}
+              trackStyle={{ height: 4, borderRadius: 2 }}
             />
             <Pressable
               onPress={() => {
-                setKeepScreenOnMinutes((prev) =>
-                  prev < 300 ? prev + 1 : prev,
-                );
+                const i = steps.indexOf(minutes);
+                setMinutes((prev) => (prev < 300 ? steps[i + 1] : prev));
               }}
               style={styles.stepBtn}
             >

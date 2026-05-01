@@ -13,6 +13,7 @@
     "stopGradle": "cd android && ./gradlew --stop && cd .."
   },
   "dependencies": {
+    "@miblanchard/react-native-slider": "^2.6.0",
     "@notifee/react-native": "^9.1.8",
     "@react-native-async-storage/async-storage": "^2.1.0",
     "@react-native-community/checkbox": "^0.5.20",

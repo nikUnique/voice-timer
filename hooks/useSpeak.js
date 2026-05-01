@@ -22,12 +22,17 @@ export function useSpeak() {
 
         if (text.trim()) {
           // NativeModules.AudioFocusModule?.stopBluetoothSco();
-          NativeModules.AudioFocusModule.requestAudioFocus();
           setIsListening(false);
           isListeningRef.current = false;
           await Tts.setDefaultRate(speed || 0.5);
 
-          Tts.speak(text, voiceOptions);
+          NativeModules.AudioFocusModule.requestAudioFocus((granted) => {
+            if (granted) {
+              console.log("Granted focus");
+
+              Tts.speak(text, voiceOptions);
+            }
+          });
         }
       } catch (error) {
         console.error("An error occurred in the speak function 🤯", error);

@@ -27,6 +27,7 @@ export default function VoiceRecognizerProvider({ children }) {
 
   const isListeningRef = useRef(false);
   const isValidCommandRef = useRef(false);
+  const isMediaPausedRef = useRef(false);
 
   // Sound
   const soundRef = useRef(null);
@@ -91,8 +92,17 @@ export default function VoiceRecognizerProvider({ children }) {
   const [isVibrating, setIsVibrating] = useState(false);
   const dimScreenRef = useRef(null);
 
-  const { START, CONTINUE, RESET, PAUSE, REPEAT, RESET_FINISHED, DISCO, TIME } =
-    commandsRef.current ? commandsRef.current : {};
+  const {
+    START,
+    CONTINUE,
+    RESET,
+    PAUSE,
+    REPEAT,
+    RESET_FINISHED,
+    DISCO,
+    TIME,
+    MEDIA,
+  } = commandsRef.current ? commandsRef.current : {};
 
   const getCommands = useCallback(async function getCommands(lang) {
     switch (lang) {
@@ -175,10 +185,11 @@ export default function VoiceRecognizerProvider({ children }) {
         RESET_FINISHED,
         DISCO,
         TIME,
+        MEDIA,
       ]
         .flatMap((command) => command)
         .map((item) => `${item} ${secretIdentifierRef.current}`.trim()),
-    [DISCO, REPEAT, RESET_FINISHED, TIME, allActions, timers],
+    [DISCO, MEDIA, REPEAT, RESET_FINISHED, TIME, allActions, timers],
   );
 
   const dynamicGrammar = useMemo(
@@ -275,6 +286,7 @@ export default function VoiceRecognizerProvider({ children }) {
       setTimerHeight,
       currentlyViewedItemRef,
       isFocusedRef,
+      isMediaPausedRef,
     }),
     [editableTimers, timerHeight, timers, voiceOptions],
   );

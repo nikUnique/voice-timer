@@ -2,13 +2,15 @@ import { useCallback, useRef } from "react";
 import { NativeModules, Vibration } from "react-native";
 import Sound from "react-native-sound";
 
-import { useSoundData } from "../context/VoiceRecognizerContext";
+import { useRefsData, useSoundData } from "../context/VoiceRecognizerContext";
+import Tts from "react-native-tts";
 
 function useSound() {
   const alarmSoundObjectRef = useRef(null);
   const vibrationIntervalRef = useRef(null);
   const { soundRef, shortSoundRef, soundIsPlayingRef, alertTimeoutRef } =
     useSoundData();
+  const { isMediaPausedRef, isListeningRef } = useRefsData();
 
   function startVibration() {
     Vibration.vibrate();
@@ -183,9 +185,17 @@ function useSound() {
           soundIsPlayingRef.current = true;
         }
 
-        NativeModules.AudioFocusModule.requestAudioFocus();
-
-        await playSoundGeneral({ fileName, isLooping, volume, isVibrating });
+        NativeModules.AudioFocusModule.requestAudioFocus(async (granted) => {
+          if (granted) {
+            console.log();
+          }
+        });
+        await playSoundGeneral({
+          fileName,
+          isLooping,
+          volume,
+          isVibrating,
+        });
       } catch (e) {
         console.error("Error loading sound: 🏸", e);
       }
@@ -197,7 +207,9 @@ function useSound() {
     async function stopSound() {
       try {
         if (soundRef.current) {
-          NativeModules.AudioFocusModule.releaseAudioFocus();
+          if (!isMediaPausedRef.current && isListeningRef.current) {
+            NativeModules.AudioFocusModule.releaseAudioFocus();
+          }
           stopVibration();
           clearTimeout(alertTimeoutRef.current);
           alertTimeoutRef.current = null;
@@ -208,7 +220,13 @@ function useSound() {
         console.error("Error stopping sound", error);
       }
     },
-    [soundRef, alertTimeoutRef, soundIsPlayingRef],
+    [
+      soundRef,
+      isMediaPausedRef,
+      isListeningRef,
+      alertTimeoutRef,
+      soundIsPlayingRef,
+    ],
   );
 
   return { playSoundGeneral, playSound, stopSound, playSpecial };

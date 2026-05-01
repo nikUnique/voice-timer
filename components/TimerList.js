@@ -1,7 +1,13 @@
 import * as SplashScreen from "expo-splash-screen";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AppState, FlatList, StyleSheet, View } from "react-native";
+import {
+  AppState,
+  FlatList,
+  NativeModules,
+  StyleSheet,
+  View,
+} from "react-native";
 
 import {
   useRecognizerData,
@@ -45,12 +51,12 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     activateTimerRef,
     leastTimeTimerRef,
     workingTimersRef,
+    isMediaPausedRef,
   } = useRefsData();
 
   const { speak } = useSpeak();
-  const { REPEAT, RESET, RESET_FINISHED, DISCO, TIME } = commandsRef?.current
-    ? commandsRef.current
-    : {};
+  const { REPEAT, RESET, RESET_FINISHED, DISCO, TIME, MEDIA } =
+    commandsRef?.current ? commandsRef.current : {};
 
   const { successSound, discoSound } = useSettingsData();
   const { playSoundGeneral, playSpecial } = useSound();
@@ -98,10 +104,12 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         recognizedCommandRef.current?.toLowerCase() ===
         `${RESET_FINISHED} ${secretIdentifierRef.current?.split(" ").slice(2, -1)}`.trim()
       ) {
-        playSoundGeneral({
-          fileName: successSound,
-          shouldStop: false,
-        });
+        setTimeout(function () {
+          playSoundGeneral({
+            fileName: successSound,
+            shouldStop: false,
+          });
+        }, 200);
         speak("Completed timers reset");
 
         alertingTimerNamesRef?.current?.map((alertingTimer) =>
@@ -112,14 +120,36 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       if (recognizedCommandRef.current?.toLowerCase().trim() === TIME && TIME) {
         speak(getTimePhrase(), 0.3);
       }
+
+      if (
+        recognizedCommandRef.current?.toLowerCase().trim() === MEDIA &&
+        MEDIA
+      ) {
+        NativeModules.AudioFocusModule.toggleMedia((shouldTake) => {
+          if (shouldTake) {
+            isMediaPausedRef.current = true;
+            speak("Media paused");
+            NativeModules.AudioFocusModule.requestAudioFocus((granted) => {
+              if (granted) {
+                console.log();
+              }
+            });
+          } else {
+            isMediaPausedRef.current = false;
+            NativeModules.AudioFocusModule.releaseAudioFocus();
+          }
+        });
+      }
     },
     [
       DISCO,
+      MEDIA,
       RESET,
       RESET_FINISHED,
       TIME,
       alertingTimerNamesRef,
       discoSound,
+      isMediaPausedRef,
       playSoundGeneral,
       playSpecial,
       recognizedCommandRef,

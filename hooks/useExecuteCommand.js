@@ -165,10 +165,12 @@ export function useExecuteCommand({
           timerIsActiveRef.current && speak(`${name} started`);
         }
         if (commandExecuted) {
-          playSoundGeneral({
-            fileName: successSound,
-            shouldStop: false,
-          });
+          setTimeout(function () {
+            playSoundGeneral({
+              fileName: successSound,
+              shouldStop: false,
+            });
+          }, 200);
         }
       } catch (error) {
         console.error(`An error occurred in executeCommand function 🦸`, error);

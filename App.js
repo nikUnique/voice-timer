@@ -21,6 +21,7 @@ import ContextMenu from "./components/ContextMenu";
 import TimerNameControl from "./components/TimerNameControl";
 import { Colors } from "./constants/colors";
 import VoiceRecognizerProvider, {
+  useRefsData,
   useSettingsData,
 } from "./context/VoiceRecognizerContext";
 import { useAppState } from "./hooks/useAppState";
@@ -40,21 +41,31 @@ const Stack = createNativeStackNavigator();
 function AppWithContext() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const { dimScreenRef } = useSettingsData();
+  const { isMediaPausedRef } = useRefsData();
   const { appState } = useAppState();
+
+  const releaseAudioFocus = useCallback(
+    function () {
+      if (!isMediaPausedRef.current) {
+        NativeModules.AudioFocusModule.releaseAudioFocus();
+      }
+    },
+    [isMediaPausedRef],
+  );
 
   useEffect(() => {
     const finish = Tts.addEventListener("tts-finish", () => {
-      NativeModules.AudioFocusModule.releaseAudioFocus();
+      releaseAudioFocus();
 
       // NativeModules.AudioFocusModule?.startBluetoothSco();
       // NativeModules.AudioFocusModule?.stopBluetoothSco();
     });
     const cancel = Tts.addEventListener("tts-cancel", () => {
-      NativeModules.AudioFocusModule.releaseAudioFocus();
+      releaseAudioFocus();
       // NativeModules.AudioFocusModule?.stopBluetoothSco();
     });
     const error = Tts.addEventListener("tts-error", () => {
-      NativeModules.AudioFocusModule.releaseAudioFocus();
+      releaseAudioFocus();
       // NativeModules.AudioFocusModule?.stopBluetoothSco();
     });
 
