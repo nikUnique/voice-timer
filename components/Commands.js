@@ -48,7 +48,7 @@ const commands = [
     description:
       "Restarts the timer from the last individual timer command. Any command that used a specific timer counts - that timer will be restarted. E.g. if you last said 'start twenty minutes' or 'reset twenty minutes', where 'twenty minutes' is one of your timers, saying 'Repeat' restarts the 'twenty-minutes' timer.",
     icon: "repeat-outline",
-    badge: "REPEAT",   
+    badge: "REPEAT",
   },
   {
     command: "Reset finished",
@@ -79,6 +79,22 @@ const commands = [
       "Pauses external media and restores full voice control. Required before any other command will be accepted - while media is playing, this is the only command that works.",
     icon: "stop-circle-outline",
     badge: "STOP",
+  },
+  {
+    command: "Status report",
+    example: "Status report",
+    description:
+      "Reads out all timers and their current state - how many are running, paused, alarming, or not active.",
+    icon: "list-outline",
+    badge: "STATUS",
+  },
+  {
+    command: "Status [timer name]",
+    example: "Status Focus timer",
+    description:
+      "Reads the current state of a single timer - whether it is running, paused, alarming, or not active, and how much time is left.",
+    icon: "timer-outline",
+    badge: "STATUS",
   },
 ];
 

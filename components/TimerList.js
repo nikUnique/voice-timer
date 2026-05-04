@@ -75,6 +75,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     renderTimer,
     onLayoutHandler,
     formatStatusSpeech,
+    formatRingingResetSpeech,
   } = useTimerList({
     timers,
     setTimers,
@@ -149,7 +150,8 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
             shouldStop: false,
           });
         }, 200);
-        speak("Completed timers reset");
+
+        speak(formatRingingResetSpeech(alertingTimerNamesRef.current), 0.5);
 
         alertingTimerNamesRef?.current?.map((alertingTimer) =>
           resetTimerEmitter.emit(`${RESET} ${alertingTimer}`),

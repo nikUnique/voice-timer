@@ -234,9 +234,13 @@ export function useTimerList({
     }
 
     const headerParts = [
-      runningTimerNamesLength ? `${runningTimerNamesLength} running` : null,
-      pausedTimerNamesLength ? `${pausedTimerNamesLength} paused` : null,
-      alertingTimerNamesLength ? `${alertingTimerNamesLength} completed` : null,
+      runningTimerNamesLength
+        ? `${runningTimerNamesLength} timers running`
+        : null,
+      pausedTimerNamesLength ? `${pausedTimerNamesLength} timers paused` : null,
+      alertingTimerNamesLength
+        ? `${alertingTimerNamesLength} timers ringing`
+        : null,
     ].filter(Boolean);
 
     const header = headerParts.join(", ") + ".";
@@ -246,13 +250,23 @@ export function useTimerList({
       ...(getSharedObject().runningTimerNames.join(", ") + ". "),
       pausedTimerNamesLength && "Paused timers: ",
       ...(getSharedObject().pausedTimerNames.join(", ") + ". "),
-      alertingTimerNamesLength && "Completed timers: ",
+      alertingTimerNamesLength && "Ringing timers: ",
       ...(getSharedObject().alertingTimerNames.join(", ") + ". "),
     ]
       .filter(Boolean)
       .join("");
 
     return `${header} ${timerLines}`;
+  }, []);
+
+  const formatRingingResetSpeech = useCallback(function (timerNames) {
+    if (timerNames.length === 0) return "Nothing to reset.";
+    if (timerNames.length === 1) return `${timerNames[0]} timer reset.`;
+
+    const last = timerNames[timerNames.length - 1];
+    const rest = timerNames.slice(0, -1);
+    const count = timerNames.length;
+    return `${count} timers reset. ${rest.join(", ")} and ${last}.`;
   }, []);
 
   return {
@@ -262,5 +276,6 @@ export function useTimerList({
     renderTimer,
     onLayoutHandler,
     formatStatusSpeech,
+    formatRingingResetSpeech,
   };
 }

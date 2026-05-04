@@ -40,9 +40,9 @@ export function useExecuteCommand({
   const { speak } = useSpeak();
 
   const formatSingleTimerSpeech = useCallback(
-    ({ name, remainingSeconds, paused, completed, isActive }) => {
-      if (!completed && !isActive) return `${name} is not active.`;
-      if (completed) return `${name} is completed.`;
+    ({ name, remainingSeconds, paused, ringing, isActive }) => {
+      if (!ringing && !isActive) return `${name} is not active.`;
+      if (ringing) return `${name} is ringing.`;
 
       const m = Math.floor(remainingSeconds / 60);
       const s = remainingSeconds % 60;
@@ -96,7 +96,7 @@ export function useExecuteCommand({
               name,
               remainingSeconds: timeLeftRef.current,
               paused: isPaused,
-              completed: getSharedObject().alertingTimerNames.includes(name),
+              ringing: getSharedObject().alertingTimerNames.includes(name),
               isActive,
             }),
           );
@@ -183,7 +183,8 @@ export function useExecuteCommand({
             `${CONTINUE} ${name} ${secretIdentifierRef.current}`
               .toLocaleLowerCase()
               .trim(),
-          )
+          ) &&
+          isPaused
         ) {
           resumeTimerRef.current();
           activateTimerRef.current(index);
