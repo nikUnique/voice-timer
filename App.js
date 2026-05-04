@@ -1,10 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
-import notifee from "@notifee/react-native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import notifee, { AuthorizationStatus } from "@notifee/react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { AuthorizationStatus } from "@notifee/react-native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as Brightness from "expo-brightness";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import React, { memo, useCallback, useEffect, useState } from "react";
 import {
@@ -15,6 +14,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import Tts from "react-native-tts";
 import AgreementAlert from "./components/AgreementAlert";
 import AlarmOverlay from "./components/AlarmOverlay";
 import ContextMenu from "./components/ContextMenu";
@@ -33,14 +33,12 @@ import SettingsScreen from "./screens/SettingsScreen";
 import TermsScreen from "./screens/TermsScreen";
 import TimersScreen from "./screens/TimersScreen";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
-import * as Audio from "expo-audio";
-import Tts from "react-native-tts";
 
 const Stack = createNativeStackNavigator();
 
 function AppWithContext() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
-  const { dimScreenRef } = useSettingsData();
+  const { dimScreenRef, keepScreenDim } = useSettingsData();
   const { isMediaPausedRef } = useRefsData();
   const { appState } = useAppState();
 
@@ -53,20 +51,24 @@ function AppWithContext() {
     [isMediaPausedRef],
   );
 
+  useEffect(
+    function () {
+      if (keepScreenDim) {
+        Brightness.setBrightnessAsync(0);
+      }
+    },
+    [keepScreenDim],
+  );
+
   useEffect(() => {
     const finish = Tts.addEventListener("tts-finish", () => {
       releaseAudioFocus();
-
-      // NativeModules.AudioFocusModule?.startBluetoothSco();
-      // NativeModules.AudioFocusModule?.stopBluetoothSco();
     });
     const cancel = Tts.addEventListener("tts-cancel", () => {
       releaseAudioFocus();
-      // NativeModules.AudioFocusModule?.stopBluetoothSco();
     });
     const error = Tts.addEventListener("tts-error", () => {
       releaseAudioFocus();
-      // NativeModules.AudioFocusModule?.stopBluetoothSco();
     });
 
     return () => {
@@ -74,10 +76,11 @@ function AppWithContext() {
       cancel.remove();
       error.remove();
     };
-  }, []);
+  }, [releaseAudioFocus]);
 
   const restoreBrightness = useCallback(
     async function () {
+      if (keepScreenDim) return;
       Brightness.restoreSystemBrightnessAsync();
 
       clearTimeout(dimScreenRef.current);
@@ -85,7 +88,7 @@ function AppWithContext() {
         Brightness.setBrightnessAsync(DIM_PERCENTAGE);
       }, DIM_TIMEOUT * 1000);
     },
-    [dimScreenRef],
+    [dimScreenRef, keepScreenDim],
   );
 
   useEffect(

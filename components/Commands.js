@@ -1,15 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import {
-  ActivityIndicator,
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { memo, useCallback, useEffect, useState } from "react";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../constants/colors";
 import { useResponsive } from "../hooks/useResponsive";
-import { memo, useCallback, useEffect, useState } from "react";
 import LoadingIndicator from "../ui/LoadingIndicator";
 
 const commands = [

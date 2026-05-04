@@ -12,6 +12,7 @@ export default function useSettingsFunctions() {
     keepScreenOnCommand,
     keepScreenOnMinutes,
     isVibrating,
+    keepScreenDim,
   } = useSettingsData();
 
   const settings = useMemo(
@@ -23,12 +24,14 @@ export default function useSettingsFunctions() {
       keepScreenOnCommand,
       keepScreenOnMinutes,
       isVibrating,
+      keepScreenDim,
     }),
     [
       alarmVolume,
       autoStopAlarmTimeout,
       isVibrating,
       isVoiceFeedbackEnabled,
+      keepScreenDim,
       keepScreenOnCommand,
       keepScreenOnMinutes,
       voiceEnabled,

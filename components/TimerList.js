@@ -191,6 +191,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       TIME,
       alertingTimerNamesRef,
       discoSound,
+      formatRingingResetSpeech,
       formatStatusSpeech,
       isMediaPausedRef,
       isMediaPlayingRef,

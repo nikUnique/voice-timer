@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { PermissionsAndroid } from "react-native";
 import {
   useRefsData,
@@ -15,32 +15,36 @@ export function useSettings() {
     setKeepScreenOnCommand,
     setKeepScreenOnMinutes,
     setIsVibrating,
+    setKeepScreenDim,
   } = useSettingsData();
 
   const { timers } = useRefsData();
 
-  async function requestMicrophone() {
-    try {
-      let localMicroGranted;
+  const requestMicrophone = useCallback(
+    async function () {
+      try {
+        let localMicroGranted;
 
-      localMicroGranted = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-      );
-
-      if (!localMicroGranted) {
-        const granted = await PermissionsAndroid.request(
+        localMicroGranted = await PermissionsAndroid.check(
           PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
         );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          setVoiceEnabled(true);
-        } else {
-          setVoiceEnabled(false);
+
+        if (!localMicroGranted) {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            setVoiceEnabled(true);
+          } else {
+            setVoiceEnabled(false);
+          }
         }
+      } catch (error) {
+        console.warn(error);
       }
-    } catch (error) {
-      console.warn(error);
-    }
-  }
+    },
+    [setVoiceEnabled],
+  );
 
   useEffect(
     function () {
@@ -62,6 +66,7 @@ export function useSettings() {
           setKeepScreenOnCommand(retrievedSettings.keepScreenOnCommand);
           setKeepScreenOnMinutes(retrievedSettings.keepScreenOnMinutes);
           setIsVibrating(retrievedSettings.isVibrating);
+          setKeepScreenDim(retrievedSettings.keepScreenDim);
         } catch (error) {
           console.error(
             `An error occurred in the load settings function`,
@@ -73,10 +78,12 @@ export function useSettings() {
       load();
     },
     [
+      requestMicrophone,
       setAlarmVolume,
       setAutoStopAlarmTimeout,
       setIsVibrating,
       setIsVoiceFeedbackEnabled,
+      setKeepScreenDim,
       setKeepScreenOnCommand,
       setKeepScreenOnMinutes,
       setVoiceEnabled,

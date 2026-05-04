@@ -18,6 +18,8 @@ export default memo(function AppBehavior() {
     setKeepScreenOnCommand,
     keepScreenOnMinutes,
     setKeepScreenOnMinutes,
+    keepScreenDim,
+    setKeepScreenDim,
   } = useSettingsData();
   const { updateSettingsInStorage } = useSettingsFunctions();
   const [minutes, setMinutes] = useState(keepScreenOnMinutes);
@@ -113,6 +115,26 @@ export default memo(function AppBehavior() {
           </View>
         </View>
       )}
+
+      <View style={[switchBox, setting]}>
+        <Text style={settingLabel}>
+          Keep Screen Dim (Locks brightness to minimum while the app is open.
+          Useful when you&apos;re working out or listening to audio and
+          don&apos;t need to look at the screen)
+        </Text>
+
+        <Switch
+          value={keepScreenDim}
+          onValueChange={(value) => {
+            setKeepScreenDim(value);
+            updateSettingsInStorage("keepScreenDim", value);
+          }}
+          thumbColor={Colors.primaryTint90}
+          trackColor={{
+            true: Colors.primaryTint40,
+          }}
+        />
+      </View>
     </View>
   );
 });

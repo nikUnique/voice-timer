@@ -26,7 +26,7 @@ export default function Timers({ navigation }) {
   const [isTaskStopped, setIsTaskStopped] = useState(false);
 
   const activeTimeRef = useRef(null);
-  const { dimScreenRef } = useSettingsData();
+  const { dimScreenRef, keepScreenDim } = useSettingsData();
   const lastCommandRef = useRef(null);
 
   const {
@@ -93,7 +93,7 @@ export default function Timers({ navigation }) {
           isValidCommandRef.current = recognizedCommand;
 
           if (activeTimeRef.current) {
-            await Brightness.restoreSystemBrightnessAsync();
+            if (!keepScreenDim) await Brightness.restoreSystemBrightnessAsync();
             clearTimeout(activeTimeRef.current);
             clearTimeout(dimScreenRef.current);
           }
@@ -151,6 +151,7 @@ export default function Timers({ navigation }) {
       dimScreenRef,
       isMediaPlayingRef,
       STOP_MEDIA,
+      keepScreenDim,
     ],
   );
 

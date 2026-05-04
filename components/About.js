@@ -16,7 +16,7 @@ export default function About() {
     >
       <Text style={styles.title}>About</Text>
       <Text style={styles.subtitle}>
-        <Text style={{ fontWeight: "bold" }}>Voice Timer</Text> – v1.0.0
+        <Text style={{ fontWeight: "bold" }}>Voice Timer</Text> – v0.1.0
       </Text>
       <Text style={styles.paragraph}>
         Voice Timer is a simple and flexible timer app designed for hands-free
@@ -59,6 +59,20 @@ export default function About() {
           isn&apos;t in use, then voice commands won&apos;t work.
         </Paragraph>
       </Section>
+
+      <Subtitle>Using Media While the App Is Open</Subtitle>
+      <Paragraph>
+        You can keep external media - music, podcasts, videos - playing while
+        the app runs in the foreground. To use any voice command while media is
+        playing, say &quot;Stop media&quot; first. This pauses playback and
+        activates voice control.
+      </Paragraph>
+
+      <Paragraph>
+        Pause and resume only work when controlled from within the app. If you
+        pause media using earphone buttons or directly inside the media app, the
+        app loses control over playback and will not be able to resume it.
+      </Paragraph>
 
       <Subtitle>Instructions On Naming Timers</Subtitle>
 
