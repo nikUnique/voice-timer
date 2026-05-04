@@ -1,15 +1,6 @@
-import Tts from "react-native-tts";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { createContext, useContext, useMemo, useRef, useState } from "react";
 import { useDefaultTimers } from "../hooks/useDefaultTimers";
-import { NativeModules } from "react-native";
+import useVoiceRecognizerContext from "./useVoiceRecognizerContext";
 
 const VoiceRecognizerContext = createContext();
 const SoundContext = createContext();
@@ -94,125 +85,12 @@ export default function VoiceRecognizerProvider({ children }) {
   const [isVibrating, setIsVibrating] = useState(false);
   const dimScreenRef = useRef(null);
 
-  const {
-    START,
-    CONTINUE,
-    RESET,
-    PAUSE,
-    REPEAT,
-    RESET_FINISHED,
-    DISCO,
-    TIME,
-    PLAY_MEDIA,
-    STOP_MEDIA,
-    STATUS_REPORT,
-    STATUS,
-  } = commandsRef.current ? commandsRef.current : {};
-
-  const getCommands = useCallback(async function getCommands(lang) {
-    switch (lang) {
-      case "en":
-      default:
-        commandsRef.current = await import("../utils/en_commands");
-    }
-  }, []);
-
-  useEffect(
-    function () {
-      getCommands(language);
-    },
-    [language, getCommands],
-  );
-
-  function pickBestVoice(voices) {
-    const enUs = voices.filter(
-      (v) => v.language === "en-US" && !v.notInstalled,
-    );
-    // offline first, then by quality desc
-    const sorted = enUs.sort((a, b) => {
-      if (a.networkConnectionRequired !== b.networkConnectionRequired)
-        return a.networkConnectionRequired ? 1 : -1; // offline first
-      return b.quality - a.quality; // higher quality first
-    });
-    return sorted[0] ?? null;
-  }
-  useEffect(() => {
-    Tts.getInitStatus().then(async () => {
-      Tts.setDefaultLanguage("en-US");
-      const available = await Tts.voices();
-      // console.log(available);
-
-      const bestVoice = pickBestVoice(available);
-      // console.log(bestVoice.name + "The best voice 📹");
-      // console.log(bestVoice.quality + "Quality");
-
-      await Tts.setDefaultVoice(bestVoice);
-    });
-  }, []);
-
-  const voiceOptions = useMemo(
-    () => ({
-      onStart: () => {
-        console.log("Started talking...");
-        isListeningRef.current = false;
-        setIsListening(false);
-      },
-      onStopped: () => {
-        isListeningRef.current = true;
-        setIsListening(true);
-        console.log("Speech stopped");
-      },
-      onDone: () => {
-        isListeningRef.current = true;
-        setIsListening(true);
-      },
-      onError: () => {
-        console.error("An error occurred during speech utterance");
-      },
-    }),
-    [],
-  );
-
-  const allTimers = timers.map((timer) => timer.name);
-
-  const allActions = useMemo(
-    () => [START, CONTINUE, RESET, PAUSE, STATUS],
-    [CONTINUE, PAUSE, RESET, START, STATUS],
-  );
-
-  const dynamicGrammarFirst = useMemo(
-    () =>
-      [
-        ...timers.map((timer) =>
-          allActions.map((action) => `${action} ${timer.name}`.toLowerCase()),
-        ),
-        REPEAT,
-        RESET_FINISHED,
-        DISCO,
-        TIME,
-        PLAY_MEDIA,
-        STOP_MEDIA,
-        STATUS_REPORT,
-      ]
-        .flatMap((command) => command)
-        .map((item) => `${item} ${secretIdentifierRef.current}`.trim()),
-    [
-      DISCO,
-      PLAY_MEDIA,
-      REPEAT,
-      RESET_FINISHED,
-      STATUS_REPORT,
-      STOP_MEDIA,
-      TIME,
-      allActions,
-      timers,
-    ],
-  );
-
-  const dynamicGrammar = useMemo(
-    () => [...dynamicGrammarFirst, ["unk"]],
-    [dynamicGrammarFirst],
-  );
+  const { allTimers, dynamicGrammar, allActions } = useVoiceRecognizerContext({
+    commandsRef,
+    language,
+    timers,
+    secretIdentifierRef,
+  });
 
   const value = useMemo(
     () => ({
@@ -265,7 +143,6 @@ export default function VoiceRecognizerProvider({ children }) {
 
   const refsData = useMemo(
     () => ({
-      voiceOptions,
       secretIdentifierRef,
       setIsListening,
       setIsAlarmingScreen,
@@ -306,7 +183,7 @@ export default function VoiceRecognizerProvider({ children }) {
       isMediaPausedRef,
       isMediaPlayingRef,
     }),
-    [editableTimers, timerHeight, timers, voiceOptions],
+    [editableTimers, timerHeight, timers],
   );
 
   const settingsData = useMemo(
