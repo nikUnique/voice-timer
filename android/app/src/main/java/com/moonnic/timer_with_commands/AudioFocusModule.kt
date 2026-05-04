@@ -16,6 +16,11 @@ import android.content.IntentFilter
 import com.facebook.react.bridge.Callback
 import android.os.Handler
 import android.os.Looper
+import com.facebook.react.bridge.NativeModule
+import android.media.AudioRecord
+import android.media.audiofx.AcousticEchoCanceler
+import android.media.audiofx.NoiseSuppressor
+import com.facebook.react.bridge.Promise
 
 private val TAG = "AudioFocusModule"
 private var hasFocus = false
@@ -102,5 +107,56 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
     fun toggleMedia(callback: Callback) {
         hasFocus = !hasFocus
         callback(hasFocus)  // true = take focus, false = give it away
+    }
+
+    @ReactMethod
+    fun startVoiceMode() {
+        val am = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        am.mode = AudioManager.MODE_IN_COMMUNICATION
+    }
+
+    @ReactMethod
+    fun stopVoiceMode() {
+        val am = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        am.mode = AudioManager.MODE_NORMAL
+    }
+    @ReactMethod
+    fun enableAEC() {
+        try {
+            val voskModule = reactApplicationContext.catalystInstance
+                .nativeModules
+                .firstOrNull { it.javaClass.name == "com.vosk.VoskModule" } ?: run {
+                    android.util.Log.e("VoskAEC", "VoskModule not found")
+                    return
+                }
+
+            val serviceField = voskModule.javaClass.getDeclaredField("speechService")
+            serviceField.setAccessible(true)
+            val service = serviceField.get(voskModule) ?: run {
+                android.util.Log.e("VoskAEC", "speechService is null")
+                return
+            }
+
+            val recorderField = service.javaClass.getDeclaredField("recorder")
+            recorderField.setAccessible(true)
+            val recorder = recorderField.get(service) as AudioRecord
+            val sessionId = recorder.audioSessionId
+
+            if (AcousticEchoCanceler.isAvailable()) {
+                AcousticEchoCanceler.create(sessionId)?.enabled = true
+            }
+            if (NoiseSuppressor.isAvailable()) {
+                NoiseSuppressor.create(sessionId)?.enabled = true
+            }
+            android.util.Log.d("VoskAEC", "AEC attached, session=$sessionId")
+        } catch (e: Exception) {
+            android.util.Log.e("VoskAEC", "AEC failed: ${e.message}")
+        }
+    }
+
+    @ReactMethod
+    fun isMediaPlaying(promise: Promise) {
+        val audioManager = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        promise.resolve(audioManager.isMusicActive)
     }
 }

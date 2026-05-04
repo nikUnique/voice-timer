@@ -1,7 +1,14 @@
 /* eslint-disable react-native/no-raw-text */
 import CheckBox from "@react-native-community/checkbox";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
+import { HeaderBackButton } from "@react-navigation/elements";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Alert,
   BackHandler,
@@ -18,6 +25,7 @@ import { getItemFromStorage, setItemInStorage } from "../utils/helpers";
 import Section from "./Section";
 import { BulletPoint, Label, Paragraph, Subtitle } from "./TextUnits";
 import { useResponsive } from "../hooks/useResponsive";
+import { useReady } from "../hooks/useReady";
 
 export default function Terms() {
   const [isAccepted, setIsAccepted] = useState(false);
@@ -38,6 +46,7 @@ export default function Terms() {
     function () {
       async function load() {
         const userAgreement = await getItemFromStorage("termsAgreement");
+
         setIsAccepted(userAgreement);
         setIsRead(userAgreement);
 
@@ -60,7 +69,7 @@ export default function Terms() {
         navigation.setOptions({
           headerLeft: () => (
             <IconButton
-              icon='exit'
+              icon='arrow-back'
               color={Colors.primaryTint90}
               size={24}
               style={{ marginRight: 32 }}
@@ -374,7 +383,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
 
-    padding: 16,
+    padding: 24,
     marginBottom: 32,
   },
 

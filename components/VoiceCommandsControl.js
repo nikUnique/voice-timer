@@ -37,8 +37,12 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     isListening,
   } = useRecognizerData();
 
-  const { recognizedCommandRef, setIsListening, isListeningRef } =
-    useRefsData();
+  const {
+    recognizedCommandRef,
+    setIsListening,
+    isListeningRef,
+    isMediaPlayingRef,
+  } = useRefsData();
 
   const { voiceEnabled } = useSettingsData();
 
@@ -69,6 +73,21 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     },
     [fadeAnimationRefCur, fadeInAndOut],
   );
+
+  useEffect(() => {
+    if (!isListening) return;
+
+    const interval = setInterval(async () => {
+      isMediaPlayingRef.current =
+        await NativeModules.AudioFocusModule.isMediaPlaying();
+      console.log(
+        isMediaPlayingRef.current,
+        "Is background media really playing ⏯️",
+      );
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isListening, isMediaPlayingRef]);
 
   const load = useCallback(async () => {
     try {
@@ -119,6 +138,8 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         .start({ grammar: dynamicGrammar })
         .then(() => {
           // NativeModules.AudioFocusModule?.startBluetoothSco();
+          // NativeModules.AudioFocusModule?.startVoiceMode();
+          // NativeModules.AudioFocusModule?.enableAEC();
           console.log("Starting recognition with grammar...");
           setIsRecognizing(true);
         })
@@ -132,6 +153,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
 
   const stop = useCallback(async () => {
     vosk.stop();
+    // NativeModules.AudioFocusModule?.stopVoiceMode();
     // NativeModules.AudioFocusModule?.stopBluetoothSco();
     console.log("Stoping recognition..." /* , result */);
     setIsRecognizing(false);

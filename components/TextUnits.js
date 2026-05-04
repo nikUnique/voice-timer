@@ -55,11 +55,18 @@ export function Label({ children }) {
   );
 }
 
-export function BulletPoint({ children }) {
+export function BulletPoint({ children, nested = false }) {
   const { t } = useResponsive();
 
   const styles = StyleSheet.create({
+    bulletPointContainer: {
+      flexDirection: "row",
+      marginLeft: nested ? 16 : 0,
+    },
     bulletPoint: {
+      width: 16,
+    },
+    text: {
       color: Colors.primaryTint90,
       fontSize: t.subheading,
     },
@@ -67,10 +74,8 @@ export function BulletPoint({ children }) {
 
   return (
     <View style={styles.bulletPointContainer}>
-      <Text style={styles.bulletPoint}>
-        {"\u2022 "}
-        {children + "\n"}
-      </Text>
+      <Text style={[styles.bulletPoint, styles.text]}>{"\u2022 "}</Text>
+      <Text style={styles.text}>{children + "\n"}</Text>
     </View>
   );
 }

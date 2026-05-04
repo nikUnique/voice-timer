@@ -8,6 +8,7 @@ import { sleep } from "../utils/helpers";
 
 import { useSound } from "./useSound";
 import { useSpeak } from "./useSpeak";
+import { NativeModules } from "react-native";
 
 export function useExecuteCommand({
   recognizedCommand,
@@ -26,13 +27,12 @@ export function useExecuteCommand({
   activateTimerRef,
   index,
 }) {
-  const { secretIdentifierRef, commandsRef } = useRefsData();
+  const { secretIdentifierRef, commandsRef, isMediaPlayingRef } = useRefsData();
 
   const { successSound } = useSettingsData();
 
-  const { CONTINUE, PAUSE, REPEAT, RESET, START } = commandsRef?.current
-    ? commandsRef.current
-    : {};
+  const { CONTINUE, PAUSE, REPEAT, RESET, START, STOP_MEDIA } =
+    commandsRef?.current ? commandsRef.current : {};
 
   const { playSoundGeneral } = useSound();
 
@@ -42,6 +42,23 @@ export function useExecuteCommand({
     async function () {
       try {
         if (!recognizedCommand?.recognizedCommand) return;
+
+        if (isMediaPlayingRef.current) {
+          if (recognizedCommand?.recognizedCommand.includes(STOP_MEDIA))
+            NativeModules.AudioFocusModule.requestAudioFocus((granted) => {
+              if (granted) speak("Media paused");
+            });
+        }
+        if (
+          isMediaPlayingRef.current &&
+          !recognizedCommand?.recognizedCommand.includes(STOP_MEDIA)
+        ) {
+          console.log(
+            "Stop the background media first before using other voice commands",
+          );
+
+          return;
+        }
 
         let availableCommands, isCommandValid, commandExecuted;
 

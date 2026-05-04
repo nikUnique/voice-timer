@@ -1,9 +1,10 @@
 import { useCallback, useRef } from "react";
-import { NativeModules, Vibration } from "react-native";
+import { AppState, NativeModules, Vibration } from "react-native";
 import Sound from "react-native-sound";
 
 import { useRefsData, useSoundData } from "../context/VoiceRecognizerContext";
 import Tts from "react-native-tts";
+import { useAppState } from "./useAppState";
 
 function useSound() {
   const alarmSoundObjectRef = useRef(null);
@@ -11,6 +12,7 @@ function useSound() {
   const { soundRef, shortSoundRef, soundIsPlayingRef, alertTimeoutRef } =
     useSoundData();
   const { isMediaPausedRef, isListeningRef } = useRefsData();
+  const { appStateRef } = useAppState();
 
   function startVibration() {
     Vibration.vibrate();
@@ -207,7 +209,10 @@ function useSound() {
     async function stopSound() {
       try {
         if (soundRef.current) {
-          if (!isMediaPausedRef.current && isListeningRef.current) {
+          if (
+            (!isMediaPausedRef.current && isListeningRef.current) ||
+            AppState.currentState !== "active"
+          ) {
             NativeModules.AudioFocusModule.releaseAudioFocus();
           }
           stopVibration();

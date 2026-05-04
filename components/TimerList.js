@@ -52,10 +52,11 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     leastTimeTimerRef,
     workingTimersRef,
     isMediaPausedRef,
+    isMediaPlayingRef,
   } = useRefsData();
 
   const { speak } = useSpeak();
-  const { REPEAT, RESET, RESET_FINISHED, DISCO, TIME, MEDIA } =
+  const { REPEAT, RESET, RESET_FINISHED, DISCO, TIME, PLAY_MEDIA, STOP_MEDIA } =
     commandsRef?.current ? commandsRef.current : {};
 
   const { successSound, discoSound } = useSettingsData();
@@ -100,6 +101,31 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
 
   useEffect(
     function () {
+      if (isMediaPlayingRef.current) {
+        if (recognizedCommandRef.current.includes(STOP_MEDIA))
+          NativeModules.AudioFocusModule.requestAudioFocus((granted) => {
+            if (granted) {
+              isMediaPausedRef.current = true;
+              speak("Media paused");
+              NativeModules.AudioFocusModule.requestAudioFocus((granted) => {
+                if (granted) {
+                  console.log();
+                }
+              });
+            }
+          });
+      }
+      if (
+        isMediaPlayingRef.current &&
+        !recognizedCommandRef.current.includes(STOP_MEDIA)
+      ) {
+        console.log(
+          "Stop the background media first before using other voice commands",
+        );
+
+        return;
+      }
+
       if (
         recognizedCommandRef.current?.toLowerCase() ===
         `${RESET_FINISHED} ${secretIdentifierRef.current?.split(" ").slice(2, -1)}`.trim()
@@ -122,34 +148,27 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       }
 
       if (
-        recognizedCommandRef.current?.toLowerCase().trim() === MEDIA &&
-        MEDIA
+        recognizedCommandRef.current?.toLowerCase().trim() === PLAY_MEDIA &&
+        PLAY_MEDIA
       ) {
         NativeModules.AudioFocusModule.toggleMedia((shouldTake) => {
-          if (shouldTake) {
-            isMediaPausedRef.current = true;
-            speak("Media paused");
-            NativeModules.AudioFocusModule.requestAudioFocus((granted) => {
-              if (granted) {
-                console.log();
-              }
-            });
-          } else {
-            isMediaPausedRef.current = false;
-            NativeModules.AudioFocusModule.releaseAudioFocus();
-          }
+          isMediaPausedRef.current = false;
+          NativeModules.AudioFocusModule.releaseAudioFocus();
         });
       }
+      recognizedCommandRef.current = null;
     },
     [
       DISCO,
-      MEDIA,
+      PLAY_MEDIA,
       RESET,
       RESET_FINISHED,
+      STOP_MEDIA,
       TIME,
       alertingTimerNamesRef,
       discoSound,
       isMediaPausedRef,
+      isMediaPlayingRef,
       playSoundGeneral,
       playSpecial,
       recognizedCommandRef,

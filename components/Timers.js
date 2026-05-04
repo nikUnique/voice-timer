@@ -44,14 +44,19 @@ export default function Timers({ navigation }) {
 
   const { soundRef, soundIsPlayingRef } = useSoundData();
 
-  const { setAlertingTimerNames, commandsRef, workingTimersRef, timers } =
-    useRefsData();
+  const {
+    setAlertingTimerNames,
+    commandsRef,
+    workingTimersRef,
+    timers,
+    isMediaPlayingRef,
+  } = useRefsData();
 
   const { defaultTimers } = useDefaultTimers();
 
   useServiceAndSpeechControl();
 
-  const { REPEAT, RESET_FINISHED } = commandsRef?.current
+  const { REPEAT, RESET_FINISHED, STOP_MEDIA } = commandsRef?.current
     ? commandsRef.current
     : {};
 
@@ -144,6 +149,8 @@ export default function Timers({ navigation }) {
       keepScreenOnCommand,
       keepScreenOnMinutes,
       dimScreenRef,
+      isMediaPlayingRef,
+      STOP_MEDIA,
     ],
   );
 

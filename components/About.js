@@ -9,7 +9,7 @@ export default function About() {
   return (
     <ScrollView
       style={{
-        paddingHorizontal: 16,
+        paddingHorizontal: 24,
         marginBottom: 32,
         marginTop: 16,
       }}
@@ -71,27 +71,28 @@ export default function About() {
           recognizing words rather than numbers.
         </Paragraph>
 
-        <Paragraph>Valid examples:</Paragraph>
-        {"\n"}
-        {"\t".repeat(2)}
-        <View style={styles.nestedStructure}>
-          <BulletPoint>Morning Routine</BulletPoint>
-          <BulletPoint>Workout Timer</BulletPoint>
-          <BulletPoint>Break Time</BulletPoint>
-        </View>
+        <Label>Valid examples:</Label>
+        <Paragraph>
+          <View>
+            <BulletPoint>Morning Routine</BulletPoint>
+            <BulletPoint>Workout Timer</BulletPoint>
+            <BulletPoint>Break Time</BulletPoint>
+          </View>
+        </Paragraph>
 
-        {"\n\n"}
         <Label>What’s not allowed:</Label>
-        <BulletPoint>
-          Digits: Names like &quot;Timer 1&quot;, &quot;Cooking 2&quot;, or
-          &quot;Work 3&quot; will not be accepted.
-        </BulletPoint>
-        <BulletPoint>
-          Non-letter characters: Any characters other than letters will be
-          rejected.
-        </BulletPoint>
-
-        {"\n\n"}
+        <Paragraph>
+          <View>
+            <BulletPoint>
+              Digits: Names like &quot;Timer 1&quot;, &quot;Cooking 2&quot;, or
+              &quot;Work 3&quot; will not be accepted.
+            </BulletPoint>
+            <BulletPoint>
+              Non-letter characters: Any characters other than letters will be
+              rejected.
+            </BulletPoint>
+          </View>
+        </Paragraph>
 
         <Label>Similar vs. Distinct Names</Label>
 
@@ -99,9 +100,7 @@ export default function About() {
           Although names can be similar, it’s a good idea to make each one
           distinct enough to avoid confusion. Here’s a comparison:
         </Paragraph>
-        <BulletPoint>Similar names:</BulletPoint>
-        {"\n"}
-        {"\t".repeat(2)}
+        <Label>Similar names:</Label>
         <View>
           <BulletPoint>
             &quot;Workout&quot; and &quot;Work Out&quot;
@@ -119,9 +118,7 @@ export default function About() {
           part of the name.
         </Paragraph>
 
-        <BulletPoint>Distinct names:</BulletPoint>
-        {"\n"}
-        {"\t".repeat(2)}
+        <Label>Distinct names:</Label>
         <View>
           <BulletPoint>
             &quot;Morning Workout&quot; and &quot;Afternoon Break&quot;

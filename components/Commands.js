@@ -1,98 +1,16 @@
 import { Ionicons } from "@expo/vector-icons";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Colors } from "../constants/colors";
 import { useResponsive } from "../hooks/useResponsive";
-
-export default function Commands() {
-  const { t } = useResponsive();
-
-  const title = {
-    fontSize: t.heading,
-    fontWeight: "600",
-    color: Colors.primaryTint90,
-    marginBottom: 16,
-  };
-  const subtitle = {
-    fontSize: t.subheading,
-    color: Colors.primaryTint70,
-    marginBottom: 20,
-  };
-  const badgeText = {
-    fontSize: t.label,
-    fontWeight: "700",
-    color: Colors.primaryTint70,
-    letterSpacing: 0.5,
-  };
-
-  const commandText = {
-    fontSize: t.body,
-    fontWeight: "600",
-    color: Colors.primaryTint90,
-    marginBottom: 3,
-  };
-
-  const exampleText = {
-    fontSize: t.caption,
-    fontStyle: "italic",
-    color: Colors.primaryTint40,
-    marginBottom: 4,
-  };
-
-  const descriptionText = {
-    fontSize: t.caption,
-    color: Colors.grayTint20,
-    lineHeight: 18,
-  };
-
-  const iconBox = {
-    width: 48,
-    height: 48,
-    borderRadius: 10,
-    backgroundColor: Colors.primaryShade30,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 2,
-    flexShrink: 0,
-  };
-
-  return (
-    <View style={styles.container}>
-      <Text style={title}>Voice Commands</Text>
-      <Text style={subtitle}>
-        Use the following voice commands to control the timer hands-free.
-      </Text>
-      <ScrollView
-        style={styles.list}
-        showsVerticalScrollIndicator={false}
-      >
-        {commands.map(
-          ({ command, example, description, icon, badge }, index) => (
-            <View
-              key={index}
-              style={styles.commandItem}
-            >
-              <View style={iconBox}>
-                <Ionicons
-                  name={icon}
-                  size={20}
-                  color={Colors.primaryTint40}
-                />
-              </View>
-              <View style={styles.textContainer}>
-                <View style={styles.badgeWrap}>
-                  <Text style={badgeText}>{badge}</Text>
-                </View>
-                <Text style={commandText}>{command}</Text>
-                {example && <Text style={exampleText}>"{example}"</Text>}
-                <Text style={descriptionText}>{description}</Text>
-              </View>
-            </View>
-          ),
-        )}
-      </ScrollView>
-    </View>
-  );
-}
+import { memo, useCallback, useEffect, useState } from "react";
+import LoadingIndicator from "../ui/LoadingIndicator";
 
 const commands = [
   {
@@ -147,6 +65,114 @@ const commands = [
     badge: "TIME",
   },
 ];
+
+export default memo(function Commands() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const id = setTimeout(() => setReady(true), 0);
+    return () => clearTimeout(id);
+  }, []);
+
+  const { t } = useResponsive();
+
+  const title = {
+    fontSize: t.heading,
+    fontWeight: "600",
+    color: Colors.primaryTint90,
+    marginBottom: 16,
+  };
+  const subtitle = {
+    fontSize: t.subheading,
+    color: Colors.primaryTint70,
+    marginBottom: 20,
+  };
+
+  const renderItem = useCallback(
+    function ({ icon, badge, command, example, description }) {
+      const badgeText = {
+        fontSize: t.label,
+        fontWeight: "700",
+        color: Colors.primaryTint70,
+        letterSpacing: 0.5,
+      };
+
+      const commandText = {
+        fontSize: t.body,
+        fontWeight: "600",
+        color: Colors.primaryTint90,
+        marginBottom: 3,
+      };
+
+      const exampleText = {
+        fontSize: t.caption,
+        fontStyle: "italic",
+        color: Colors.primaryTint40,
+        marginBottom: 4,
+      };
+
+      const descriptionText = {
+        fontSize: t.caption,
+        color: Colors.grayTint20,
+        lineHeight: 18,
+      };
+
+      const iconBox = {
+        width: 48,
+        height: 48,
+        borderRadius: 10,
+        backgroundColor: Colors.primaryShade30,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 2,
+        flexShrink: 0,
+      };
+
+      return (
+        <View style={styles.commandItem}>
+          <View style={iconBox}>
+            <Ionicons
+              name={icon}
+              size={20}
+              color={Colors.primaryTint40}
+            />
+          </View>
+          <View style={styles.textContainer}>
+            <View style={styles.badgeWrap}>
+              <Text style={badgeText}>{badge}</Text>
+            </View>
+            <Text style={commandText}>{command}</Text>
+            {example && <Text style={exampleText}>"{example}"</Text>}
+            <Text style={descriptionText}>{description}</Text>
+          </View>
+        </View>
+      );
+    },
+    [t.body, t.caption, t.label],
+  );
+
+  return ready ? (
+    <View style={styles.container}>
+      <Text style={title}>Voice Commands</Text>
+      <Text style={subtitle}>
+        Use the following voice commands to control the timer hands-free.
+      </Text>
+      <FlatList
+        data={commands}
+        renderItem={({ item }) => renderItem(item)}
+        style={styles.list}
+        showsVerticalScrollIndicator={false}
+        keyExtractor={(item) => item.command}
+        initialNumToRender={20}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        removeClippedSubviews={true}
+      />
+    </View>
+  ) : (
+    <LoadingIndicator />
+  );
+});
 
 const styles = StyleSheet.create({
   container: {
