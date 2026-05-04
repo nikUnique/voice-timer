@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, StyleSheet, Text } from "react-native";
+import { Animated, Text } from "react-native";
 import { Colors } from "../constants/colors";
 import { useRefsData } from "../context/VoiceRecognizerContext";
+import { useSpeak } from "../hooks/useSpeak";
 import { emitter } from "../utils/EventEmitter";
 import { formatTime } from "../utils/helpers";
 
@@ -17,6 +18,7 @@ export default function Time({
   const [timeLeft, setTimeLeft] = useState(time);
   const fadeAnimationRefCur = useRef(new Animated.Value(1)).current;
 
+  const { speak } = useSpeak();
   const { currentlyViewedItemRef } = useRefsData();
 
   Time[`timeLeft${name}`] = timeLeft;
@@ -81,6 +83,8 @@ export default function Time({
       setIsActive,
       currentlyViewedItemRef,
       name,
+      speak,
+      time,
     ],
   );
 

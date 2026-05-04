@@ -6,9 +6,10 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { sleep } from "../utils/helpers";
 
+import { NativeModules } from "react-native";
+import { getSharedObject } from "../utils/sharedVariables";
 import { useSound } from "./useSound";
 import { useSpeak } from "./useSpeak";
-import { NativeModules } from "react-native";
 
 export function useExecuteCommand({
   recognizedCommand,
@@ -31,12 +32,33 @@ export function useExecuteCommand({
 
   const { successSound } = useSettingsData();
 
-  const { CONTINUE, PAUSE, REPEAT, RESET, START, STOP_MEDIA } =
+  const { CONTINUE, PAUSE, REPEAT, RESET, START, STOP_MEDIA, STATUS } =
     commandsRef?.current ? commandsRef.current : {};
 
   const { playSoundGeneral } = useSound();
 
   const { speak } = useSpeak();
+
+  const formatSingleTimerSpeech = useCallback(
+    ({ name, remainingSeconds, paused, completed, isActive }) => {
+      if (!completed && !isActive) return `${name} is not active.`;
+      if (completed) return `${name} is completed.`;
+
+      const m = Math.floor(remainingSeconds / 60);
+      const s = remainingSeconds % 60;
+
+      const timeStr =
+        m > 0 && s > 0
+          ? `${m} minute${m !== 1 ? "s" : ""} ${s} second${s !== 1 ? "s" : ""}`
+          : m > 0
+            ? `${m} minute${m !== 1 ? "s" : ""}`
+            : `${s} second${s !== 1 ? "s" : ""}`;
+
+      const state = paused ? "paused" : "running";
+      return `${name} is ${state}. ${timeStr} left.`;
+    },
+    [],
+  );
 
   const executeCommand = useCallback(
     async function () {
@@ -54,10 +76,32 @@ export function useExecuteCommand({
           !recognizedCommand?.recognizedCommand.includes(STOP_MEDIA)
         ) {
           console.log(
-            "Stop the background media first before using other voice commands",
+            "Stop the background media first before using other voice commands - useExecuteCommand",
           );
 
           return;
+        }
+
+        if (
+          recognizedCommand?.recognizedCommand
+            ?.toLowerCase()
+            .includes(
+              `${STATUS} ${name} ${secretIdentifierRef.current}`
+                .toLocaleLowerCase()
+                .trim(),
+            )
+        ) {
+          speak(
+            formatSingleTimerSpeech({
+              name,
+              remainingSeconds: timeLeftRef.current,
+              paused: isPaused,
+              completed: getSharedObject().alertingTimerNames.includes(name),
+              isActive,
+            }),
+          );
+
+          commandExecuted = true;
         }
 
         let availableCommands, isCommandValid, commandExecuted;
@@ -197,12 +241,15 @@ export function useExecuteCommand({
     },
     [
       recognizedCommand?.recognizedCommand,
+      isMediaPlayingRef,
+      STOP_MEDIA,
+      STATUS,
+      name,
+      secretIdentifierRef,
       isActive,
       START,
       REPEAT,
       isBusyRef,
-      name,
-      secretIdentifierRef,
       PAUSE,
       CONTINUE,
       RESET,
@@ -210,6 +257,7 @@ export function useExecuteCommand({
       timeLeftRef,
       lastCommandRef,
       speak,
+      formatSingleTimerSpeech,
       clearCommand,
       startTimer,
       timerIsActiveRef,

@@ -104,6 +104,8 @@ export default function VoiceRecognizerProvider({ children }) {
     TIME,
     PLAY_MEDIA,
     STOP_MEDIA,
+    STATUS_REPORT,
+    STATUS,
   } = commandsRef.current ? commandsRef.current : {};
 
   const getCommands = useCallback(async function getCommands(lang) {
@@ -173,8 +175,8 @@ export default function VoiceRecognizerProvider({ children }) {
   const allTimers = timers.map((timer) => timer.name);
 
   const allActions = useMemo(
-    () => [START, CONTINUE, RESET, PAUSE],
-    [CONTINUE, PAUSE, RESET, START],
+    () => [START, CONTINUE, RESET, PAUSE, STATUS],
+    [CONTINUE, PAUSE, RESET, START, STATUS],
   );
 
   const dynamicGrammarFirst = useMemo(
@@ -189,6 +191,7 @@ export default function VoiceRecognizerProvider({ children }) {
         TIME,
         PLAY_MEDIA,
         STOP_MEDIA,
+        STATUS_REPORT,
       ]
         .flatMap((command) => command)
         .map((item) => `${item} ${secretIdentifierRef.current}`.trim()),
@@ -197,6 +200,7 @@ export default function VoiceRecognizerProvider({ children }) {
       PLAY_MEDIA,
       REPEAT,
       RESET_FINISHED,
+      STATUS_REPORT,
       STOP_MEDIA,
       TIME,
       allActions,

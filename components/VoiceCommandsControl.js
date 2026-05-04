@@ -80,10 +80,10 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     const interval = setInterval(async () => {
       isMediaPlayingRef.current =
         await NativeModules.AudioFocusModule.isMediaPlaying();
-      console.log(
-        isMediaPlayingRef.current,
-        "Is background media really playing ⏯️",
-      );
+      // console.log(
+      //   isMediaPlayingRef.current,
+      //   "Is background media really playing ⏯️",
+      // );
     }, 1000);
 
     return () => clearInterval(interval);
@@ -152,10 +152,10 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
   }, [isReady, stop, isListening, vosk, dynamicGrammar]);
 
   const stop = useCallback(async () => {
-    vosk.stop();
+    await vosk.stop();
     // NativeModules.AudioFocusModule?.stopVoiceMode();
     // NativeModules.AudioFocusModule?.stopBluetoothSco();
-    console.log("Stoping recognition..." /* , result */);
+    console.log("Stopping recognition..." /* , result */);
     setIsRecognizing(false);
   }, [vosk]);
 

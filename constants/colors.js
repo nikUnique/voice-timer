@@ -16,6 +16,16 @@ export const Colors = {
   grayTint20: "#5d6166",
   grayTint70: "#c2c4c6",
 
+  // --- primary alpha variants ---
+  // primaryTint8 (#0c8599) at 15% — icon box fill
+  primaryTint8Alpha15: "rgba(12,133,153,0.15)",
+  // primaryTint8 (#0c8599) at 30% — icon box border
+  primaryTint8Alpha30: "rgba(12,133,153,0.30)",
+  // primaryTint40 (#6daab6) at 8% — badge fill
+  primaryTint40Alpha8: "rgba(109,170,182,0.08)",
+  // primaryTint40 (#6daab6) at 40% — badge border
+  primaryTint40Alpha40: "rgba(109,170,182,0.40)",
+
   // --- card backgrounds — maketintsandshades.com shade-75 of respective OC base ---
   // shade-75: color × 0.25
 

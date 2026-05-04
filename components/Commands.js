@@ -46,9 +46,9 @@ const commands = [
     command: "Repeat",
     example: "Repeat",
     description:
-      "Restarts the timer from the most recent command. Only works if the timer is inactive.",
+      "Restarts the timer from the last individual timer command. Any command that used a specific timer counts - that timer will be restarted. E.g. if you last said 'start twenty minutes' or 'reset twenty minutes', where 'twenty minutes' is one of your timers, saying 'Repeat' restarts the 'twenty-minutes' timer.",
     icon: "repeat-outline",
-    badge: "REPEAT",
+    badge: "REPEAT",   
   },
   {
     command: "Reset finished",
@@ -63,6 +63,22 @@ const commands = [
     description: "Tells you the exact time.",
     icon: "time-outline",
     badge: "TIME",
+  },
+  {
+    command: "Play media",
+    example: "Play media",
+    description:
+      "Resumes external media playback. While media is playing, only the 'Stop media' command is accepted - all other commands are ignored.",
+    icon: "play-circle-outline",
+    badge: "PLAY",
+  },
+  {
+    command: "Stop media",
+    example: "Stop media",
+    description:
+      "Pauses external media and restores full voice control. Required before any other command will be accepted - while media is playing, this is the only command that works.",
+    icon: "stop-circle-outline",
+    badge: "STOP",
   },
 ];
 
@@ -91,24 +107,24 @@ export default memo(function Commands() {
   const renderItem = useCallback(
     function ({ icon, badge, command, example, description }) {
       const badgeText = {
+        fontFamily: "JetBrainsMono", // or your monospace font
         fontSize: t.label,
-        fontWeight: "700",
-        color: Colors.primaryTint70,
-        letterSpacing: 0.5,
+        letterSpacing: 1.1,
+        color: Colors.primaryTint40,
       };
 
       const commandText = {
         fontSize: t.body,
         fontWeight: "600",
         color: Colors.primaryTint90,
-        marginBottom: 3,
       };
 
       const exampleText = {
         fontSize: t.caption,
-        fontStyle: "italic",
-        color: Colors.primaryTint40,
-        marginBottom: 4,
+
+        fontFamily: "JetBrainsMono",
+
+        color: Colors.primaryTint8,
       };
 
       const descriptionText = {
@@ -117,32 +133,25 @@ export default memo(function Commands() {
         lineHeight: 18,
       };
 
-      const iconBox = {
-        width: 48,
-        height: 48,
-        borderRadius: 10,
-        backgroundColor: Colors.primaryShade30,
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 2,
-        flexShrink: 0,
-      };
-
       return (
-        <View style={styles.commandItem}>
-          <View style={iconBox}>
+        <View style={styles.card}>
+          <View style={styles.iconBox}>
             <Ionicons
               name={icon}
-              size={20}
+              size={18}
               color={Colors.primaryTint40}
             />
           </View>
-          <View style={styles.textContainer}>
-            <View style={styles.badgeWrap}>
+          <View style={styles.body}>
+            <View style={styles.badge}>
               <Text style={badgeText}>{badge}</Text>
             </View>
             <Text style={commandText}>{command}</Text>
-            {example && <Text style={exampleText}>"{example}"</Text>}
+            {example && (
+              <Text style={exampleText}>
+                <Text style={styles.prompt}>&gt; </Text>&quot;{example}&quot;
+              </Text>
+            )}
             <Text style={descriptionText}>{description}</Text>
           </View>
         </View>
@@ -183,6 +192,22 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
   },
+  card: {
+    backgroundColor: Colors.primaryShade50, // #092e34
+    borderRadius: 14,
+    borderLeftWidth: 3,
+    borderLeftColor: Colors.primary, // #0b7285
+    paddingVertical: 14,
+    paddingRight: 16,
+    paddingLeft: 13,
+    flexDirection: "row",
+    gap: 14,
+    marginBottom: 10,
+  },
+  body: {
+    flex: 1,
+    gap: 4,
+  },
   commandItem: {
     flexDirection: "row",
     alignItems: "flex-start",
@@ -194,18 +219,29 @@ const styles = StyleSheet.create({
     borderColor: Colors.whiteAlpha10,
     gap: 12,
   },
-  // iconBox: {
-  //   width: 36,
-  //   height: 36,
-  //   borderRadius: 10,
-  //   backgroundColor: Colors.primaryShade30,
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   marginTop: 2,
-  //   flexShrink: 0,
-  // },
+  iconBox: {
+    width: 38,
+    height: 38,
+    borderRadius: 10,
+    backgroundColor: Colors.primaryTint8Alpha15,
+    borderWidth: 1,
+    borderColor: Colors.primaryTint8Alpha30,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 2,
+  },
   textContainer: {
     flex: 1,
+  },
+  badge: {
+    alignSelf: "flex-start",
+    borderWidth: 1,
+    borderColor: Colors.primaryTint40Alpha40,
+    borderRadius: 5,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    backgroundColor: Colors.primaryTint40Alpha8,
+    marginBottom: 1,
   },
   badgeWrap: {
     alignSelf: "flex-start",
@@ -215,27 +251,9 @@ const styles = StyleSheet.create({
     paddingVertical: 1,
     marginBottom: 6,
   },
-  // badge: {
-  //   fontSize: 10,
-  //   fontWeight: "700",
-  //   color: Colors.primaryTint70,
-  //   letterSpacing: 0.5,
-  // },
-  // command: {
-  //   fontSize: 18,
-  //   fontWeight: "600",
-  //   color: Colors.primaryTint90,
-  //   marginBottom: 3,
-  // },
-  // example: {
-  //   fontSize: 14,
-  //   fontStyle: "italic",
-  //   color: Colors.primaryTint40,
-  //   marginBottom: 4,
-  // },
-  // description: {
-  //   fontSize: 14,
-  //   color: Colors.grayTint20,
-  //   lineHeight: 18,
-  // },
+  prompt: {
+    color: Colors.primaryShade30,
+    fontWeight: "700",
+    fontSize: 14,
+  },
 });

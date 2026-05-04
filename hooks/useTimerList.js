@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
-import { updateSharedObject } from "../utils/sharedVariables";
+import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import { getItemFromStorage, setItemInStorage, sleep } from "../utils/helpers";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -220,11 +220,47 @@ export function useTimerList({
     }
   }
 
+  const formatStatusSpeech = useCallback(function () {
+    const runningTimerNamesLength = getSharedObject().runningTimerNames.length;
+    const pausedTimerNamesLength = getSharedObject().pausedTimerNames.length;
+    const alertingTimerNamesLength =
+      getSharedObject().alertingTimerNames.length;
+    if (
+      !runningTimerNamesLength &&
+      !pausedTimerNamesLength &&
+      !alertingTimerNamesLength
+    ) {
+      return "No timers active.";
+    }
+
+    const headerParts = [
+      runningTimerNamesLength ? `${runningTimerNamesLength} running` : null,
+      pausedTimerNamesLength ? `${pausedTimerNamesLength} paused` : null,
+      alertingTimerNamesLength ? `${alertingTimerNamesLength} completed` : null,
+    ].filter(Boolean);
+
+    const header = headerParts.join(", ") + ".";
+
+    const timerLines = [
+      runningTimerNamesLength && "Running timers: ",
+      ...(getSharedObject().runningTimerNames.join(", ") + ". "),
+      pausedTimerNamesLength && "Paused timers: ",
+      ...(getSharedObject().pausedTimerNames.join(", ") + ". "),
+      alertingTimerNamesLength && "Completed timers: ",
+      ...(getSharedObject().alertingTimerNames.join(", ") + ". "),
+    ]
+      .filter(Boolean)
+      .join("");
+
+    return `${header} ${timerLines}`;
+  }, []);
+
   return {
     handleDelete,
     handleReadyState,
     clearCommand,
     renderTimer,
     onLayoutHandler,
+    formatStatusSpeech,
   };
 }

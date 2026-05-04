@@ -56,24 +56,37 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
   } = useRefsData();
 
   const { speak } = useSpeak();
-  const { REPEAT, RESET, RESET_FINISHED, DISCO, TIME, PLAY_MEDIA, STOP_MEDIA } =
-    commandsRef?.current ? commandsRef.current : {};
+  const {
+    REPEAT,
+    RESET,
+    RESET_FINISHED,
+    DISCO,
+    TIME,
+    PLAY_MEDIA,
+    STOP_MEDIA,
+    STATUS_REPORT,
+  } = commandsRef?.current ? commandsRef.current : {};
 
   const { successSound, discoSound } = useSettingsData();
   const { playSoundGeneral, playSpecial } = useSound();
-  const { handleDelete, handleReadyState, renderTimer, onLayoutHandler } =
-    useTimerList({
-      timers,
-      setTimers,
-      setIsReady,
-      setRecognizedCommand,
-      flatListRef,
-      REPEAT,
-      lastCommandRef,
-      containerHeight,
-      setIsTaskStopped,
-      setContainerHeight,
-    });
+  const {
+    handleDelete,
+    handleReadyState,
+    renderTimer,
+    onLayoutHandler,
+    formatStatusSpeech,
+  } = useTimerList({
+    timers,
+    setTimers,
+    setIsReady,
+    setRecognizedCommand,
+    flatListRef,
+    REPEAT,
+    lastCommandRef,
+    containerHeight,
+    setIsTaskStopped,
+    setContainerHeight,
+  });
 
   const sortedTimers = useMemo(() => timers.slice().reverse(), [timers]);
 
@@ -156,6 +169,14 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           NativeModules.AudioFocusModule.releaseAudioFocus();
         });
       }
+
+      if (
+        recognizedCommandRef.current?.toLowerCase().trim() === STATUS_REPORT &&
+        STATUS_REPORT
+      ) {
+        speak(formatStatusSpeech(), 0.3);
+      }
+
       recognizedCommandRef.current = null;
     },
     [
@@ -163,10 +184,12 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       PLAY_MEDIA,
       RESET,
       RESET_FINISHED,
+      STATUS_REPORT,
       STOP_MEDIA,
       TIME,
       alertingTimerNamesRef,
       discoSound,
+      formatStatusSpeech,
       isMediaPausedRef,
       isMediaPlayingRef,
       playSoundGeneral,

@@ -121,6 +121,9 @@ export function useResetTimer({
           runningTimerNames: getSharedObject().runningTimerNames.filter(
             (timerName) => timerName !== name,
           ),
+          pausedTimerNames: getSharedObject().pausedTimerNames.filter(
+            (timerName) => timerName !== name,
+          ),
           timers: getSharedObject().timers.map((timer) => {
             return timer?.label.trim().toLowerCase() ===
               updatableTimer?.label.trim().toLowerCase() && !timer.endTime
