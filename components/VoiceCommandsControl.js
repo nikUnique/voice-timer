@@ -3,6 +3,7 @@ import Vosk from "react-native-vosk";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
+  AppState,
   NativeModules,
   PermissionsAndroid,
   StyleSheet,
@@ -17,6 +18,8 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { useIsLocked } from "../hooks/useIsLocked";
 import { sleep } from "../utils/helpers";
+import { emitter } from "../utils/EventEmitter";
+import Tts from "react-native-tts";
 
 export default memo(function VoiceCommandsControl({ setCommand }) {
   const [isReady, setIsReady] = useState(false);
@@ -127,11 +130,17 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         return;
       }
 
-      await stop();
-
-      if (!isListening) {
+      // if (!isListening) {
+      //   console.log("The app is not listening 💣");
+      //   return;
+      // }
+      if (!voiceEnabled) {
         console.log("The app is not listening 💣");
         return;
+      }
+
+      if (AppState.currentState === "active") {
+        await stop();
       }
 
       const microGranted = await PermissionsAndroid.check(
@@ -143,19 +152,20 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         return;
       }
 
-      vosk
-        .start({ grammar: dynamicGrammar })
-        .then(() => {
-          console.log("Starting recognition with grammar...");
-          setIsRecognizing(true);
-        })
-        .catch((e) =>
-          console.error(`An error occurred while initializing vosk`, e),
-        );
+      AppState.currentState === "active" &&
+        vosk
+          .start({ grammar: dynamicGrammar })
+          .then(() => {
+            console.log("Starting recognition with grammar...");
+            setIsRecognizing(true);
+          })
+          .catch((e) =>
+            console.error(`An error occurred while initializing vosk`, e),
+          );
     } catch (error) {
       console.error("An error occurred in the recordGrammar function", error);
     }
-  }, [isReady, stop, isListening, vosk, dynamicGrammar]);
+  }, [isReady, voiceEnabled, vosk, dynamicGrammar, stop]);
 
   const stop = useCallback(async () => {
     await vosk.stop();
@@ -176,30 +186,26 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
   useEffect(
     function () {
       async function loadThis() {
-        if (!voiceEnabled || !isListening) {
-          await stop();
-          return;
-        }
+        // if (!voiceEnabled || !isListening) {
+        //   await stop();
+        //   return;
+        // }
 
-        if (isListening && isReady /* && !isPhoneLocked */) {
+        if (/* isListening */ voiceEnabled && isReady /* && !isPhoneLocked */) {
           await recordGrammar();
         } else {
+          setIsRecognizing(false);
+          // stop();
+        }
+
+        if (!voiceEnabled) {
           setIsRecognizing(false);
           stop();
         }
       }
       loadThis();
     },
-    [
-      isListening,
-      isReady,
-      recordGrammar,
-      setIsListening,
-      stop,
-      vosk,
-      voiceEnabled,
-      isPhoneLocked,
-    ],
+    [isReady, recordGrammar, setIsListening, vosk, voiceEnabled, stop],
   );
 
   useEffect(() => {
@@ -220,11 +226,13 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         ? "Unrecognized phrase"
         : res;
 
-      setResult(checkedResponse);
-      setRecognizedCommand(checkedResponse);
-      setRecognizedTime(Date.now());
+      if (isListeningRef.current && voiceEnabled) {
+        setResult(checkedResponse);
+        setRecognizedCommand(checkedResponse);
+        setRecognizedTime(Date.now());
 
-      recognizedCommandRef.current = res;
+        recognizedCommandRef.current = res;
+      }
     });
 
     const errorEvent = vosk.onError((e) => {
@@ -255,6 +263,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     vosk,
     isListening,
     isListeningRef,
+    voiceEnabled,
   ]);
 
   return (

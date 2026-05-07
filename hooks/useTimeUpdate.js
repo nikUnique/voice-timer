@@ -241,15 +241,15 @@ export function useTimeUpdate({
           await sendNotification();
         }
 
-        if (
-          !workingTimersRef.current?.length &&
-          !alertingTimerNamesRef.current?.length
-        ) {
-          console.log("Background service stops...");
+        // if (
+        //   !workingTimersRef.current?.length &&
+        //   !alertingTimerNamesRef.current?.length
+        // ) {
+        //   console.log("Background service stops...");
 
-          updateSharedObject({ isTaskRunning: false });
-          BackgroundService?.stop();
-        }
+        //   updateSharedObject({ isTaskRunning: false });
+        //   BackgroundService?.stop();
+        // }
 
         clearTimeout(timeoutRef.current);
 

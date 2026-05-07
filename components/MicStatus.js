@@ -110,12 +110,12 @@ export default function MicStatus() {
       <View style={[styles.toggleListening, toggleListeningBackground]}>
         <View style={styles.isListeningStatus}>
           <Ionicons
-            name={voiceEnabled && isListening ? "mic" : "mic-outline"}
+            name={voiceEnabled /* && isListening */ ? "mic" : "mic-outline"}
             size={t.title}
             color={Colors.primary}
           />
           <Text style={isListeningText}>
-            {voiceEnabled && isListening && !isPhoneLocked
+            {voiceEnabled /* && isListening */ && !isPhoneLocked
               ? "Listening..."
               : "Not Listening"}{" "}
             (Tap to change)

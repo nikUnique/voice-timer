@@ -153,9 +153,9 @@ export function useResetTimer({
 
         setItemInStorage("timerHistory", getSharedObject().timers);
 
-        if (getSharedObject().runningTimerNames.length === 0) {
-          BackgroundService.stop();
-        }
+        // if (getSharedObject().runningTimerNames.length === 0) {
+        //   BackgroundService.stop();
+        // }
 
         setAlertingTimerNames(alertingTimerNamesRef.current);
         setItemInStorage("alertingTimerNames", alertingTimerNamesRef.current);
@@ -205,15 +205,15 @@ export function useResetTimer({
           removeItemFromStorage("alertingTimerNames");
         }
 
-        if (
-          workingTimersRef.current.length -
-            alertingTimerNamesRef.current.length ===
-          0
-        ) {
-          await BackgroundService.stop();
-          updateSharedObject({ isTaskRunning: false });
-          // await notifee.stopForegroundService();
-        }
+        // if (
+        //   workingTimersRef.current.length -
+        //     alertingTimerNamesRef.current.length ===
+        //   0
+        // ) {
+        //   await BackgroundService.stop();
+        //   updateSharedObject({ isTaskRunning: false });
+        //   // await notifee.stopForegroundService();
+        // }
 
         await removeItemFromStorage(`timerStarted-${name}`);
         await removeItemFromStorage(`timerState-${name}`);
@@ -254,8 +254,8 @@ export function useResetTimer({
         if (workingTimersRef.current?.length === 0) {
           notifee.cancelAllNotifications();
           notifee.cancelDisplayedNotifications();
-          updateSharedObject({ isTaskRunning: false });
-          BackgroundService.stop();
+          // updateSharedObject({ isTaskRunning: false });
+          // BackgroundService.stop();
         }
 
         // This is important becuase if the app is closed then the currentActivityRef.current will be null
