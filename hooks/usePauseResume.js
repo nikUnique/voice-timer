@@ -186,6 +186,8 @@ export function usePauseResume({
           }),
         });
 
+        
+
         setTimersHistory((cur) =>
           cur.map((timer) => {
             return timer?.label.toLowerCase() ===

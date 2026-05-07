@@ -46,10 +46,6 @@ export function useTimeUpdate({
 
       setAlertingTimerNames(alertingTimerNamesRef.current);
 
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-
-      // console.log("should play", name, alarmVolume);
-
       if (alertingTimerNamesRef.current?.length > 0) {
         notifee.cancelDisplayedNotification("92901");
       }
