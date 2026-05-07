@@ -65,6 +65,9 @@ export function useExecuteCommand({
       try {
         if (!recognizedCommand?.recognizedCommand) return;
 
+        isMediaPlayingRef.current =
+          await NativeModules.AudioFocusModule.isMediaPlaying();
+
         if (isMediaPlayingRef.current) {
           if (recognizedCommand?.recognizedCommand.includes(STOP_MEDIA))
             NativeModules.AudioFocusModule.requestAudioFocus((granted) => {

@@ -17,9 +17,6 @@ import {
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
 import { useIsLocked } from "../hooks/useIsLocked";
-import { sleep } from "../utils/helpers";
-import { emitter } from "../utils/EventEmitter";
-import Tts from "react-native-tts";
 
 export default memo(function VoiceCommandsControl({ setCommand }) {
   const [isReady, setIsReady] = useState(false);
@@ -55,8 +52,6 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
 
   const { voiceEnabled } = useSettingsData();
 
-  const { isPhoneLocked } = useIsLocked();
-
   const fadeInAndOut = useCallback(
     function () {
       Animated.sequence([
@@ -82,21 +77,6 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     },
     [fadeAnimationRefCur, fadeInAndOut],
   );
-
-  useEffect(() => {
-    if (!isListening) return;
-
-    const interval = setInterval(async () => {
-      isMediaPlayingRef.current =
-        await NativeModules.AudioFocusModule.isMediaPlaying();
-      // console.log(
-      //   isMediaPlayingRef.current,
-      //   "Is background media really playing ⏯️",
-      // );
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isListening, isMediaPlayingRef]);
 
   const load = useCallback(async () => {
     try {

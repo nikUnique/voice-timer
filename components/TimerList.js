@@ -115,71 +115,81 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
 
   useEffect(
     function () {
-      if (isMediaPlayingRef.current) {
-        if (recognizedCommandRef.current.includes(STOP_MEDIA))
-          NativeModules.AudioFocusModule.requestAudioFocus((granted) => {
-            if (granted) {
-              isMediaPausedRef.current = true;
-              speak("Media paused");
-              NativeModules.AudioFocusModule.requestAudioFocus((granted) => {
-                if (granted) {
-                  console.log();
-                }
-              });
-            }
+      async function load() {
+        isMediaPlayingRef.current =
+          await NativeModules.AudioFocusModule.isMediaPlaying();
+        if (isMediaPlayingRef.current) {
+          if (recognizedCommandRef.current.includes(STOP_MEDIA))
+            NativeModules.AudioFocusModule.requestAudioFocus((granted) => {
+              if (granted) {
+                isMediaPausedRef.current = true;
+                speak("Media paused");
+                NativeModules.AudioFocusModule.requestAudioFocus((granted) => {
+                  if (granted) {
+                    console.log();
+                  }
+                });
+              }
+            });
+        }
+        if (
+          isMediaPlayingRef.current &&
+          !recognizedCommandRef.current.includes(STOP_MEDIA)
+        ) {
+          console.log(
+            "Stop the background media first before using other voice commands",
+          );
+
+          return;
+        }
+
+        if (
+          recognizedCommandRef.current?.toLowerCase() ===
+          `${RESET_FINISHED} ${secretIdentifierRef.current?.split(" ").slice(2, -1)}`.trim()
+        ) {
+          setTimeout(function () {
+            playSoundGeneral({
+              fileName: successSound,
+              shouldStop: false,
+            });
+          }, 200);
+
+          speak(formatRingingResetSpeech(alertingTimerNamesRef.current), 0.5);
+
+          alertingTimerNamesRef?.current?.map((alertingTimer) =>
+            resetTimerEmitter.emit(`${RESET} ${alertingTimer}`),
+          );
+        }
+
+        if (
+          recognizedCommandRef.current?.toLowerCase().trim() === TIME &&
+          TIME
+        ) {
+          speak(getTimePhrase(), 0.3);
+        }
+
+        if (
+          recognizedCommandRef.current?.toLowerCase().trim() === PLAY_MEDIA &&
+          PLAY_MEDIA
+        ) {
+          NativeModules.AudioFocusModule.toggleMedia((shouldTake) => {
+            isMediaPausedRef.current = false;
+            NativeModules.AudioFocusModule.releaseAudioFocus();
           });
-      }
-      if (
-        isMediaPlayingRef.current &&
-        !recognizedCommandRef.current.includes(STOP_MEDIA)
-      ) {
-        console.log(
-          "Stop the background media first before using other voice commands",
-        );
+        }
 
-        return;
-      }
+        if (
+          recognizedCommandRef.current?.toLowerCase().trim() ===
+            STATUS_REPORT &&
+          STATUS_REPORT
+        ) {
+          speak(formatStatusSpeech(), 0.3);
+        }
 
-      if (
-        recognizedCommandRef.current?.toLowerCase() ===
-        `${RESET_FINISHED} ${secretIdentifierRef.current?.split(" ").slice(2, -1)}`.trim()
-      ) {
-        setTimeout(function () {
-          playSoundGeneral({
-            fileName: successSound,
-            shouldStop: false,
-          });
-        }, 200);
-
-        speak(formatRingingResetSpeech(alertingTimerNamesRef.current), 0.5);
-
-        alertingTimerNamesRef?.current?.map((alertingTimer) =>
-          resetTimerEmitter.emit(`${RESET} ${alertingTimer}`),
-        );
+        recognizedCommandRef.current = null;
       }
 
-      if (recognizedCommandRef.current?.toLowerCase().trim() === TIME && TIME) {
-        speak(getTimePhrase(), 0.3);
-      }
-
-      if (
-        recognizedCommandRef.current?.toLowerCase().trim() === PLAY_MEDIA &&
-        PLAY_MEDIA
-      ) {
-        NativeModules.AudioFocusModule.toggleMedia((shouldTake) => {
-          isMediaPausedRef.current = false;
-          NativeModules.AudioFocusModule.releaseAudioFocus();
-        });
-      }
-
-      if (
-        recognizedCommandRef.current?.toLowerCase().trim() === STATUS_REPORT &&
-        STATUS_REPORT
-      ) {
-        speak(formatStatusSpeech(), 0.3);
-      }
-
-      recognizedCommandRef.current = null;
+      load();
     },
     [
       DISCO,
