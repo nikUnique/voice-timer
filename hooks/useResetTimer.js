@@ -7,7 +7,6 @@ import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter, resetTimerEmitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 
-import BackgroundService from "react-native-background-actions";
 import { removeItemFromStorage, setItemInStorage } from "../utils/helpers";
 import { useNotification } from "./useNotification";
 import { useUpdateControlButtons } from "./useUpdateControlButtons";
@@ -56,13 +55,16 @@ export function useResetTimer({
 
   const { onUpdateNotification } = useNotification();
 
-  useEffect(function () {
-    emitter.all.delete(`updateTimeGlobally-${name}`);
-    emitter.on(`updateTimeGlobally-${name}`, () => {
-      Time[`setTimeLeft-${name}`](time);
-      timeLeftRef.current = time;
-    });
-  }, []);
+  useEffect(
+    function () {
+      emitter.all.delete(`updateTimeGlobally-${name}`);
+      emitter.on(`updateTimeGlobally-${name}`, () => {
+        Time[`setTimeLeft-${name}`](time);
+        timeLeftRef.current = time;
+      });
+    },
+    [name, time, timeLeftRef],
+  );
 
   const getLeastTimer = useCallback(
     function () {
@@ -182,7 +184,6 @@ export function useResetTimer({
         notificationTitleRef.current = "";
         notificationBodyRef.current = "";
         timerStateRef.current = "completed";
-        timeLeftRef.current = time;
         timerIsActiveRef.current = false;
         startNewTimerRef.current = false;
         pausedTimeRef.current = null;

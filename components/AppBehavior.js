@@ -119,8 +119,7 @@ export default memo(function AppBehavior() {
       <View style={[switchBox, setting]}>
         <Text style={settingLabel}>
           Keep Screen Dim (Locks brightness to minimum while the app is open.
-          Useful when you&apos;re working out or listening to audio and
-          don&apos;t need to look at the screen)
+          Useful when you prefer a dark screen without locking your device.)
         </Text>
 
         <Switch

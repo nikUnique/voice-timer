@@ -39,11 +39,7 @@ export function useServiceAndSpeechControl() {
           if (nextAppState !== "active") {
             // setIsListening(false);
             // isListeningRef.current = false;
-
             // await BackgroundService.start(backgroundTask, options);
-            console.log(
-              "The app is no longer listening to commands as it moved to background 🤐",
-            );
           }
 
           const areThereNotCompletedTimers =

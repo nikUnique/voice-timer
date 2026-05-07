@@ -64,7 +64,6 @@ export function useSpeak() {
         }
 
         if (text.trim()) {
-          // NativeModules.AudioFocusModule?.stopBluetoothSco();
           setIsListening(false);
           isListeningRef.current = false;
           await Tts.setDefaultRate(speed || 0.5);

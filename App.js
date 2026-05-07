@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as Brightness from "expo-brightness";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import BackgroundService from "react-native-background-actions";
 
 import React, { memo, useCallback, useEffect, useState } from "react";
 import {
@@ -33,13 +34,16 @@ import SettingsScreen from "./screens/SettingsScreen";
 import TermsScreen from "./screens/TermsScreen";
 import TimersScreen from "./screens/TimersScreen";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
+import { emitter } from "./utils/EventEmitter";
+import { getSharedObject, updateSharedObject } from "./utils/sharedVariables";
 
 const Stack = createNativeStackNavigator();
 
 function AppWithContext() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const { dimScreenRef, keepScreenDim } = useSettingsData();
-  const { isMediaPausedRef } = useRefsData();
+  const { isMediaPausedRef, currentActivityRef, leastTimeTimerRef } =
+    useRefsData();
   const { appState } = useAppState();
 
   const releaseAudioFocus = useCallback(
@@ -50,6 +54,21 @@ function AppWithContext() {
     },
     [isMediaPausedRef],
   );
+
+  useEffect(function () {
+    emitter.emit("startForegroundService");
+
+    return () => {
+      if (
+        !getSharedObject().runningTimerNames.length &&
+        !getSharedObject().alertingTimerNames.length
+      ) {
+        BackgroundService.stop();
+        updateSharedObject({ isTaskRunning: false });
+        console.log("BackgroundService stops 🇵🛑");
+      }
+    };
+  }, []);
 
   useEffect(
     function () {

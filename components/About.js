@@ -60,18 +60,30 @@ export default function About() {
         </Paragraph>
       </Section>
 
-      <Subtitle>Using Media While the App Is Open</Subtitle>
+      <Subtitle>Using Media in Foreground and Background</Subtitle>
       <Paragraph>
-        You can keep external media - music, podcasts, videos - playing while
-        the app runs in the foreground. To use any voice command while media is
-        playing, say &quot;Stop media&quot; first. This pauses playback and
-        activates voice control.
+        The app can listen for voice commands even when running in the
+        background or with the screen locked. External media - music, podcasts,
+        videos - can keep playing whether the app is open or not.
       </Paragraph>
 
       <Paragraph>
-        Pause and resume only work when controlled from within the app. If you
-        pause media using earphone buttons or directly inside the media app, the
-        app loses control over playback and will not be able to resume it.
+        To use any voice command while media is playing, say &quot;Stop
+        media&quot; first. This pauses playback and activates voice control. You
+        can then say &quot;Play media&quot; to continue playback.
+      </Paragraph>
+
+      <Paragraph>
+        Pause and resume only work when controlled through the Voice Timer app
+        using voice commands. If you pause media using earphone buttons or
+        directly inside the media app, the app loses control over playback and
+        will not be able to resume it.
+      </Paragraph>
+
+      <Paragraph>
+        Voice commands require a wired connection. Bluetooth earphones do not
+        support voice input for this app - use your device microphone or wired
+        earphones instead.
       </Paragraph>
 
       <Subtitle>Instructions On Naming Timers</Subtitle>

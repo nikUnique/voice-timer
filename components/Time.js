@@ -28,6 +28,8 @@ export default function Time({
 
   const fadeInAndOut = useCallback(
     function () {
+      fadeAnimationRefCur.stopAnimation();
+      fadeAnimationRefCur.setValue(0);
       Animated.sequence([
         Animated.timing(fadeAnimationRefCur, {
           toValue: 1,

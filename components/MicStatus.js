@@ -10,29 +10,21 @@ import {
 } from "react-native";
 
 import { Colors } from "../constants/colors";
-import {
-  useRecognizerData,
-  useSettingsData,
-} from "../context/VoiceRecognizerContext";
+import { useSettingsData } from "../context/VoiceRecognizerContext";
 import { useIsLocked } from "../hooks/useIsLocked";
-import { setItemInStorage } from "../utils/helpers";
 import { useResponsive } from "../hooks/useResponsive";
+import useSettingsFunctions from "../hooks/useSettingsFunctions";
 
 export default function MicStatus() {
   const {
-    alarmVolume,
-    autoStopAlarmTimeout,
     voiceEnabled,
     setVoiceEnabled,
-    isVoiceFeedbackEnabled,
-    keepScreenOnCommand,
-    keepScreenOnMinutes,
-    isVibrating,
+
     microGranted,
     setMicroGranted,
   } = useSettingsData();
 
-  const { isListening } = useRecognizerData();
+  const { updateSettingsInStorage } = useSettingsFunctions();
   const { isPhoneLocked } = useIsLocked();
   const { t } = useResponsive();
 
@@ -82,16 +74,7 @@ export default function MicStatus() {
     }
 
     setVoiceEnabled((prevState) => !prevState);
-    setItemInStorage("settings", {
-      alarmVolume,
-      autoStopAlarmTimeout,
-      voiceEnabled: !voiceEnabled,
-      setVoiceEnabled,
-      isVoiceFeedbackEnabled,
-      keepScreenOnCommand,
-      keepScreenOnMinutes,
-      isVibrating,
-    });
+    updateSettingsInStorage("voiceEnabled", !voiceEnabled);
   }
 
   const isListeningText = {
@@ -138,12 +121,6 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
   },
-
-  // isListeningText: {
-  //   marginLeft: 8,
-  //   fontSize: 16,
-  //   color: Colors.grayShade20,
-  // },
 
   isListeningStatus: {
     flexDirection: "row",

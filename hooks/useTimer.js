@@ -177,14 +177,8 @@ export function useTimer() {
           notificationIdRef.current = "92901";
 
           setTimeout(() => {
-            // notifee.cancelDisplayedNotifications();
             notifee.cancelDisplayedNotification("92901");
-            // console.log(
-            //   "Ongoing notification is canceled 🦋",
-            //   AppState.currentState
-            // );
           }, 50);
-          // await notifee.stopForegroundService();
         }
 
         if (AppState.currentState !== "active") {

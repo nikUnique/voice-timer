@@ -1,7 +1,5 @@
 import notifee from "@notifee/react-native";
 import { useCallback, useEffect, useRef } from "react";
-import { NativeModules } from "react-native";
-import BackgroundService from "react-native-background-actions";
 
 import Time from "../components/Time";
 import {
@@ -10,7 +8,6 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { emitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
-
 import { setItemInStorage } from "../utils/helpers";
 import { useTimeUpdateFunctions } from "./useTimeUpdateFunctions";
 
@@ -31,17 +28,12 @@ export function useTimeUpdate({
     setIsAlarmingScreen,
     alertingTimerNamesRef,
     setAlertingTimerNames,
-    notificationIdRef,
     timersTimesRef,
-    workingTimersRef,
     setTimersHistory,
   } = useRefsData();
-  // const routes = useNavigationState((state) => state.routes);
 
   const { alertSound, autoStopAlarmTimeout, alarmVolume, isVibrating } =
     useSettingsData();
-
-  let isPhoneLocked;
 
   const { assignAlertingTimersNames } = useTimeUpdateFunctions(
     name,
@@ -55,7 +47,6 @@ export function useTimeUpdate({
       setAlertingTimerNames(alertingTimerNamesRef.current);
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      isPhoneLocked = await NativeModules.NativeUtilsModule.isPhoneLocked();
 
       // console.log("should play", name, alarmVolume);
 
@@ -97,8 +88,6 @@ export function useTimeUpdate({
 
       setItemInStorage("timerHistory", getSharedObject().timers);
 
-      // console.log("Ended", Date.now(), Date.now() - timerStartedRef.current);
-
       const playingObject = {
         fileName: alertSound,
         isLooping: true,
@@ -113,12 +102,20 @@ export function useTimeUpdate({
       await sendNotification();
     },
     [
-      name,
-      alertingTimerNamesRef,
-      alarmVolume,
+      assignAlertingTimersNames,
       setAlertingTimerNames,
+      alertingTimerNamesRef,
+      setTimersHistory,
+      alertSound,
+      alarmVolume,
       autoStopAlarmTimeout,
       isVibrating,
+      updateLeastTimer,
+      updateTimerLabel,
+      sendNotification,
+      name,
+      time,
+      timeLeftRef,
     ],
   );
 
@@ -179,10 +176,6 @@ export function useTimeUpdate({
       if (timeLeftRef.current % 60 >= 10) {
         updateSharedObject({ delay: 1 });
       }
-
-      // if (!leastTimeTimerRef.current) {
-      //   await updateLeastTimer();
-      // }
     },
     [leastTimeTimerRef, name, timeLeftRef, timersTimesRef, updateLeastTimer],
   );
@@ -213,10 +206,6 @@ export function useTimeUpdate({
 
         if (timeLeftRef.current <= 0 && timeLeftRef.current >= -5) {
           if (alertingTimerNamesRef.current.includes(name)) {
-            // console.log(
-            //   "This already played the sound",
-            //   alertingTimerNamesRef.current
-            // );
             return;
           }
 
@@ -293,7 +282,6 @@ export function useTimeUpdate({
       timeLeftRef,
       updateDelayAndLeastTimer,
       leastTimeTimerRef,
-      workingTimersRef,
       alertingTimerNamesRef,
       timeoutRef,
       timerStartedRef,

@@ -4,7 +4,6 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
   AppState,
-  NativeModules,
   PermissionsAndroid,
   StyleSheet,
   Text,
@@ -16,7 +15,6 @@ import {
   useRefsData,
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
-import { useIsLocked } from "../hooks/useIsLocked";
 
 export default memo(function VoiceCommandsControl({ setCommand }) {
   const [isReady, setIsReady] = useState(false);
@@ -43,12 +41,8 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     isListening,
   } = useRecognizerData();
 
-  const {
-    recognizedCommandRef,
-    setIsListening,
-    isListeningRef,
-    isMediaPlayingRef,
-  } = useRefsData();
+  const { recognizedCommandRef, setIsListening, isListeningRef } =
+    useRefsData();
 
   const { voiceEnabled } = useSettingsData();
 
@@ -68,14 +62,14 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         }),
       ]).start();
     },
-    [fadeAnimationRefCur, recognizedCommand, recognizedTime],
+    [fadeAnimationRefCur],
   );
 
   useEffect(
     function () {
       fadeInAndOut();
     },
-    [fadeAnimationRefCur, fadeInAndOut],
+    [fadeAnimationRefCur, fadeInAndOut, recognizedCommand, recognizedTime],
   );
 
   const load = useCallback(async () => {
@@ -110,10 +104,6 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         return;
       }
 
-      // if (!isListening) {
-      //   console.log("The app is not listening 💣");
-      //   return;
-      // }
       if (!voiceEnabled) {
         console.log("The app is not listening 💣");
         return;
@@ -149,9 +139,8 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
 
   const stop = useCallback(async () => {
     await vosk.stop();
-    // NativeModules.AudioFocusModule?.stopVoiceMode();
-    // NativeModules.AudioFocusModule?.stopBluetoothSco();
-    console.log("Stopping recognition..." /* , result */);
+
+    console.log("Stopping recognition...");
     setIsRecognizing(false);
   }, [vosk]);
 
@@ -166,16 +155,10 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
   useEffect(
     function () {
       async function loadThis() {
-        // if (!voiceEnabled || !isListening) {
-        //   await stop();
-        //   return;
-        // }
-
-        if (/* isListening */ voiceEnabled && isReady /* && !isPhoneLocked */) {
+        if (voiceEnabled && isReady) {
           await recordGrammar();
         } else {
           setIsRecognizing(false);
-          // stop();
         }
 
         if (!voiceEnabled) {
@@ -189,19 +172,15 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
   );
 
   useEffect(() => {
+    if (!voiceEnabled) {
+      return;
+    }
     const resultEvent = vosk.onResult(async (res) => {
       console.log(
         "An onResult event has been caught: " + res,
         isListening,
         isListeningRef.current,
       );
-      const isPhoneLocked =
-        await NativeModules.NativeUtilsModule.isPhoneLocked();
-      // if (!isListening || isPhoneLocked) {
-      //   console.log(`The timer is not listening at the moment 🫧`);
-      //   return;
-      // }
-
       const checkedResponse = res.includes("[unk]")
         ? "Unrecognized phrase"
         : res;
