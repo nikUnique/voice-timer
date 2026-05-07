@@ -7,6 +7,7 @@
   <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE_BACKGROUND_TIMER" />
   <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
@@ -32,10 +33,11 @@
   android:usesCleartextTraffic="true"
   android:supportsRtl="true">
 
-    <service android:name=".RNBackgroundActionsTask" android:foregroundServiceType="specialUse" android:exported="false">    <meta-data
+    <service android:name=".RNBackgroundActionsTask" android:foregroundServiceType="microphone|specialUse" android:exported="false">    <meta-data
         android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
         android:value="background_timer" /> 
     </service> 
+   
     
     <service
         android:name="me.carda.awesome_notifications.notifications.services.NotificationService"

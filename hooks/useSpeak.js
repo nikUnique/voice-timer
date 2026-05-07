@@ -37,17 +37,17 @@ export function useSpeak() {
     () => ({
       onStart: () => {
         console.log("Started talking...");
-        isListeningRef.current = false;
-        setIsListening(false);
+        // isListeningRef.current = false;
+        // setIsListening(false);
       },
       onStopped: () => {
-        isListeningRef.current = true;
-        setIsListening(true);
+        // isListeningRef.current = true;
+        // setIsListening(true);
         console.log("Speech stopped");
       },
       onDone: () => {
-        isListeningRef.current = true;
-        setIsListening(true);
+        // isListeningRef.current = true;
+        // setIsListening(true);
       },
       onError: () => {
         console.error("An error occurred during speech utterance");

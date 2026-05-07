@@ -37,8 +37,8 @@ export function useServiceAndSpeechControl() {
       async (nextAppState) => {
         try {
           if (nextAppState !== "active") {
-            setIsListening(false);
-            isListeningRef.current = false;
+            // setIsListening(false);
+            // isListeningRef.current = false;
 
             // await BackgroundService.start(backgroundTask, options);
             console.log(

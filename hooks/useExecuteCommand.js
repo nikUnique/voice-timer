@@ -113,11 +113,11 @@ export function useExecuteCommand({
           );
         }
 
-        if (!isActive && !isCommandValid) {
-          console.log("The timer is not active 🥇", isCommandValid);
+        // if (!isActive && !isCommandValid) {
+        //   console.log("The timer is not active 🥇", isCommandValid);
 
-          return;
-        }
+        //   return;
+        // }
 
         if (
           (isActive && recognizedCommand?.recognizedCommand.includes(START)) ||

@@ -52,13 +52,13 @@ export function useStartTimer({
         // }
         emitter.emit("startForegroundService");
 
-        if (!AppState.currentState.includes("active")) {
-          console.log(
-            "The app is already in the background 🐈‍⬛",
-            AppState.currentState,
-          );
-          return;
-        }
+        // if (!AppState.currentState.includes("active")) {
+        //   console.log(
+        //     "The app is already in the background 🐈‍⬛",
+        //     AppState.currentState,
+        //   );
+        //   return;
+        // }
 
         if ((!isActive || repeat) && timeLeftRef.current > 0) {
           if (workingTimersRef.current.length >= 5) {

@@ -16,14 +16,20 @@ import {
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
 import { useIsLocked } from "../hooks/useIsLocked";
+import { sleep } from "../utils/helpers";
 
 export default memo(function VoiceCommandsControl({ setCommand }) {
   const [isReady, setIsReady] = useState(false);
+  const isReadyRef = useRef(false);
   const [isRecognizing, setIsRecognizing] = useState(false);
   const [result, setResult] = useState();
   const [improvedResult, setImprovedResult] = useState("");
 
-  const vosk = useRef(new Vosk()).current;
+  const voskRef = useRef(null);
+  if (!voskRef.current) {
+    voskRef.current = new Vosk();
+  }
+  const vosk = voskRef.current;
 
   const fadeAnimationRefCur = useRef(new Animated.Value(0)).current;
 
@@ -93,6 +99,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     try {
       await vosk.loadModel("vosk-model-small-en-us-0.15");
       setIsReady(true);
+      isReadyRef.current = true;
     } catch (error) {
       console.error(`An error occurred in the load vosk function`, error);
     }
@@ -100,6 +107,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
 
   const unload = useCallback(() => {
     setIsReady(false);
+    isReadyRef.current = false;
     setIsRecognizing(false);
     vosk?.unload();
   }, [vosk]);
@@ -114,12 +122,13 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
 
   const recordGrammar = useCallback(async () => {
     try {
-      if (!isReady) {
+      if (!isReady || !isReadyRef.current) {
         console.log("The model is not loaded yet 😲");
         return;
       }
 
       await stop();
+
       if (!isListening) {
         console.log("The app is not listening 💣");
         return;
@@ -137,9 +146,6 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       vosk
         .start({ grammar: dynamicGrammar })
         .then(() => {
-          // NativeModules.AudioFocusModule?.startBluetoothSco();
-          // NativeModules.AudioFocusModule?.startVoiceMode();
-          // NativeModules.AudioFocusModule?.enableAEC();
           console.log("Starting recognition with grammar...");
           setIsRecognizing(true);
         })
@@ -175,10 +181,9 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
           return;
         }
 
-        if (isListening && isReady && !isPhoneLocked) {
+        if (isListening && isReady /* && !isPhoneLocked */) {
           await recordGrammar();
         } else {
-          vosk.stop();
           setIsRecognizing(false);
           stop();
         }
@@ -206,10 +211,10 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       );
       const isPhoneLocked =
         await NativeModules.NativeUtilsModule.isPhoneLocked();
-      if (!isListening || isPhoneLocked) {
-        console.log(`The timer is not listening at the moment 🫧`);
-        return;
-      }
+      // if (!isListening || isPhoneLocked) {
+      //   console.log(`The timer is not listening at the moment 🫧`);
+      //   return;
+      // }
 
       const checkedResponse = res.includes("[unk]")
         ? "Unrecognized phrase"
