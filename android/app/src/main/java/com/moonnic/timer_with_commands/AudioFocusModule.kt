@@ -84,24 +84,6 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
         }
     }
 
-    @ReactMethod
-    fun startBluetoothSco() {
-        val devices = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
-        val hasBluetooth = devices.any { it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO }
-        if (hasBluetooth) {
-            audioManager.mode = AudioManager.MODE_NORMAL  // force this BEFORE starting SCO
-            audioManager.startBluetoothSco()
-            audioManager.isBluetoothScoOn = true
-            Log.d(TAG, "SCO started, mode kept NORMAL")
-        }
-    }
-    
-    @ReactMethod
-    fun stopBluetoothSco() {
-        audioManager.stopBluetoothSco()
-        audioManager.isBluetoothScoOn = false
-        Log.d(TAG, "Bluetooth SCO stopped")
-    }
 
     @ReactMethod
     fun toggleMedia(callback: Callback) {
@@ -109,50 +91,6 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
         callback(hasFocus)  // true = take focus, false = give it away
     }
 
-    @ReactMethod
-    fun startVoiceMode() {
-        val am = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        am.mode = AudioManager.MODE_IN_COMMUNICATION
-    }
-
-    @ReactMethod
-    fun stopVoiceMode() {
-        val am = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        am.mode = AudioManager.MODE_NORMAL
-    }
-    @ReactMethod
-    fun enableAEC() {
-        try {
-            val voskModule = reactApplicationContext.catalystInstance
-                .nativeModules
-                .firstOrNull { it.javaClass.name == "com.vosk.VoskModule" } ?: run {
-                    android.util.Log.e("VoskAEC", "VoskModule not found")
-                    return
-                }
-
-            val serviceField = voskModule.javaClass.getDeclaredField("speechService")
-            serviceField.setAccessible(true)
-            val service = serviceField.get(voskModule) ?: run {
-                android.util.Log.e("VoskAEC", "speechService is null")
-                return
-            }
-
-            val recorderField = service.javaClass.getDeclaredField("recorder")
-            recorderField.setAccessible(true)
-            val recorder = recorderField.get(service) as AudioRecord
-            val sessionId = recorder.audioSessionId
-
-            if (AcousticEchoCanceler.isAvailable()) {
-                AcousticEchoCanceler.create(sessionId)?.enabled = true
-            }
-            if (NoiseSuppressor.isAvailable()) {
-                NoiseSuppressor.create(sessionId)?.enabled = true
-            }
-            android.util.Log.d("VoskAEC", "AEC attached, session=$sessionId")
-        } catch (e: Exception) {
-            android.util.Log.e("VoskAEC", "AEC failed: ${e.message}")
-        }
-    }
 
     @ReactMethod
     fun isMediaPlaying(promise: Promise) {
