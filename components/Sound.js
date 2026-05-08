@@ -53,6 +53,10 @@ export default memo(function Sound() {
           <Pressable
             onPress={() => {
               setVolume((prev) => (prev >= 0.1 ? prev - 0.05 : prev));
+              updateSettingsInStorage(
+                "alarmVolume",
+                volume >= 0.1 ? volume - 0.05 : volume,
+              );
             }}
             style={[({ pressed }) => ({ opacity: pressed }), styles.stepBtn]}
           >
@@ -79,6 +83,10 @@ export default memo(function Sound() {
           <Pressable
             onPress={() => {
               setVolume((prev) => (prev < 1 ? prev + 0.05 : prev));
+              updateSettingsInStorage(
+                "alarmVolume",
+                volume < 1 ? volume + 0.05 : volume,
+              );
             }}
             style={styles.stepBtn}
           >

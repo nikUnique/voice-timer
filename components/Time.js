@@ -95,7 +95,7 @@ export default function Time({
       <Text
         style={[
           {
-            fontSize: 74,
+            fontSize: 52,
             fontWeight: "bold",
             color: Colors.primaryTint90,
           },

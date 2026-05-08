@@ -82,6 +82,10 @@ export default memo(function AppBehavior() {
               onPress={() => {
                 const i = steps.indexOf(minutes);
                 setMinutes((prev) => (prev > 1 ? steps[i - 1] : prev));
+                updateSettingsInStorage(
+                  "keepScreenOnMinutes",
+                  minutes > 1 ? steps[i - 1] : minutes,
+                );
               }}
               style={[({ pressed }) => ({ opacity: pressed }), styles.stepBtn]}
             >
@@ -107,6 +111,10 @@ export default memo(function AppBehavior() {
               onPress={() => {
                 const i = steps.indexOf(minutes);
                 setMinutes((prev) => (prev < 300 ? steps[i + 1] : prev));
+                updateSettingsInStorage(
+                  "keepScreenOnMinutes",
+                  minutes < 300 ? steps[i + 1] : minutes,
+                );
               }}
               style={styles.stepBtn}
             >

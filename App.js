@@ -12,6 +12,8 @@ import {
   Platform,
   StatusBar,
   StyleSheet,
+  Text,
+  TextInput,
   TouchableOpacity,
 } from "react-native";
 
