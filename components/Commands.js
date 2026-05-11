@@ -89,6 +89,36 @@ const commands = [
     icon: "timer-outline",
     badge: "STATUS",
   },
+  {
+    command: "Timer wake up",
+    example: "Timer wake up",
+    description:
+      "Activates voice command listening. Timer will now respond to spoken commands.",
+    icon: "mic-outline",
+    badge: "WAKE",
+  },
+  {
+    command: "Timer go sleep",
+    example: "Timer go sleep",
+    description:
+      "Deactivates voice command listening. Timer will stop responding to spoken commands until woken up again.",
+    icon: "mic-off-outline",
+    badge: "SLEEP",
+  },
+  {
+    command: "Volume up",
+    example: "Volume up",
+    description: "Increases media volume by one step.",
+    icon: "volume-high-outline",
+    badge: "VOL+",
+  },
+  {
+    command: "Volume down",
+    example: "Volume down",
+    description: "Decreases media volume by one step.",
+    icon: "volume-low-outline",
+    badge: "VOL-",
+  },
 ];
 
 export default memo(function Commands() {

@@ -3,22 +3,17 @@ import notifee, { AuthorizationStatus } from "@notifee/react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as Brightness from "expo-brightness";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BackgroundService from "react-native-background-actions";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import React, { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import {
-  BackHandler,
   NativeModules,
-  PixelRatio,
   Platform,
   StatusBar,
   StyleSheet,
-  Text,
-  TextInput,
   TouchableOpacity,
 } from "react-native";
-import { AppState } from "react-native";
 
 import Tts from "react-native-tts";
 import AgreementAlert from "./components/AgreementAlert";
@@ -31,6 +26,7 @@ import VoiceRecognizerProvider, {
   useSettingsData,
 } from "./context/VoiceRecognizerContext";
 import { useAppState } from "./hooks/useAppState";
+import { useResponsive } from "./hooks/useResponsive";
 import AboutScreen from "./screens/AboutScreen";
 import CommandsScreen from "./screens/CommandsScreen";
 import CreateTimerScreen from "./screens/CreateTimerScreen";
@@ -39,9 +35,7 @@ import SettingsScreen from "./screens/SettingsScreen";
 import TermsScreen from "./screens/TermsScreen";
 import TimersScreen from "./screens/TimersScreen";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
-import { emitter } from "./utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "./utils/sharedVariables";
-import { useResponsive } from "./hooks/useResponsive";
 
 const Stack = createNativeStackNavigator();
 
@@ -52,15 +46,6 @@ function AppWithContext() {
     useRefsData();
   const { appState } = useAppState();
   const { t } = useResponsive();
-
-  const releaseAudioFocus = useCallback(
-    function () {
-      if (!isMediaPausedRef.current) {
-        NativeModules.AudioFocusModule.releaseAudioFocus();
-      }
-    },
-    [isMediaPausedRef],
-  );
 
   useEffect(function () {
     return () => {
@@ -88,24 +73,6 @@ function AppWithContext() {
     const voiceKeepAlive = setInterval(() => {}, 10000);
     return () => clearInterval(voiceKeepAlive);
   }, []);
-
-  useEffect(() => {
-    const finish = Tts.addEventListener("tts-finish", () => {
-      releaseAudioFocus();
-    });
-    const cancel = Tts.addEventListener("tts-cancel", () => {
-      releaseAudioFocus();
-    });
-    const error = Tts.addEventListener("tts-error", () => {
-      releaseAudioFocus();
-    });
-
-    return () => {
-      finish.remove();
-      cancel.remove();
-      error.remove();
-    };
-  }, [releaseAudioFocus]);
 
   const restoreBrightness = useCallback(
     async function () {

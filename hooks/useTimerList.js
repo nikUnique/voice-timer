@@ -261,7 +261,7 @@ export function useTimerList({
 
   const formatRingingResetSpeech = useCallback(function (timerNames) {
     if (timerNames.length === 0) return "Nothing to reset.";
-    if (timerNames.length === 1) return `${timerNames[0]} timer reset.`;
+    if (timerNames.length === 1) return `timer ${timerNames[0]} reset.`;
 
     const last = timerNames[timerNames.length - 1];
     const rest = timerNames.slice(0, -1);

@@ -8,9 +8,13 @@ import {
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
 
+function duration(text) {
+  const words = text.trim().split(/\s+/).length;
+  return words * 150;
+}
 export function useSpeak() {
   const { isVoiceFeedbackEnabled } = useSettingsData();
-  const { setIsListening, isListeningRef } = useRefsData();
+  const { setIsListening, isListeningRef, ignoreUntilRef } = useRefsData();
 
   useEffect(() => {
     function pickBestVoice(voices) {
@@ -68,11 +72,15 @@ export function useSpeak() {
           isListeningRef.current = false;
           await Tts.setDefaultRate(speed || 0.5);
 
-          NativeModules.AudioFocusModule.requestAudioFocus((granted) => {
+          NativeModules.AudioFocusModule.requestAudioFocus(async (granted) => {
             if (granted) {
               console.log("Granted focus");
 
-              Tts.speak(text, voiceOptions);
+              ignoreUntilRef.current = Date.now() + duration(text) + 300;
+              console.log(duration(text));
+
+              const id = await Tts.speak(text, voiceOptions);
+              console.log("super id", id);
             }
           });
         }

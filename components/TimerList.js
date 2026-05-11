@@ -53,6 +53,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     workingTimersRef,
     isMediaPausedRef,
     isMediaPlayingRef,
+    isTimerSleepingRef,
   } = useRefsData();
 
   const { speak } = useSpeak();
@@ -65,6 +66,8 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     PLAY_MEDIA,
     STOP_MEDIA,
     STATUS_REPORT,
+    TIMER_WAKE_UP,
+    TIMER_GO_SLEEP,
   } = commandsRef?.current ? commandsRef.current : {};
 
   const { successSound, discoSound } = useSettingsData();
@@ -124,11 +127,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
               if (granted) {
                 isMediaPausedRef.current = true;
                 speak("Media paused");
-                NativeModules.AudioFocusModule.requestAudioFocus((granted) => {
-                  if (granted) {
-                    console.log();
-                  }
-                });
               }
             });
         }
@@ -139,8 +137,45 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           console.log(
             "Stop the background media first before using other voice commands",
           );
-
+          recognizedCommandRef.current = null;
           return;
+        }
+
+        if (
+          recognizedCommandRef.current?.toLowerCase().trim() === PLAY_MEDIA &&
+          PLAY_MEDIA
+        ) {
+          NativeModules.AudioFocusModule.toggleMedia((shouldTake) => {
+            isMediaPausedRef.current = false;
+            NativeModules.AudioFocusModule.releaseAudioFocus();
+          });
+          speak("Media resumed");
+        }
+
+        if (
+          isTimerSleepingRef.current &&
+          recognizedCommandRef.current &&
+          !recognizedCommandRef.current.includes(TIMER_WAKE_UP) &&
+          !recognizedCommandRef.current.includes(STOP_MEDIA)
+        ) {
+          recognizedCommandRef.current = null;
+          return;
+        }
+
+        if (
+          recognizedCommandRef.current.includes(TIMER_GO_SLEEP) &&
+          !isTimerSleepingRef.current
+        ) {
+          speak("Timer went to sleep");
+          isTimerSleepingRef.current = true;
+        }
+
+        if (
+          recognizedCommandRef.current.includes(TIMER_WAKE_UP) &&
+          isTimerSleepingRef.current
+        ) {
+          speak("Timer ready");
+          isTimerSleepingRef.current = false;
         }
 
         if (
@@ -169,16 +204,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         }
 
         if (
-          recognizedCommandRef.current?.toLowerCase().trim() === PLAY_MEDIA &&
-          PLAY_MEDIA
-        ) {
-          NativeModules.AudioFocusModule.toggleMedia((shouldTake) => {
-            isMediaPausedRef.current = false;
-            NativeModules.AudioFocusModule.releaseAudioFocus();
-          });
-        }
-
-        if (
           recognizedCommandRef.current?.toLowerCase().trim() ===
             STATUS_REPORT &&
           STATUS_REPORT
@@ -199,12 +224,15 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       STATUS_REPORT,
       STOP_MEDIA,
       TIME,
+      TIMER_GO_SLEEP,
+      TIMER_WAKE_UP,
       alertingTimerNamesRef,
       discoSound,
       formatRingingResetSpeech,
       formatStatusSpeech,
       isMediaPausedRef,
       isMediaPlayingRef,
+      isTimerSleepingRef,
       playSoundGeneral,
       playSpecial,
       recognizedCommandRef,

@@ -30,6 +30,8 @@ export default function useVoiceRecognizerContext({
     STOP_MEDIA,
     STATUS_REPORT,
     STATUS,
+    TIMER_WAKE_UP,
+    TIMER_GO_SLEEP,
   } = commandsRef.current ? commandsRef.current : {};
 
   useEffect(
@@ -59,6 +61,8 @@ export default function useVoiceRecognizerContext({
         PLAY_MEDIA,
         STOP_MEDIA,
         STATUS_REPORT,
+        TIMER_WAKE_UP,
+        TIMER_GO_SLEEP,
       ]
         .flatMap((command) => command)
         .map((item) => `${item} ${secretIdentifierRef.current}`.trim()),
@@ -70,6 +74,8 @@ export default function useVoiceRecognizerContext({
       STATUS_REPORT,
       STOP_MEDIA,
       TIME,
+      TIMER_GO_SLEEP,
+      TIMER_WAKE_UP,
       allActions,
       secretIdentifierRef,
       timers,

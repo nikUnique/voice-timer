@@ -33,6 +33,8 @@ export function useTimer() {
     setIsListening,
     alertingTimerNamesRef,
     allTimersRef,
+    isMediaPausedRef,
+    ignoreUntilRef,
   } = useRefsData();
 
   useSettings();
@@ -98,6 +100,14 @@ export function useTimer() {
     },
     [alertingTimerNamesRef],
   );
+  const releaseAudioFocus = useCallback(
+    function () {
+      if (!isMediaPausedRef.current) {
+        NativeModules.AudioFocusModule.releaseAudioFocus();
+      }
+    },
+    [isMediaPausedRef],
+  );
 
   const startTalking = useCallback(
     function startTalking() {
@@ -108,16 +118,26 @@ export function useTimer() {
   );
 
   const doneTalking = useCallback(
-    function doneTalking() {
+    function doneTalking(e) {
+      console.log("Here", e.utteranceId, Date.now());
+
+      releaseAudioFocus();
+      // setTimeout(() => {
+      ignoreUntilRef.current = Date.now() + 300;
       isListeningRef.current = true;
       setIsListening(true);
+      // }, 1500);
     },
-    [isListeningRef, setIsListening],
+    [ignoreUntilRef, isListeningRef, releaseAudioFocus, setIsListening],
   );
 
-  const errorTalking = useCallback(function errorTalking() {
-    console.error("An error occurred during speech utterance");
-  }, []);
+  const errorTalking = useCallback(
+    function errorTalking() {
+      releaseAudioFocus();
+      console.error("An error occurred during speech utterance");
+    },
+    [releaseAudioFocus],
+  );
 
   useEffect(
     function () {
@@ -125,11 +145,16 @@ export function useTimer() {
       Tts.removeAllListeners("tts-start");
       Tts.removeAllListeners("tts-finish");
       Tts.removeAllListeners("tts-error");
+      Tts.removeAllListeners("tts-cancel");
       Tts.addEventListener("tts-start", startTalking);
-      Tts.addEventListener("tts-finish", doneTalking);
+      Tts.addEventListener("tts-finish", (e) => {
+        // await sleep(4);
+        doneTalking(e);
+      });
+      Tts.addEventListener("tts-cancel", releaseAudioFocus);
       Tts.addEventListener("tts-error", errorTalking);
     },
-    [doneTalking, errorTalking, startTalking],
+    [doneTalking, errorTalking, releaseAudioFocus, startTalking],
   );
 
   useEffect(

@@ -16,6 +16,7 @@ import {
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
 import { useResponsive } from "../hooks/useResponsive";
+import { useSpeak } from "../hooks/useSpeak";
 
 export default memo(function VoiceCommandsControl({ setCommand }) {
   const [isReady, setIsReady] = useState(false);
@@ -42,8 +43,20 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     isListening,
   } = useRecognizerData();
 
-  const { recognizedCommandRef, setIsListening, isListeningRef } =
-    useRefsData();
+  const {
+    recognizedCommandRef,
+    setIsListening,
+    isListeningRef,
+    ignoreUntilRef,
+    isTimerSleepingRef,
+    commandsRef,
+  } = useRefsData();
+
+  const { PLAY_MEDIA, STOP_MEDIA, TIMER_WAKE_UP } = commandsRef?.current
+    ? commandsRef.current
+    : {};
+
+  const { speak } = useSpeak();
 
   const { voiceEnabled } = useSettingsData();
 
@@ -125,18 +138,16 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         return;
       }
 
-      console.log(AppState.currentState, "is it active");
-
-      /*   AppState.currentState === "active" && */
-      vosk
-        .start({ grammar: dynamicGrammar })
-        .then(() => {
-          console.log("Starting recognition with grammar...");
-          setIsRecognizing(true);
-        })
-        .catch((e) =>
-          console.error(`An error occurred while initializing vosk`, e),
-        );
+      AppState.currentState === "active" &&
+        vosk
+          .start({ grammar: dynamicGrammar })
+          .then(() => {
+            console.log("Starting recognition with grammar...");
+            setIsRecognizing(true);
+          })
+          .catch((e) =>
+            console.error(`An error occurred while initializing vosk`, e),
+          );
     } catch (error) {
       console.error("An error occurred in the recordGrammar function", error);
     }
@@ -173,19 +184,34 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       }
       loadThis();
     },
-    [isReady, recordGrammar, setIsListening, vosk, voiceEnabled, stop],
+    [
+      isReady,
+      recordGrammar,
+      setIsListening,
+      vosk,
+      voiceEnabled,
+      stop,
+      isListeningRef,
+      isListening,
+    ],
   );
 
   useEffect(() => {
-    if (!voiceEnabled) {
+    if (!voiceEnabled || !isListeningRef.current) {
       return;
     }
 
     const resultEvent = vosk.onResult(async (res) => {
+      if (Date.now() < ignoreUntilRef.current) {
+        console.log("Ignoring speech to prevent TTS making a difference");
+
+        return;
+      }
       console.log(
         "An onResult event has been caught: " + res,
         isListening,
         isListeningRef.current,
+        Date.now(),
       );
       const checkedResponse = res.includes("[unk]")
         ? "Unrecognized phrase"

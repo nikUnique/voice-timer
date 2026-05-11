@@ -118,7 +118,9 @@ export function useResetTimer({
         const localDuration = time - timeLeftRef.current;
 
         updateSharedObject({
-          alertingTimerNames: alertingTimerNamesRef.current,
+          alertingTimerNames: getSharedObject().alertingTimerNames.filter(
+            (timerName) => timerName !== name,
+          ),
           index: workingTimersRef.current.length === 0 && 0,
           runningTimerNames: getSharedObject().runningTimerNames.filter(
             (timerName) => timerName !== name,

@@ -9,6 +9,7 @@ import { registerChannelsAndService } from "../utils/channelAndServiceManaber";
 import { useBackgroundActions } from "./useBackgroundActions";
 import { useNotification } from "./useNotification";
 import { useTimer } from "./useTimer";
+import Tts from "react-native-tts";
 
 export function useServiceAndSpeechControl() {
   const {
@@ -28,6 +29,8 @@ export function useServiceAndSpeechControl() {
   useBackgroundActions();
 
   useEffect(() => {
+    console.log("When it changes");
+
     setIsListening(true);
     isListeningRef.current = true;
 
@@ -67,6 +70,8 @@ export function useServiceAndSpeechControl() {
           }
 
           if (AppState.currentState === "active") {
+            console.log("Maybe here");
+
             isListeningRef.current = true;
             setIsListening(true);
 

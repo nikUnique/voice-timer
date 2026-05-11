@@ -28,7 +28,12 @@ export function useExecuteCommand({
   activateTimerRef,
   index,
 }) {
-  const { secretIdentifierRef, commandsRef, isMediaPlayingRef } = useRefsData();
+  const {
+    secretIdentifierRef,
+    commandsRef,
+    isMediaPlayingRef,
+    isTimerSleepingRef,
+  } = useRefsData();
 
   const { successSound } = useSettingsData();
 
@@ -82,6 +87,10 @@ export function useExecuteCommand({
             "Stop the background media first before using other voice commands - useExecuteCommand",
           );
 
+          return;
+        }
+
+        if (isTimerSleepingRef.current) {
           return;
         }
 
@@ -249,6 +258,7 @@ export function useExecuteCommand({
       recognizedCommand?.recognizedCommand,
       isMediaPlayingRef,
       STOP_MEDIA,
+      isTimerSleepingRef,
       STATUS,
       name,
       secretIdentifierRef,
@@ -256,17 +266,17 @@ export function useExecuteCommand({
       START,
       REPEAT,
       isBusyRef,
+      timerIsActiveRef,
+      timeLeftRef,
       PAUSE,
       CONTINUE,
-      RESET,
       isPaused,
-      timeLeftRef,
+      RESET,
       lastCommandRef,
       speak,
       formatSingleTimerSpeech,
       clearCommand,
       startTimer,
-      timerIsActiveRef,
       pauseTimerRef,
       activateTimerRef,
       index,
