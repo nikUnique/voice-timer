@@ -169,6 +169,8 @@ export function useExecuteCommand({
             speak(`${name} started`);
         }
         if (
+          timerIsActiveRef.current &&
+          timeLeftRef.current > 0 &&
           lowerCommand.includes(
             `${PAUSE} ${name} ${secretIdentifierRef.current}`
               .toLocaleLowerCase()

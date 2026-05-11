@@ -20,6 +20,7 @@ import { getItemFromStorage, removeItemFromStorage } from "../utils/helpers";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import TimerList from "./TimerList";
 import VoiceCommandsControl from "./VoiceCommandsControl";
+import TimerListTest from "./TimerListTest";
 
 export default function Timers({ navigation }) {
   const [isAwake, setIsAwake] = useState(false);
@@ -232,24 +233,32 @@ export default function Timers({ navigation }) {
   );
 
   useEffect(function () {
-    // emitter.all.clear();
-    // AsyncStorage.clear();
-    // removeItemFromStorage("workingTimers");
-    // if (AppState.currentState !== "background") {
-    //   notifee.stopForegroundService();
-    // }
-
-    () => {
-      if (workingTimersRef.current.length === 0) {
-        soundIsPlayingRef.current = false;
-        // emitter.all.clear();
-        removeItemFromStorage("workingTimers");
-        removeItemFromStorage("alertingTimerNames");
-        soundRef.current?.stopAsync();
-        soundRef.current?.unloadAsync();
-      }
-    };
+    updateSharedObject({ isTaskRunning: true });
+    BackgroundService.start(backgroundTask, options);
   }, []);
+
+  useEffect(
+    function () {
+      // emitter.all.clear();
+      // AsyncStorage.clear();
+      // removeItemFromStorage("workingTimers");
+      // if (AppState.currentState !== "background") {
+      //   notifee.stopForegroundService();
+      // }
+
+      () => {
+        if (workingTimersRef.current.length === 0) {
+          soundIsPlayingRef.current = false;
+          // emitter.all.clear();
+          removeItemFromStorage("workingTimers");
+          removeItemFromStorage("alertingTimerNames");
+          soundRef.current?.stopAsync();
+          soundRef.current?.unloadAsync();
+        }
+      };
+    },
+    [soundIsPlayingRef, soundRef, workingTimersRef],
+  );
 
   useEffect(
     function () {
@@ -276,6 +285,7 @@ export default function Timers({ navigation }) {
 
         emitter.all.delete("startForegroundService");
         emitter.on("startForegroundService", async () => {
+          updateSharedObject({ isTaskRunning: true });
           await BackgroundService.start(backgroundTask, options);
         });
       }

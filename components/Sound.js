@@ -58,9 +58,11 @@ export default memo(function Sound() {
                 volume >= 0.1 ? volume - 0.05 : volume,
               );
             }}
-            style={[({ pressed }) => ({ opacity: pressed }), styles.stepBtn]}
+            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
           >
-            <Text style={styles.textBtn}>−</Text>
+            <View style={styles.stepBtn}>
+              <Text style={styles.textBtn}>−</Text>
+            </View>
           </Pressable>
 
           <Slider
@@ -88,9 +90,11 @@ export default memo(function Sound() {
                 volume < 1 ? volume + 0.05 : volume,
               );
             }}
-            style={styles.stepBtn}
+            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
           >
-            <Text style={styles.textBtn}>+</Text>
+            <View style={styles.stepBtn}>
+              <Text style={styles.textBtn}>+</Text>
+            </View>
           </Pressable>
         </View>
       </View>
@@ -115,6 +119,7 @@ const styles = StyleSheet.create({
   },
   textBtn: {
     color: Colors.primary,
-    fontSize: 18,
+    alignSelf: "center",
+    lineHeight: 18,
   },
 });

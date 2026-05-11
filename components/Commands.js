@@ -171,13 +171,17 @@ export default memo(function Commands() {
 
   return ready ? (
     <View style={styles.container}>
-      <Text style={title}>Voice Commands</Text>
-      <Text style={subtitle}>
-        Use the following voice commands to control the timer hands-free.
-      </Text>
       <FlatList
         data={commands}
         renderItem={({ item }) => renderItem(item)}
+        ListHeaderComponent={
+          <>
+            <Text style={title}>Voice Commands</Text>
+            <Text style={subtitle}>
+              Use the following voice commands to control the timer hands-free.
+            </Text>
+          </>
+        }
         style={styles.list}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.command}

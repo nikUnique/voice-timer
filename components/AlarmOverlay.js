@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   wrapper: {
     position: "absolute",
     width: width,
-    height: height,
+    minHeight: height,
     zIndex: 9999,
     backgroundColor: Colors.primary,
   },

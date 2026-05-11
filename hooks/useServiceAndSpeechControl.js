@@ -54,8 +54,10 @@ export function useServiceAndSpeechControl() {
             !leastTimeTimerRef.current?.isPaused &&
             leastTimeTimerRef.current
           ) {
-            Platform.constants.Release < 12 &&
-              (await BackgroundService.start(backgroundTask, options));
+            // if (Platform.constants.Release < 12) {
+            //   await BackgroundService.start(backgroundTask, options);
+            //   console.log("Did it start");
+            // }
 
             await onUpdateNotification(
               ongoingNotificationLabelRef.current,

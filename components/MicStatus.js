@@ -5,15 +5,16 @@ import {
   PermissionsAndroid,
   Pressable,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 
+import { Text } from "../ui/AppText";
 import { Colors } from "../constants/colors";
 import { useSettingsData } from "../context/VoiceRecognizerContext";
 import { useIsLocked } from "../hooks/useIsLocked";
 import { useResponsive } from "../hooks/useResponsive";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
+import IconButton from "../ui/IconButton";
 
 export default function MicStatus() {
   const {
@@ -78,9 +79,10 @@ export default function MicStatus() {
   }
 
   const isListeningText = {
-    marginLeft: 8,
     fontSize: t.body,
     color: Colors.grayShade20,
+    textAlignVertical: "center",
+    textAlign: "left",
   };
 
   return (
@@ -92,16 +94,15 @@ export default function MicStatus() {
     >
       <View style={[styles.toggleListening, toggleListeningBackground]}>
         <View style={styles.isListeningStatus}>
-          <Ionicons
-            name={voiceEnabled /* && isListening */ ? "mic" : "mic-outline"}
+          <IconButton
+            icon={voiceEnabled /* && isListening */ ? "mic" : "mic-outline"}
             size={t.title}
             color={Colors.primary}
           />
           <Text style={isListeningText}>
             {voiceEnabled /* && isListening */ && !isPhoneLocked
               ? "Listening..."
-              : "Not Listening"}{" "}
-            (Tap to change)
+              : "Not Listening"}
           </Text>
         </View>
       </View>
@@ -126,5 +127,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    gap: 4,
+    textAlign: "left",
   },
 });

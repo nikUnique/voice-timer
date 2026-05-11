@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, Text } from "react-native";
+import { Animated } from "react-native";
+import { Text } from "../ui/AppText";
 import { Colors } from "../constants/colors";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { useSpeak } from "../hooks/useSpeak";
 import { emitter } from "../utils/EventEmitter";
 import { formatTime } from "../utils/helpers";
+
+import { PixelRatio } from "react-native";
 
 export default function Time({
   time,
@@ -17,6 +20,7 @@ export default function Time({
 }) {
   const [timeLeft, setTimeLeft] = useState(time);
   const fadeAnimationRefCur = useRef(new Animated.Value(1)).current;
+  const fontScale = PixelRatio.getFontScale();
 
   const { speak } = useSpeak();
   const { currentlyViewedItemRef } = useRefsData();
@@ -91,13 +95,22 @@ export default function Time({
   );
 
   return (
-    <Animated.View style={{ opacity: fadeAnimationRefCur }}>
+    <Animated.View
+      style={{
+        opacity: fadeAnimationRefCur,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <Text
         style={[
           {
-            fontSize: 52,
+            fontSize: 62,
             fontWeight: "bold",
             color: Colors.primaryTint90,
+            textAlign: "center",
+            width: "100%",
+            // slightly larger than fontSize
           },
           moreThenHour && {
             fontSize: 52,

@@ -41,24 +41,25 @@ export default function About() {
       <Text> </Text>
 
       <Subtitle>Voice Timer Tips</Subtitle>
-      <Section>
-        <Paragraph>
-          For the best experience using voice commands, make sure you&apos;re in
-          a quiet environment. Background noise can affect recognition accuracy.
-          Also having vibration on may interfere with voice recognition and is
-          not recommended when using voice commands.
-        </Paragraph>
 
-        <Paragraph>
-          If the alarm sound is loud, your voice might need to be louder too.
-          Try to speak clearly and close to the device when giving commands.
-        </Paragraph>
+      <Paragraph>
+        For the best experience using voice commands, make sure you&apos;re in a
+        quiet environment. Background noise can affect recognition accuracy.
+        Also having vibration on may interfere with voice recognition and is not
+        recommended when using voice commands.
+      </Paragraph>
 
-        <Paragraph>
+      <Paragraph>
+        If the alarm sound is loud, your voice might need to be louder too. Try
+        to speak clearly and close to the device when giving commands.
+      </Paragraph>
+
+      {/* <Paragraph>
           If a full-screen notification appears, which happens only if the phone
           isn&apos;t in use, then voice commands won&apos;t work.
-        </Paragraph>
-      </Section>
+        </Paragraph> */}
+
+      <Paragraph></Paragraph>
 
       <Subtitle>Using Media in Foreground and Background</Subtitle>
       <Paragraph>
@@ -81,10 +82,11 @@ export default function About() {
       </Paragraph>
 
       <Paragraph>
-        Voice commands require a wired connection. Bluetooth earphones do not
-        support voice input for this app - use your device microphone or wired
-        earphones instead.
+        Voice input works with your device mic or wired earphones only -
+        Bluetooth is not supported.
       </Paragraph>
+
+      <Paragraph></Paragraph>
 
       <Subtitle>Instructions On Naming Timers</Subtitle>
 
@@ -98,27 +100,28 @@ export default function About() {
         </Paragraph>
 
         <Label>Valid examples:</Label>
-        <Paragraph>
-          <View>
-            <BulletPoint>Morning Routine</BulletPoint>
-            <BulletPoint>Workout Timer</BulletPoint>
-            <BulletPoint>Break Time</BulletPoint>
-          </View>
-        </Paragraph>
+        {/* <Paragraph> */}
+        <View>
+          <BulletPoint>Morning Routine</BulletPoint>
+          <BulletPoint>Workout Timer</BulletPoint>
+          <BulletPoint>Break Time</BulletPoint>
+        </View>
+        {/* </Paragraph> */}
 
         <Label>What’s not allowed:</Label>
-        <Paragraph>
-          <View>
-            <BulletPoint>
-              Digits: Names like &quot;Timer 1&quot;, &quot;Cooking 2&quot;, or
-              &quot;Work 3&quot; will not be accepted.
-            </BulletPoint>
-            <BulletPoint>
-              Non-letter characters: Any characters other than letters will be
-              rejected.
-            </BulletPoint>
-          </View>
-        </Paragraph>
+        {/* <Paragraph> */}
+        <View>
+          <BulletPoint>
+            Digits: Names like &quot;Timer 1&quot;, &quot;Cooking 2&quot;, or
+            &quot;Work 3&quot; will not be accepted.
+          </BulletPoint>
+          <BulletPoint>
+            Non-letter characters: Any characters other than letters will be
+            rejected.
+          </BulletPoint>
+        </View>
+        {/* </Paragraph> */}
+        <Paragraph></Paragraph>
 
         <Label>Similar vs. Distinct Names</Label>
 

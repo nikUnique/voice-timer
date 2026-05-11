@@ -139,21 +139,21 @@ export default function Terms() {
 
         <Subtitle>Definitions</Subtitle>
         <Section>
-          <Paragraph>
-            <BulletPoint>
-              &quot;Software&quot; refers to the Voice Timer mobile application.
-            </BulletPoint>
+          {/* <Paragraph> */}
+          <BulletPoint>
+            &quot;Software&quot; refers to the Voice Timer mobile application.
+          </BulletPoint>
 
-            <BulletPoint>
-              &quot;Licensor&quot; means the individual developer or legal owner
-              of the Software.
-            </BulletPoint>
+          <BulletPoint>
+            &quot;Licensor&quot; means the individual developer or legal owner
+            of the Software.
+          </BulletPoint>
 
-            <BulletPoint>
-              &quot;User&quot; or &quot;You&quot; means any person who installs,
-              accesses, or uses the Software.
-            </BulletPoint>
-          </Paragraph>
+          <BulletPoint>
+            &quot;User&quot; or &quot;You&quot; means any person who installs,
+            accesses, or uses the Software.
+          </BulletPoint>
+          {/* </Paragraph> */}
         </Section>
 
         <Subtitle>1. Grant of License</Subtitle>
@@ -165,47 +165,45 @@ export default function Terms() {
             by the Software, subject to the terms of this Agreement.
           </Paragraph>
           <Label>You may:</Label>
-          <Paragraph>
-            <BulletPoint>
-              Install and use the Software on supported devices.
-            </BulletPoint>
-            <BulletPoint>
-              Use the Software solely for personal, non-commercial use.
-            </BulletPoint>
-          </Paragraph>
+          {/* <Paragraph> */}
+          <BulletPoint>
+            Install and use the Software on supported devices.
+          </BulletPoint>
+          <BulletPoint>
+            Use the Software solely for personal, non-commercial use.
+          </BulletPoint>
+          {/* </Paragraph> */}
           <Label>You may not:</Label>
 
-          <Paragraph>
-            <BulletPoint>
-              Modify, distribute, sell, or transfer the Software to any third
-              party.
-            </BulletPoint>
+          {/* <Paragraph> */}
+          <BulletPoint>
+            Modify, distribute, sell, or transfer the Software to any third
+            party.
+          </BulletPoint>
 
-            <BulletPoint>
-              Reverse engineer, decompile, or disassemble the Software.
-            </BulletPoint>
+          <BulletPoint>
+            Reverse engineer, decompile, or disassemble the Software.
+          </BulletPoint>
 
-            <BulletPoint>
-              Use the Software for any unlawful purpose.
-            </BulletPoint>
-          </Paragraph>
+          <BulletPoint>Use the Software for any unlawful purpose.</BulletPoint>
+          {/* </Paragraph> */}
         </Section>
 
         <Subtitle>2. Restrictions on Use</Subtitle>
 
         <Label>You may not:</Label>
         <Section>
-          <Paragraph>
-            <BulletPoint>
-              Remove, alter, or obscure any copyright or other proprietary
-              notices within the Software.
-            </BulletPoint>
+          {/* <Paragraph> */}
+          <BulletPoint>
+            Remove, alter, or obscure any copyright or other proprietary notices
+            within the Software.
+          </BulletPoint>
 
-            <BulletPoint>
-              Use the Software in a way that infringes on any intellectual
-              property rights, or for any unlawful activity.
-            </BulletPoint>
-          </Paragraph>
+          <BulletPoint>
+            Use the Software in a way that infringes on any intellectual
+            property rights, or for any unlawful activity.
+          </BulletPoint>
+          {/* </Paragraph> */}
         </Section>
 
         <Subtitle>3. Intellectual Property Rights</Subtitle>

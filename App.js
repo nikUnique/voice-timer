@@ -8,7 +8,9 @@ import BackgroundService from "react-native-background-actions";
 
 import React, { memo, useCallback, useEffect, useState } from "react";
 import {
+  BackHandler,
   NativeModules,
+  PixelRatio,
   Platform,
   StatusBar,
   StyleSheet,
@@ -16,6 +18,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
+import { AppState } from "react-native";
 
 import Tts from "react-native-tts";
 import AgreementAlert from "./components/AgreementAlert";
@@ -38,6 +41,7 @@ import TimersScreen from "./screens/TimersScreen";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
 import { emitter } from "./utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "./utils/sharedVariables";
+import { useResponsive } from "./hooks/useResponsive";
 
 const Stack = createNativeStackNavigator();
 
@@ -47,6 +51,7 @@ function AppWithContext() {
   const { isMediaPausedRef, currentActivityRef, leastTimeTimerRef } =
     useRefsData();
   const { appState } = useAppState();
+  const { t } = useResponsive();
 
   const releaseAudioFocus = useCallback(
     function () {
@@ -58,16 +63,14 @@ function AppWithContext() {
   );
 
   useEffect(function () {
-    emitter.emit("startForegroundService");
-
     return () => {
       if (
         !getSharedObject().runningTimerNames.length &&
         !getSharedObject().alertingTimerNames.length
       ) {
-        BackgroundService.stop();
         updateSharedObject({ isTaskRunning: false });
         console.log("BackgroundService stops 🇵🛑");
+        BackgroundService.stop();
       }
     };
   }, []);
@@ -80,6 +83,11 @@ function AppWithContext() {
     },
     [keepScreenDim],
   );
+
+  useEffect(() => {
+    const voiceKeepAlive = setInterval(() => {}, 10000);
+    return () => clearInterval(voiceKeepAlive);
+  }, []);
 
   useEffect(() => {
     const finish = Tts.addEventListener("tts-finish", () => {
@@ -171,7 +179,7 @@ function AppWithContext() {
             headerTitleStyle: {
               color: Colors.primaryTint90,
 
-              fontSize: 18,
+              fontSize: t.heading,
             },
             headerTintColor: Colors.primaryTint90,
             animation: "fade",

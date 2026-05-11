@@ -14,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import { useSettings } from "./useSettings";
 import { useSound } from "./useSound";
+import backgroundServer from "react-native-background-actions";
 
 let delay = 900;
 
@@ -53,10 +54,12 @@ export function useTimer() {
 
   const backgroundTask = useCallback(async () => {
     try {
-      updateSharedObject({ isTaskRunning: true });
+      // updateSharedObject({ isTaskRunning: true });
 
       while (true) {
         if (!getSharedObject()?.isTaskRunning) {
+          console.log("Background service stops for sure");
+
           break;
         }
 

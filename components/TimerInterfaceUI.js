@@ -1,6 +1,13 @@
 import { memo } from "react";
 import { Colors } from "../constants/colors";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  TextComponent,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import { Text } from "../ui/AppText";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { useResponsive } from "../hooks/useResponsive";
 import IconButton from "../ui/IconButton";
@@ -27,7 +34,10 @@ export default memo(function TimerInterfaceUI({
     fontWeight: 600,
     fontSize: t.title,
     color: Colors.primaryTint90,
+    textAlign: "center",
   };
+
+  const { height } = useWindowDimensions();
 
   // const currentRoute = useNavigationState(
   //   (state) => state.routes[state.index].name,
@@ -40,7 +50,7 @@ export default memo(function TimerInterfaceUI({
       style={[
         styles.container,
         {
-          height: timerHeight,
+          minHeight: timerHeight,
         },
 
         // isActive && { backgroundColor: Colors.primaryTint8 },
@@ -67,16 +77,18 @@ export default memo(function TimerInterfaceUI({
           />
         </Pressable>
 
-        <Time
-          time={time}
-          activateTimerRef={activateTimerRef}
-          index={index}
-          setIsActive={setIsActive}
-          name={name}
-          startTimer={startTimer}
-          isPaused={isPaused}
-          isActive={isActive}
-        />
+        {
+          <Time
+            time={time}
+            activateTimerRef={activateTimerRef}
+            index={index}
+            setIsActive={setIsActive}
+            name={name}
+            startTimer={startTimer}
+            isPaused={isPaused}
+            isActive={isActive}
+          />
+        }
 
         {
           <View style={(!isPaused || !isActive) && styles.hiddenTimer}>
@@ -138,6 +150,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 15,
     right: 15,
+    textAlign: "right",
   },
 
   timerLabel: {

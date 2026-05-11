@@ -87,9 +87,11 @@ export default memo(function AppBehavior() {
                   minutes > 1 ? steps[i - 1] : minutes,
                 );
               }}
-              style={[({ pressed }) => ({ opacity: pressed }), styles.stepBtn]}
+              style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
             >
-              <Text style={styles.textBtn}>−</Text>
+              <View style={styles.stepBtn}>
+                <Text style={styles.textBtn}>−</Text>
+              </View>
             </Pressable>
             <Slider
               containerStyle={{ flex: 1 }}
@@ -116,9 +118,11 @@ export default memo(function AppBehavior() {
                   minutes < 300 ? steps[i + 1] : minutes,
                 );
               }}
-              style={styles.stepBtn}
+              style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
             >
-              <Text style={styles.textBtn}>+</Text>
+              <View style={styles.stepBtn}>
+                <Text style={styles.textBtn}>+</Text>
+              </View>
             </Pressable>
           </View>
         </View>
@@ -162,6 +166,6 @@ const styles = StyleSheet.create({
   },
   textBtn: {
     color: Colors.primary,
-    fontSize: 18,
+    lineHeight: 18,
   },
 });

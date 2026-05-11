@@ -282,7 +282,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         }}
       >
         {<MicStatus />}
-
         {sortedTimers?.length > 0 && (
           <View
             style={[

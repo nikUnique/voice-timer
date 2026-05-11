@@ -11,7 +11,7 @@ export default function ContextMenu({ onToggleModal, modalIsVisible }) {
 
   const menuItem = {
     padding: 10,
-    fontSize: t.subheading,
+    fontSize: t.body,
     color: Colors.primaryTint90,
   };
   return (
@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     backgroundColor: Colors.primaryShade30,
     borderRadius: 8,
-    width: 170,
     elevation: 5,
     padding: 10,
   },

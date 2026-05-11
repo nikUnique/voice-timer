@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   },
   modalIconBox: {
     width: 52,
-    height: 52,
+    minHeight: 52,
     borderRadius: 16,
     backgroundColor: Colors.dangerIconBg,
     alignItems: "center",

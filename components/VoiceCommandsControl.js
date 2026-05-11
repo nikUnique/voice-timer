@@ -6,15 +6,16 @@ import {
   AppState,
   PermissionsAndroid,
   StyleSheet,
-  Text,
 } from "react-native";
 
+import { Text } from "../ui/AppText";
 import { Colors } from "../constants/colors";
 import {
   useRecognizerData,
   useRefsData,
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
+import { useResponsive } from "../hooks/useResponsive";
 
 export default memo(function VoiceCommandsControl({ setCommand }) {
   const [isReady, setIsReady] = useState(false);
@@ -45,6 +46,8 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     useRefsData();
 
   const { voiceEnabled } = useSettingsData();
+
+  const { t } = useResponsive();
 
   const fadeInAndOut = useCallback(
     function () {
@@ -122,16 +125,18 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         return;
       }
 
-      AppState.currentState === "active" &&
-        vosk
-          .start({ grammar: dynamicGrammar })
-          .then(() => {
-            console.log("Starting recognition with grammar...");
-            setIsRecognizing(true);
-          })
-          .catch((e) =>
-            console.error(`An error occurred while initializing vosk`, e),
-          );
+      console.log(AppState.currentState, "is it active");
+
+      /*   AppState.currentState === "active" && */
+      vosk
+        .start({ grammar: dynamicGrammar })
+        .then(() => {
+          console.log("Starting recognition with grammar...");
+          setIsRecognizing(true);
+        })
+        .catch((e) =>
+          console.error(`An error occurred while initializing vosk`, e),
+        );
     } catch (error) {
       console.error("An error occurred in the recordGrammar function", error);
     }
@@ -175,6 +180,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     if (!voiceEnabled) {
       return;
     }
+
     const resultEvent = vosk.onResult(async (res) => {
       console.log(
         "An onResult event has been caught: " + res,
@@ -232,34 +238,11 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
           marginTop: 24,
           color: Colors.primaryTint90,
           fontWeight: "bold",
-          fontSize: 20,
+          fontSize: t.subheading,
         }}
       >
         {result}
       </Text>
     </Animated.View>
   );
-});
-
-const styles = StyleSheet.create({
-  container: {
-    gap: 25,
-    flex: 1,
-    display: "flex",
-    textAlign: "center",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "absolute",
-  },
-  recordingButtons: {
-    gap: 15,
-    display: "flex",
-  },
-  textContainer: {
-    gap: 15,
-  },
-
-  resultText: {
-    backgroundColor: "orange",
-  },
 });

@@ -164,11 +164,11 @@ function CreateTimer() {
 
   const buttonStyle = {
     fontWeight: "600",
-    fontSize: 30,
+    fontSize: 24,
     color: Colors.primaryTint90,
     backgroundColor: Colors.whiteAlpha20,
-    width: 64,
-    height: 64,
+    width: 72,
+    height: 72,
     textAlign: "center",
     textAlignVertical: "center",
     borderRadius: 1000,
@@ -177,7 +177,7 @@ function CreateTimer() {
 
   const inputValueSt = {
     color: Colors.primaryTint90,
-    fontSize: 36,
+    fontSize: 30,
     alignSelf: "center",
   };
 

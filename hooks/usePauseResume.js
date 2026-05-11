@@ -186,8 +186,6 @@ export function usePauseResume({
           }),
         });
 
-        
-
         setTimersHistory((cur) =>
           cur.map((timer) => {
             return timer?.label.toLowerCase() ===
@@ -255,7 +253,7 @@ export function usePauseResume({
         emitter.on(`updateNotification-${name}`, updatePersitentNotification);
 
         if (
-          !getSharedObject().appStateBox?.includes("active") &&
+          /* !getSharedObject().appStateBox?.includes("active") && */
           timeLeftRef.current > 0
         ) {
           emitter.emit(`updateNotification-${name}`, {
