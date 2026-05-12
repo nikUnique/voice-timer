@@ -58,16 +58,16 @@ const commands = [
     badge: "TIME",
   },
   {
-    command: "Play media",
-    example: "Play media",
+    command: "Play all media",
+    example: "Play all media",
     description:
       "Resumes external media playback. While media is playing, only the 'Stop media' command is accepted - all other commands are ignored.",
     icon: "play-circle-outline",
     badge: "PLAY",
   },
   {
-    command: "Stop media",
-    example: "Stop media",
+    command: "Stop all media",
+    example: "Stop all media",
     description:
       "Pauses external media and restores full voice control. Required before any other command will be accepted - while media is playing, this is the only command that works.",
     icon: "stop-circle-outline",
@@ -101,7 +101,7 @@ const commands = [
     command: "Timer go sleep",
     example: "Timer go sleep",
     description:
-      "Deactivates voice command listening. Timer will stop responding to spoken commands until woken up again.",
+      "Deactivates voice command listening. Timer will stop responding to spoken commands until woken up again. 'Stop all media' and 'play all media' still work while sleeping. Say 'timer wake up' to resume commands.",
     icon: "mic-off-outline",
     badge: "SLEEP",
   },

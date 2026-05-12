@@ -24,6 +24,7 @@ import { useTimerList } from "../hooks/useTimerList";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import MicStatus from "./MicStatus";
 import TimerInterfaceButtons from "./TimerInterfaceButtons";
+import { VolumeManager } from "react-native-volume-manager";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -68,6 +69,8 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     STATUS_REPORT,
     TIMER_WAKE_UP,
     TIMER_GO_SLEEP,
+    VOLUME_UP,
+    VOLUME_DOWN,
   } = commandsRef?.current ? commandsRef.current : {};
 
   const { successSound, discoSound } = useSettingsData();
@@ -178,6 +181,27 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           isTimerSleepingRef.current = false;
         }
 
+        // Volume place
+        if (recognizedCommandRef.current.includes(VOLUME_UP)) {
+          const { volume } = await VolumeManager.getVolume("music");
+          const percent = Math.round((volume + 0.1) * 10) / 10;
+          console.log(percent);
+
+          if (percent < 1) {
+            await VolumeManager.setVolume(percent, { type: "music" });
+            speak(`Volume ${percent}`);
+          }
+        }
+
+        if (recognizedCommandRef.current.includes(VOLUME_DOWN)) {
+          const { volume } = await VolumeManager.getVolume("music");
+          const percent = Math.round((volume - 0.1) * 10) / 10;
+          console.log(percent);
+
+          await VolumeManager.setVolume(percent, { type: "music" });
+          speak(`Volume ${percent}`);
+        }
+
         if (
           recognizedCommandRef.current?.toLowerCase() ===
           `${RESET_FINISHED} ${secretIdentifierRef.current?.split(" ").slice(2, -1)}`.trim()
@@ -226,6 +250,8 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       TIME,
       TIMER_GO_SLEEP,
       TIMER_WAKE_UP,
+      VOLUME_DOWN,
+      VOLUME_UP,
       alertingTimerNamesRef,
       discoSound,
       formatRingingResetSpeech,

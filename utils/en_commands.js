@@ -13,3 +13,5 @@ export const PLAY_MEDIA = "play all media";
 export const STOP_MEDIA = "stop all media";
 export const TIMER_WAKE_UP = "timer wake up";
 export const TIMER_GO_SLEEP = "timer go sleep";
+export const VOLUME_UP = "volume up";
+export const VOLUME_DOWN = "volume down";

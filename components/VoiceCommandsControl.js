@@ -17,6 +17,7 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { useResponsive } from "../hooks/useResponsive";
 import { useSpeak } from "../hooks/useSpeak";
+import { sleep } from "../utils/helpers";
 
 export default memo(function VoiceCommandsControl({ setCommand }) {
   const [isReady, setIsReady] = useState(false);
@@ -138,6 +139,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         return;
       }
 
+      await sleep(0.1);
       AppState.currentState === "active" &&
         vosk
           .start({ grammar: dynamicGrammar })
@@ -255,6 +257,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     isListening,
     isListeningRef,
     voiceEnabled,
+    ignoreUntilRef,
   ]);
 
   return (

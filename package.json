@@ -42,6 +42,7 @@
     "react-native-sound": "^0.11.2",
     "react-native-svg": "^15.11.2",
     "react-native-tts": "^4.1.1",
+    "react-native-volume-manager": "^2.0.8",
     "react-native-vosk": "^0.3.2",
     "typo-js": "^1.2.5",
     "words-to-numbers": "^1.5.1"
