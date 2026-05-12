@@ -211,7 +211,6 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       }
       console.log(
         "An onResult event has been caught: " + res,
-        isListening,
         isListeningRef.current,
         Date.now(),
       );

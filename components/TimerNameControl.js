@@ -47,7 +47,6 @@ export default function TimerNameControl() {
         : true;
 
       const areBothWordsCorrect = isFirstWordCorrect && isSecondWordCorrect;
-      // console.log("areBothWordsCorrect", areBothWordsCorrect);
 
       if (!areBothWordsCorrect || lowerCaseName.split(" ").length > 2) {
         console.log(

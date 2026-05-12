@@ -125,12 +125,6 @@ export function useExecuteCommand({
           );
         }
 
-        // if (!isActive && !isCommandValid) {
-        //   console.log("The timer is not active 🥇", isCommandValid);
-
-        //   return;
-        // }
-
         if (
           (isActive && recognizedCommand?.recognizedCommand.includes(START)) ||
           (isActive && recognizedCommand?.recognizedCommand.includes(REPEAT))

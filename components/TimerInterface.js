@@ -108,8 +108,6 @@ function TimerInterface({
     startTimer,
   });
 
-  const { t } = useResponsive();
-
   useEffect(
     function () {
       executeCommand();
@@ -142,14 +140,8 @@ function TimerInterface({
     [controlTimer, index, isActive, isPaused, name, onDelete, startTimer],
   );
 
-  // const currentRoute = useNavigationState(
-  //   (state) => state.routes[state.index].name,
-  // );
-
-  // console.log(currentRoute);
-
   const ui = (
-    /* currentRoute !== "SettingsScreen" && */ <TimerInterfaceUI
+    <TimerInterfaceUI
       timerHeight={timerHeight}
       index={index}
       isActive={isActive}

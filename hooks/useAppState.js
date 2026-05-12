@@ -11,10 +11,8 @@ export const useAppState = () => {
     const appStateListener = AppState.addEventListener(
       "change",
       (nextAppState) => {
-        // console.log("Changes in app state");
-
         setAppState(nextAppState);
-      }
+      },
     );
 
     // Clean up the listener when the component unmounts

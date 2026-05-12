@@ -180,7 +180,7 @@ export function useTimeUpdate({
     async function () {
       try {
         if (getSharedObject().alertingTimerNames?.includes(name)) {
-          console.log(`This timer is alredy finished 🪃`, name);
+          console.log(`This timer is already finished 🪃`, name);
 
           return;
         }

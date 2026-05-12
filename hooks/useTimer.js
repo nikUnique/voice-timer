@@ -56,12 +56,8 @@ export function useTimer() {
 
   const backgroundTask = useCallback(async () => {
     try {
-      // updateSharedObject({ isTaskRunning: true });
-
       while (true) {
         if (!getSharedObject()?.isTaskRunning) {
-          console.log("Background service stops for sure");
-
           break;
         }
 
@@ -119,14 +115,10 @@ export function useTimer() {
 
   const doneTalking = useCallback(
     function doneTalking(e) {
-      console.log("Here", e.utteranceId, Date.now());
-
       releaseAudioFocus();
-      // setTimeout(() => {
       ignoreUntilRef.current = Date.now() + 300;
       isListeningRef.current = true;
       setIsListening(true);
-      // }, 1500);
     },
     [ignoreUntilRef, isListeningRef, releaseAudioFocus, setIsListening],
   );

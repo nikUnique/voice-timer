@@ -68,8 +68,6 @@ export function useServiceAndSpeechControl() {
           }
 
           if (AppState.currentState === "active") {
-            console.log("Maybe here");
-
             isListeningRef.current = true;
             setIsListening(true);
 

@@ -108,7 +108,6 @@ export default function Timers({ navigation }) {
             async function () {
               try {
                 await deactivateKeepAwake();
-                console.log("KeepScreenOnMinutes", keepScreenOnMinutes * 60);
               } catch (error) {
                 console.error(
                   `An error occurred in the active screen function`,

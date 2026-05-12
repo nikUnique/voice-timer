@@ -277,8 +277,6 @@ export function useResetTimer({
         if (isPhoneLocked) {
           BackHandler.exitApp();
         }
-
-        // console.log("The end of reset function", name);
       } catch (error) {
         console.error(`An error occurred in resetTimer function ❎`, error);
       }

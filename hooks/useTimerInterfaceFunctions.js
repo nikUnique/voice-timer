@@ -48,10 +48,8 @@ export function useTimerInterfaceFunctions({
   async function createDictionary(affData, dicData) {
     return new Promise((resolve, reject) => {
       InteractionManager.runAfterInteractions(async () => {});
-      const newDate = Date.now();
       const dictionary = new Typo("en_US", affData, dicData, {});
       dictionaryTypoRef.current = dictionary;
-      // console.log(Date.now() - newDate, "The gap");
       resolve(dictionary);
       if (!dictionary)
         reject(

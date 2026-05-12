@@ -1,18 +1,12 @@
 import { memo } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+
 import { Colors } from "../constants/colors";
-import {
-  Pressable,
-  StyleSheet,
-  TextComponent,
-  useWindowDimensions,
-  View,
-} from "react-native";
-import { Text } from "../ui/AppText";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { useResponsive } from "../hooks/useResponsive";
+import { Text } from "../ui/AppText";
 import IconButton from "../ui/IconButton";
 import Time from "./Time";
-import { useNavigationState } from "@react-navigation/native";
 
 export default memo(function TimerInterfaceUI({
   timerHeight,
@@ -37,23 +31,14 @@ export default memo(function TimerInterfaceUI({
     textAlign: "center",
   };
 
-  const { height } = useWindowDimensions();
-
-  // const currentRoute = useNavigationState(
-  //   (state) => state.routes[state.index].name,
-  // );
-
-  // console.log(currentRoute);
-
   const ui = (
-    /* currentRoute !== "SettingsScreen" &&  */ <View
+    <View
       style={[
         styles.container,
         {
           minHeight: timerHeight,
         },
 
-        // isActive && { backgroundColor: Colors.primaryTint8 },
         !timerHeight && styles.hiddenTimer,
       ]}
     >
@@ -129,7 +114,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: Colors.primaryShade30,
-    // padding: 20,
     zIndex: -1,
   },
 
@@ -160,12 +144,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
   },
-
-  // name: {
-  //   fontWeight: 600,
-  //   fontSize: t.body,
-  //   color: Colors.primaryTint90,
-  // },
 
   refreshButton: {
     borderRadius: "50%",

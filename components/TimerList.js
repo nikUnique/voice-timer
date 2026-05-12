@@ -185,7 +185,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         if (recognizedCommandRef.current.includes(VOLUME_UP)) {
           const { volume } = await VolumeManager.getVolume("music");
           const percent = Math.round((volume + 0.1) * 10) / 10;
-          console.log(percent);
 
           if (percent < 1) {
             await VolumeManager.setVolume(percent, { type: "music" });
@@ -196,7 +195,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         if (recognizedCommandRef.current.includes(VOLUME_DOWN)) {
           const { volume } = await VolumeManager.getVolume("music");
           const percent = Math.round((volume - 0.1) * 10) / 10;
-          console.log(percent);
 
           await VolumeManager.setVolume(percent, { type: "music" });
           speak(`Volume ${percent}`);

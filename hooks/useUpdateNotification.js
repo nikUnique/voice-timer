@@ -109,7 +109,6 @@ export function useUpdateNotification({
         let basicLabel = `${seconds >= 3600 ? Math.floor(seconds / 3600) + "h" : ""} ${seconds >= 60 ? Math.floor(seconds / 60) % 60 : ""}m`;
 
         timersLabel = `${workingTimersRef.current?.length - alertingTimerNamesRef.current?.length} timers`;
-        // console.log("timersLabel", timersLabel, workingTimersRef.current, name);
 
         updateSharedObject({ timersLabel });
 

@@ -22,8 +22,7 @@ export function useResponsive() {
     }),
     [],
   );
-  // console.log(width + ` is the phone's width`);
-  // console.log(breakpoint + " size");
+
   const t = useMemo(() => TOKENS, [TOKENS]);
 
   return { width, breakpoint, t };
