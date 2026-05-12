@@ -77,6 +77,8 @@ export function useSpeak() {
               console.log("Granted focus");
 
               ignoreUntilRef.current = Date.now() + duration(text) + 300;
+
+              await Tts.speak(text, voiceOptions);
             }
           });
         }
@@ -84,7 +86,13 @@ export function useSpeak() {
         console.error("An error occurred in the speak function 🤯", error);
       }
     },
-    [ignoreUntilRef, isListeningRef, isVoiceFeedbackEnabled, setIsListening],
+    [
+      ignoreUntilRef,
+      isListeningRef,
+      isVoiceFeedbackEnabled,
+      setIsListening,
+      voiceOptions,
+    ],
   );
 
   return { speak };
