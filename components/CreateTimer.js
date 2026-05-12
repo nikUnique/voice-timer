@@ -151,7 +151,7 @@ function CreateTimer() {
       setTimers(sortedTimers);
       freshlyCreatedTimerRef.current = newTimer;
 
-      if (sortedTimers.length === 1) {
+      if (sortedTimers.length >= 1) {
         navigation.replace("TimersScreen");
       }
       if (sortedTimers.length > 1) {

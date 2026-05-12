@@ -56,8 +56,8 @@ export default function VoiceRecognizerProvider({ children }) {
 
   // Timers
   const workingTimersRef = useRef([]);
-  const { defaultTimers } = useDefaultTimers();
-  const [timers, setTimers] = useState([]);
+  const { DEFAULT_PRESETS } = useDefaultTimers();
+  const [timers, setTimers] = useState(DEFAULT_PRESETS);
   const [editableTimers, setEditableTimers] = useState([]);
   const [timersHistory, setTimersHistory] = useState([]);
   const [timerHeight, setTimerHeight] = useState(0);

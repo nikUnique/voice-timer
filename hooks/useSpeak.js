@@ -77,10 +77,6 @@ export function useSpeak() {
               console.log("Granted focus");
 
               ignoreUntilRef.current = Date.now() + duration(text) + 300;
-              console.log(duration(text));
-
-              const id = await Tts.speak(text, voiceOptions);
-              console.log("super id", id);
             }
           });
         }

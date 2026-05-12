@@ -29,8 +29,6 @@ export function useServiceAndSpeechControl() {
   useBackgroundActions();
 
   useEffect(() => {
-    console.log("When it changes");
-
     setIsListening(true);
     isListeningRef.current = true;
 

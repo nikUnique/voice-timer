@@ -53,7 +53,7 @@ export default function Timers({ navigation }) {
     isMediaPlayingRef,
   } = useRefsData();
 
-  const { defaultTimers } = useDefaultTimers();
+  const { DEFAULT_PRESETS } = useDefaultTimers();
 
   useServiceAndSpeechControl();
 
@@ -145,7 +145,7 @@ export default function Timers({ navigation }) {
       isAwake,
       REPEAT,
       RESET_FINISHED,
-      defaultTimers,
+      DEFAULT_PRESETS,
       timers,
       keepScreenOnCommand,
       keepScreenOnMinutes,
