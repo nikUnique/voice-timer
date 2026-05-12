@@ -85,3 +85,7 @@ export function getTimePhrase(date = new Date()) {
 
   return `It's ${h12}:${pad(m)} ${period}.`;
 }
+
+export function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

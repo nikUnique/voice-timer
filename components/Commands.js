@@ -1,128 +1,168 @@
 import { Ionicons } from "@expo/vector-icons";
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
+
 import { Colors } from "../constants/colors";
 import { useResponsive } from "../hooks/useResponsive";
 import LoadingIndicator from "../ui/LoadingIndicator";
-
-const commands = [
-  {
-    command: "Start [timer name]",
-    example: "Start Focus timer",
-    description: "Starts the named timer with its default duration.",
-    icon: "play-outline",
-    badge: "START",
-  },
-  {
-    command: "Pause [timer name]",
-    example: "Pause Focus timer",
-    description: "Pauses the timer if it is running, otherwise no effect.",
-    icon: "pause-outline",
-    badge: "PAUSE",
-  },
-  {
-    command: "Continue [timer name]",
-    example: "Continue Focus timer",
-    description:
-      'Resumes the timer if paused. "Resume" is avoided as it can be misheard as "Reset".',
-    icon: "play-skip-forward-outline",
-    badge: "CONTINUE",
-  },
-  {
-    command: "Reset [timer name]",
-    example: "Reset Focus timer",
-    description: "Resets the timer if it was paused, otherwise no effect.",
-    icon: "refresh-outline",
-    badge: "RESET",
-  },
-  {
-    command: "Repeat",
-    example: "Repeat",
-    description:
-      "Restarts the timer from the last individual timer command. Any command that used a specific timer counts - that timer will be restarted. E.g. if you last said 'start twenty minutes' or 'reset twenty minutes', where 'twenty minutes' is one of your timers, saying 'Repeat' restarts the 'twenty-minutes' timer.",
-    icon: "repeat-outline",
-    badge: "REPEAT",
-  },
-  {
-    command: "Reset finished",
-    example: "Reset finished",
-    description: "Resets all timers that have run out of time.",
-    icon: "checkmark-done-outline",
-    badge: "BULK",
-  },
-  {
-    command: "Time",
-    example: "Time",
-    description: "Tells you the exact time.",
-    icon: "time-outline",
-    badge: "TIME",
-  },
-  {
-    command: "Play all media",
-    example: "Play all media",
-    description:
-      "Resumes external media playback. While media is playing, only the 'Stop media' command is accepted - all other commands are ignored.",
-    icon: "play-circle-outline",
-    badge: "PLAY",
-  },
-  {
-    command: "Stop all media",
-    example: "Stop all media",
-    description:
-      "Pauses external media and restores full voice control. Required before any other command will be accepted - while media is playing, this is the only command that works.",
-    icon: "stop-circle-outline",
-    badge: "STOP",
-  },
-  {
-    command: "Status report",
-    example: "Status report",
-    description:
-      "Reads out all timers and their current state - how many are running, paused, alarming, or not active.",
-    icon: "list-outline",
-    badge: "STATUS",
-  },
-  {
-    command: "Status [timer name]",
-    example: "Status Focus timer",
-    description:
-      "Reads the current state of a single timer - whether it is running, paused, alarming, or not active, and how much time is left.",
-    icon: "timer-outline",
-    badge: "STATUS",
-  },
-  {
-    command: "Timer wake up",
-    example: "Timer wake up",
-    description:
-      "Activates voice command listening. Timer will now respond to spoken commands.",
-    icon: "mic-outline",
-    badge: "WAKE",
-  },
-  {
-    command: "Timer go sleep",
-    example: "Timer go sleep",
-    description:
-      "Deactivates voice command listening. Timer will stop responding to spoken commands until woken up again. 'Stop all media' and 'play all media' still work while sleeping. Say 'timer wake up' to resume commands.",
-    icon: "mic-off-outline",
-    badge: "SLEEP",
-  },
-  {
-    command: "Volume up",
-    example: "Volume up",
-    description: "Increases media volume by one step.",
-    icon: "volume-high-outline",
-    badge: "VOL+",
-  },
-  {
-    command: "Volume down",
-    example: "Volume down",
-    description: "Decreases media volume by one step.",
-    icon: "volume-low-outline",
-    badge: "VOL-",
-  },
-];
+import { useRefsData } from "../context/VoiceRecognizerContext";
+import { capitalize } from "../utils/helpers";
 
 export default memo(function Commands() {
   const [ready, setReady] = useState(false);
+
+  const { commandsRef } = useRefsData();
+
+  const {
+    REPEAT,
+    RESET,
+    RESET_FINISHED,
+    TIME,
+    START,
+    PAUSE,
+    PLAY_MEDIA,
+    STOP_MEDIA,
+    CONTINUE,
+    STATUS_REPORT,
+    STATUS,
+    TIMER_WAKE_UP,
+    TIMER_GO_SLEEP,
+    VOLUME_UP,
+    VOLUME_DOWN,
+  } = commandsRef?.current ? commandsRef.current : {};
+
+  const commands = useMemo(() => {
+    return [
+      {
+        command: `${capitalize(START)} [timer name]`,
+        example: `${capitalize(START)} Focus timer`,
+        description: "Starts the named timer with its default duration.",
+        icon: "play-outline",
+        badge: "START",
+      },
+      {
+        command: `${capitalize(PAUSE)} [timer name]`,
+        example: `${capitalize(PAUSE)} Focus timer`,
+        description: "Pauses the timer if it is running, otherwise no effect.",
+        icon: "pause-outline",
+        badge: "PAUSE",
+      },
+      {
+        command: `${capitalize(CONTINUE)} [timer name]`,
+        example: `${capitalize(CONTINUE)} Focus timer`,
+        description:
+          'Resumes the timer if paused. "Resume" is avoided as it can be misheard as "Reset".',
+        icon: "play-skip-forward-outline",
+        badge: "CONTINUE",
+      },
+      {
+        command: `${capitalize(RESET)} [timer name]`,
+        example: `${capitalize(RESET)} Focus timer`,
+        description: "Resets the timer if it was paused, otherwise no effect.",
+        icon: "refresh-outline",
+        badge: "RESET",
+      },
+      {
+        command: `${capitalize(REPEAT)}`,
+        example: `${capitalize(REPEAT)}`,
+        description:
+          "Restarts the timer from the last individual timer command. Any command that used a specific timer counts - that timer will be restarted. E.g. if you last said 'start twenty minutes' or 'reset twenty minutes', where 'twenty minutes' is one of your timers, saying 'Repeat' restarts the 'twenty-minutes' timer.",
+        icon: "repeat-outline",
+        badge: "REPEAT",
+      },
+      {
+        command: `${capitalize(RESET_FINISHED)}`,
+        example: `${capitalize(RESET_FINISHED)}`,
+        description: "Resets all timers that have run out of time.",
+        icon: "checkmark-done-outline",
+        badge: "BULK",
+      },
+      {
+        command: `${capitalize(TIME)}`,
+        example: `${capitalize(TIME)}`,
+        description: "Tells you the exact time.",
+        icon: "time-outline",
+        badge: "TIME",
+      },
+      {
+        command: `${capitalize(PLAY_MEDIA)}`,
+        example: `${capitalize(PLAY_MEDIA)}`,
+        description: `Resumes external media playback. While media is playing, only the "${capitalize(STOP_MEDIA)}" command is accepted - all other commands are ignored.`,
+        icon: "play-circle-outline",
+        badge: "PLAY",
+      },
+      {
+        command: `${capitalize(STOP_MEDIA)}`,
+        example: `${capitalize(STOP_MEDIA)}`,
+        description:
+          "Pauses external media and restores full voice control. Required before any other command will be accepted - while media is playing, this is the only command that works.",
+        icon: "stop-circle-outline",
+        badge: "STOP",
+      },
+      {
+        command: `${capitalize(STATUS_REPORT)}`,
+        example: `${capitalize(STATUS_REPORT)}`,
+        description:
+          "Reads out all timers and their current state - how many are running, paused, alarming, or not active.",
+        icon: "list-outline",
+        badge: "STATUS",
+      },
+      {
+        command: `${capitalize(STATUS)} [timer name]`,
+        example: `${capitalize(STATUS)} Focus timer`,
+        description:
+          "Reads the current state of a single timer - whether it is running, paused, alarming, or not active, and how much time is left.",
+        icon: "timer-outline",
+        badge: "STATUS",
+      },
+      {
+        command: `${capitalize(TIMER_WAKE_UP)}`,
+        example: `${capitalize(TIMER_WAKE_UP)}`,
+        description:
+          "Activates voice command listening. Timer will now respond to spoken commands.",
+        icon: "mic-outline",
+        badge: "WAKE",
+      },
+      {
+        command: `${capitalize(TIMER_GO_SLEEP)}`,
+        example: `${capitalize(TIMER_GO_SLEEP)}`,
+        description:
+          "Deactivates voice command listening. Timer will stop responding to spoken commands until woken up again. 'Stop all media' and 'play all media' still work while sleeping. Say 'timer wake up' to resume commands.",
+        icon: "mic-off-outline",
+        badge: "SLEEP",
+      },
+      {
+        command: `${capitalize(VOLUME_UP)}`,
+        example: `${capitalize(VOLUME_UP)}`,
+        description: "Increases media volume by one step.",
+        icon: "volume-high-outline",
+        badge: "VOL+",
+      },
+      {
+        command: `${capitalize(VOLUME_DOWN)}`,
+        example: `${capitalize(VOLUME_DOWN)}`,
+        description: "Decreases media volume by one step.",
+        icon: "volume-low-outline",
+        badge: "VOL-",
+      },
+    ];
+  }, [
+    CONTINUE,
+    PAUSE,
+    PLAY_MEDIA,
+    REPEAT,
+    RESET,
+    RESET_FINISHED,
+    START,
+    STATUS,
+    STATUS_REPORT,
+    STOP_MEDIA,
+    TIME,
+    TIMER_GO_SLEEP,
+    TIMER_WAKE_UP,
+    VOLUME_DOWN,
+    VOLUME_UP,
+  ]);
 
   useEffect(() => {
     const id = setTimeout(() => setReady(true), 0);

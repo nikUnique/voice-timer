@@ -4,8 +4,25 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../constants/colors";
 import Section from "./Section";
 import { BulletPoint, Label, Paragraph, Subtitle } from "./TextUnits";
+import { useRefsData } from "../context/VoiceRecognizerContext";
 
 export default function About() {
+  const { commandsRef } = useRefsData();
+
+  const {
+    REPEAT,
+    RESET,
+    RESET_FINISHED,
+    DISCO,
+    TIME,
+    PLAY_MEDIA,
+    STOP_MEDIA,
+    STATUS_REPORT,
+    TIMER_WAKE_UP,
+    TIMER_GO_SLEEP,
+    VOLUME_UP,
+    VOLUME_DOWN,
+  } = commandsRef?.current ? commandsRef.current : {};
   return (
     <ScrollView
       style={{
@@ -69,9 +86,9 @@ export default function About() {
       </Paragraph>
 
       <Paragraph>
-        To use any voice command while media is playing, say &quot;Stop
-        media&quot; first. This pauses playback and activates voice control. You
-        can then say &quot;Play media&quot; to continue playback.
+        To use any voice command while media is playing, say &quot;{STOP_MEDIA}
+        &quot; first. This pauses playback and activates voice control. You can
+        then say &quot;{PLAY_MEDIA}&quot; to continue playback.
       </Paragraph>
 
       <Paragraph>
