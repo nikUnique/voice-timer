@@ -139,7 +139,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         return;
       }
 
-      await sleep(0.2);
+      await sleep(0.1);
       AppState.currentState === "active" &&
         vosk
           .start({ grammar: dynamicGrammar })

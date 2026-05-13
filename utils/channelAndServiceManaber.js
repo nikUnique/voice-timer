@@ -34,7 +34,7 @@ export function registerChannelsAndService() {
     await notifee.createChannel({
       id: "channel-with-silent-mode",
       name: "Channel with silent mode",
-      importance: AndroidImportance.DEFAULT,
+      importance: AndroidImportance.LOW,
       vibration: false,
     });
   }

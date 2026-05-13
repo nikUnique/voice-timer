@@ -10,13 +10,17 @@ import {
 
 import { Text } from "../ui/AppText";
 import { Colors } from "../constants/colors";
-import { useSettingsData } from "../context/VoiceRecognizerContext";
+import {
+  useRecognizerData,
+  useSettingsData,
+} from "../context/VoiceRecognizerContext";
 import { useIsLocked } from "../hooks/useIsLocked";
 import { useResponsive } from "../hooks/useResponsive";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import IconButton from "../ui/IconButton";
 
 export default function MicStatus() {
+  const { isListening } = useRecognizerData();
   const {
     voiceEnabled,
     setVoiceEnabled,
@@ -95,12 +99,12 @@ export default function MicStatus() {
       <View style={[styles.toggleListening, toggleListeningBackground]}>
         <View style={styles.isListeningStatus}>
           <IconButton
-            icon={voiceEnabled /* && isListening */ ? "mic" : "mic-outline"}
+            icon={voiceEnabled && isListening ? "mic" : "mic-outline"}
             size={t.title}
             color={Colors.primary}
           />
           <Text style={isListeningText}>
-            {voiceEnabled /* && isListening */ && !isPhoneLocked
+            {voiceEnabled && isListening && !isPhoneLocked
               ? "Listening..."
               : "Not Listening"}
           </Text>
