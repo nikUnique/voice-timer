@@ -179,4 +179,9 @@ fun isDeviceLocked(callback: Callback) {
         }
 
     }
+
+    @ReactMethod
+    fun pressBack() {
+        currentActivity?.onBackPressed()
+    }
 }

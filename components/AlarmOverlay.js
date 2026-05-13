@@ -28,7 +28,9 @@ const AlarmOverlay = ({ navigation }) => {
 
   useEffect(
     function () {
-      if (alertingTimerNames.length === 0) {
+      if (getSharedObject().alertingTimerNames.length === 0) {
+        console.log("So, it is", getSharedObject().alertingTimerNames);
+
         navigation.goBack();
       }
     },

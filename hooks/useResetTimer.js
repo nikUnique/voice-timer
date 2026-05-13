@@ -7,7 +7,11 @@ import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter, resetTimerEmitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 
-import { removeItemFromStorage, setItemInStorage } from "../utils/helpers";
+import {
+  removeItemFromStorage,
+  setItemInStorage,
+  sleep,
+} from "../utils/helpers";
 import { useNotification } from "./useNotification";
 import { useUpdateControlButtons } from "./useUpdateControlButtons";
 import { useUpdateTimers } from "./useUpdateTimers";
@@ -191,7 +195,7 @@ export function useResetTimer({
         pausedTimeRef.current = null;
 
         emitter?.emit("stopSound", {
-          alertingTimerNames: alertingTimerNamesRef.current || [],
+          alertingTimerNames: getSharedObject().alertingTimerNames || [],
         });
 
         timersTimesRef.current = timersTimesRef.current?.filter(
@@ -274,8 +278,10 @@ export function useResetTimer({
 
         wasActiveBeforeLockRef.current = false;
 
-        if (isPhoneLocked) {
-          BackHandler.exitApp();
+        if (isPhoneLocked && !getSharedObject().alertingTimerNames.length) {
+          // BackHandler.exitApp();
+          await sleep(1);
+          NativeModules.NativeUtilsModule.pressBack();
         }
       } catch (error) {
         console.error(`An error occurred in resetTimer function ❎`, error);

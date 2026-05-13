@@ -67,7 +67,8 @@ export function useTimeUpdate({
         }),
 
         runningTimerNames: getSharedObject().runningTimerNames.filter(
-          (timerName) => timerName !== name,
+          (timerName) =>
+            timerName.toLowerCase().trim() !== name.toLowerCase().trim(),
         ),
       });
       setTimersHistory((cur) =>

@@ -69,11 +69,6 @@ function AppWithContext() {
     [keepScreenDim],
   );
 
-  useEffect(() => {
-    const voiceKeepAlive = setInterval(() => {}, 10000);
-    return () => clearInterval(voiceKeepAlive);
-  }, []);
-
   const restoreBrightness = useCallback(
     async function () {
       if (keepScreenDim) return;

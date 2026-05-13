@@ -103,10 +103,17 @@ export default function Timers({ navigation }) {
             return;
           }
 
+          console.log(
+            keepScreenOnMinutes * 60 * 1000,
+            "How much minutes there are",
+          );
+
           activateKeepAwakeAsync();
           activeTimeRef.current = setTimeout(
             async function () {
               try {
+                console.log("Does it deactivate already?");
+
                 await deactivateKeepAwake();
               } catch (error) {
                 console.error(
@@ -232,8 +239,19 @@ export default function Timers({ navigation }) {
   );
 
   useEffect(function () {
-    updateSharedObject({ isTaskRunning: true });
-    BackgroundService.start(backgroundTask, options);
+    if (AppState.currentState === "active") {
+      updateSharedObject({ isTaskRunning: true });
+      BackgroundService.start(backgroundTask, options);
+    } else {
+      const sub = AppState.addEventListener("change", (state) => {
+        if (state === "active") {
+          updateSharedObject({ isTaskRunning: true });
+          BackgroundService.start(backgroundTask, options);
+          sub.remove();
+        }
+      });
+      return () => sub.remove();
+    }
   }, []);
 
   useEffect(

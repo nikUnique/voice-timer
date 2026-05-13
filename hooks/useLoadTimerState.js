@@ -62,9 +62,15 @@ export function useLoadTimerState({
         clearTimeout(getSharedObject()[`timeoutId-${name}`]);
         clearTimeout(getSharedObject()[`timeoutId-${name}`]);
 
-        console.log(`The timer ${name} is running`);
-        setIsActive(true);
-        setIsPaused(false);
+        if (
+          !getSharedObject().alertingTimerNames.find(
+            (timerName) => timerName.toLowerCase() === name.toLowerCase(),
+          )
+        ) {
+          console.log(`The timer ${name} is running`);
+          setIsActive(true);
+          setIsPaused(false);
+        }
       }
 
       if (
@@ -122,7 +128,11 @@ export function useLoadTimerState({
         Time[`setTimeLeft-${name}`](remainingTime);
         timeLeftRef.current = remainingTime;
 
-        // Paused here
+        console.log(
+          getSharedObject().alertingTimerNames,
+          "our nice alerting name 🇩🇿",
+        );
+
         if (timerStateRef.current === "running") {
           clearTimeout(getSharedObject()[`timeoutId-${name}`]);
 

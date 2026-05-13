@@ -127,6 +127,8 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       }
 
       if (AppState.currentState === "active") {
+        console.log("Is the stop happening here ⏹️");
+
         await stop();
       }
 
@@ -139,7 +141,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         return;
       }
 
-      await sleep(0.1);
+      console.log("Is it active here", AppState.currentState);
       AppState.currentState === "active" &&
         vosk
           .start({ grammar: dynamicGrammar })
@@ -173,7 +175,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
   useEffect(
     function () {
       async function loadThis() {
-        if (voiceEnabled && isReady) {
+        if (voiceEnabled && isReady && AppState.currentState === "active") {
           await recordGrammar();
         } else {
           setIsRecognizing(false);
