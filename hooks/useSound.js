@@ -11,7 +11,8 @@ function useSound() {
   const vibrationIntervalRef = useRef(null);
   const { soundRef, shortSoundRef, soundIsPlayingRef, alertTimeoutRef } =
     useSoundData();
-  const { isMediaPausedRef, isListeningRef } = useRefsData();
+  const { isMediaPausedRef, isListeningRef, isMediaPausedManuallyRef } =
+    useRefsData();
   const { appStateRef } = useAppState();
 
   function startVibration() {
@@ -210,9 +211,14 @@ function useSound() {
       try {
         if (soundRef.current) {
           if (
-            (!isMediaPausedRef.current && isListeningRef.current) ||
-            AppState.currentState !== "active"
+            !isMediaPausedRef.current &&
+            isListeningRef.current &&
+            !isMediaPausedManuallyRef.current /* ||
+            AppState.currentState !== "active" */
           ) {
+            console.log(AppState.currentState, "appState in sound");
+            console.log(isMediaPausedManuallyRef, " isMediaPausedManuallyRef");
+
             NativeModules.AudioFocusModule.releaseAudioFocus();
           }
           stopVibration();

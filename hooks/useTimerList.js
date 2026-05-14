@@ -220,11 +220,14 @@ export function useTimerList({
     }
   }
 
-  const formatStatusSpeech = useCallback(function () {
-    const runningTimerNamesLength = getSharedObject().runningTimerNames.length;
-    const pausedTimerNamesLength = getSharedObject().pausedTimerNames.length;
-    const alertingTimerNamesLength =
-      getSharedObject().alertingTimerNames.length;
+  const formatStatusSpeech = useCallback(function (
+    runningTimerNames,
+    pausedTimerNames,
+    alertingTimerNames,
+  ) {
+    const runningTimerNamesLength = runningTimerNames.length;
+    const pausedTimerNamesLength = pausedTimerNames.length;
+    const alertingTimerNamesLength = alertingTimerNames.length;
     if (
       !runningTimerNamesLength &&
       !pausedTimerNamesLength &&
@@ -239,7 +242,7 @@ export function useTimerList({
         : null,
       pausedTimerNamesLength ? `${pausedTimerNamesLength} timers paused` : null,
       alertingTimerNamesLength
-        ? `${alertingTimerNamesLength} timers ringing`
+        ? `${alertingTimerNamesLength} timers alerting`
         : null,
     ].filter(Boolean);
 
@@ -250,7 +253,7 @@ export function useTimerList({
       ...(getSharedObject().runningTimerNames.join(", ") + ". "),
       pausedTimerNamesLength && "Paused timers: ",
       ...(getSharedObject().pausedTimerNames.join(", ") + ". "),
-      alertingTimerNamesLength && "Ringing timers: ",
+      alertingTimerNamesLength && "Alerting timers: ",
       ...(getSharedObject().alertingTimerNames.join(", ") + ". "),
     ]
       .filter(Boolean)

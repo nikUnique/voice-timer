@@ -93,13 +93,22 @@ export function usePauseResume({
         isPausedRef.current = false;
         pausedTimeRef.current = null;
 
+        console.log(getSharedObject().alertingTimerNames, "our nice timer");
+        const isTimerUp = getSharedObject().alertingTimerNames.find(
+          (timerName) =>
+            timerName.toLowerCase().trim() === name.toLowerCase().trim(),
+        );
+
         updateSharedObject({
           pausedTimerNames: getSharedObject().pausedTimerNames.filter(
             (timerName) => timerName !== name,
           ),
           runningTimerNames: [
-            ...new Set([...getSharedObject().runningTimerNames, name]),
-          ],
+            ...new Set([
+              ...getSharedObject().runningTimerNames,
+              !isTimerUp ? name : false,
+            ]),
+          ].filter(Boolean),
         });
 
         if (

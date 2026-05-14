@@ -55,6 +55,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     isMediaPausedRef,
     isMediaPlayingRef,
     isTimerSleepingRef,
+    isMediaPausedManuallyRef,
   } = useRefsData();
 
   const { speak } = useSpeak();
@@ -129,6 +130,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
             NativeModules.AudioFocusModule.requestAudioFocus((granted) => {
               if (granted) {
                 isMediaPausedRef.current = true;
+                isMediaPausedManuallyRef.current = true;
                 speak("Media paused");
               }
             });
@@ -149,10 +151,11 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           PLAY_MEDIA
         ) {
           NativeModules.AudioFocusModule.toggleMedia((shouldTake) => {
+            speak("Media resumed");
             isMediaPausedRef.current = false;
+            isMediaPausedManuallyRef.current = false;
             NativeModules.AudioFocusModule.releaseAudioFocus();
           });
-          speak("Media resumed");
         }
 
         if (
@@ -230,7 +233,21 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
             STATUS_REPORT &&
           STATUS_REPORT
         ) {
-          speak(formatStatusSpeech(), 0.3);
+          console.log(
+            getSharedObject().runningTimerNames,
+            getSharedObject().pausedTimerNames,
+            getSharedObject().alertingTimerNames,
+            "🦸",
+          );
+
+          speak(
+            formatStatusSpeech(
+              getSharedObject().runningTimerNames,
+              getSharedObject().pausedTimerNames,
+              getSharedObject().alertingTimerNames,
+            ),
+            0.3,
+          );
         }
 
         recognizedCommandRef.current = null;
@@ -254,6 +271,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       discoSound,
       formatRingingResetSpeech,
       formatStatusSpeech,
+      isMediaPausedManuallyRef,
       isMediaPausedRef,
       isMediaPlayingRef,
       isTimerSleepingRef,

@@ -103,17 +103,10 @@ export default function Timers({ navigation }) {
             return;
           }
 
-          console.log(
-            keepScreenOnMinutes * 60 * 1000,
-            "How much minutes there are",
-          );
-
           activateKeepAwakeAsync();
           activeTimeRef.current = setTimeout(
             async function () {
               try {
-                console.log("Does it deactivate already?");
-
                 await deactivateKeepAwake();
               } catch (error) {
                 console.error(

@@ -22,6 +22,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const isMediaPlayingRef = useRef(false);
   const isTimerSleepingRef = useRef(false);
   const ignoreUntilRef = useRef(null);
+  const isMediaPausedManuallyRef = useRef(false);
 
   // Sound
   const soundRef = useRef(null);
@@ -186,6 +187,7 @@ export default function VoiceRecognizerProvider({ children }) {
       isMediaPlayingRef,
       isTimerSleepingRef,
       ignoreUntilRef,
+      isMediaPausedManuallyRef,
     }),
     [editableTimers, timerHeight, timers],
   );

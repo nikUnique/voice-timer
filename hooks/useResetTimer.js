@@ -123,14 +123,17 @@ export function useResetTimer({
 
         updateSharedObject({
           alertingTimerNames: getSharedObject().alertingTimerNames.filter(
-            (timerName) => timerName !== name,
+            (timerName) =>
+              timerName.toLowerCase().trim() !== name.toLowerCase().trim(),
           ),
           index: workingTimersRef.current.length === 0 && 0,
           runningTimerNames: getSharedObject().runningTimerNames.filter(
-            (timerName) => timerName !== name,
+            (timerName) =>
+              timerName.toLowerCase().trim() !== name.toLowerCase().trim(),
           ),
           pausedTimerNames: getSharedObject().pausedTimerNames.filter(
-            (timerName) => timerName !== name,
+            (timerName) =>
+              timerName.toLowerCase().trim() !== name.toLowerCase().trim(),
           ),
           timers: getSharedObject().timers.map((timer) => {
             return timer?.label.trim().toLowerCase() ===
@@ -280,7 +283,7 @@ export function useResetTimer({
 
         if (isPhoneLocked && !getSharedObject().alertingTimerNames.length) {
           // BackHandler.exitApp();
-          await sleep(1);
+          // await sleep(1);
           NativeModules.NativeUtilsModule.pressBack();
         }
       } catch (error) {

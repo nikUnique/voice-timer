@@ -25,7 +25,7 @@ export default function Time({
   const { speak } = useSpeak();
   const { currentlyViewedItemRef } = useRefsData();
 
-  Time[`timeLeft${name}`] = timeLeft;
+  // Time[`timeLeft${name}`] = timeLeft;
   Time[`setTimeLeft-${name}`] = setTimeLeft;
 
   const moreThenHour = timeLeft / 3600 >= 1;

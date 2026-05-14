@@ -10,6 +10,7 @@ import { emitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import { setItemInStorage } from "../utils/helpers";
 import { useTimeUpdateFunctions } from "./useTimeUpdateFunctions";
+import { BackHandler } from "react-native";
 
 export function useTimeUpdate({
   timeLeftRef,
@@ -71,6 +72,7 @@ export function useTimeUpdate({
             timerName.toLowerCase().trim() !== name.toLowerCase().trim(),
         ),
       });
+
       setTimersHistory((cur) =>
         cur.map((timer) => {
           return timer?.label === updatableTimer?.label && !timer?.endTime
@@ -143,7 +145,15 @@ export function useTimeUpdate({
 
       timeLeftRef.current = remainingTime;
       console.log(`New time comes-${name}`, timeLeftRef.current);
-      Time[`setTimeLeft-${name}`](timeLeftRef.current);
+      console.log(Date.now(), "in useTimeUpdate");
+
+      if (Time?.[`setTimeLeft-${name}`]) {
+        Time[`setTimeLeft-${name}`](timeLeftRef.current);
+      } else {
+        requestAnimationFrame(() =>
+          Time[`setTimeLeft-${name}`](timeLeftRef.current),
+        );
+      }
     },
     [name, time, timeLeftRef, timerStartedRef],
   );

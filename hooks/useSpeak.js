@@ -74,11 +74,9 @@ export function useSpeak() {
 
           NativeModules.AudioFocusModule.requestAudioFocus(async (granted) => {
             if (granted) {
-              console.log("Granted focus");
-
               ignoreUntilRef.current = Date.now() + duration(text) + 300;
 
-              await Tts.speak(text, voiceOptions);
+              Tts.speak(text, voiceOptions);
             }
           });
         }

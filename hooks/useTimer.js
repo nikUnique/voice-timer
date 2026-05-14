@@ -35,6 +35,7 @@ export function useTimer() {
     allTimersRef,
     isMediaPausedRef,
     ignoreUntilRef,
+    isMediaPausedManuallyRef,
   } = useRefsData();
 
   useSettings();
@@ -98,11 +99,15 @@ export function useTimer() {
   );
   const releaseAudioFocus = useCallback(
     function () {
-      if (!isMediaPausedRef.current) {
+      if (
+        !isMediaPausedRef.current &&
+        !isMediaPausedManuallyRef.current &&
+        !getSharedObject().alertingTimerNames.length
+      ) {
         NativeModules.AudioFocusModule.releaseAudioFocus();
       }
     },
-    [isMediaPausedRef],
+    [isMediaPausedManuallyRef, isMediaPausedRef],
   );
 
   const startTalking = useCallback(

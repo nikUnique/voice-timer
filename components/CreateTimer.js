@@ -11,6 +11,7 @@ import { Colors } from "../constants/colors";
 import {
   useRecognizerData,
   useRefsData,
+  useSettingsData,
 } from "../context/VoiceRecognizerContext";
 import IconButton from "../ui/IconButton";
 import { setItemInStorage } from "../utils/helpers";
@@ -20,6 +21,7 @@ function CreateTimer() {
   const { timers, setTimers } = useRecognizerData();
   const { freshlyCreatedTimerRef, lastTimerStartedRef, workingTimersRef } =
     useRefsData();
+  const { setVoiceEnabled, voiceEnabled } = useSettingsData();
   const navigation = useNavigation();
   const [inputValue, setInputValue] = useState("------");
 
@@ -150,6 +152,14 @@ function CreateTimer() {
       setItemInStorage("timers", sortedTimers);
       setTimers(sortedTimers);
       freshlyCreatedTimerRef.current = newTimer;
+
+      // Restart vosk
+      if (voiceEnabled) {
+        setVoiceEnabled(false);
+        setTimeout(function () {
+          setVoiceEnabled(true);
+        }, 100);
+      }
 
       if (sortedTimers.length >= 1) {
         navigation.replace("TimersScreen");

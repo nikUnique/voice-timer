@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import {
+  BackHandler,
   Dimensions,
   NativeModules,
   Pressable,
@@ -29,10 +30,15 @@ const AlarmOverlay = ({ navigation }) => {
   useEffect(
     function () {
       if (getSharedObject().alertingTimerNames.length === 0) {
-        console.log("So, it is", getSharedObject().alertingTimerNames);
-
         navigation.goBack();
       }
+
+      let sub;
+      if (getSharedObject().alertingTimerNames.length) {
+        sub = BackHandler.addEventListener("hardwareBackPress", () => true);
+      }
+
+      return () => sub?.remove();
     },
     [alertingTimerNames, navigation],
   );
