@@ -184,9 +184,9 @@ export default memo(function Commands() {
   };
 
   const renderItem = useCallback(
-    function ({ icon, badge, command, example, description }) {
+    function ({ item }) {
+      const { icon, badge, command, example, description } = item;
       const badgeText = {
-        fontFamily: "JetBrainsMono", // or your monospace font
         fontSize: t.label,
         letterSpacing: 1.1,
         color: Colors.primaryTint40,
@@ -200,8 +200,6 @@ export default memo(function Commands() {
 
       const exampleText = {
         fontSize: t.caption,
-
-        fontFamily: "JetBrainsMono",
 
         color: Colors.primaryTint8,
       };
@@ -239,26 +237,31 @@ export default memo(function Commands() {
     [t.body, t.caption, t.label],
   );
 
+  const Header = useMemo(
+    () => (
+      <>
+        <Text style={title}>Voice Commands</Text>
+        <Text style={subtitle}>
+          Use the following voice commands to control the timer hands-free.
+        </Text>
+      </>
+    ),
+    [],
+  );
+
   return ready ? (
     <View style={styles.container}>
       <FlatList
         data={commands}
-        renderItem={({ item }) => renderItem(item)}
-        ListHeaderComponent={
-          <>
-            <Text style={title}>Voice Commands</Text>
-            <Text style={subtitle}>
-              Use the following voice commands to control the timer hands-free.
-            </Text>
-          </>
-        }
+        renderItem={renderItem}
+        ListHeaderComponent={Header}
         style={styles.list}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.command}
         initialNumToRender={20}
         maxToRenderPerBatch={10}
         windowSize={5}
-        removeClippedSubviews={true}
+        removeClippedSubviews={false}
       />
     </View>
   ) : (
