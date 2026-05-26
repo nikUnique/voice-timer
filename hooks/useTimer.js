@@ -7,16 +7,13 @@ import Tts from "react-native-tts";
 import {
   useRecognizerData,
   useRefsData,
-  useSettingsData,
 } from "../context/VoiceRecognizerContext";
 import { getItemFromStorage, setItemInStorage, sleep } from "../utils/helpers";
 
 import { useNavigation } from "@react-navigation/native";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
+import { getSharedObject } from "../utils/sharedVariables";
 import { useSettings } from "./useSettings";
 import { useSound } from "./useSound";
-import backgroundServer from "react-native-background-actions";
-import { useSpeak } from "./useSpeak";
 
 let delay = 900;
 
@@ -38,15 +35,9 @@ export function useTimer() {
     isMediaPausedRef,
     ignoreUntilRef,
     isMediaPausedManuallyRef,
-    resultEventRef,
-    voiceFeedbackSpeedRef,
   } = useRefsData();
 
   useSettings();
-
-  const { speak } = useSpeak();
-  const { playSoundGeneral } = useSound();
-  const { successSound, discoSound } = useSettingsData();
 
   const options = useMemo(
     () => ({
@@ -130,15 +121,12 @@ export function useTimer() {
     async function doneTalking(e) {
       releaseAudioFocus();
 
-      ignoreUntilRef.current = Date.now() + 2000 /* + 2000 */;
+      if (isListeningRef.current) {
+        ignoreUntilRef.current = Date.now() + 2000;
+      }
 
       // await sleep(2 - voiceFeedbackSpeedRef.current);
-      // playSoundGeneral({
-      //   fileName: successSound,
-      //   shouldStop: false,
-      // });
       console.log("Done talking");
-
       isListeningRef.current = true;
       setIsListening(true);
     },
@@ -155,14 +143,12 @@ export function useTimer() {
 
   useEffect(
     function () {
-      // Tts.setDefaultRate(0.5);
       Tts.removeAllListeners("tts-start");
       Tts.removeAllListeners("tts-finish");
       Tts.removeAllListeners("tts-error");
       Tts.removeAllListeners("tts-cancel");
       Tts.addEventListener("tts-start", startTalking);
       Tts.addEventListener("tts-finish", (e) => {
-        // await sleep(4);
         doneTalking(e);
       });
       Tts.addEventListener("tts-cancel", releaseAudioFocus);

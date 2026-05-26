@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-import { AppState, Platform } from "react-native";
-import BackgroundService from "react-native-background-actions";
+import { AppState } from "react-native";
 
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { getSharedObject } from "../utils/sharedVariables";
@@ -9,7 +8,6 @@ import { registerChannelsAndService } from "../utils/channelAndServiceManaber";
 import { useBackgroundActions } from "./useBackgroundActions";
 import { useNotification } from "./useNotification";
 import { useTimer } from "./useTimer";
-import Tts from "react-native-tts";
 
 export function useServiceAndSpeechControl() {
   const {

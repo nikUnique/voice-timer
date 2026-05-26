@@ -11,9 +11,7 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { useResponsive } from "../hooks/useResponsive";
 import { Text } from "../ui/AppText";
-import { sleep } from "../utils/helpers";
 
-let subCount = 0;
 export default memo(function VoiceCommandsControl({ setCommand }) {
   const [isReady, setIsReady] = useState(false);
   const isReadyRef = useRef(false);
@@ -44,15 +42,8 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     setIsListening,
     isListeningRef,
     ignoreUntilRef,
-    commandsRef,
     resultEventRef,
   } = useRefsData();
-
-  const { PLAY_MEDIA, STOP_MEDIA, TIMER_WAKE_UP } = commandsRef?.current
-    ? commandsRef.current
-    : {};
-
-  const resultEvent = resultEventRef.current;
 
   const { voiceEnabled } = useSettingsData();
 
@@ -168,14 +159,6 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     setIsRecognizing(false);
   }, [vosk]);
 
-  // useEffect(
-  //   function () {
-  //     setIsListening(true);
-  //     isListeningRef.current = true;
-  //   },
-  //   [isListeningRef, setIsListening],
-  // );
-
   useEffect(
     function () {
       async function loadThis() {
@@ -186,9 +169,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
           !isRecognizing
         ) {
           await recordGrammar();
-        } /* else {
-          setIsRecognizing(false);
-        } */
+        }
 
         if (!voiceEnabled) {
           stop();
@@ -214,31 +195,20 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       if (!voiceEnabled || !isListeningRef.current) {
         return;
       }
-      // if (Date.now() < ignoreUntilRef.current) {
-      //   console.log("Ignoring speech to prevent TTS making a difference");
+      if (Date.now() < ignoreUntilRef.current) {
+        console.log("Ignoring speech to prevent TTS making a difference");
 
-      //   return;
-      // }
+        return;
+      }
 
-      // await sleep(5);
-      console.log(
-        Date.now(),
-        isListeningRef.current,
-        "reattached",
-        resultEventRef.current,
-      );
       resultEventRef.current?.remove();
-      // subCount--;
-      // console.log(subCount, "subcount");
 
-      // resultEventRef.current = null;
       let vosk = voskRef.current;
       resultEventRef.current = vosk.onResult(async (res) => {
         if (!isListeningRef.current) {
           console.log("While TTS speak, the resultEvent is ignored 🐽");
           return;
         }
-        console.log(ignoreUntilRef.current, Date.now(), "Inside the listener");
 
         if (Date.now() < ignoreUntilRef.current) {
           console.log("Ignoring speech to prevent TTS making a difference");
@@ -254,11 +224,6 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         let checkedResponse = res.includes("[unk]")
           ? "Unrecognized phrase"
           : res;
-        // console.log(dynamicGrammar, "dynamicGrammar");
-
-        // checkedResponse = dynamicGrammar.includes(res.toLowerCase())
-        //   ? res
-        //   : " Unrecognized phrase";
 
         setResult(checkedResponse);
         setRecognizedCommand(checkedResponse);
@@ -275,67 +240,10 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       setRecognizedCommand,
       setRecognizedTime,
       voiceEnabled,
-      vosk,
     ],
   );
 
   useEffect(() => {
-    // async function load() {
-    // if (!voiceEnabled || !isListeningRef.current) {
-    //   return;
-    // }
-    // // if (Date.now() < ignoreUntilRef.current) {
-    // //   console.log("Ignoring speech to prevent TTS making a difference");
-
-    // //   return;
-    // // }
-
-    // // await sleep(5);
-    // console.log(
-    //   Date.now(),
-    //   isListeningRef.current,
-    //   "reattached",
-    //   resultEventRef.current,
-    // );
-    // resultEventRef.current?.remove();
-    // // subCount--;
-    // // console.log(subCount, "subcount");
-
-    // // resultEventRef.current = null;
-    // resultEventRef.current = vosk.onResult(async (res) => {
-    //   subCount++;
-    //   if (!isListeningRef.current) {
-    //     console.log("While TTS speak, the resultEvent is ignored 🐽");
-    //     return;
-    //   }
-    //   console.log(ignoreUntilRef.current, Date.now(), "Inside the listener");
-
-    //   if (Date.now() < ignoreUntilRef.current) {
-    //     console.log("Ignoring speech to prevent TTS making a difference");
-
-    //     return;
-    //   }
-
-    //   console.log(
-    //     "An onResult event has been caught: " + res,
-    //     isListeningRef.current,
-    //     Date.now(),
-    //   );
-    //   let checkedResponse = res.includes("[unk]") ? "Unrecognized phrase" : res;
-    //   // console.log(dynamicGrammar, "dynamicGrammar");
-
-    //   // checkedResponse = dynamicGrammar.includes(res.toLowerCase())
-    //   //   ? res
-    //   //   : " Unrecognized phrase";
-
-    //   setResult(checkedResponse);
-    //   setRecognizedCommand(checkedResponse);
-    //   setRecognizedTime(Date.now());
-
-    //   recognizedCommandRef.current = res;
-    // });
-    // }
-
     addResultListener();
 
     const errorEvent = vosk.onError((e) => {
@@ -348,10 +256,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     });
 
     return () => {
-      console.log("Result even is removed every type?", resultEventRef.current);
-
       resultEventRef.current?.remove();
-      // resultEventRef.current = null;
       // partialResultEvent.remove();
       // finalResultEvent.remove();
       errorEvent.remove();

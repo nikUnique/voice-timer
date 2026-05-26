@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import {
   Alert,
   Linking,
@@ -8,7 +7,6 @@ import {
   View,
 } from "react-native";
 
-import { Text } from "../ui/AppText";
 import { Colors } from "../constants/colors";
 import {
   useRecognizerData,
@@ -17,6 +15,7 @@ import {
 import { useIsLocked } from "../hooks/useIsLocked";
 import { useResponsive } from "../hooks/useResponsive";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
+import { Text } from "../ui/AppText";
 import IconButton from "../ui/IconButton";
 
 export default function MicStatus() {
@@ -53,7 +52,7 @@ export default function MicStatus() {
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
       );
 
-      // Required manual ask if never ask again was choosen before
+      // Required manual ask if never ask again was chosen before
       if (permission === "never_ask_again") {
         permission = null;
         Alert.alert(

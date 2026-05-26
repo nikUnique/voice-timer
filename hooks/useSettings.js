@@ -68,6 +68,11 @@ export function useSettings() {
           setIsVibrating(retrievedSettings.isVibrating);
           setKeepScreenDim(retrievedSettings.keepScreenDim);
           voiceFeedbackSpeedRef.current = +retrievedSettings.voiceFeedbackSpeed;
+          console.log(
+            voiceFeedbackSpeedRef.current,
+            "current feedback",
+            retrievedSettings.voiceFeedbackSpeed,
+          );
         } catch (error) {
           console.error(
             `An error occurred in the load settings function`,

@@ -5,4 +5,5 @@ export const VOICE_FEEDBACK_SPEEDS = [
   { label: "Slow", value: 0.3 },
   { label: "Normal", value: 0.5 },
   { label: "Fast", value: 0.8 },
+  { label: "Super Fast", value: 1 },
 ];

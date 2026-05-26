@@ -8,12 +8,7 @@ import {
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
 import { VOICE_FEEDBACK_SPEEDS } from "../utils/config";
-import { sleep } from "../utils/helpers";
 
-function duration(text) {
-  const words = text.trim().split(/\s+/).length;
-  return words * 150;
-}
 export function useSpeak() {
   const { isVoiceFeedbackEnabled } = useSettingsData();
   const {
@@ -65,7 +60,7 @@ export function useSpeak() {
         console.error("An error occurred during speech utterance");
       },
     }),
-    [isListeningRef, resultEventRef, setIsListening],
+    [isListeningRef, setIsListening],
   );
 
   const speak = useCallback(
@@ -77,7 +72,6 @@ export function useSpeak() {
 
         if (text.trim()) {
           resultEventRef.current?.remove();
-          // resultEventRef.current = null;
           setIsListening(false);
           isListeningRef.current = false;
           await Tts.setDefaultRate(
@@ -86,11 +80,7 @@ export function useSpeak() {
                 (option) => option.label.toLowerCase() === "normal",
               ).value,
           );
-          console.log(Date.now(), "Is it remove");
 
-          // console.log(duration(text), "how much does it take");
-
-          // ignoreUntilRef.current = Date.now() + duration(text) + 300;
           NativeModules.AudioFocusModule.requestAudioFocus(async (granted) => {
             if (granted) {
               Tts.speak(text, voiceOptions);

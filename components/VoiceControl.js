@@ -20,9 +20,10 @@ import { useResponsive } from "../hooks/useResponsive";
 import { VOICE_FEEDBACK_SPEEDS } from "../utils/config";
 
 function getSpeedLabel(value) {
-  if (value <= 0.3) return "Slow";
-  if (value <= 0.6) return "Normal";
-  return "Fast";
+  if (+value <= 0.3) return "Slow";
+  if (+value <= 0.6) return "Normal";
+  if (+value <= 0.9) return "Fast";
+  return "Super Fast";
 }
 export default memo(function VoiceControl() {
   const [showVoiceFeedbackSpeed, setShowVoiceFeedbackSpeed] = useState(false);
@@ -78,7 +79,7 @@ export default memo(function VoiceControl() {
                 permission = await PermissionsAndroid.request(
                   PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
                 );
-                // Required manual ask if never ask again was choosen before
+                // Required manual ask if never ask again was chosen before
                 if (permission === "never_ask_again") {
                   permission = null;
                   Alert.alert(
@@ -128,52 +129,57 @@ export default memo(function VoiceControl() {
             }}
           />
         </View>
-      </View>
-      {isVoiceFeedbackEnabled && (
-        <View style={setting}>
-          <Pressable
-            onPress={() => {
-              setShowVoiceFeedbackSpeed(!showVoiceFeedbackSpeed);
-            }}
-          >
-            {
-              <Text
-                style={[
-                  settingLabel,
-                  settingBtn,
-                  showVoiceFeedbackSpeed && styles.unfoldedBtn,
-                ]}
-              >
-                Voice Feedback Speed: {getSpeedLabel(voiceFeedbackSpeed)}
-              </Text>
-            }
-          </Pressable>
-
+        {isVoiceFeedbackEnabled && (
           <View style={setting}>
-            {showVoiceFeedbackSpeed &&
-              VOICE_FEEDBACK_SPEEDS.map((option, i, arr) => (
-                <Pressable
-                  key={option.value}
-                  onPress={() => {
-                    setVoiceFeedbackSpeed(option.value);
-                    setShowVoiceFeedbackSpeed(false);
-                    voiceFeedbackSpeedRef.current = option.value;
-                    updateSettingsInStorage("voiceFeedbackSpeed", option.value);
-                  }}
+            <Pressable
+              onPress={() => {
+                setShowVoiceFeedbackSpeed(!showVoiceFeedbackSpeed);
+              }}
+            >
+              {
+                <Text
+                  style={[
+                    settingLabel,
+                    settingBtn,
+                    showVoiceFeedbackSpeed && styles.unfoldedBtn,
+                  ]}
                 >
-                  <View
-                    style={[
-                      optionView,
-                      i === arr.length - 1 && styles.lastOption,
-                    ]}
+                  Voice Feedback Speed: {getSpeedLabel(voiceFeedbackSpeed)}
+                </Text>
+              }
+            </Pressable>
+
+            <View style={setting}>
+              {showVoiceFeedbackSpeed &&
+                VOICE_FEEDBACK_SPEEDS.map((option, i, arr) => (
+                  <Pressable
+                    key={option.value}
+                    onPress={() => {
+                      setVoiceFeedbackSpeed(+option.value);
+                      setShowVoiceFeedbackSpeed(false);
+                      voiceFeedbackSpeedRef.current = +option.value;
+
+                      updateSettingsInStorage(
+                        "voiceFeedbackSpeed",
+
+                        +option.value,
+                      );
+                    }}
                   >
-                    <Text style={optionText}>{option.label}</Text>
-                  </View>
-                </Pressable>
-              ))}
+                    <View
+                      style={[
+                        optionView,
+                        i === arr.length - 1 && styles.lastOption,
+                      ]}
+                    >
+                      <Text style={optionText}>{option.label}</Text>
+                    </View>
+                  </Pressable>
+                ))}
+            </View>
           </View>
-        </View>
-      )}
+        )}
+      </View>
     </>
   );
 });

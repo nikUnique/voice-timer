@@ -55,6 +55,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     isMediaPausedRef,
     isMediaPlayingRef,
     isTimerSleepingRef,
+    isListeningRef,
     isMediaPausedManuallyRef,
   } = useRefsData();
 
@@ -154,15 +155,17 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           recognizedCommandRef.current?.toLowerCase().trim() === PLAY_MEDIA &&
           PLAY_MEDIA
         ) {
-          NativeModules.AudioFocusModule.toggleMedia((shouldTake) => {
+          NativeModules.AudioFocusModule.toggleMedia(async (shouldTake) => {
             playSoundGeneral({
               fileName: successSound,
               shouldStop: false,
             });
-            speak("Media resumed");
+            await speak("Media resumed");
             isMediaPausedRef.current = false;
             isMediaPausedManuallyRef.current = false;
-            NativeModules.AudioFocusModule.releaseAudioFocus();
+            if (isListeningRef.current) {
+              NativeModules.AudioFocusModule.releaseAudioFocus();
+            }
           });
         }
 
@@ -272,34 +275,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
 
       load();
     },
-    [
-      DISCO,
-      PLAY_MEDIA,
-      RESET,
-      RESET_FINISHED,
-      STATUS_REPORT,
-      STOP_MEDIA,
-      TIME,
-      TIMER_GO_SLEEP,
-      TIMER_WAKE_UP,
-      VOLUME_DOWN,
-      VOLUME_UP,
-      alertingTimerNamesRef,
-      discoSound,
-      formatRingingResetSpeech,
-      formatStatusSpeech,
-      isMediaPausedManuallyRef,
-      isMediaPausedRef,
-      isMediaPlayingRef,
-      isTimerSleepingRef,
-      playSoundGeneral,
-      playSpecial,
-      recognizedCommandRef,
-      recognizedTime,
-      secretIdentifierRef,
-      speak,
-      successSound,
-    ],
+    [DISCO, PLAY_MEDIA, RESET, RESET_FINISHED, STATUS_REPORT, STOP_MEDIA, TIME, TIMER_GO_SLEEP, TIMER_WAKE_UP, VOLUME_DOWN, VOLUME_UP, alertingTimerNamesRef, discoSound, formatRingingResetSpeech, formatStatusSpeech, isListeningRef, isMediaPausedManuallyRef, isMediaPausedRef, isMediaPlayingRef, isTimerSleepingRef, playSoundGeneral, playSpecial, recognizedCommandRef, recognizedTime, secretIdentifierRef, speak, successSound],
   );
 
   useEffect(

@@ -41,7 +41,7 @@ export default function useSettingsFunctions() {
     function (key, value) {
       const updatedSettings = { ...settings, [key]: value };
       setItemInStorage("settings", updatedSettings);
-      console.log("Settings updated 🫴");
+      console.log("Settings updated 🫴", updatedSettings);
     },
     [settings],
   );
