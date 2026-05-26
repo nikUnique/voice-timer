@@ -29,8 +29,8 @@ export function useServiceAndSpeechControl() {
   useBackgroundActions();
 
   useEffect(() => {
-    setIsListening(true);
-    isListeningRef.current = true;
+    // setIsListening(true);
+    // isListeningRef.current = true;
 
     const appStateListener = AppState.addEventListener(
       "change",
@@ -68,9 +68,8 @@ export function useServiceAndSpeechControl() {
           }
 
           if (AppState.currentState === "active") {
-            isListeningRef.current = true;
-            setIsListening(true);
-
+            // isListeningRef.current = true;
+            // setIsListening(true);
             // await BackgroundService?.stop();
             // await notifee.stopForegroundService();
           }

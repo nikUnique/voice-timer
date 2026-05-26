@@ -131,6 +131,10 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
               if (granted) {
                 isMediaPausedRef.current = true;
                 isMediaPausedManuallyRef.current = true;
+                playSoundGeneral({
+                  fileName: successSound,
+                  shouldStop: false,
+                });
                 speak("Media paused");
               }
             });
@@ -151,6 +155,10 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           PLAY_MEDIA
         ) {
           NativeModules.AudioFocusModule.toggleMedia((shouldTake) => {
+            playSoundGeneral({
+              fileName: successSound,
+              shouldStop: false,
+            });
             speak("Media resumed");
             isMediaPausedRef.current = false;
             isMediaPausedManuallyRef.current = false;
@@ -172,6 +180,10 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           recognizedCommandRef.current.includes(TIMER_GO_SLEEP) &&
           !isTimerSleepingRef.current
         ) {
+          playSoundGeneral({
+            fileName: successSound,
+            shouldStop: false,
+          });
           speak("Timer went to sleep");
           isTimerSleepingRef.current = true;
         }
@@ -180,6 +192,10 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           recognizedCommandRef.current.includes(TIMER_WAKE_UP) &&
           isTimerSleepingRef.current
         ) {
+          playSoundGeneral({
+            fileName: successSound,
+            shouldStop: false,
+          });
           speak("Timer ready");
           isTimerSleepingRef.current = false;
         }
@@ -191,6 +207,10 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
 
           if (percent < 1) {
             await VolumeManager.setVolume(percent, { type: "music" });
+            playSoundGeneral({
+              fileName: successSound,
+              shouldStop: false,
+            });
             speak(`Volume ${percent}`);
           }
         }
@@ -200,6 +220,10 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           const percent = Math.round((volume - 0.1) * 10) / 10;
 
           await VolumeManager.setVolume(percent, { type: "music" });
+          playSoundGeneral({
+            fileName: successSound,
+            shouldStop: false,
+          });
           speak(`Volume ${percent}`);
         }
 
@@ -233,13 +257,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
             STATUS_REPORT &&
           STATUS_REPORT
         ) {
-          console.log(
-            getSharedObject().runningTimerNames,
-            getSharedObject().pausedTimerNames,
-            getSharedObject().alertingTimerNames,
-            "🦸",
-          );
-
           speak(
             formatStatusSpeech(
               getSharedObject().runningTimerNames,

@@ -110,6 +110,9 @@ export default memo(function TimerBehavior() {
             ))}
         </View>
       </View>
+
+
+
       <View style={[switchBox, setting]}>
         <Text style={settingLabel}>Timer Vibrate</Text>
 

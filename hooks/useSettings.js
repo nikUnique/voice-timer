@@ -18,7 +18,7 @@ export function useSettings() {
     setKeepScreenDim,
   } = useSettingsData();
 
-  const { timers } = useRefsData();
+  const { timers, voiceFeedbackSpeedRef } = useRefsData();
 
   const requestMicrophone = useCallback(
     async function () {
@@ -67,6 +67,7 @@ export function useSettings() {
           setKeepScreenOnMinutes(retrievedSettings.keepScreenOnMinutes);
           setIsVibrating(retrievedSettings.isVibrating);
           setKeepScreenDim(retrievedSettings.keepScreenDim);
+          voiceFeedbackSpeedRef.current = +retrievedSettings.voiceFeedbackSpeed;
         } catch (error) {
           console.error(
             `An error occurred in the load settings function`,
@@ -88,6 +89,7 @@ export function useSettings() {
       setKeepScreenOnMinutes,
       setVoiceEnabled,
       timers.length,
+      voiceFeedbackSpeedRef,
     ],
   );
 }

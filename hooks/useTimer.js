@@ -7,6 +7,7 @@ import Tts from "react-native-tts";
 import {
   useRecognizerData,
   useRefsData,
+  useSettingsData,
 } from "../context/VoiceRecognizerContext";
 import { getItemFromStorage, setItemInStorage, sleep } from "../utils/helpers";
 
@@ -15,6 +16,7 @@ import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import { useSettings } from "./useSettings";
 import { useSound } from "./useSound";
 import backgroundServer from "react-native-background-actions";
+import { useSpeak } from "./useSpeak";
 
 let delay = 900;
 
@@ -36,9 +38,15 @@ export function useTimer() {
     isMediaPausedRef,
     ignoreUntilRef,
     isMediaPausedManuallyRef,
+    resultEventRef,
+    voiceFeedbackSpeedRef,
   } = useRefsData();
 
   useSettings();
+
+  const { speak } = useSpeak();
+  const { playSoundGeneral } = useSound();
+  const { successSound, discoSound } = useSettingsData();
 
   const options = useMemo(
     () => ({
@@ -119,9 +127,18 @@ export function useTimer() {
   );
 
   const doneTalking = useCallback(
-    function doneTalking(e) {
+    async function doneTalking(e) {
       releaseAudioFocus();
-      ignoreUntilRef.current = Date.now() + 300;
+
+      ignoreUntilRef.current = Date.now() + 2000 /* + 2000 */;
+
+      // await sleep(2 - voiceFeedbackSpeedRef.current);
+      // playSoundGeneral({
+      //   fileName: successSound,
+      //   shouldStop: false,
+      // });
+      console.log("Done talking");
+
       isListeningRef.current = true;
       setIsListening(true);
     },

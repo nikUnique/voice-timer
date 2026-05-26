@@ -58,7 +58,7 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
         }
 
         val granted = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-        val delay = if (granted && isWiredHeadsetConnected()) 400L else 0L
+        val delay = if (granted && isWiredHeadsetConnected()) 500L else 0L
 
         Handler(Looper.getMainLooper()).postDelayed({
             callback(granted)

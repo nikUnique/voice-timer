@@ -7,6 +7,8 @@ import {
   useRefsData,
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
+import { VOICE_FEEDBACK_SPEEDS } from "../utils/config";
+import { sleep } from "../utils/helpers";
 
 function duration(text) {
   const words = text.trim().split(/\s+/).length;
@@ -14,7 +16,13 @@ function duration(text) {
 }
 export function useSpeak() {
   const { isVoiceFeedbackEnabled } = useSettingsData();
-  const { setIsListening, isListeningRef, ignoreUntilRef } = useRefsData();
+  const {
+    setIsListening,
+    isListeningRef,
+    ignoreUntilRef,
+    resultEventRef,
+    voiceFeedbackSpeedRef,
+  } = useRefsData();
 
   useEffect(() => {
     function pickBestVoice(voices) {
@@ -57,7 +65,7 @@ export function useSpeak() {
         console.error("An error occurred during speech utterance");
       },
     }),
-    [isListeningRef, setIsListening],
+    [isListeningRef, resultEventRef, setIsListening],
   );
 
   const speak = useCallback(
@@ -68,14 +76,23 @@ export function useSpeak() {
         }
 
         if (text.trim()) {
+          resultEventRef.current?.remove();
+          // resultEventRef.current = null;
           setIsListening(false);
           isListeningRef.current = false;
-          await Tts.setDefaultRate(speed || 0.5);
+          await Tts.setDefaultRate(
+            voiceFeedbackSpeedRef.current ||
+              VOICE_FEEDBACK_SPEEDS.find(
+                (option) => option.label.toLowerCase() === "normal",
+              ).value,
+          );
+          console.log(Date.now(), "Is it remove");
 
+          // console.log(duration(text), "how much does it take");
+
+          // ignoreUntilRef.current = Date.now() + duration(text) + 300;
           NativeModules.AudioFocusModule.requestAudioFocus(async (granted) => {
             if (granted) {
-              ignoreUntilRef.current = Date.now() + duration(text) + 300;
-
               Tts.speak(text, voiceOptions);
             }
           });
@@ -85,10 +102,11 @@ export function useSpeak() {
       }
     },
     [
-      ignoreUntilRef,
       isListeningRef,
       isVoiceFeedbackEnabled,
+      resultEventRef,
       setIsListening,
+      voiceFeedbackSpeedRef,
       voiceOptions,
     ],
   );

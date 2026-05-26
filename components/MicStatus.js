@@ -104,7 +104,7 @@ export default function MicStatus() {
             color={Colors.primary}
           />
           <Text style={isListeningText}>
-            {voiceEnabled && isListening && !isPhoneLocked
+            {voiceEnabled && isListening /* && !isPhoneLocked */
               ? "Listening..."
               : "Not Listening"}
           </Text>

@@ -23,6 +23,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const isTimerSleepingRef = useRef(false);
   const ignoreUntilRef = useRef(null);
   const isMediaPausedManuallyRef = useRef(false);
+  const resultEventRef = useRef(null);
 
   // Sound
   const soundRef = useRef(null);
@@ -87,6 +88,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const [keepScreenDim, setKeepScreenDim] = useState(false);
   const [isVibrating, setIsVibrating] = useState(false);
   const dimScreenRef = useRef(null);
+  const voiceFeedbackSpeedRef = useRef(0.8);
 
   const { allTimers, dynamicGrammar, allActions } = useVoiceRecognizerContext({
     commandsRef,
@@ -115,7 +117,6 @@ export default function VoiceRecognizerProvider({ children }) {
       alertingTimerNamesRef,
       isLocked,
       editableTimers,
-      setEditableTimers,
     }),
     [
       recognizedCommand,
@@ -188,6 +189,8 @@ export default function VoiceRecognizerProvider({ children }) {
       isTimerSleepingRef,
       ignoreUntilRef,
       isMediaPausedManuallyRef,
+      resultEventRef,
+      voiceFeedbackSpeedRef,
     }),
     [editableTimers, timerHeight, timers],
   );
