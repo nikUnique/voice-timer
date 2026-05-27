@@ -195,11 +195,8 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       if (!voiceEnabled || !isListeningRef.current) {
         return;
       }
-      if (Date.now() < ignoreUntilRef.current) {
-        console.log("Ignoring speech to prevent TTS making a difference");
 
-        return;
-      }
+      console.log(Date.now(), ignoreUntilRef.current, "The difference");
 
       resultEventRef.current?.remove();
 

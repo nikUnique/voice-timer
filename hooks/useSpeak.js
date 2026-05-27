@@ -75,7 +75,7 @@ export function useSpeak() {
           setIsListening(false);
           isListeningRef.current = false;
           await Tts.setDefaultRate(
-            voiceFeedbackSpeedRef.current ||
+            +voiceFeedbackSpeedRef.current ||
               VOICE_FEEDBACK_SPEEDS.find(
                 (option) => option.label.toLowerCase() === "normal",
               ).value,

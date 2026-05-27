@@ -161,7 +161,6 @@ export default memo(function VoiceControl() {
 
                       updateSettingsInStorage(
                         "voiceFeedbackSpeed",
-
                         +option.value,
                       );
                     }}

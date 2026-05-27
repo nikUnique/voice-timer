@@ -58,6 +58,7 @@ export function useSettings() {
           const retrievedSettings = await getItemFromStorage("settings");
 
           if (!retrievedSettings) return;
+          console.log(retrievedSettings);
 
           setAlarmVolume(+retrievedSettings.alarmVolume);
           setAutoStopAlarmTimeout(+retrievedSettings.autoStopAlarmTimeout);

@@ -7,6 +7,7 @@ import Tts from "react-native-tts";
 import {
   useRecognizerData,
   useRefsData,
+  useSettingsData,
 } from "../context/VoiceRecognizerContext";
 import { getItemFromStorage, setItemInStorage, sleep } from "../utils/helpers";
 
@@ -15,12 +16,13 @@ import { getSharedObject } from "../utils/sharedVariables";
 import { useSettings } from "./useSettings";
 import { useSound } from "./useSound";
 
-let delay = 900;
+let delay = 10800;
 
 export function useTimer() {
   const navigation = useNavigation();
   const { playSound, stopSound } = useSound();
   const { setTimers, setEditableTimers } = useRecognizerData();
+  const { isVoiceFeedbackEnabled } = useSettingsData();
 
   const {
     notificationIdRef,
@@ -121,7 +123,7 @@ export function useTimer() {
     async function doneTalking(e) {
       releaseAudioFocus();
 
-      if (isListeningRef.current) {
+      if (isVoiceFeedbackEnabled) {
         ignoreUntilRef.current = Date.now() + 2000;
       }
 
@@ -130,7 +132,13 @@ export function useTimer() {
       isListeningRef.current = true;
       setIsListening(true);
     },
-    [ignoreUntilRef, isListeningRef, releaseAudioFocus, setIsListening],
+    [
+      ignoreUntilRef,
+      isListeningRef,
+      isVoiceFeedbackEnabled,
+      releaseAudioFocus,
+      setIsListening,
+    ],
   );
 
   const errorTalking = useCallback(
