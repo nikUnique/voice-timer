@@ -92,10 +92,10 @@ export default function About() {
       </Paragraph>
 
       <Paragraph>
-        Pause and resume only work when controlled through the Voice Timer app
-        using voice commands. If you pause media using earphone buttons or
-        directly inside the media app, the app loses control over playback and
-        will not be able to resume it.
+        Pausing and resuming external media only works when controlled through
+        the Voice Timer app using voice commands. If you pause external media
+        using earphone buttons or directly inside the media app, the app loses
+        control over playback and will not be able to resume it.
       </Paragraph>
 
       <Paragraph>
