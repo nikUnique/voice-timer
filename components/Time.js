@@ -113,7 +113,7 @@ export default function Time({
             // slightly larger than fontSize
           },
           moreThenHour && {
-            fontSize: 52,
+            fontSize: 36,
           },
         ]}
       >

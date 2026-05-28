@@ -11,6 +11,7 @@ export default function useSettingsFunctions() {
     isVoiceFeedbackEnabled,
     keepScreenOnCommand,
     keepScreenOnMinutes,
+    voiceFeedbackSpeedRef,
     isVibrating,
     keepScreenDim,
   } = useSettingsData();
@@ -25,6 +26,7 @@ export default function useSettingsFunctions() {
       keepScreenOnMinutes,
       isVibrating,
       keepScreenDim,
+      voiceFeedbackSpeed: voiceFeedbackSpeedRef.current,
     }),
     [
       alarmVolume,
@@ -35,6 +37,7 @@ export default function useSettingsFunctions() {
       keepScreenOnCommand,
       keepScreenOnMinutes,
       voiceEnabled,
+      voiceFeedbackSpeedRef,
     ],
   );
   const updateSettingsInStorage = useCallback(

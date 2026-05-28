@@ -21,6 +21,10 @@ import android.media.AudioRecord
 import android.media.audiofx.AcousticEchoCanceler
 import android.media.audiofx.NoiseSuppressor
 import com.facebook.react.bridge.Promise
+import android.media.AudioRecordingConfiguration
+import androidx.annotation.RequiresApi
+import android.os.Process
+import com.facebook.react.modules.core.DeviceEventManagerModule
 
 private val TAG = "AudioFocusModule"
 private var hasFocus = false
@@ -37,6 +41,7 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
     reactContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private var focusRequest: AudioFocusRequest? = null
     private var scoReceiver: BroadcastReceiver? = null
+    private var callback: AudioManager.AudioRecordingCallback? = null
 
 
     @ReactMethod
@@ -97,4 +102,49 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
         val audioManager = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         promise.resolve(audioManager.isMusicActive)
     }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    @ReactMethod
+    fun isMicInUse(promise: Promise) {
+        val configs = audioManager.activeRecordingConfigurations
+        promise.resolve(configs.size-1 > 0)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    @ReactMethod
+    fun isMicInUseByOtherApp(promise: Promise) {
+        val configs = audioManager.activeRecordingConfigurations
+        promise.resolve(configs.size > 0)
+    }
+
+    private fun sendEvent(eventName: String, params: String) {
+        reactApplicationContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+            .emit(eventName, params)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N) 
+    private val recordingCallback = object : AudioManager.AudioRecordingCallback() {
+        override fun onRecordingConfigChanged(configs: MutableList<AudioRecordingConfiguration>) {
+            sendEvent("onMicStatusChanged", (configs.size - 1 > 0).toString())
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    @ReactMethod
+    fun startMicMonitoring(promise: Promise) {
+        audioManager.registerAudioRecordingCallback(recordingCallback, null)
+        promise.resolve(true)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    @ReactMethod
+    fun stopMicMonitoring(promise: Promise) {
+        audioManager.unregisterAudioRecordingCallback(recordingCallback)
+        promise.resolve(true)
+    }
+
+
+
+    
 }

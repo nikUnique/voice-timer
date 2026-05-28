@@ -148,15 +148,6 @@ export default function TimerInterfaceButtons({ onDelete }) {
             />
           </View>
         }
-        {
-          // <IconButton
-          //   icon='add'
-          //   color={Colors.primaryTint90}
-          //   onPress={() => NativeModules.NativeUtilsModule.crashApp()}
-          //   size={36}
-          //   style={styles.icon}
-          // />
-        }
       </View>
       {maximumTimersTipCreation && (
         <View style={styles.tipTextContainer}>

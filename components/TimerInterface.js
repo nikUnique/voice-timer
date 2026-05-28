@@ -5,7 +5,6 @@ import { useLoadTimerState } from "../hooks/useLoadTimerState";
 import { usePauseResume } from "../hooks/usePauseResume";
 import { usePrepareEffects } from "../hooks/usePrepareEffects";
 import { useResetTimer } from "../hooks/useResetTimer";
-import { useResponsive } from "../hooks/useResponsive";
 import { useSaveStorage } from "../hooks/useSaveStorage";
 import { useStartTimer } from "../hooks/useStartTimer";
 import { useTimerInterfaceFunctions } from "../hooks/useTimerInterfaceFunctions";
@@ -16,7 +15,6 @@ import { useUpdateNotification } from "../hooks/useUpdateNotification";
 import { emitter } from "../utils/EventEmitter";
 import { updateSharedObject } from "../utils/sharedVariables";
 import TimerInterfaceUI from "./TimerInterfaceUI";
-import { useNavigationState } from "@react-navigation/native";
 
 function TimerInterface({
   time = 1200,

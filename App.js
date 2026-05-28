@@ -41,7 +41,7 @@ const Stack = createNativeStackNavigator();
 
 function AppWithContext() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
-  const { dimScreenRef, keepScreenDim } = useSettingsData();
+  const { dimScreenRef, keepScreenDim, voiceEnabled } = useSettingsData();
   const { isMediaPausedRef, currentActivityRef, leastTimeTimerRef } =
     useRefsData();
   const { appState } = useAppState();

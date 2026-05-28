@@ -190,7 +190,6 @@ export default function VoiceRecognizerProvider({ children }) {
       ignoreUntilRef,
       isMediaPausedManuallyRef,
       resultEventRef,
-      voiceFeedbackSpeedRef,
     }),
     [editableTimers, timerHeight, timers],
   );
@@ -223,6 +222,7 @@ export default function VoiceRecognizerProvider({ children }) {
       dimScreenRef,
       keepScreenDim,
       setKeepScreenDim,
+      voiceFeedbackSpeedRef,
     }),
     [
       screenTimeout,

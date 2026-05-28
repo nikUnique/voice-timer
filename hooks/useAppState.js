@@ -4,6 +4,7 @@ import { AppState } from "react-native";
 // Custom hook to track app state (foreground/background)
 export const useAppState = () => {
   const [appState, setAppState] = useState(AppState.currentState);
+  const [prevAppState, setPrevAppState] = useState(AppState.currentState);
   const appStateRef = useRef(AppState.currentState);
 
   useEffect(() => {
@@ -11,6 +12,7 @@ export const useAppState = () => {
     const appStateListener = AppState.addEventListener(
       "change",
       (nextAppState) => {
+        setPrevAppState(appState);
         setAppState(nextAppState);
       },
     );
@@ -21,5 +23,5 @@ export const useAppState = () => {
     };
   }, []);
 
-  return { appState, setAppState, appStateRef };
+  return { appState, setAppState, appStateRef, prevAppState };
 };

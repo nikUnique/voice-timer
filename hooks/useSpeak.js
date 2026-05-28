@@ -10,14 +10,8 @@ import {
 import { VOICE_FEEDBACK_SPEEDS } from "../utils/config";
 
 export function useSpeak() {
-  const { isVoiceFeedbackEnabled } = useSettingsData();
-  const {
-    setIsListening,
-    isListeningRef,
-    ignoreUntilRef,
-    resultEventRef,
-    voiceFeedbackSpeedRef,
-  } = useRefsData();
+  const { isVoiceFeedbackEnabled, voiceFeedbackSpeedRef } = useSettingsData();
+  const { setIsListening, isListeningRef, resultEventRef } = useRefsData();
 
   useEffect(() => {
     function pickBestVoice(voices) {
@@ -64,7 +58,7 @@ export function useSpeak() {
   );
 
   const speak = useCallback(
-    async function speak(text, speed) {
+    async function speak(text) {
       try {
         if (!isVoiceFeedbackEnabled) {
           return;

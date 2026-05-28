@@ -1,7 +1,13 @@
 import Vosk from "react-native-vosk";
 
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { Animated, AppState, PermissionsAndroid } from "react-native";
+import {
+  Animated,
+  AppState,
+  NativeEventEmitter,
+  NativeModules,
+  PermissionsAndroid,
+} from "react-native";
 
 import { Colors } from "../constants/colors";
 import {
@@ -11,6 +17,8 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { useResponsive } from "../hooks/useResponsive";
 import { Text } from "../ui/AppText";
+
+const eventEmitter = new NativeEventEmitter(NativeModules.AudioFocusModule);
 
 export default memo(function VoiceCommandsControl({ setCommand }) {
   const [isReady, setIsReady] = useState(false);
@@ -45,7 +53,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     resultEventRef,
   } = useRefsData();
 
-  const { voiceEnabled } = useSettingsData();
+  const { voiceEnabled, setVoiceEnabled } = useSettingsData();
 
   const { t } = useResponsive();
 
@@ -103,61 +111,66 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
   }, []);
 
   // Listening logic
-  const recordGrammar = useCallback(async () => {
-    try {
-      if (!isReady || !isReadyRef.current) {
-        console.log("The model is not loaded yet 😲");
-        return;
-      }
+  const recordGrammar = useCallback(
+    async (nextAppState) => {
+      try {
+        if (!isReady || !isReadyRef.current) {
+          console.log("The model is not loaded yet 😲");
+          return;
+        }
 
-      if (!voiceEnabled) {
-        console.log("The app is not listening 💣");
-        return;
-      }
+        if (!voiceEnabled) {
+          console.log("The app is not listening 💣");
+          return;
+        }
 
-      if (AppState.currentState === "active") {
-        await stop();
-      }
+        if (AppState.currentState === "active" || nextAppState) {
+          await stop();
+        }
 
-      const microGranted = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-      );
-
-      if (!microGranted) {
-        console.log("Microphone permission denied by the user");
-        return;
-      }
-
-      vosk
-        .start({ grammar: dynamicGrammar })
-        .then(() => {
-          console.log("Starting recognition with grammar...");
-          setIsRecognizing(true);
-          setIsListening(true);
-          isListeningRef.current = true;
-        })
-        .catch((e) =>
-          console.error(`An error occurred while initializing vosk`, e),
+        const microGranted = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
         );
-    } catch (error) {
-      console.error("An error occurred in the recordGrammar function", error);
-    }
-  }, [
-    isReady,
-    voiceEnabled,
-    vosk,
-    dynamicGrammar,
-    stop,
-    setIsListening,
-    isListeningRef,
-  ]);
+
+        if (!microGranted) {
+          console.log("Microphone permission denied by the user");
+          return;
+        }
+
+        vosk
+          .start({ grammar: dynamicGrammar })
+          .then(() => {
+            console.log("Starting recognition with grammar...");
+            setIsRecognizing(true);
+            setIsListening(true);
+            isListeningRef.current = true;
+          })
+          .catch((e) =>
+            console.error(`An error occurred while initializing vosk`, e),
+          );
+      } catch (error) {
+        console.error("An error occurred in the recordGrammar function", error);
+      }
+    },
+    [
+      isReady,
+      voiceEnabled,
+      vosk,
+      dynamicGrammar,
+      stop,
+      setIsListening,
+      isListeningRef,
+    ],
+  );
 
   const stop = useCallback(async () => {
     await vosk.stop();
 
     console.log("Stopping recognition...");
     setIsRecognizing(false);
-  }, [vosk]);
+    isListeningRef.current = false;
+    setIsListening(false);
+  }, [isListeningRef, setIsListening, vosk]);
 
   useEffect(
     function () {
@@ -166,7 +179,8 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
           voiceEnabled &&
           isReady &&
           AppState.currentState === "active" &&
-          !isRecognizing
+          !isRecognizing &&
+          !(await NativeModules.AudioFocusModule.isMicInUseByOtherApp())
         ) {
           await recordGrammar();
         }
@@ -276,6 +290,45 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     resultEventRef,
     addResultListener,
   ]);
+
+  useEffect(
+    function () {
+      NativeModules.AudioFocusModule.startMicMonitoring();
+      const sub = eventEmitter.addListener(
+        "onMicStatusChanged",
+        function (inUse) {
+          if (inUse === "true") {
+            stop();
+            console.log("The mic is used by another app 🎤");
+          }
+
+          return () => {
+            sub.remove();
+            NativeModules.AudioFocusModule.stopMicMonitoring();
+          };
+        },
+      );
+    },
+    [resultEventRef, stop],
+  );
+
+  useEffect(
+    function () {
+      const sub = AppState.addEventListener("change", async (nextAppState) => {
+        if (
+          nextAppState === "active" &&
+          !(await NativeModules.AudioFocusModule.isMicInUse())
+        ) {
+          console.log("It should not run 100 times 😯");
+
+          recordGrammar(true);
+        }
+      });
+
+      return () => sub.remove();
+    },
+    [recordGrammar],
+  );
 
   return (
     <Animated.View style={{ opacity: fadeAnimationRefCur }}>

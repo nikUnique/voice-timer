@@ -16,9 +16,10 @@ export function useSettings() {
     setKeepScreenOnMinutes,
     setIsVibrating,
     setKeepScreenDim,
+    voiceFeedbackSpeedRef,
   } = useSettingsData();
 
-  const { timers, voiceFeedbackSpeedRef } = useRefsData();
+  const { timers } = useRefsData();
 
   const requestMicrophone = useCallback(
     async function () {

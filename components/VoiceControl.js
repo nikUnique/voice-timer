@@ -36,12 +36,11 @@ export default memo(function VoiceControl() {
     setVoiceEnabled,
     isVoiceFeedbackEnabled,
     setIsVoiceFeedbackEnabled,
-
+    voiceFeedbackSpeedRef,
     microGranted,
     setMicroGranted,
   } = useSettingsData();
 
-  const { voiceFeedbackSpeedRef } = useRefsData();
   const [voiceFeedbackSpeed, setVoiceFeedbackSpeed] = useState(
     voiceFeedbackSpeedRef.current,
   );
