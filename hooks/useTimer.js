@@ -105,6 +105,8 @@ export function useTimer() {
         !isMediaPausedManuallyRef.current &&
         !getSharedObject().alertingTimerNames.length
       ) {
+        console.log("Is it released 🎱");
+
         NativeModules.AudioFocusModule.releaseAudioFocus();
       }
     },
@@ -164,6 +166,15 @@ export function useTimer() {
     },
     [doneTalking, errorTalking, releaseAudioFocus, startTalking],
   );
+
+  useEffect(function () {
+    return () => {
+      Tts.removeAllListeners("tts-start");
+      Tts.removeAllListeners("tts-finish");
+      Tts.removeAllListeners("tts-error");
+      Tts.removeAllListeners("tts-cancel");
+    };
+  }, []);
 
   useEffect(
     function () {

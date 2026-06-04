@@ -89,6 +89,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const [isVibrating, setIsVibrating] = useState(false);
   const dimScreenRef = useRef(null);
   const voiceFeedbackSpeedRef = useRef(0.8);
+  const permitAnswerCallsRef = useRef(false);
 
   const { allTimers, dynamicGrammar, allActions } = useVoiceRecognizerContext({
     commandsRef,
@@ -223,6 +224,7 @@ export default function VoiceRecognizerProvider({ children }) {
       keepScreenDim,
       setKeepScreenDim,
       voiceFeedbackSpeedRef,
+      permitAnswerCallsRef,
     }),
     [
       screenTimeout,

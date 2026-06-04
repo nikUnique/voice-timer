@@ -98,6 +98,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     setIsReady(false);
     isReadyRef.current = false;
     setIsRecognizing(false);
+    vosk?.stop();
     vosk?.unload();
   }, [vosk]);
 

@@ -1,5 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeModules, Platform } from "react-native";
+import BackgroundService from "react-native-background-actions";
+
+import { updateSharedObject } from "./sharedVariables";
 
 export const sleep = async (time) => {
   return new Promise((resolve) => {
@@ -88,4 +91,13 @@ export function getTimePhrase(date = new Date()) {
 
 export function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function cleanStop() {
+  updateSharedObject({ isTaskRunning: false });
+  // console.log("BackgroundService stops 🇵from reset notification button 🔔");
+  BackgroundService.stop();
+  // console.log("Focus released 🇵from reset notification button 🔔");
+  NativeModules.AudioFocusModule.releaseAudioFocus();
+  console.log("BackgroundService stopped, audio focus released 🌜");
 }

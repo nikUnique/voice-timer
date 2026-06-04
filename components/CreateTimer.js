@@ -259,35 +259,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  // icon: {
-  //   padding: 32,
-  //   backgroundColor: Colors.whiteAlpha20,
-  //   borderRadius: "50%",
-  // },
-
-  // buttonStyle: {
-  //   fontWeight: "600",
-  //   fontSize: 44,
-  //   color: Colors.primaryTint90,
-  //   backgroundColor: Colors.whiteAlpha20,
-  //   width: 85,
-  //   height: 85,
-  //   textAlign: "center",
-  //   textAlignVertical: "center",
-  //   borderRadius: 45,
-  //   marginBottom: 10,
-  // },
-
   inputValueContainer: {
     flex: 1,
     justifyContent: "center",
   },
-
-  // inputValue: {
-  //   color: Colors.primaryTint90,
-  //   fontSize: 48,
-  //   alignSelf: "center",
-  // },
 
   unit: {
     fontSize: 18,

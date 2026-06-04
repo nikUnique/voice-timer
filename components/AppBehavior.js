@@ -2,7 +2,16 @@ import { Slider } from "@miblanchard/react-native-slider";
 import { useNavigation } from "@react-navigation/native";
 
 import { memo, useEffect, useRef, useState } from "react";
-import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import {
+  Alert,
+  Linking,
+  PermissionsAndroid,
+  Pressable,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from "react-native";
 
 import { Colors } from "../constants/colors";
 import { useSettingsData } from "../context/VoiceRecognizerContext";
@@ -20,6 +29,7 @@ export default memo(function AppBehavior() {
     setKeepScreenOnMinutes,
     keepScreenDim,
     setKeepScreenDim,
+    permitAnswerCallsRef,
   } = useSettingsData();
   const { updateSettingsInStorage } = useSettingsFunctions();
   const [minutes, setMinutes] = useState(keepScreenOnMinutes);
@@ -28,6 +38,41 @@ export default memo(function AppBehavior() {
 
   const minutesRef = useRef(minutes);
   minutesRef.current = minutes; // always latest, no re-subscribe
+  const [permitAnswerCall, setPermitAnswerCall] = useState(
+    permitAnswerCallsRef.current,
+  );
+
+  useEffect(
+    function () {
+      async function load() {
+        if (permitAnswerCall === true) {
+          const results = await PermissionsAndroid.requestMultiple([
+            PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+            PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
+            PermissionsAndroid.PERMISSIONS.ANSWER_PHONE_CALLS,
+          ]);
+
+          const allGranted = Object.values(results).every(
+            (r) => r === PermissionsAndroid.RESULTS.GRANTED,
+          );
+
+          if (!allGranted) {
+            const denied = Object.entries(results)
+              .filter(([_, r]) => r !== PermissionsAndroid.RESULTS.GRANTED)
+              .map(([perm]) => perm);
+
+            if (denied) {
+              permitAnswerCallsRef.current = false;
+              setPermitAnswerCall(false);
+              updateSettingsInStorage("permitAnswerCalls", false);
+            }
+          }
+        }
+      }
+      load();
+    },
+    [permitAnswerCall, permitAnswerCallsRef, updateSettingsInStorage],
+  );
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("blur", () => {
@@ -139,6 +184,59 @@ export default memo(function AppBehavior() {
           onValueChange={(value) => {
             setKeepScreenDim(value);
             updateSettingsInStorage("keepScreenDim", value);
+          }}
+          thumbColor={Colors.primaryTint90}
+          trackColor={{
+            true: Colors.primaryTint40,
+          }}
+        />
+      </View>
+
+      <View style={[switchBox, setting]}>
+        <Text style={settingLabel}>Answer calls with voice</Text>
+        <Switch
+          value={permitAnswerCall}
+          onValueChange={async (value) => {
+            if (value === true) {
+              const results = await PermissionsAndroid.requestMultiple([
+                PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+                PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
+                PermissionsAndroid.PERMISSIONS.ANSWER_PHONE_CALLS,
+              ]);
+
+              const allGranted = Object.values(results).every(
+                (r) => r === PermissionsAndroid.RESULTS.GRANTED,
+              );
+
+              if (!allGranted) {
+                const denied = Object.entries(results)
+                  .filter(([_, r]) => r !== PermissionsAndroid.RESULTS.GRANTED)
+                  .map(([perm]) => perm);
+                console.warn("Permissions denied: ", denied);
+
+                const isPermanentlyDenied = Object.values(results).includes(
+                  PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN,
+                );
+
+                if (isPermanentlyDenied) {
+                  Alert.alert(
+                    "Permission required",
+                    "Please enable microphone and phone permissions in app settings.",
+                    [
+                      { text: "Cancel", style: "cancel" },
+                      {
+                        text: "Open settings",
+                        onPress: () => Linking.openSettings(),
+                      },
+                    ],
+                  );
+                }
+                return;
+              }
+            }
+            permitAnswerCallsRef.current = value;
+            setPermitAnswerCall(value);
+            updateSettingsInStorage("permitAnswerCalls", value);
           }}
           thumbColor={Colors.primaryTint90}
           trackColor={{

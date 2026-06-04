@@ -34,6 +34,7 @@ export default function useVoiceRecognizerContext({
     TIMER_GO_SLEEP,
     VOLUME_UP,
     VOLUME_DOWN,
+    ANSWER_CALL,
   } = commandsRef.current ? commandsRef.current : {};
 
   useEffect(
@@ -67,10 +68,12 @@ export default function useVoiceRecognizerContext({
         TIMER_GO_SLEEP,
         VOLUME_UP,
         VOLUME_DOWN,
+        ANSWER_CALL,
       ]
         .flatMap((command) => command)
         .map((item) => `${item} ${secretIdentifierRef.current}`.trim()),
     [
+      ANSWER_CALL,
       DISCO,
       PLAY_MEDIA,
       REPEAT,

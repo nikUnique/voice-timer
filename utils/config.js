@@ -1,4 +1,4 @@
-export const MAX_HISTORY = 150;
+export const MAX_HISTORY = 300;
 export const DIM_PERCENTAGE = 0;
 export const DIM_TIMEOUT = 60;
 export const VOICE_FEEDBACK_SPEEDS = [

@@ -103,11 +103,15 @@ export default function Timers({ navigation }) {
             return;
           }
 
-          activateKeepAwakeAsync();
+          console.log(keepScreenOnMinutes, "our precious minutes 🤵‍♂️");
+
+          await activateKeepAwakeAsync("sleep");
           activeTimeRef.current = setTimeout(
             async function () {
               try {
-                await deactivateKeepAwake();
+                console.log("Deactivation, time to sleep? ❓");
+
+                await deactivateKeepAwake("sleep");
               } catch (error) {
                 console.error(
                   `An error occurred in the active screen function`,
@@ -153,6 +157,16 @@ export default function Timers({ navigation }) {
       STOP_MEDIA,
       keepScreenDim,
     ],
+  );
+
+  useEffect(
+    function () {
+      return () => {
+        clearTimeout(activeTimeRef.current);
+        clearTimeout(dimScreenRef.current);
+      };
+    },
+    [dimScreenRef],
   );
 
   const prepareAlertingTimerNames = useCallback(

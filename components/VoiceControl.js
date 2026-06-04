@@ -8,15 +8,12 @@ import {
   View,
 } from "react-native";
 
+import { memo, useState } from "react";
+import { Colors } from "../constants/colors";
+import { useSettingsData } from "../context/VoiceRecognizerContext";
+import { useResponsive } from "../hooks/useResponsive";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import useSettingsStyles from "../hooks/useSettingsStyles";
-import {
-  useRefsData,
-  useSettingsData,
-} from "../context/VoiceRecognizerContext";
-import { Colors } from "../constants/colors";
-import { memo, useState } from "react";
-import { useResponsive } from "../hooks/useResponsive";
 import { VOICE_FEEDBACK_SPEEDS } from "../utils/config";
 
 function getSpeedLabel(value) {

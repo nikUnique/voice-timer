@@ -90,7 +90,13 @@ export function useExecuteCommand({
           return;
         }
 
-        if (isTimerSleepingRef.current) {
+        if (
+          isTimerSleepingRef.current &&
+          !recognizedCommand?.recognizedCommand
+            .trim()
+            .toLowerCase()
+            .includes(RESET)
+        ) {
           return;
         }
 

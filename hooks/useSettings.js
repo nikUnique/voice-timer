@@ -17,6 +17,7 @@ export function useSettings() {
     setIsVibrating,
     setKeepScreenDim,
     voiceFeedbackSpeedRef,
+    permitAnswerCallsRef,
   } = useSettingsData();
 
   const { timers } = useRefsData();
@@ -70,6 +71,7 @@ export function useSettings() {
           setIsVibrating(retrievedSettings.isVibrating);
           setKeepScreenDim(retrievedSettings.keepScreenDim);
           voiceFeedbackSpeedRef.current = +retrievedSettings.voiceFeedbackSpeed;
+          permitAnswerCallsRef.current = retrievedSettings.permitAnswerCalls;
         } catch (error) {
           console.error(
             `An error occurred in the load settings function`,
@@ -81,6 +83,7 @@ export function useSettings() {
       load();
     },
     [
+      permitAnswerCallsRef,
       requestMicrophone,
       setAlarmVolume,
       setAutoStopAlarmTimeout,

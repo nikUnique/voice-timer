@@ -5,10 +5,15 @@ import notifee, {
 } from "@notifee/react-native";
 import { useCallback } from "react";
 import { AppState, NativeModules } from "react-native";
+import BackgroundService from "react-native-background-actions";
 
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter } from "../utils/EventEmitter";
-import { getSharedObject } from "../utils/sharedVariables.js";
+import {
+  getSharedObject,
+  updateSharedObject,
+} from "../utils/sharedVariables.js";
+import { cleanStop } from "../utils/helpers.js";
 
 let stopServiceTimeout;
 
@@ -18,6 +23,7 @@ export function useNotification() {
     workingTimersRef,
     leastTimeTimerRef,
     alertingTimerNamesRef,
+    currentActivityRef,
   } = useRefsData();
 
   const onCreateTriggerNotification = useCallback(
@@ -190,7 +196,18 @@ export function useNotification() {
             if (!workingTimersRef.current.length) return;
             // notifee.stopForegroundService();
             if (AppState.currentState === "active") return;
-            onUpdateNotification(title, body, timerName, true);
+
+            if (currentActivityRef.current !== "MainActivity") {
+              cleanStop();
+              // updateSharedObject({ isTaskRunning: false });
+              // console.log(
+              //   "BackgroundService stops 🇵from reset notification button 🔔",
+              // );
+              // BackgroundService.stop();
+              // console.log("Focus released 🇵from reset notification button 🔔");
+              // NativeModules.AudioFocusModule.releaseAudioFocus();
+            }
+            // onUpdateNotification(title, body, timerName, true);
           }, 5000);
         }
 
@@ -236,6 +253,7 @@ export function useNotification() {
     },
     [
       alertingTimerNamesRef,
+      currentActivityRef,
       leastTimeTimerRef,
       notificationIdRef,
       workingTimersRef,

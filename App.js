@@ -9,6 +9,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { memo, useCallback, useEffect, useState } from "react";
 import {
   NativeModules,
+  PermissionsAndroid,
   Platform,
   StatusBar,
   StyleSheet,
@@ -36,6 +37,7 @@ import TermsScreen from "./screens/TermsScreen";
 import TimersScreen from "./screens/TimersScreen";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
 import { getSharedObject, updateSharedObject } from "./utils/sharedVariables";
+import { cleanStop } from "./utils/helpers";
 
 const Stack = createNativeStackNavigator();
 
@@ -53,9 +55,12 @@ function AppWithContext() {
         !getSharedObject().runningTimerNames.length &&
         !getSharedObject().alertingTimerNames.length
       ) {
-        updateSharedObject({ isTaskRunning: false });
-        console.log("BackgroundService stops 🇵🛑");
-        BackgroundService.stop();
+        cleanStop();
+        // updateSharedObject({ isTaskRunning: false });
+        // console.log("BackgroundService stops 🇵🛑");
+        // BackgroundService.stop();
+        // console.log("Focus released");
+        // NativeModules.AudioFocusModule.releaseAudioFocus();
       }
     };
   }, []);
@@ -68,6 +73,23 @@ function AppWithContext() {
     },
     [keepScreenDim],
   );
+
+  // useEffect(function () {
+  //   async function load() {
+  //     const results = await PermissionsAndroid.requestMultiple([
+  //       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+  //       PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
+  //       PermissionsAndroid.PERMISSIONS.ANSWER_PHONE_CALLS,
+  //     ]);
+  //   }
+  //   load();
+  // }, []);
+
+  useEffect(() => {
+    return () => {
+      Tts.stop();
+    };
+  }, []);
 
   const restoreBrightness = useCallback(
     async function () {

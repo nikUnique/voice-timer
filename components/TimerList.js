@@ -16,7 +16,7 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { useSound } from "../hooks/useSound";
 import { emitter, resetTimerEmitter } from "../utils/EventEmitter";
-import { getItemFromStorage, getTimePhrase } from "../utils/helpers";
+import { getItemFromStorage, getTimePhrase, sleep } from "../utils/helpers";
 
 import { Colors } from "../constants/colors";
 import { useSpeak } from "../hooks/useSpeak";
@@ -73,6 +73,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     TIMER_GO_SLEEP,
     VOLUME_UP,
     VOLUME_DOWN,
+    ANSWER_CALL,
   } = commandsRef?.current ? commandsRef.current : {};
 
   const { successSound, discoSound } = useSettingsData();
@@ -127,18 +128,30 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         isMediaPlayingRef.current =
           await NativeModules.AudioFocusModule.isMediaPlaying();
         if (isMediaPlayingRef.current) {
-          if (recognizedCommandRef.current.includes(STOP_MEDIA))
-            NativeModules.AudioFocusModule.requestAudioFocus((granted) => {
-              if (granted) {
-                isMediaPausedRef.current = true;
-                isMediaPausedManuallyRef.current = true;
-                playSoundGeneral({
-                  fileName: successSound,
-                  shouldStop: false,
-                });
-                speak("Media paused");
-              }
-            });
+          if (recognizedCommandRef.current.includes(STOP_MEDIA)) {
+            // playSoundGeneral({
+            //   fileName: successSound,
+            //   shouldStop: false,
+            // });
+
+            // isMediaPausedRef.current = true;
+            // isMediaPausedManuallyRef.current = true;
+            // await speak("Media paused");
+            NativeModules.AudioFocusModule.requestAudioFocus(
+              async (granted) => {
+                if (granted) {
+                  isMediaPausedRef.current = true;
+                  isMediaPausedManuallyRef.current = true;
+                  playSoundGeneral({
+                    fileName: successSound,
+                    shouldStop: false,
+                  });
+                  await speak("Media paused");
+                  // await NativeModules.NativeUtilsModule.pressHeadsetButton();
+                }
+              },
+            );
+          }
         }
         if (
           isMediaPlayingRef.current &&
@@ -153,27 +166,44 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
 
         if (
           recognizedCommandRef.current?.toLowerCase().trim() === PLAY_MEDIA &&
-          PLAY_MEDIA
+          PLAY_MEDIA &&
+          !isMediaPlayingRef.current
         ) {
-          NativeModules.AudioFocusModule.toggleMedia(async (shouldTake) => {
-            playSoundGeneral({
-              fileName: successSound,
-              shouldStop: false,
-            });
-            await speak("Media resumed");
-            isMediaPausedRef.current = false;
-            isMediaPausedManuallyRef.current = false;
-            if (isListeningRef.current) {
-              NativeModules.AudioFocusModule.releaseAudioFocus();
-            }
+          // NativeModules.AudioFocusModule.toggleMedia(async (shouldTake) => {
+          //   playSoundGeneral({
+          //     fileName: successSound,
+          //     shouldStop: false,
+          //   });
+          //   await speak("Media resumed");
+          //   isMediaPausedRef.current = false;
+          //   isMediaPausedManuallyRef.current = false;
+          //   if (isListeningRef.current) {
+          //     NativeModules.AudioFocusModule.releaseAudioFocus();
+          //   }
+          // });
+          await speak("Media resumed");
+          await NativeModules.NativeUtilsModule.pressHeadsetButton();
+          playSoundGeneral({
+            fileName: successSound,
+            shouldStop: false,
           });
+          isMediaPausedRef.current = false;
+          isMediaPausedManuallyRef.current = false;
+        }
+
+        if (
+          recognizedCommandRef.current &&
+          recognizedCommandRef.current.trim().toLowerCase() === ANSWER_CALL
+        ) {
+          NativeModules.NativeUtilsModule.answerCall();
         }
 
         if (
           isTimerSleepingRef.current &&
           recognizedCommandRef.current &&
           !recognizedCommandRef.current.includes(TIMER_WAKE_UP) &&
-          !recognizedCommandRef.current.includes(STOP_MEDIA)
+          !recognizedCommandRef.current.includes(STOP_MEDIA) &&
+          !recognizedCommandRef.current.trim().toLowerCase().includes(RESET)
         ) {
           recognizedCommandRef.current = null;
           return;
@@ -208,7 +238,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           const { volume } = await VolumeManager.getVolume("music");
           const percent = Math.round((volume + 0.1) * 10) / 10;
 
-          if (percent < 1) {
+          if (percent <= 1) {
             await VolumeManager.setVolume(percent, { type: "music" });
             playSoundGeneral({
               fileName: successSound,
@@ -275,7 +305,36 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
 
       load();
     },
-    [DISCO, PLAY_MEDIA, RESET, RESET_FINISHED, STATUS_REPORT, STOP_MEDIA, TIME, TIMER_GO_SLEEP, TIMER_WAKE_UP, VOLUME_DOWN, VOLUME_UP, alertingTimerNamesRef, discoSound, formatRingingResetSpeech, formatStatusSpeech, isListeningRef, isMediaPausedManuallyRef, isMediaPausedRef, isMediaPlayingRef, isTimerSleepingRef, playSoundGeneral, playSpecial, recognizedCommandRef, recognizedTime, secretIdentifierRef, speak, successSound],
+    [
+      ANSWER_CALL,
+      DISCO,
+      PLAY_MEDIA,
+      RESET,
+      RESET_FINISHED,
+      STATUS_REPORT,
+      STOP_MEDIA,
+      TIME,
+      TIMER_GO_SLEEP,
+      TIMER_WAKE_UP,
+      VOLUME_DOWN,
+      VOLUME_UP,
+      alertingTimerNamesRef,
+      discoSound,
+      formatRingingResetSpeech,
+      formatStatusSpeech,
+      isListeningRef,
+      isMediaPausedManuallyRef,
+      isMediaPausedRef,
+      isMediaPlayingRef,
+      isTimerSleepingRef,
+      playSoundGeneral,
+      playSpecial,
+      recognizedCommandRef,
+      recognizedTime,
+      secretIdentifierRef,
+      speak,
+      successSound,
+    ],
   );
 
   useEffect(

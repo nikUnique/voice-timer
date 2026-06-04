@@ -1,6 +1,7 @@
 import notifee from "@notifee/react-native";
 import { useCallback, useEffect } from "react";
 import { AppState, BackHandler, NativeModules } from "react-native";
+import BackgroundService from "react-native-background-actions";
 
 import Time from "../components/Time";
 import { useRefsData } from "../context/VoiceRecognizerContext";
@@ -8,6 +9,7 @@ import { emitter, resetTimerEmitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 
 import {
+  cleanStop,
   removeItemFromStorage,
   setItemInStorage,
   sleep,
@@ -224,6 +226,19 @@ export function useResetTimer({
         //   updateSharedObject({ isTaskRunning: false });
         //   // await notifee.stopForegroundService();
         // }
+
+        if (
+          !getSharedObject().runningTimerNames.length &&
+          !getSharedObject().alertingTimerNames.length &&
+          currentActivityRef.current !== "MainActivity"
+        ) {
+          cleanStop();
+          // updateSharedObject({ isTaskRunning: false });
+          // console.log("BackgroundService stops from reset 🇵🏵️");
+          // BackgroundService.stop();
+          // console.log("Focus released from reset 🇵🏵️");
+          // NativeModules.AudioFocusModule.releaseAudioFocus();
+        }
 
         await removeItemFromStorage(`timerStarted-${name}`);
         await removeItemFromStorage(`timerState-${name}`);

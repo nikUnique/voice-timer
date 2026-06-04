@@ -15,6 +15,10 @@ import android.net.Uri;
 import android.app.AlarmManager;
 import android.os.DeadObjectException;
 import android.view.WindowManager;
+import android.view.KeyEvent
+import android.media.AudioManager
+import android.telecom.TelecomManager;
+import android.telephony.TelephonyManager;
 
 
 
@@ -22,31 +26,31 @@ import android.view.WindowManager;
 
 class NativeUtilsModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
-   override fun getName(): String {
-    return "NativeUtilsModule"
-   }
-
- @ReactMethod
-fun getCurrentActivityName(promise: Promise) {
-    val activity = currentActivity
-    if (activity != null && activity is MainActivity) {
-        promise.resolve("MainActivity")
-    } else {
-        promise.resolve("No activity")
+    override fun getName(): String {
+        return "NativeUtilsModule"
     }
-}
 
-
-@ReactMethod
-fun checkExactAlarmPermission(promise: Promise) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        val alarmManager = reactApplicationContext
-            .getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        promise.resolve(alarmManager.canScheduleExactAlarms())
-    } else {
-        promise.resolve(true)
+    @ReactMethod
+    fun getCurrentActivityName(promise: Promise) {
+        val activity = currentActivity
+        if (activity != null && activity is MainActivity) {
+            promise.resolve("MainActivity")
+        } else {
+            promise.resolve("No activity")
+        }
     }
-}
+
+
+    @ReactMethod
+    fun checkExactAlarmPermission(promise: Promise) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = reactApplicationContext
+                .getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            promise.resolve(alarmManager.canScheduleExactAlarms())
+        } else {
+            promise.resolve(true)
+        }
+    }
 
   @ReactMethod
     fun requestExactAlarmPermission() {
@@ -183,5 +187,41 @@ fun isDeviceLocked(callback: Callback) {
     @ReactMethod
     fun pressBack() {
         currentActivity?.onBackPressed()
+    }
+
+    @ReactMethod
+    fun pressHeadsetButton(promise: Promise) {
+        try {
+
+            val am = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            am.dispatchMediaKeyEvent(
+                KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_HEADSETHOOK)
+            )
+            am.dispatchMediaKeyEvent(
+                KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK)
+            )
+            
+            promise.resolve(true)
+        } catch (e: Exception) {
+            promise.reject("ERROR", e.message)
+        }
+    }
+
+
+
+    @ReactMethod
+    fun answerCall(): Boolean {
+    val tm = reactApplicationContext
+        .getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+
+    if (tm.callState != TelephonyManager.CALL_STATE_RINGING) return false
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val telecom = reactApplicationContext
+            .getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+        telecom.acceptRingingCall()
+    }
+
+    return true
     }
 }

@@ -21,6 +21,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import android.graphics.Color
 import android.view.View
+import android.media.AudioManager
 
 
 import expo.modules.ReactActivityDelegateWrapper
@@ -140,6 +141,8 @@ class MainActivity : ReactActivity() {
       // because it's doing more than [Activity.moveTaskToBack] in fact.
       super.invokeDefaultOnBackPressed()
   }
+
+
 
 
 }
