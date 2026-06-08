@@ -155,7 +155,8 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         }
         if (
           isMediaPlayingRef.current &&
-          !recognizedCommandRef.current.includes(STOP_MEDIA)
+          !recognizedCommandRef.current.includes(STOP_MEDIA) &&
+          !recognizedCommandRef.current.includes(ANSWER_CALL)
         ) {
           console.log(
             "Stop the background media first before using other voice commands",
@@ -193,8 +194,13 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
 
         if (
           recognizedCommandRef.current &&
-          recognizedCommandRef.current.trim().toLowerCase() === ANSWER_CALL
+          recognizedCommandRef.current
+            .trim()
+            .toLowerCase()
+            .includes(ANSWER_CALL.toLowerCase())
         ) {
+          console.log("I am trying to answer call 🤙");
+
           NativeModules.NativeUtilsModule.answerCall();
         }
 

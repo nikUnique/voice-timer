@@ -19,9 +19,12 @@ import android.view.KeyEvent
 import android.media.AudioManager
 import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
+import android.os.Handler
+import android.os.Looper
 
 
 
+private val TAG = "Call"
 
 
 class NativeUtilsModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
@@ -213,13 +216,25 @@ fun isDeviceLocked(callback: Callback) {
     fun answerCall(): Boolean {
     val tm = reactApplicationContext
         .getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+    if (tm.callState != TelephonyManager.CALL_STATE_RINGING) {
+        return false
+    }
 
-    if (tm.callState != TelephonyManager.CALL_STATE_RINGING) return false
+    val audio = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val telecom = reactApplicationContext
             .getSystemService(Context.TELECOM_SERVICE) as TelecomManager
-        telecom.acceptRingingCall()
+        try {
+            telecom.acceptRingingCall()                   
+        } catch (e: Exception) {
+            Log.e("Call", "accept failed", e)
+        }
+    } else {
+        val headsetHook = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_HEADSETHOOK)
+        val releaseHook = KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK)
+        audio.dispatchMediaKeyEvent(headsetHook)
+        audio.dispatchMediaKeyEvent(releaseHook)
     }
 
     return true
