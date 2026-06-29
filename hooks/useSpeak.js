@@ -11,7 +11,8 @@ import { VOICE_FEEDBACK_SPEEDS } from "../utils/config";
 
 export function useSpeak() {
   const { isVoiceFeedbackEnabled, voiceFeedbackSpeedRef } = useSettingsData();
-  const { setIsListening, isListeningRef, resultEventRef } = useRefsData();
+  const { setIsListening, isListeningRef, resultEventRef, currentSpeechRef } =
+    useRefsData();
 
   useEffect(() => {
     function pickBestVoice(voices) {
@@ -63,6 +64,8 @@ export function useSpeak() {
         if (!isVoiceFeedbackEnabled) {
           return;
         }
+
+        currentSpeechRef.current = text;
 
         if (text.trim()) {
           resultEventRef.current?.remove();

@@ -51,6 +51,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     isListeningRef,
     ignoreUntilRef,
     resultEventRef,
+    currentSpeechRef,
   } = useRefsData();
 
   const { voiceEnabled, setVoiceEnabled } = useSettingsData();
@@ -222,6 +223,8 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
           return;
         }
 
+        console.log(currentSpeechRef.current);
+
         if (Date.now() < ignoreUntilRef.current) {
           console.log("Ignoring speech to prevent TTS making a difference");
 
@@ -236,6 +239,21 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         let checkedResponse = res.includes("[unk]")
           ? "Unrecognized phrase"
           : res;
+
+        if (currentSpeechRef.current) {
+          const speechArray = currentSpeechRef.current.split(" ");
+          checkedResponse = res
+            .split(" ")
+            .filter(
+              (el) =>
+                !speechArray.includes(el.toLowerCase()) &&
+                typeof el !== "object",
+            )
+            .join(" ");
+          console.log(checkedResponse);
+
+          currentSpeechRef.current = "";
+        }
 
         setResult(checkedResponse);
         setRecognizedCommand(checkedResponse);

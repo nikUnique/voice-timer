@@ -48,6 +48,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const recognizedCommandRef = useRef(null);
   const secretIdentifierRef = useRef("");
   const commandsRef = useRef(null);
+  const currentSpeechRef = useRef(null);
 
   // Full-screen notification
   const currentActivityRef = useRef("");
@@ -191,6 +192,7 @@ export default function VoiceRecognizerProvider({ children }) {
       ignoreUntilRef,
       isMediaPausedManuallyRef,
       resultEventRef,
+      currentSpeechRef,
     }),
     [editableTimers, timerHeight, timers],
   );

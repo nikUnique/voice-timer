@@ -37,6 +37,7 @@ export function useTimer() {
     isMediaPausedRef,
     ignoreUntilRef,
     isMediaPausedManuallyRef,
+    currentSpeechRef,
   } = useRefsData();
 
   useSettings();
@@ -126,7 +127,8 @@ export function useTimer() {
       releaseAudioFocus();
 
       if (isVoiceFeedbackEnabled) {
-        ignoreUntilRef.current = Date.now() + 2000;
+        // currentSpeechRef.current = "";
+        // ignoreUntilRef.current = Date.now() + 2000;
       }
 
       // await sleep(2 - voiceFeedbackSpeedRef.current);
