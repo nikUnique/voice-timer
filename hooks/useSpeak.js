@@ -88,14 +88,7 @@ export function useSpeak() {
         console.error("An error occurred in the speak function 🤯", error);
       }
     },
-    [
-      isListeningRef,
-      isVoiceFeedbackEnabled,
-      resultEventRef,
-      setIsListening,
-      voiceFeedbackSpeedRef,
-      voiceOptions,
-    ],
+    [currentSpeechRef, isListeningRef, isVoiceFeedbackEnabled, resultEventRef, setIsListening, voiceFeedbackSpeedRef, voiceOptions],
   );
 
   return { speak };

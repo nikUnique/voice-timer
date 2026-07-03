@@ -212,7 +212,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         return;
       }
 
-      console.log(Date.now(), ignoreUntilRef.current, "The difference");
+      // console.log(Date.now(), ignoreUntilRef.current, "The difference");
 
       resultEventRef.current?.remove();
 
@@ -223,7 +223,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
           return;
         }
 
-        console.log(currentSpeechRef.current);
+        // console.log(currentSpeechRef.current);
 
         if (Date.now() < ignoreUntilRef.current) {
           console.log("Ignoring speech to prevent TTS making a difference");
@@ -236,9 +236,11 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
           isListeningRef.current,
           Date.now(),
         );
-        let checkedResponse = res.includes("[unk]")
-          ? "Unrecognized phrase"
-          : res;
+
+        let checkedResponse = res
+          .split(" ")
+          .filter((el) => typeof el !== "object" && el !== "[unk]")
+          .join(" ");
 
         if (currentSpeechRef.current) {
           const speechArray = currentSpeechRef.current.split(" ");
@@ -247,13 +249,13 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
             .filter(
               (el) =>
                 !speechArray.includes(el.toLowerCase()) &&
-                typeof el !== "object",
+                typeof el !== "object" &&
+                el !== "[unk]",
             )
             .join(" ");
-          console.log(checkedResponse);
-
           currentSpeechRef.current = "";
         }
+        console.log("CHECKED_RESPONSE", checkedResponse);
 
         setResult(checkedResponse);
         setRecognizedCommand(checkedResponse);
@@ -263,6 +265,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       });
     },
     [
+      currentSpeechRef,
       ignoreUntilRef,
       isListeningRef,
       recognizedCommandRef,

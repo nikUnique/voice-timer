@@ -136,13 +136,7 @@ export function useTimer() {
       isListeningRef.current = true;
       setIsListening(true);
     },
-    [
-      ignoreUntilRef,
-      isListeningRef,
-      isVoiceFeedbackEnabled,
-      releaseAudioFocus,
-      setIsListening,
-    ],
+    [isListeningRef, isVoiceFeedbackEnabled, releaseAudioFocus, setIsListening],
   );
 
   const errorTalking = useCallback(

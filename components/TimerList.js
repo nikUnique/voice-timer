@@ -137,20 +137,28 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
             // isMediaPausedRef.current = true;
             // isMediaPausedManuallyRef.current = true;
             // await speak("Media paused");
-            NativeModules.AudioFocusModule.requestAudioFocus(
-              async (granted) => {
-                if (granted) {
-                  isMediaPausedRef.current = true;
-                  isMediaPausedManuallyRef.current = true;
-                  playSoundGeneral({
-                    fileName: successSound,
-                    shouldStop: false,
-                  });
-                  await speak("Media paused");
-                  // await NativeModules.NativeUtilsModule.pressHeadsetButton();
-                }
-              },
-            );
+            // NativeModules.AudioFocusModule.requestAudioFocus(
+            //   async (granted) => {
+            //     if (granted) {
+            //       isMediaPausedRef.current = true;
+            //       isMediaPausedManuallyRef.current = true;
+            //       playSoundGeneral({
+            //         fileName: successSound,
+            //         shouldStop: false,
+            //       });
+            //       await speak("Media paused");
+            //       // await NativeModules.NativeUtilsModule.pressHeadsetButton();
+            //     }
+            //   },
+            // );
+            await NativeModules.NativeUtilsModule.pressHeadsetButton();
+            isMediaPausedRef.current = true;
+            isMediaPausedManuallyRef.current = true;
+            playSoundGeneral({
+              fileName: successSound,
+              shouldStop: false,
+            });
+            await speak("Media paused");
           }
         }
         if (
@@ -166,7 +174,10 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         }
 
         if (
-          recognizedCommandRef.current?.toLowerCase().trim() === PLAY_MEDIA &&
+          recognizedCommandRef.current
+            ?.toLowerCase()
+            .trim()
+            .includes(PLAY_MEDIA) &&
           PLAY_MEDIA &&
           !isMediaPlayingRef.current
         ) {
@@ -267,8 +278,11 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         }
 
         if (
-          recognizedCommandRef.current?.toLowerCase() ===
-          `${RESET_FINISHED} ${secretIdentifierRef.current?.split(" ").slice(2, -1)}`.trim()
+          recognizedCommandRef.current
+            ?.toLowerCase()
+            .includes(
+              `${RESET_FINISHED} ${secretIdentifierRef.current?.split(" ").slice(2, -1)}`.trim(),
+            )
         ) {
           setTimeout(function () {
             playSoundGeneral({
@@ -285,15 +299,17 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
         }
 
         if (
-          recognizedCommandRef.current?.toLowerCase().trim() === TIME &&
+          recognizedCommandRef.current?.toLowerCase().trim().includes(TIME) &&
           TIME
         ) {
           speak(getTimePhrase(), 0.3);
         }
 
         if (
-          recognizedCommandRef.current?.toLowerCase().trim() ===
-            STATUS_REPORT &&
+          recognizedCommandRef.current
+            ?.toLowerCase()
+            .trim()
+            .includes(STATUS_REPORT) &&
           STATUS_REPORT
         ) {
           speak(
