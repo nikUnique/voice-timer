@@ -11,8 +11,8 @@ export default function About() {
 
   const {
     REPEAT,
-    RESET,
-    RESET_FINISHED,
+    STOP,
+    STOP_FINISHED,
     DISCO,
     TIME,
     PLAY_MEDIA,
@@ -88,7 +88,7 @@ export default function About() {
       <Paragraph>
         To use any voice command while media is playing, say &quot;{STOP_MEDIA}
         &quot; first. This pauses playback and activates voice control. You can
-        then say &quot;{PLAY_MEDIA}&quot; to continue playback.
+        then say &quot;{PLAY_MEDIA}&quot; to RESUME playback.
       </Paragraph>
 
       <Paragraph>

@@ -37,7 +37,7 @@ export function useExecuteCommand({
 
   const { successSound } = useSettingsData();
 
-  const { CONTINUE, PAUSE, REPEAT, RESET, START, STOP_MEDIA, STATUS } =
+  const { RESUME, PAUSE, REPEAT, STOP, START, STOP_MEDIA, STATUS } =
     commandsRef?.current ? commandsRef.current : {};
 
   const { playSoundGeneral } = useSound();
@@ -95,7 +95,7 @@ export function useExecuteCommand({
           !recognizedCommand?.recognizedCommand
             .trim()
             .toLowerCase()
-            .includes(RESET)
+            .includes(STOP)
         ) {
           return;
         }
@@ -125,7 +125,7 @@ export function useExecuteCommand({
         let availableCommands, isCommandValid, commandExecuted;
 
         if (!isActive) {
-          availableCommands = [START, REPEAT, RESET];
+          availableCommands = [START, REPEAT, STOP];
           isCommandValid = availableCommands.some((command) =>
             recognizedCommand?.recognizedCommand.includes(command),
           );
@@ -194,7 +194,7 @@ export function useExecuteCommand({
         }
         if (
           lowerCommand.includes(
-            `${CONTINUE} ${name} ${secretIdentifierRef.current}`
+            `${RESUME} ${name} ${secretIdentifierRef.current}`
               .toLocaleLowerCase()
               .trim(),
           ) &&
@@ -208,7 +208,7 @@ export function useExecuteCommand({
         }
         if (
           lowerCommand.includes(
-            `${RESET} ${name} ${secretIdentifierRef.current}`
+            `${STOP} ${name} ${secretIdentifierRef.current}`
               .toLocaleLowerCase()
               .trim(),
           ) &&
@@ -219,7 +219,7 @@ export function useExecuteCommand({
           commandExecuted = true;
           activateTimerRef.current(index);
 
-          speak(`${name} reset`);
+          speak(`${name} stopped`);
         }
 
         const nameBasedOnSecret = secretIdentifierRef.current
@@ -269,9 +269,9 @@ export function useExecuteCommand({
       timerIsActiveRef,
       timeLeftRef,
       PAUSE,
-      CONTINUE,
+      RESUME,
       isPaused,
-      RESET,
+      STOP,
       lastCommandRef,
       speak,
       formatSingleTimerSpeech,

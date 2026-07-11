@@ -101,3 +101,9 @@ export function cleanStop() {
   NativeModules.AudioFocusModule.releaseAudioFocus();
   console.log("BackgroundService stopped, audio focus released 🌜");
 }
+
+export const normalize = (str) =>
+  str
+    .toLowerCase()
+    .replace(/[^\w\s]/g, "")
+    .trim(); // strip punctuation

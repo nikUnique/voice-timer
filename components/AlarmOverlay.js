@@ -25,7 +25,9 @@ const AlarmOverlay = ({ navigation }) => {
 
   const { alertingTimerNames } = useRecognizerData();
 
-  const { currentActivityRef } = useRefsData();
+  const { currentActivityRef, commandsRef } = useRefsData();
+
+  const { STOP } = commandsRef?.current ? commandsRef.current : {};
 
   useEffect(
     function () {
@@ -43,12 +45,15 @@ const AlarmOverlay = ({ navigation }) => {
     [alertingTimerNames, navigation],
   );
 
-  const onDismiss = useCallback(function () {
-    getSharedObject().alertingTimerNames.map((alertingTimer) =>
-      resetTimerEmitter.emit(`reset ${alertingTimer}`),
-    );
-    navigation.goBack();
-  }, []);
+  const onDismiss = useCallback(
+    function () {
+      getSharedObject().alertingTimerNames.map((alertingTimer) =>
+        resetTimerEmitter.emit(`${STOP.toLowerCase()} ${alertingTimer}`),
+      );
+      navigation.goBack();
+    },
+    [STOP, navigation],
+  );
 
   useEffect(
     function () {

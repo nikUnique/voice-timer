@@ -69,8 +69,8 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
             callback(granted)
         }, delay)
     }
-
-    private fun isWiredHeadsetConnected(): Boolean {
+    @ReactMethod
+    fun isWiredHeadsetConnected(): Boolean {
         val devices = audioManager?.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
         return devices?.any {
             it.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES ||

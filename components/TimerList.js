@@ -16,7 +16,12 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { useSound } from "../hooks/useSound";
 import { emitter, resetTimerEmitter } from "../utils/EventEmitter";
-import { getItemFromStorage, getTimePhrase, sleep } from "../utils/helpers";
+import {
+  getItemFromStorage,
+  getTimePhrase,
+  normalize,
+  sleep,
+} from "../utils/helpers";
 
 import { Colors } from "../constants/colors";
 import { useSpeak } from "../hooks/useSpeak";
@@ -62,8 +67,8 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
   const { speak } = useSpeak();
   const {
     REPEAT,
-    RESET,
-    RESET_FINISHED,
+    STOP,
+    STOP_FINISHED,
     DISCO,
     TIME,
     PLAY_MEDIA,
@@ -220,7 +225,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           recognizedCommandRef.current &&
           !recognizedCommandRef.current.includes(TIMER_WAKE_UP) &&
           !recognizedCommandRef.current.includes(STOP_MEDIA) &&
-          !recognizedCommandRef.current.trim().toLowerCase().includes(RESET)
+          !recognizedCommandRef.current.trim().toLowerCase().includes(STOP)
         ) {
           recognizedCommandRef.current = null;
           return;
@@ -261,7 +266,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
               fileName: successSound,
               shouldStop: false,
             });
-            speak(`Volume ${percent}`);
+            speak(`Volume ${percent * 100}`);
           }
         }
 
@@ -274,14 +279,14 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
             fileName: successSound,
             shouldStop: false,
           });
-          speak(`Volume ${percent}`);
+          speak(`Volume ${percent * 100}`);
         }
 
         if (
           recognizedCommandRef.current
             ?.toLowerCase()
             .includes(
-              `${RESET_FINISHED} ${secretIdentifierRef.current?.split(" ").slice(2, -1)}`.trim(),
+              `${STOP_FINISHED} ${secretIdentifierRef.current?.split(" ").slice(2, -1)}`.trim(),
             )
         ) {
           setTimeout(function () {
@@ -294,14 +299,13 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           speak(formatRingingResetSpeech(alertingTimerNamesRef.current), 0.5);
 
           alertingTimerNamesRef?.current?.map((alertingTimer) =>
-            resetTimerEmitter.emit(`${RESET} ${alertingTimer}`),
+            resetTimerEmitter.emit(`${STOP} ${alertingTimer}`),
           );
         }
 
-        if (
-          recognizedCommandRef.current?.toLowerCase().trim().includes(TIME) &&
-          TIME
-        ) {
+        const words = recognizedCommandRef.current?.split(" ").map(normalize);
+
+        if (words.includes(TIME) && TIME) {
           speak(getTimePhrase(), 0.3);
         }
 
@@ -331,8 +335,8 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       ANSWER_CALL,
       DISCO,
       PLAY_MEDIA,
-      RESET,
-      RESET_FINISHED,
+      STOP,
+      STOP_FINISHED,
       STATUS_REPORT,
       STOP_MEDIA,
       TIME,

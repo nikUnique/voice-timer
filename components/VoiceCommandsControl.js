@@ -17,6 +17,7 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { useResponsive } from "../hooks/useResponsive";
 import { Text } from "../ui/AppText";
+import { normalize } from "../utils/helpers";
 
 const eventEmitter = new NativeEventEmitter(NativeModules.AudioFocusModule);
 
@@ -104,13 +105,16 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
   }, [vosk]);
 
   // Hope that the app state will be active at this point
-  useEffect(function () {
-    async function initVosk() {
-      await load();
-    }
-    initVosk();
-    return () => unload();
-  }, []);
+  useEffect(
+    function () {
+      async function initVosk() {
+        await load();
+      }
+      initVosk();
+      return () => unload();
+    },
+    [load, unload],
+  );
 
   // Listening logic
   const recordGrammar = useCallback(
@@ -147,9 +151,11 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
             setIsListening(true);
             isListeningRef.current = true;
           })
-          .catch((e) =>
+          .catch((e) => {
             console.error(`An error occurred while initializing vosk`, e),
-          );
+              unload?.();
+            load();
+          });
       } catch (error) {
         console.error("An error occurred in the recordGrammar function", error);
       }
@@ -162,6 +168,8 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       stop,
       setIsListening,
       isListeningRef,
+      unload,
+      load,
     ],
   );
 
@@ -243,12 +251,14 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
           .join(" ");
 
         if (currentSpeechRef.current) {
-          const speechArray = currentSpeechRef.current.split(" ");
+          const speechArray = new Set(
+            currentSpeechRef.current.split(" ").map(normalize),
+          );
           checkedResponse = res
             .split(" ")
             .filter(
               (el) =>
-                !speechArray.includes(el.toLowerCase()) &&
+                !speechArray.has(normalize(el)) &&
                 typeof el !== "object" &&
                 el !== "[unk]",
             )

@@ -19,11 +19,11 @@ export default function useVoiceRecognizerContext({
 
   const {
     START,
-    CONTINUE,
-    RESET,
+    RESUME,
+    STOP,
     PAUSE,
     REPEAT,
-    RESET_FINISHED,
+    STOP_FINISHED,
     DISCO,
     TIME,
     PLAY_MEDIA,
@@ -47,8 +47,8 @@ export default function useVoiceRecognizerContext({
   const allTimers = timers.map((timer) => timer.name);
 
   const allActions = useMemo(
-    () => [START, CONTINUE, RESET, PAUSE, STATUS],
-    [CONTINUE, PAUSE, RESET, START, STATUS],
+    () => [START, RESUME, STOP, PAUSE, STATUS],
+    [RESUME, PAUSE, STOP, START, STATUS],
   );
 
   const dynamicGrammarFirst = useMemo(
@@ -58,7 +58,7 @@ export default function useVoiceRecognizerContext({
           allActions.map((action) => `${action} ${timer.name}`.toLowerCase()),
         ),
         REPEAT,
-        RESET_FINISHED,
+        STOP_FINISHED,
         DISCO,
         TIME,
         PLAY_MEDIA,
@@ -77,7 +77,7 @@ export default function useVoiceRecognizerContext({
       DISCO,
       PLAY_MEDIA,
       REPEAT,
-      RESET_FINISHED,
+      STOP_FINISHED,
       STATUS_REPORT,
       STOP_MEDIA,
       TIME,

@@ -14,6 +14,7 @@ export default function useSettingsFunctions() {
     voiceFeedbackSpeedRef,
     isVibrating,
     keepScreenDim,
+    permitAnswerCallsRef,
   } = useSettingsData();
 
   const settings = useMemo(
@@ -27,6 +28,7 @@ export default function useSettingsFunctions() {
       isVibrating,
       keepScreenDim,
       voiceFeedbackSpeed: voiceFeedbackSpeedRef.current,
+      permitAnswerCalls: permitAnswerCallsRef.current,
     }),
     [
       alarmVolume,
@@ -36,6 +38,7 @@ export default function useSettingsFunctions() {
       keepScreenDim,
       keepScreenOnCommand,
       keepScreenOnMinutes,
+      permitAnswerCallsRef,
       voiceEnabled,
       voiceFeedbackSpeedRef,
     ],

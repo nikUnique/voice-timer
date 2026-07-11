@@ -5,15 +5,11 @@ import notifee, {
 } from "@notifee/react-native";
 import { useCallback } from "react";
 import { AppState, NativeModules } from "react-native";
-import BackgroundService from "react-native-background-actions";
 
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter } from "../utils/EventEmitter";
-import {
-  getSharedObject,
-  updateSharedObject,
-} from "../utils/sharedVariables.js";
 import { cleanStop } from "../utils/helpers.js";
+import { getSharedObject } from "../utils/sharedVariables.js";
 
 let stopServiceTimeout;
 

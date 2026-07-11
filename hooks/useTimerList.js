@@ -263,13 +263,13 @@ export function useTimerList({
   }, []);
 
   const formatRingingResetSpeech = useCallback(function (timerNames) {
-    if (timerNames.length === 0) return "Nothing to reset.";
-    if (timerNames.length === 1) return `timer ${timerNames[0]} reset.`;
+    if (timerNames.length === 0) return "Nothing to stop.";
+    if (timerNames.length === 1) return `timer ${timerNames[0]} stopped.`;
 
     const last = timerNames[timerNames.length - 1];
     const rest = timerNames.slice(0, -1);
     const count = timerNames.length;
-    return `${count} timers reset. ${rest.join(", ")} and ${last}.`;
+    return `${count} timers stopped. ${rest.join(", ")} and ${last}.`;
   }, []);
 
   return {

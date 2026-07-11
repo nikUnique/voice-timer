@@ -21,7 +21,7 @@ export const useAppState = () => {
     return () => {
       appStateListener.remove();
     };
-  }, []);
+  }, [appState]);
 
   return { appState, setAppState, appStateRef, prevAppState };
 };

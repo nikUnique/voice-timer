@@ -57,12 +57,31 @@ export default function Timers({ navigation }) {
 
   useServiceAndSpeechControl();
 
-  const { REPEAT, RESET_FINISHED, STOP_MEDIA } = commandsRef?.current
+  const { REPEAT, STOP_FINISHED, STOP_MEDIA } = commandsRef?.current
     ? commandsRef.current
     : {};
 
   const { playSoundWrapper, stopSoundWrapper, options, backgroundTask } =
     useTimer();
+
+  const forceKeepAwake = useCallback(async function (tag) {
+    await deactivateKeepAwake(tag);
+    await activateKeepAwakeAsync(tag);
+  }, []);
+
+  // useEffect(
+  //   function () {
+  //     const sub = AppState.addEventListener("change", (nextAppState) => {
+  //       if (nextAppState !== "active") {
+  //         clearTimeout(activeTimeRef.current);
+  //         clearTimeout(activeTimeRef.current);
+  //         clearTimeout(dimScreenRef.current);
+  //       }
+  //     });
+  //     return () => sub?.remove();
+  //   },
+  //   [dimScreenRef],
+  // );
 
   useEffect(
     function () {
@@ -105,7 +124,7 @@ export default function Timers({ navigation }) {
 
           console.log(keepScreenOnMinutes, "our precious minutes 🤵‍♂️");
 
-          await activateKeepAwakeAsync("sleep");
+          await forceKeepAwake("sleep");
           activeTimeRef.current = setTimeout(
             async function () {
               try {
@@ -147,7 +166,7 @@ export default function Timers({ navigation }) {
       dynamicGrammar,
       isAwake,
       REPEAT,
-      RESET_FINISHED,
+      STOP_FINISHED,
       DEFAULT_PRESETS,
       timers,
       keepScreenOnCommand,
@@ -156,6 +175,7 @@ export default function Timers({ navigation }) {
       isMediaPlayingRef,
       STOP_MEDIA,
       keepScreenDim,
+      forceKeepAwake,
     ],
   );
 

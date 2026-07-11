@@ -4,30 +4,36 @@ import { NativeModules } from "react-native";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter, resetTimerEmitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
+import { STOP } from "../utils/en_commands";
 
 export function useBackgroundActions() {
   const { workingTimersRef, leastTimeTimerRef, currentActivityRef } =
     useRefsData();
 
   const resetTimer = useCallback(function resetTimer(name) {
-    resetTimerEmitter.emit(`reset ${name}`);
+    resetTimerEmitter.emit(`${STOP} ${name}`);
   }, []);
 
   const resetAllTimers = useCallback(
     function resetAllTimers() {
+      console.log(STOP, "IS STOP");
+
       workingTimersRef.current.map((timerName) => {
-        resetTimerEmitter.emit(`reset ${timerName}`);
+        resetTimerEmitter.emit(`${STOP} ${timerName}`);
       });
     },
-    [workingTimersRef],
+    [STOP, workingTimersRef],
   );
 
-  const resetAllFinishedTimers = useCallback(function resetAllTimers() {
-    updateSharedObject({ resetAllFinishedFromApp: true });
-    getSharedObject()?.alertingTimerNames?.map((timerName) => {
-      resetTimerEmitter.emit(`reset ${timerName}`);
-    });
-  }, []);
+  const resetAllFinishedTimers = useCallback(
+    function resetAllTimers() {
+      updateSharedObject({ resetAllFinishedFromApp: true });
+      getSharedObject()?.alertingTimerNames?.map((timerName) => {
+        resetTimerEmitter.emit(`${STOP} ${timerName}`);
+      });
+    },
+    [STOP],
+  );
 
   const pauseTimer = useCallback(
     async function pauseTimer() {

@@ -8,6 +8,7 @@ import {
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
 import { VOICE_FEEDBACK_SPEEDS } from "../utils/config";
+import { sleep } from "../utils/helpers";
 
 export function useSpeak() {
   const { isVoiceFeedbackEnabled, voiceFeedbackSpeedRef } = useSettingsData();
@@ -65,7 +66,7 @@ export function useSpeak() {
           return;
         }
 
-        currentSpeechRef.current = text;
+        currentSpeechRef.current = text.toLowerCase();
 
         if (text.trim()) {
           resultEventRef.current?.remove();
@@ -78,17 +79,28 @@ export function useSpeak() {
               ).value,
           );
 
-          NativeModules.AudioFocusModule.requestAudioFocus(async (granted) => {
-            if (granted) {
-              Tts.speak(text, voiceOptions);
-            }
-          });
+          if (NativeModules.AudioFocusModule.isWiredHeadsetConnected()) {
+            await sleep(0.5);
+          }
+          await Tts.speak(text, voiceOptions);
+          // NativeModules.AudioFocusModule.requestAudioFocus(async (granted) => {
+          //   if (granted) {
+          //   }
+          // });
         }
       } catch (error) {
         console.error("An error occurred in the speak function 🤯", error);
       }
     },
-    [currentSpeechRef, isListeningRef, isVoiceFeedbackEnabled, resultEventRef, setIsListening, voiceFeedbackSpeedRef, voiceOptions],
+    [
+      currentSpeechRef,
+      isListeningRef,
+      isVoiceFeedbackEnabled,
+      resultEventRef,
+      setIsListening,
+      voiceFeedbackSpeedRef,
+      voiceOptions,
+    ],
   );
 
   return { speak };
