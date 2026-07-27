@@ -107,7 +107,6 @@ export function useTimer() {
         !getSharedObject().alertingTimerNames.length
       ) {
         console.log("Is it released 🎱");
-
         NativeModules.AudioFocusModule.releaseAudioFocus();
       }
     },
@@ -133,10 +132,17 @@ export function useTimer() {
 
       // await sleep(2 - voiceFeedbackSpeedRef.current);
       console.log("Done talking");
+      currentSpeechRef.current = "";
       isListeningRef.current = true;
       setIsListening(true);
     },
-    [isListeningRef, isVoiceFeedbackEnabled, releaseAudioFocus, setIsListening],
+    [
+      currentSpeechRef,
+      isListeningRef,
+      isVoiceFeedbackEnabled,
+      releaseAudioFocus,
+      setIsListening,
+    ],
   );
 
   const errorTalking = useCallback(

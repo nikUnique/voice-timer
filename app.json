@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.moonnic.timer-with-commands"
+      "bundleIdentifier": "com.moonnic.timer_with_commands"
     },
     "android": {
       "plugins": [
@@ -49,7 +49,7 @@
       "adaptiveIcon": {
         "backgroundColor": "lightblue"
       },
-      "package": "com.moonnic.timer-with-commands"
+      "package": "com.moonnic.timer_with_commands"
     },
     "scheme": "timer_with_commands",
     "web": {

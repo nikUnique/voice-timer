@@ -17,7 +17,8 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { useResponsive } from "../hooks/useResponsive";
 import { Text } from "../ui/AppText";
-import { normalize } from "../utils/helpers";
+import { cleanStop, normalize } from "../utils/helpers";
+import { getSharedObject } from "../utils/sharedVariables";
 
 const eventEmitter = new NativeEventEmitter(NativeModules.AudioFocusModule);
 
@@ -27,6 +28,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
   const [isRecognizing, setIsRecognizing] = useState(false);
   const [result, setResult] = useState();
   const [improvedResult, setImprovedResult] = useState("");
+  const partialResultEventRef = useRef(null);
 
   const voskRef = useRef(null);
   if (!voskRef.current) {
@@ -97,6 +99,8 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
   }, [vosk]);
 
   const unload = useCallback(() => {
+    console.log("unload called");
+
     setIsReady(false);
     isReadyRef.current = false;
     setIsRecognizing(false);
@@ -111,10 +115,22 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         await load();
       }
       initVosk();
-      return () => unload();
+      // return () => unload();
     },
     [load, unload],
   );
+
+  useEffect(function () {
+    return () => {
+      if (
+        !getSharedObject().runningTimerNames.length &&
+        !getSharedObject().alertingTimerNames.length
+      ) {
+        unload();
+        cleanStop();
+      }
+    };
+  }, []);
 
   // Listening logic
   const recordGrammar = useCallback(
@@ -130,9 +146,13 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
           return;
         }
 
-        if (AppState.currentState === "active" || nextAppState) {
-          await stop();
-        }
+        // if (
+        //   (AppState.currentState === "active" && !isRecognizing) ||
+        //   nextAppState
+        // ) {
+        //   stop();
+        // }
+        console.log(AppState.currentState, "currentState?😄");
 
         const microGranted = await PermissionsAndroid.check(
           PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
@@ -152,9 +172,9 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
             isListeningRef.current = true;
           })
           .catch((e) => {
-            console.error(`An error occurred while initializing vosk`, e),
-              unload?.();
-            load();
+            console.error(`An error occurred while initializing vosk`, e);
+            //   unload?.();
+            // load();
           });
       } catch (error) {
         console.error("An error occurred in the recordGrammar function", error);
@@ -165,16 +185,13 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       voiceEnabled,
       vosk,
       dynamicGrammar,
-      stop,
       setIsListening,
       isListeningRef,
-      unload,
-      load,
     ],
   );
 
-  const stop = useCallback(async () => {
-    await vosk.stop();
+  const stop = useCallback(() => {
+    vosk.stop();
 
     console.log("Stopping recognition...");
     setIsRecognizing(false);
@@ -192,6 +209,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
           !isRecognizing &&
           !(await NativeModules.AudioFocusModule.isMicInUseByOtherApp())
         ) {
+          // stop();
           await recordGrammar();
         }
 
@@ -214,8 +232,83 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     ],
   );
 
+  const addPartialResultListener = useCallback(
+    async function load() {
+      console.log("Do we have something");
+
+      if (!voiceEnabled || !isListeningRef.current) {
+        return;
+      }
+
+      // console.log(Date.now(), ignoreUntilRef.current, "The difference");
+
+      partialResultEventRef.current?.remove();
+
+      let vosk = voskRef.current;
+      partialResultEventRef.current = vosk.onPartialResult(async (res) => {
+        if (!isListeningRef.current) {
+          console.log("While TTS speak, the resultEvent is ignored 🐽");
+          return;
+        }
+
+        // console.log(currentSpeechRef.current);
+
+        if (Date.now() < ignoreUntilRef.current) {
+          console.log("Ignoring speech to prevent TTS making a difference");
+
+          return;
+        }
+
+        console.log(
+          "An onPartialResult event has been caught: " + res,
+          isListeningRef.current,
+          Date.now(),
+        );
+
+        let checkedResponse = res
+          .split(" ")
+          .filter((el) => typeof el !== "object" && el !== "[unk]")
+          .join(" ");
+
+        if (currentSpeechRef.current) {
+          const speechArray = new Set(
+            currentSpeechRef.current.split(" ").map(normalize),
+          );
+          checkedResponse = res
+            .split(" ")
+            .filter(
+              (el) =>
+                !speechArray.has(normalize(el)) &&
+                typeof el !== "object" &&
+                el !== "[unk]",
+            )
+            .join(" ");
+          currentSpeechRef.current = "";
+        }
+        console.log("CHECKED_RESPONSE", checkedResponse);
+
+        setResult(checkedResponse);
+        setRecognizedCommand(checkedResponse);
+        setRecognizedTime(Date.now());
+
+        recognizedCommandRef.current = res;
+      });
+    },
+    [
+      currentSpeechRef,
+      ignoreUntilRef,
+      isListeningRef,
+      recognizedCommandRef,
+      setRecognizedCommand,
+      setRecognizedTime,
+      voiceEnabled,
+    ],
+  );
+
   const addResultListener = useCallback(
     async function load() {
+      console.log("Do we have something");
+
       if (!voiceEnabled || !isListeningRef.current) {
         return;
       }
@@ -288,6 +381,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
 
   useEffect(() => {
     addResultListener();
+    // addPartialResultListener();
 
     const errorEvent = vosk.onError((e) => {
       console.error(e);
@@ -300,7 +394,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
 
     return () => {
       resultEventRef.current?.remove();
-      // partialResultEvent.remove();
+      partialResultEventRef.current?.remove();
       // finalResultEvent.remove();
       errorEvent.remove();
       timeoutEvent.remove();
@@ -348,18 +442,21 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     function () {
       const sub = AppState.addEventListener("change", async (nextAppState) => {
         if (
-          nextAppState === "active" &&
-          !(await NativeModules.AudioFocusModule.isMicInUse())
+          voiceEnabled &&
+          isReady &&
+          AppState.currentState === "active" &&
+          !isRecognizing &&
+          !(await NativeModules.AudioFocusModule.isMicInUseByOtherApp())
         ) {
           console.log("It should not run 100 times 😯");
-
+          stop();
           recordGrammar(true);
         }
       });
 
       return () => sub.remove();
     },
-    [recordGrammar],
+    [isReady, isRecognizing, recordGrammar, stop, voiceEnabled],
   );
 
   return (

@@ -27,6 +27,7 @@ import com.facebook.react.jstasks.HeadlessJsTaskConfig;
 final public class RNBackgroundActionsTask extends HeadlessJsTaskService {
 
    public static final int FOREGROUND_SERVICE_TYPE_SPECIAL_USE = 1073741824;
+   public static final int FOREGROUND_SERVICE_TYPE_MICROPHONE = 128;
 
     public static final int SERVICE_NOTIFICATION_ID = 92901;
     private static final String CHANNEL_ID = "RN_BACKGROUND_ACTIONS_CHANNEL";
@@ -64,7 +65,7 @@ final public class RNBackgroundActionsTask extends HeadlessJsTaskService {
                 .setContentIntent(contentIntent)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_MIN)
-                .setColor(color)
+                .setColor(color);
 
         final Bundle progressBarBundle = bgOptions.getProgressBar();
         if (progressBarBundle != null) {
@@ -98,16 +99,16 @@ final public class RNBackgroundActionsTask extends HeadlessJsTaskService {
         final Notification notification = buildNotification(this, bgOptions);
         // 1073741824
         int type = 0;
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                type = ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE;
-          
-            }
+       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            type = ServiceInfo.     FOREGROUND_SERVICE_TYPE_MICROPHONE | ServiceInfo.       FOREGROUND_SERVICE_TYPE_SPECIAL_USE;
+        }
 
-  Log.d("YourTag", "Foreground service type: " + type);
-     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-     startForeground(SERVICE_NOTIFICATION_ID, notification, type);
-     } else {
-         startForeground(SERVICE_NOTIFICATION_ID, notification);
+        Log.d("YourTag", "Microphone service type: " + ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE);
+        Log.d("YourTag", "Foreground service type: " + type);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        startForeground(SERVICE_NOTIFICATION_ID, notification, type);
+        } else {
+            startForeground(SERVICE_NOTIFICATION_ID, notification);
         }
 
         return super.onStartCommand(intent, flags, startId);

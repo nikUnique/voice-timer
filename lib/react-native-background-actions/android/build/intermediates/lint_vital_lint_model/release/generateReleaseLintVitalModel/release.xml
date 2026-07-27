@@ -2,7 +2,7 @@
     name="release"
     package="com.asterinet.react.bgactions"
     minSdkVersion="24"
-    targetSdkVersion="34"
+    targetSdkVersion="35"
     mergedManifest="build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml"
     manifestMergeReport="build/outputs/logs/manifest-merger-release-report.txt"
     proguardFiles="build/intermediates/default_proguard_files/global/proguard-android.txt-8.6.0"
@@ -26,6 +26,6 @@
       applicationId="com.asterinet.react.bgactions"
       generatedSourceFolders="build/generated/ap_generated_sources/release/out:build/generated/source/buildConfig/release"
       generatedResourceFolders="build/generated/res/resValues/release"
-      desugaredMethodsFiles="/home/nik/.gradle/caches/8.10.2/transforms/19385f4a017446dc6eb5d5c24a0343b5/transformed/D8BackportedDesugaredMethods.txt">
+      desugaredMethodsFiles="/home/nik/.gradle/caches/8.10.2/transforms/115a5bc27a23e298d9e6a835457e7812/transformed/D8BackportedDesugaredMethods.txt">
   </artifact>
 </variant>

@@ -76,30 +76,32 @@ export default memo(function TimerInterfaceUI({
         }
 
         {
-          <View style={(!isPaused || !isActive) && styles.hiddenTimer}>
-            <IconButton
-              size={36}
-              icon='refresh-outline'
-              color={Colors.primaryTint90}
-              onPress={resetTimerRef.current}
-              style={styles.refreshButton}
-            />
-          </View>
+          <>
+            <View style={(!isPaused || !isActive) && styles.hiddenTimer}>
+              <IconButton
+                size={36}
+                icon='refresh-outline'
+                color={Colors.primaryTint90}
+                onPress={resetTimerRef.current}
+                style={styles.refreshButton}
+              />
+            </View>
+            {!isActive && timeLeftRef.current <= 0 && (
+              <View>
+                <IconButton
+                  size={36}
+                  icon='stop'
+                  color={Colors.primaryTint90}
+                  onPress={resetTimerRef.current}
+                  style={[
+                    styles.resetButton,
+                    (isPaused || isActive) && styles.resetHiddenButton,
+                  ]}
+                />
+              </View>
+            )}
+          </>
         }
-      </View>
-      <View>
-        {!isActive && timeLeftRef.current <= 0 && (
-          <IconButton
-            size={36}
-            icon='stop'
-            color={Colors.primaryTint90}
-            onPress={resetTimerRef.current}
-            style={[
-              styles.resetButton,
-              (isPaused || isActive) && styles.resetHiddenButton,
-            ]}
-          />
-        )}
       </View>
     </View>
   );
@@ -154,6 +156,12 @@ const styles = StyleSheet.create({
   resetHiddenButton: {
     pointerEvents: "none",
     backgroundColor: Colors.whiteAlpha10,
+  },
+
+  resetButton: {
+    borderRadius: "50%",
+    padding: 24,
+    backgroundColor: Colors.whiteAlpha20,
   },
 
   disabled: {

@@ -35,7 +35,8 @@
   android:usesCleartextTraffic="true"
   android:supportsRtl="true">
 
-    <service android:name=".RNBackgroundActionsTask" android:foregroundServiceType="microphone|specialUse" android:exported="false">    <meta-data
+    <service android:name=".RNBackgroundActionsTask" android:foregroundServiceType="microphone|specialUse" android:exported="false">  
+      <meta-data
         android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
         android:value="background_timer" /> 
     </service> 

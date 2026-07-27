@@ -56,11 +56,6 @@ function AppWithContext() {
         !getSharedObject().alertingTimerNames.length
       ) {
         cleanStop();
-        // updateSharedObject({ isTaskRunning: false });
-        // console.log("BackgroundService stops 🇵🛑");
-        // BackgroundService.stop();
-        // console.log("Focus released");
-        // NativeModules.AudioFocusModule.releaseAudioFocus();
       }
     };
   }, []);

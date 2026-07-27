@@ -235,6 +235,7 @@ function useSound() {
       soundRef,
       isMediaPausedRef,
       isListeningRef,
+      isMediaPausedManuallyRef,
       alertTimeoutRef,
       soundIsPlayingRef,
     ],

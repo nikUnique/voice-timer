@@ -1,6 +1,6 @@
 <lint-module
     format="1"
-    dir="/mnt/g/Programming/React Native/working directory/timer_with_commands/node_modules/react-native-background-actions/android"
+    dir="/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android"
     name=":react-native-background-actions"
     type="LIBRARY"
     maven="timer_with_commands:react-native-background-actions:unspecified"

@@ -50,7 +50,7 @@ export function useStartTimer({
       try {
         // if (Platform.constants.Release >= 12) {
         // }
-        emitter.emit("startForegroundService");
+        // emitter.emit("startForegroundService");
 
         // if (!AppState.currentState.includes("active")) {
         //   console.log(

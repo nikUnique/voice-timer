@@ -128,6 +128,10 @@
         "source": "com.asterinet.react.bgactions.react-native-background-actions-appcompat-1.6.1-0:/layout/abc_action_mode_bar.xml"
     },
     {
+        "merged": "com.asterinet.react.bgactions.react-native-background-actions-release-24:/layout/abc_screen_toolbar.xml",
+        "source": "com.asterinet.react.bgactions.react-native-background-actions-appcompat-1.6.1-0:/layout/abc_screen_toolbar.xml"
+    },
+    {
         "merged": "com.asterinet.react.bgactions.react-native-background-actions-release-24:/layout/abc_alert_dialog_button_bar_material.xml",
         "source": "com.asterinet.react.bgactions.react-native-background-actions-appcompat-1.6.1-0:/layout/abc_alert_dialog_button_bar_material.xml"
     },

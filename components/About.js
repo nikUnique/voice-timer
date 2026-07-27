@@ -88,7 +88,7 @@ export default function About() {
       <Paragraph>
         To use any voice command while media is playing, say &quot;{STOP_MEDIA}
         &quot; first. This pauses playback and activates voice control. You can
-        then say &quot;{PLAY_MEDIA}&quot; to RESUME playback.
+        then say &quot;{PLAY_MEDIA}&quot; to resume playback.
       </Paragraph>
 
       <Paragraph>
