@@ -68,7 +68,7 @@ function AppWithContext() {
     },
     [keepScreenDim],
   );
-
+  // comment
   // useEffect(function () {
   //   async function load() {
   //     const results = await PermissionsAndroid.requestMultiple([
