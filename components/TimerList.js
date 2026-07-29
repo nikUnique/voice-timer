@@ -30,6 +30,7 @@ import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import MicStatus from "./MicStatus";
 import TimerInterfaceButtons from "./TimerInterfaceButtons";
 import { VolumeManager } from "react-native-volume-manager";
+import Arrows from "../ui/Arrows";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -482,6 +483,10 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
             {sortedTimers?.length > 0 && (
               <TimerInterfaceButtons onDelete={handleDelete} />
             )}
+            <Arrows
+              currentIndex={currentIndex}
+              timers={timers}
+            />
           </View>
         )}
       </View>

@@ -1,7 +1,7 @@
 /* eslint-disable no-constant-condition */
 import notifee from "@notifee/react-native";
-import { useCallback, useEffect, useMemo } from "react";
-import { AppState, NativeModules } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { AppState, NativeModules, PermissionsAndroid } from "react-native";
 import Tts from "react-native-tts";
 
 import {
@@ -20,6 +20,7 @@ let delay = 10800;
 
 export function useTimer() {
   const navigation = useNavigation();
+  const [isMicroGranted, setIsMicroGranted] = useState(false);
   const { playSound, stopSound } = useSound();
   const { setTimers, setEditableTimers } = useRecognizerData();
   const { isVoiceFeedbackEnabled } = useSettingsData();
@@ -42,6 +43,17 @@ export function useTimer() {
 
   useSettings();
 
+  useEffect(
+    function () {
+      async function load() {
+        const microGranted = await PermissionsAndroid.PERMISSIONS.RECORD_AUDIO;
+        setIsMicroGranted(microGranted);
+      }
+      load();
+    },
+    [isMicroGranted],
+  );
+
   const options = useMemo(
     () => ({
       taskName: "Timer",
@@ -53,6 +65,9 @@ export function useTimer() {
       },
       color: "#edf2ff",
       linkingURI: "timer_with_commands://timer", // Optional deep linking URI
+      foregroundServiceType: /* isMicroGranted
+        ?  */ ["specialUse", "microphone"],
+      /*  : ["specialUse"] */
     }),
     [],
   );

@@ -44,31 +44,36 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
     private var callback: AudioManager.AudioRecordingCallback? = null
 
 
-    @ReactMethod
-    fun requestAudioFocus(callback: Callback) {
-        
-        val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
-                .setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                        .build()
-                )
-                .build()
-            audioManager?.requestAudioFocus(focusRequest!!)
-        } else {
-            @Suppress("DEPRECATION")
-            audioManager?.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
-        }
+  @ReactMethod
+fun requestAudioFocus(callback: Callback) {
 
-        val granted = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-        val delay = if (granted && isWiredHeadsetConnected()) 500L else 0L
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            callback(granted)
-        }, delay)
+    val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .build()
+            )
+            .setOnAudioFocusChangeListener { focusChange ->
+                Log.d("AudioFocusModule", "Focus changed: $focusChange")
+            }
+            .build()
+        audioManager?.requestAudioFocus(focusRequest!!)
+    } else {
+        @Suppress("DEPRECATION")
+        audioManager?.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
     }
+
+    val granted = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+    Log.d("AudioFocusModule", "requestAudioFocus result: $result, granted: $granted")
+
+    val delay = if (granted && isWiredHeadsetConnected()) 500L else 0L
+
+    Handler(Looper.getMainLooper()).postDelayed({
+        callback(granted)
+    }, delay)
+}
     @ReactMethod
     fun isWiredHeadsetConnected(): Boolean {
         val devices = audioManager?.getDevices(AudioManager.GET_DEVICES_OUTPUTS)

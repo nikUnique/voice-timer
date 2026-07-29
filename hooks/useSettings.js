@@ -5,6 +5,7 @@ import {
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
 import { getItemFromStorage } from "../utils/helpers";
+import { emitter } from "../utils/EventEmitter";
 
 export function useSettings() {
   const {
@@ -25,6 +26,8 @@ export function useSettings() {
   const requestMicrophone = useCallback(
     async function () {
       try {
+        console.log("Works everywhere");
+
         let localMicroGranted;
 
         localMicroGranted = await PermissionsAndroid.check(
@@ -36,6 +39,9 @@ export function useSettings() {
             PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
           );
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            emitter.emit("startForegroundService");
+            console.log("It starts the service");
+
             setVoiceEnabled(true);
           } else {
             setVoiceEnabled(false);

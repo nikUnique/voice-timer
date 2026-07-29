@@ -32,7 +32,7 @@
     "number-to-words": "^1.2.4",
     "react": "18.3.1",
     "react-native": "0.76.3",
-    "react-native-background-actions": "file:./lib/react-native-background-actions-4.0.1.tgz",
+    "react-native-background-actions": "4.1.0",
     "react-native-dialog": "^9.3.0",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.24.0",

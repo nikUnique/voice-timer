@@ -3,7 +3,13 @@ import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import BackgroundService from "react-native-background-actions";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AppState, NativeModules, StyleSheet, View } from "react-native";
+import {
+  AppState,
+  NativeModules,
+  PermissionsAndroid,
+  StyleSheet,
+  View,
+} from "react-native";
 
 import {
   useRecognizerData,
@@ -25,6 +31,7 @@ import TimerListTest from "./TimerListTest";
 export default function Timers({ navigation }) {
   const [isAwake, setIsAwake] = useState(false);
   const [isTaskStopped, setIsTaskStopped] = useState(false);
+  const [isMicroGranted, setIsMicroGranted] = useState(false);
 
   const activeTimeRef = useRef(null);
   const { dimScreenRef, keepScreenDim } = useSettingsData();
@@ -266,19 +273,36 @@ export default function Timers({ navigation }) {
   );
 
   useEffect(function () {
-    if (AppState.currentState === "active") {
-      updateSharedObject({ isTaskRunning: true });
-      BackgroundService.start(backgroundTask, options);
-    } else {
-      const sub = AppState.addEventListener("change", (state) => {
-        if (state === "active") {
-          updateSharedObject({ isTaskRunning: true });
-          BackgroundService.start(backgroundTask, options);
-          sub.remove();
-        }
-      });
-      return () => sub.remove();
+    async function load() {
+      const localMicroGranted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+      );
+      // if (!localMicroGranted) {
+      //   console.log(
+      //     "Cannot start the foregroundService without granting the micro first",
+      //   );
+      //   return;
+      // }
+
+      const updatedOptions = localMicroGranted
+        ? options
+        : { ...options, foregroundServiceType: ["specialUse"] };
+
+      if (AppState.currentState === "active") {
+        updateSharedObject({ isTaskRunning: true });
+        BackgroundService.start(backgroundTask, updatedOptions);
+      } else {
+        const sub = AppState.addEventListener("change", (state) => {
+          if (state === "active") {
+            updateSharedObject({ isTaskRunning: true });
+            BackgroundService.start(backgroundTask, updatedOptions);
+            sub.remove();
+          }
+        });
+        return () => sub.remove();
+      }
     }
+    load();
   }, []);
 
   useEffect(
@@ -329,6 +353,8 @@ export default function Timers({ navigation }) {
 
         emitter.all.delete("startForegroundService");
         emitter.on("startForegroundService", async () => {
+          console.log("foreground service is restarted with microphone");
+
           updateSharedObject({ isTaskRunning: true });
           await BackgroundService.start(backgroundTask, options);
         });

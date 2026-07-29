@@ -1,4 +1,5 @@
-  <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -35,11 +36,22 @@
   android:usesCleartextTraffic="true"
   android:supportsRtl="true">
 
-    <service android:name=".RNBackgroundActionsTask" android:foregroundServiceType="microphone|specialUse" android:exported="false">  
+    <!-- <service android:name=".RNBackgroundActionsTask" android:foregroundServiceType="microphone|specialUse" android:exported="false">  
       <meta-data
         android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
         android:value="background_timer" /> 
-    </service> 
+    </service>  -->
+
+    <service
+    android:name="com.asterinet.react.bgactions.RNBackgroundActionsTask"
+    android:foregroundServiceType="specialUse|microphone"
+    tools:node="merge"
+    tools:replace="android:foregroundServiceType">
+    <property
+        android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+        android:value="voice-timer-background-task"
+        tools:node="merge" />
+</service>
    
     
     <service
