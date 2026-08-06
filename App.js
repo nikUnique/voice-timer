@@ -68,17 +68,6 @@ function AppWithContext() {
     },
     [keepScreenDim],
   );
-  // useEffect(function () {
-  //   async function load() {
-  //     const results = await PermissionsAndroid.requestMultiple([
-  //       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-  //       PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
-  //       PermissionsAndroid.PERMISSIONS.ANSWER_PHONE_CALLS,
-  //     ]);
-  //   }
-  //   load();
-  // }, []);
-
   useEffect(() => {
     return () => {
       Tts.stop();

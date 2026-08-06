@@ -17,6 +17,7 @@ import { Colors } from "../constants/colors";
 import { useSettingsData } from "../context/VoiceRecognizerContext";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import useSettingsStyles from "../hooks/useSettingsStyles";
+import BrokenMic from "./BrokenMic";
 
 export default memo(function AppBehavior() {
   const { settingPart, setting, heading, settingLabel, switchBox, slider } =
@@ -244,6 +245,7 @@ export default memo(function AppBehavior() {
           }}
         />
       </View>
+      <BrokenMic />
     </View>
   );
 });

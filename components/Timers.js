@@ -26,7 +26,10 @@ import { getItemFromStorage, removeItemFromStorage } from "../utils/helpers";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import TimerList from "./TimerList";
 import VoiceCommandsControl from "./VoiceCommandsControl";
-import TimerListTest from "./TimerListTest";
+import useShake from "../hooks/useShake";
+import { useSpeak } from "../hooks/useSpeak";
+import { useSound } from "../hooks/useSound";
+import { useClapDetector } from "../hooks/useClapperDetector";
 
 export default function Timers({ navigation }) {
   const [isAwake, setIsAwake] = useState(false);
@@ -48,7 +51,9 @@ export default function Timers({ navigation }) {
     alertingTimerNames,
   } = useRecognizerData();
 
-  const { keepScreenOnCommand, keepScreenOnMinutes } = useSettingsData();
+  const { keepScreenOnCommand, keepScreenOnMinutes, successSound } =
+    useSettingsData();
+  const { playSoundGeneral } = useSound();
 
   const { soundRef, soundIsPlayingRef } = useSoundData();
 
@@ -58,6 +63,8 @@ export default function Timers({ navigation }) {
     workingTimersRef,
     timers,
     isMediaPlayingRef,
+    isMediaPausedRef,
+    isMediaPausedManuallyRef,
   } = useRefsData();
 
   const { DEFAULT_PRESETS } = useDefaultTimers();
@@ -71,24 +78,71 @@ export default function Timers({ navigation }) {
   const { playSoundWrapper, stopSoundWrapper, options, backgroundTask } =
     useTimer();
 
+  const { speak } = useSpeak();
+
+  // const { start: startClapDetector, stop: stopClapDetector } = useClapDetector(
+  //   async () => {
+  //     const isMediaPlaying =
+  //       await NativeModules.AudioFocusModule.isMediaPlaying();
+  //     // speak("The phone shakes");
+  //     await NativeModules.NativeUtilsModule.pressHeadsetButton();
+  //     if (isMediaPlaying) {
+  //       isMediaPausedRef.current = true;
+  //       isMediaPausedManuallyRef.current = true;
+  //       playSoundGeneral({
+  //         fileName: successSound,
+  //         shouldStop: false,
+  //       });
+  //       await speak("Media paused");
+  //     } else {
+  //       isMediaPausedRef.current = false;
+  //       isMediaPausedManuallyRef.current = false;
+  //       playSoundGeneral({
+  //         fileName: successSound,
+  //         shouldStop: false,
+  //       });
+  //       await speak("Media resumed");
+  //     }
+  //   },
+  // );
+
+  // useEffect(() => {
+  //   startClapDetector();
+  //   return () => stopClapDetector();
+  // }, []);
+
   const forceKeepAwake = useCallback(async function (tag) {
     await deactivateKeepAwake(tag);
     await activateKeepAwakeAsync(tag);
   }, []);
 
-  // useEffect(
-  //   function () {
-  //     const sub = AppState.addEventListener("change", (nextAppState) => {
-  //       if (nextAppState !== "active") {
-  //         clearTimeout(activeTimeRef.current);
-  //         clearTimeout(activeTimeRef.current);
-  //         clearTimeout(dimScreenRef.current);
-  //       }
-  //     });
-  //     return () => sub?.remove();
+  // useShake({
+  //   enabled: true,
+  //   sensitivity: 0.6,
+  //   onShake: async () => {
+  //     const isMediaPlaying =
+  //       await NativeModules.AudioFocusModule.isMediaPlaying();
+  //     // speak("The phone shakes");
+  //     await NativeModules.NativeUtilsModule.pressHeadsetButton();
+  //     if (isMediaPlaying) {
+  //       isMediaPausedRef.current = true;
+  //       isMediaPausedManuallyRef.current = true;
+  //       playSoundGeneral({
+  //         fileName: successSound,
+  //         shouldStop: false,
+  //       });
+  //       await speak("Media paused");
+  //     } else {
+  //       isMediaPausedRef.current = false;
+  //       isMediaPausedManuallyRef.current = false;
+  //       playSoundGeneral({
+  //         fileName: successSound,
+  //         shouldStop: false,
+  //       });
+  //       await speak("Media resumed");
+  //     }
   //   },
-  //   [dimScreenRef],
-  // );
+  // });
 
   useEffect(
     function () {
@@ -277,12 +331,6 @@ export default function Timers({ navigation }) {
       const localMicroGranted = await PermissionsAndroid.check(
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
       );
-      // if (!localMicroGranted) {
-      //   console.log(
-      //     "Cannot start the foregroundService without granting the micro first",
-      //   );
-      //   return;
-      // }
 
       const updatedOptions = localMicroGranted
         ? options

@@ -1,6 +1,6 @@
 import * as SplashScreen from "expo-splash-screen";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AppState,
   FlatList,
@@ -16,21 +16,16 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { useSound } from "../hooks/useSound";
 import { emitter, resetTimerEmitter } from "../utils/EventEmitter";
-import {
-  getItemFromStorage,
-  getTimePhrase,
-  normalize,
-  sleep,
-} from "../utils/helpers";
+import { getItemFromStorage, getTimePhrase, normalize } from "../utils/helpers";
 
+import { VolumeManager } from "react-native-volume-manager";
 import { Colors } from "../constants/colors";
 import { useSpeak } from "../hooks/useSpeak";
 import { useTimerList } from "../hooks/useTimerList";
+import Arrows from "../ui/Arrows";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import MicStatus from "./MicStatus";
 import TimerInterfaceButtons from "./TimerInterfaceButtons";
-import { VolumeManager } from "react-native-volume-manager";
-import Arrows from "../ui/Arrows";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -82,7 +77,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     ANSWER_CALL,
   } = commandsRef?.current ? commandsRef.current : {};
 
-  const { successSound, discoSound } = useSettingsData();
+  const { successSound, discoSound, isHeadsetBroken } = useSettingsData();
   const { playSoundGeneral, playSpecial } = useSound();
   const {
     handleDelete,
@@ -105,6 +100,45 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
   });
 
   const sortedTimers = useMemo(() => timers.slice().reverse(), [timers]);
+
+  const pauseMedia = useCallback(
+    async function () {
+      isMediaPausedRef.current = true;
+      isMediaPausedManuallyRef.current = true;
+      playSoundGeneral({
+        fileName: successSound,
+        shouldStop: false,
+      });
+      await speak("Media paused");
+    },
+    [
+      isMediaPausedManuallyRef,
+      isMediaPausedRef,
+      playSoundGeneral,
+      speak,
+      successSound,
+    ],
+  );
+
+  const resumeMedia = useCallback(
+    async function () {
+      await speak("Media resumed");
+      await NativeModules.NativeUtilsModule.pressHeadsetButton();
+      playSoundGeneral({
+        fileName: successSound,
+        shouldStop: false,
+      });
+      isMediaPausedRef.current = false;
+      isMediaPausedManuallyRef.current = false;
+    },
+    [
+      isMediaPausedManuallyRef,
+      isMediaPausedRef,
+      playSoundGeneral,
+      speak,
+      successSound,
+    ],
+  );
 
   useEffect(
     function () {
@@ -135,36 +169,19 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           await NativeModules.AudioFocusModule.isMediaPlaying();
         if (isMediaPlayingRef.current) {
           if (recognizedCommandRef.current.includes(STOP_MEDIA)) {
-            // playSoundGeneral({
-            //   fileName: successSound,
-            //   shouldStop: false,
-            // });
-
-            // isMediaPausedRef.current = true;
-            // isMediaPausedManuallyRef.current = true;
-            // await speak("Media paused");
-            // NativeModules.AudioFocusModule.requestAudioFocus(
-            //   async (granted) => {
-            //     if (granted) {
-            //       isMediaPausedRef.current = true;
-            //       isMediaPausedManuallyRef.current = true;
-            //       playSoundGeneral({
-            //         fileName: successSound,
-            //         shouldStop: false,
-            //       });
-            //       await speak("Media paused");
-            //       // await NativeModules.NativeUtilsModule.pressHeadsetButton();
-            //     }
-            //   },
-            // );
-            await NativeModules.NativeUtilsModule.pressHeadsetButton();
-            isMediaPausedRef.current = true;
-            isMediaPausedManuallyRef.current = true;
-            playSoundGeneral({
-              fileName: successSound,
-              shouldStop: false,
-            });
-            await speak("Media paused");
+            if (!isHeadsetBroken) {
+              await NativeModules.NativeUtilsModule.pressHeadsetButton();
+              pauseMedia();
+            }
+            if (isHeadsetBroken) {
+              NativeModules.AudioFocusModule.requestAudioFocus(
+                async (granted) => {
+                  if (granted) {
+                    pauseMedia();
+                  }
+                },
+              );
+            }
           }
         }
         if (
@@ -187,26 +204,15 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
           PLAY_MEDIA &&
           !isMediaPlayingRef.current
         ) {
-          // NativeModules.AudioFocusModule.toggleMedia(async (shouldTake) => {
-          //   playSoundGeneral({
-          //     fileName: successSound,
-          //     shouldStop: false,
-          //   });
-          //   await speak("Media resumed");
-          //   isMediaPausedRef.current = false;
-          //   isMediaPausedManuallyRef.current = false;
-          //   if (isListeningRef.current) {
-          //     NativeModules.AudioFocusModule.releaseAudioFocus();
-          //   }
-          // });
-          await speak("Media resumed");
-          await NativeModules.NativeUtilsModule.pressHeadsetButton();
-          playSoundGeneral({
-            fileName: successSound,
-            shouldStop: false,
-          });
-          isMediaPausedRef.current = false;
-          isMediaPausedManuallyRef.current = false;
+          if (!isHeadsetBroken) {
+            await resumeMedia();
+            await NativeModules.NativeUtilsModule.pressHeadsetButton();
+          }
+          if (isHeadsetBroken) {
+            NativeModules.AudioFocusModule.toggleMedia(async (shouldTake) => {
+              await resumeMedia();
+            });
+          }
         }
 
         if (
@@ -361,6 +367,9 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       secretIdentifierRef,
       speak,
       successSound,
+      isHeadsetBroken,
+      pauseMedia,
+      resumeMedia,
     ],
   );
 
@@ -458,7 +467,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
               onScroll={(e) => {
                 const totalHeight = e.nativeEvent.layoutMeasurement.height;
                 const yPosition = e.nativeEvent.contentOffset.y;
-
                 const newIndex = Math.round(yPosition / totalHeight);
 
                 emitter.emit(`timerSelected-${newIndex}`);
@@ -467,14 +475,6 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
                 }
               }}
               ref={flatListRef}
-              // getItemLayout={(data, index) => ({
-              //   length: containerHeight,
-              //   offset: containerHeight * index,
-              //   index,
-              // })}
-              // overrideItemLayout={(layout) => {
-              //   layout.size = containerHeight;
-              // }}
               viewabilityConfig={{
                 itemVisiblePercentThreshold: 30,
               }}

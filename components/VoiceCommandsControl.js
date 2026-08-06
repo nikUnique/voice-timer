@@ -1,12 +1,12 @@
 import Vosk from "react-native-vosk";
 
 import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { PermissionsAndroid, Platform } from "react-native";
 import {
   Animated,
   AppState,
   NativeEventEmitter,
   NativeModules,
-  PermissionsAndroid,
 } from "react-native";
 
 import { Colors } from "../constants/colors";
@@ -132,6 +132,24 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     };
   }, []);
 
+  const ensureBluetoothPermission = useCallback(async () => {
+    if (Platform.OS !== "android" || Platform.Version < 31) {
+      return true; // not needed pre-Android 12
+    }
+
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+      {
+        title: "Bluetooth Permission",
+        message: "Allow access to use your Bluetooth headset microphone",
+        buttonPositive: "Allow",
+        buttonNegative: "Deny",
+      },
+    );
+
+    return granted === PermissionsAndroid.RESULTS.GRANTED;
+  }, []);
+
   // Listening logic
   const recordGrammar = useCallback(
     async (nextAppState) => {
@@ -163,13 +181,25 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
           return;
         }
 
+        const hasBtPermission = await ensureBluetoothPermission();
+
+        if (hasBtPermission) {
+          try {
+            await NativeModules.AudioFocusModule.startBluetoothMic();
+          } catch (error) {
+            console.error(error);
+          }
+        }
+
         vosk
           .start({ grammar: dynamicGrammar })
-          .then(() => {
+          .then(async () => {
             console.log("Starting recognition with grammar...");
             setIsRecognizing(true);
             setIsListening(true);
             isListeningRef.current = true;
+
+            // if permission denied, just skip BT mic entirely - proceed on phone mic
           })
           .catch((e) => {
             console.error(`An error occurred while initializing vosk`, e);
@@ -187,6 +217,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       dynamicGrammar,
       setIsListening,
       isListeningRef,
+      ensureBluetoothPermission,
     ],
   );
 
@@ -197,6 +228,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     setIsRecognizing(false);
     isListeningRef.current = false;
     setIsListening(false);
+    NativeModules.AudioFocusModule.stopBluetoothMic();
   }, [isListeningRef, setIsListening, vosk]);
 
   useEffect(

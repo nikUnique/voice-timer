@@ -19,6 +19,7 @@ export function useSettings() {
     setKeepScreenDim,
     voiceFeedbackSpeedRef,
     permitAnswerCallsRef,
+    setIsHeadsetBroken,
   } = useSettingsData();
 
   const { timers } = useRefsData();
@@ -78,6 +79,7 @@ export function useSettings() {
           setKeepScreenDim(retrievedSettings.keepScreenDim);
           voiceFeedbackSpeedRef.current = +retrievedSettings.voiceFeedbackSpeed;
           permitAnswerCallsRef.current = retrievedSettings.permitAnswerCalls;
+          setIsHeadsetBroken(retrievedSettings.isHeadsetBroken);
         } catch (error) {
           console.error(
             `An error occurred in the load settings function`,
@@ -93,6 +95,7 @@ export function useSettings() {
       requestMicrophone,
       setAlarmVolume,
       setAutoStopAlarmTimeout,
+      setIsHeadsetBroken,
       setIsVibrating,
       setIsVoiceFeedbackEnabled,
       setKeepScreenDim,
