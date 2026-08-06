@@ -3,12 +3,12 @@ import notifee, {
   AndroidImportance,
   TriggerType,
 } from "@notifee/react-native";
+
 import { useCallback } from "react";
 import { AppState, NativeModules } from "react-native";
 
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter } from "../utils/EventEmitter";
-import { cleanStop } from "../utils/helpers.js";
 import { getSharedObject } from "../utils/sharedVariables.js";
 
 let stopServiceTimeout;
@@ -19,7 +19,6 @@ export function useNotification() {
     workingTimersRef,
     leastTimeTimerRef,
     alertingTimerNamesRef,
-    currentActivityRef,
   } = useRefsData();
 
   const onCreateTriggerNotification = useCallback(
@@ -67,7 +66,6 @@ export function useNotification() {
               autoCancel: false,
 
               showChronometer: true,
-              // asForegroundService: true,
               ongoing: true,
               lightUpScreen: true,
               smallIcon: "ic_launcher_notification",
@@ -77,12 +75,6 @@ export function useNotification() {
                 id: "default",
                 launchActivity: "default",
               },
-
-              // pressAction: {
-              //   // id: "default",
-              //   // launchActivity: "default",
-              //   // launchActivity: `com.moonnic.timer_with_commands.MainActivity`,
-              // },
 
               actions: [
                 {
@@ -128,7 +120,6 @@ export function useNotification() {
             alertingTimerNamesRef.current.length ===
             0
         ) {
-          // notifee.stopForegroundService();
           return;
         }
 
@@ -190,20 +181,7 @@ export function useNotification() {
         if (isOneTimerPaused && !recursive) {
           stopServiceTimeout = setTimeout(function () {
             if (!workingTimersRef.current.length) return;
-            // notifee.stopForegroundService();
             if (AppState.currentState === "active") return;
-
-            if (currentActivityRef.current !== "MainActivity") {
-              cleanStop();
-              // updateSharedObject({ isTaskRunning: false });
-              // console.log(
-              //   "BackgroundService stops 🇵from reset notification button 🔔",
-              // );
-              // BackgroundService.stop();
-              // console.log("Focus released 🇵from reset notification button 🔔");
-              // NativeModules.AudioFocusModule.releaseAudioFocus();
-            }
-            // onUpdateNotification(title, body, timerName, true);
           }, 5000);
         }
 
@@ -217,13 +195,6 @@ export function useNotification() {
             channelId: "channel-with-silent-mode",
             category: AndroidCategory.ALARM,
             importance: AndroidImportance.DEFAULT,
-
-            // ...(!isOneTimerPaused && { asForegroundService: true }),
-
-            // ...((isOneTimerPaused || AppState.currentState === "active") && {
-            //   asForegroundService: false,
-            // }),
-
             autoCancel: false,
             smallIcon: title?.toLowerCase()?.includes("pause")
               ? "ic_launcher_notification_pause"
@@ -249,7 +220,6 @@ export function useNotification() {
     },
     [
       alertingTimerNamesRef,
-      currentActivityRef,
       leastTimeTimerRef,
       notificationIdRef,
       workingTimersRef,

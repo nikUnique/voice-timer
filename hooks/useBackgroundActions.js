@@ -5,6 +5,7 @@ import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter, resetTimerEmitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import { STOP } from "../utils/en_commands";
+import { cleanStop } from "../utils/helpers";
 
 export function useBackgroundActions() {
   const { workingTimersRef, leastTimeTimerRef, currentActivityRef } =
@@ -22,18 +23,15 @@ export function useBackgroundActions() {
         resetTimerEmitter.emit(`${STOP} ${timerName}`);
       });
     },
-    [STOP, workingTimersRef],
+    [workingTimersRef],
   );
 
-  const resetAllFinishedTimers = useCallback(
-    function resetAllTimers() {
-      updateSharedObject({ resetAllFinishedFromApp: true });
-      getSharedObject()?.alertingTimerNames?.map((timerName) => {
-        resetTimerEmitter.emit(`${STOP} ${timerName}`);
-      });
-    },
-    [STOP],
-  );
+  const resetAllFinishedTimers = useCallback(function resetAllTimers() {
+    updateSharedObject({ resetAllFinishedFromApp: true });
+    getSharedObject()?.alertingTimerNames?.map((timerName) => {
+      resetTimerEmitter.emit(`${STOP} ${timerName}`);
+    });
+  }, []);
 
   const pauseTimer = useCallback(
     async function pauseTimer() {
@@ -88,11 +86,10 @@ export function useBackgroundActions() {
 
             if (type === EventType.PRESS) {
               updateSharedObject({ notificationTap: true });
-              // Linking.openURL("default");
             }
 
             if (type === EventType.DISMISSED) {
-              // await notifee.stopForegroundService();
+              cleanStop();
             }
 
             if (type === EventType.ACTION_PRESS) {
@@ -137,10 +134,6 @@ export function useBackgroundActions() {
       }
 
       load();
-      return () => {
-        // unsubcsribeForeground();
-        // unsubcsribeBackground();
-      };
     },
     [
       /* currentActivityRef, pauseTimer, resetAllTimers, resetTimer, resumeTimer */

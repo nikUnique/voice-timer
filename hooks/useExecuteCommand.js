@@ -33,6 +33,7 @@ export function useExecuteCommand({
     commandsRef,
     isMediaPlayingRef,
     isTimerSleepingRef,
+    isListeningRef,
   } = useRefsData();
 
   const { successSound } = useSettingsData();
@@ -219,7 +220,7 @@ export function useExecuteCommand({
           commandExecuted = true;
           activateTimerRef.current(index);
 
-          speak(`${name} stopped`);
+          await speak(`${name} stopped`);
         }
 
         const nameBasedOnSecret = secretIdentifierRef.current
@@ -259,6 +260,7 @@ export function useExecuteCommand({
       isMediaPlayingRef,
       STOP_MEDIA,
       isTimerSleepingRef,
+      STOP,
       STATUS,
       name,
       secretIdentifierRef,
@@ -271,7 +273,6 @@ export function useExecuteCommand({
       PAUSE,
       RESUME,
       isPaused,
-      STOP,
       lastCommandRef,
       speak,
       formatSingleTimerSpeech,
@@ -282,6 +283,7 @@ export function useExecuteCommand({
       index,
       resumeTimerRef,
       resetTimerRef,
+      isListeningRef,
       playSoundGeneral,
       successSound,
     ],

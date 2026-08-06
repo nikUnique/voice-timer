@@ -1,18 +1,16 @@
 import notifee from "@notifee/react-native";
+
 import { useCallback, useEffect } from "react";
-import { AppState, BackHandler, NativeModules } from "react-native";
-import BackgroundService from "react-native-background-actions";
+import { AppState, NativeModules } from "react-native";
 
 import Time from "../components/Time";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter, resetTimerEmitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
-
 import {
   cleanStop,
   removeItemFromStorage,
   setItemInStorage,
-  sleep,
 } from "../utils/helpers";
 import { useNotification } from "./useNotification";
 import { useUpdateControlButtons } from "./useUpdateControlButtons";
@@ -21,8 +19,6 @@ import { useUpdateTimers } from "./useUpdateTimers";
 export function useResetTimer({
   name,
   time,
-  index,
-  activateTimerRef,
   setIsActive,
   setIsReset,
   timeoutRef,
@@ -113,7 +109,6 @@ export function useResetTimer({
 
         if (alertingTimerNamesRef.current.length === 0) {
           await notifee.cancelDisplayedNotification("ALARM_NOTIFICATION");
-          // await notifee.stopForegroundService();
         }
 
         getSharedObject().name === name && updateControlButtons(false, false);
@@ -168,13 +163,9 @@ export function useResetTimer({
         );
 
         setItemInStorage("timerHistory", getSharedObject().timers);
-
-        // if (getSharedObject().runningTimerNames.length === 0) {
-        //   BackgroundService.stop();
-        // }
+        setItemInStorage("alertingTimerNames", alertingTimerNamesRef.current);
 
         setAlertingTimerNames(alertingTimerNamesRef.current);
-        setItemInStorage("alertingTimerNames", alertingTimerNamesRef.current);
 
         workingTimersRef.current = workingTimersRef.current?.filter(
           (timerName) => timerName !== name,
@@ -213,38 +204,26 @@ export function useResetTimer({
         updateTimerLabel();
 
         if (workingTimersRef.current.length === 0) {
-          // await notifee.stopForegroundService();
           timersTimesRef.current = [];
           leastTimeTimerRef.current = null;
           removeItemFromStorage("workingTimers");
           removeItemFromStorage("alertingTimerNames");
         }
 
-        // if (
-        //   workingTimersRef.current.length -
-        //     alertingTimerNamesRef.current.length ===
-        //   0
-        // ) {
-        //   await BackgroundService.stop();
-        //   updateSharedObject({ isTaskRunning: false });
-        //   // await notifee.stopForegroundService();
-        // }
+        const activity =
+          await NativeModules.NativeUtilsModule.getCurrentActivityName();
 
         if (
           !getSharedObject().runningTimerNames.length &&
           !getSharedObject().alertingTimerNames.length &&
-          currentActivityRef.current !== "MainActivity"
+          activity !== "MainActivity"
         ) {
           cleanStop();
-          // updateSharedObject({ isTaskRunning: false });
-          // console.log("BackgroundService stops from reset 🇵🏵️");
-          // BackgroundService.stop();
-          // console.log("Focus released from reset 🇵🏵️");
-          // NativeModules.AudioFocusModule.releaseAudioFocus();
         }
 
         await removeItemFromStorage(`timerStarted-${name}`);
         await removeItemFromStorage(`timerState-${name}`);
+
         updateTimers({
           name,
           timeStarted: null,
@@ -275,18 +254,15 @@ export function useResetTimer({
           await NativeModules.NativeUtilsModule.isPhoneLocked();
 
         if (alertingTimerNamesRef.current.length === 0) {
-          // await notifee.stopForegroundService();
           await notifee.cancelDisplayedNotification("ALARM_NOTIFICATION");
         }
 
         if (workingTimersRef.current?.length === 0) {
           notifee.cancelAllNotifications();
           notifee.cancelDisplayedNotifications();
-          // updateSharedObject({ isTaskRunning: false });
-          // BackgroundService.stop();
         }
 
-        // This is important becuase if the app is closed then the currentActivityRef.current will be null
+        // This is important because if the app is closed then the currentActivityRef.current will be null
         if (
           isPhoneLocked &&
           currentActivityRef.current === "MainActivity" &&
@@ -300,8 +276,6 @@ export function useResetTimer({
         wasActiveBeforeLockRef.current = false;
 
         if (isPhoneLocked && !getSharedObject().alertingTimerNames.length) {
-          // BackHandler.exitApp();
-          // await sleep(1);
           NativeModules.NativeUtilsModule.pressBack();
         }
       } catch (error) {

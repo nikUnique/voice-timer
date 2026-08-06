@@ -130,6 +130,9 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
       });
       isMediaPausedRef.current = false;
       isMediaPausedManuallyRef.current = false;
+      // if (isListeningRef.current) {
+      //   NativeModules.AudioFocusModule.releaseAudioFocus();
+      // }
     },
     [
       isMediaPausedManuallyRef,
