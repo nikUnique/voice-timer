@@ -7,8 +7,8 @@ import {
   Text,
   View,
 } from "react-native";
-
 import { memo, useState } from "react";
+
 import { Colors } from "../constants/colors";
 import { useSettingsData } from "../context/VoiceRecognizerContext";
 import { useResponsive } from "../hooks/useResponsive";
@@ -25,9 +25,18 @@ function getSpeedLabel(value) {
 export default memo(function VoiceControl() {
   const [showVoiceFeedbackSpeed, setShowVoiceFeedbackSpeed] = useState(false);
 
-  const { settingPart, setting, heading, settingLabel, switchBox, settingBtn } =
-    useSettingsStyles();
+  const {
+    settingSection,
+    setting,
+    heading,
+    settingLabel,
+    switchBox,
+    settingBtn,
+    dividerLine,
+  } = useSettingsStyles();
+
   const { updateSettingsInStorage, openSettings } = useSettingsFunctions();
+
   const {
     voiceEnabled,
     setVoiceEnabled,
@@ -61,7 +70,7 @@ export default memo(function VoiceControl() {
 
   return (
     <>
-      <View style={settingPart}>
+      <View style={settingSection}>
         <Text style={heading}>Voice Control</Text>
 
         <View style={[switchBox, setting]}>
@@ -110,6 +119,8 @@ export default memo(function VoiceControl() {
           />
         </View>
 
+        <View style={dividerLine}></View>
+
         <View style={[switchBox, setting]}>
           <Text style={settingLabel}>Enable Voice Feedback</Text>
 
@@ -125,6 +136,7 @@ export default memo(function VoiceControl() {
             }}
           />
         </View>
+        <View style={dividerLine}></View>
         {isVoiceFeedbackEnabled && (
           <View style={setting}>
             <Pressable
@@ -145,7 +157,7 @@ export default memo(function VoiceControl() {
               }
             </Pressable>
 
-            <View style={setting}>
+            <View>
               {showVoiceFeedbackSpeed &&
                 VOICE_FEEDBACK_SPEEDS.map((option, i, arr) => (
                   <Pressable

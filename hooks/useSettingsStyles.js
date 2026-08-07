@@ -4,18 +4,28 @@ import { useResponsive } from "./useResponsive";
 
 export default function useSettingsStyles() {
   const { t } = useResponsive();
-  const settingPart = useMemo(
+  const settingSection = useMemo(
     () => ({
       borderBottomWidth: 1,
       borderBottomColor: Colors.primaryTint70,
-      borderStyle: "dotted",
-      padding: 8,
+      // borderStyle: "",
+      paddingHorizontal: 8,
     }),
     [],
   );
 
   const setting = useMemo(
     () => ({
+      marginBottom: 16,
+    }),
+    [],
+  );
+
+  const dividerLine = useMemo(
+    () => ({
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.primaryTint70,
+      borderStyle: "dotted",
       marginBottom: 16,
     }),
     [],
@@ -37,14 +47,25 @@ export default function useSettingsStyles() {
       color: Colors.primaryTint90,
       fontSize: t.subheading,
       width: "90%",
+      // marginBottom: 12,
     }),
     [t.subheading],
+  );
+
+  const settingDescription = useMemo(
+    () => ({
+      color: Colors.primaryTint70,
+      fontSize: t.body,
+      width: "90%",
+      marginBottom: 8,
+    }),
+    [t.body],
   );
 
   const switchBox = useMemo(
     () => ({
       flexDirection: "row",
-      alignItems: "center",
+      alignItems: "flex-start",
       justifyContent: "space-between",
     }),
     [],
@@ -71,12 +92,14 @@ export default function useSettingsStyles() {
   );
 
   return {
-    settingPart,
+    settingSection,
     setting,
     heading,
     settingLabel,
+    settingDescription,
     settingBtn,
     switchBox,
     slider,
+    dividerLine,
   };
 }

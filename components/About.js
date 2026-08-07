@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { Colors } from "../constants/colors";
 import Section from "./Section";
-import { BulletPoint, Label, Paragraph, Subtitle } from "./TextUnits";
+import { BulletPoint, Label, Paragraph, Subtitle } from "../ui/TextUnits";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 
 export default function About() {

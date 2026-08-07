@@ -11,7 +11,7 @@ export function usePrepareEffects({
   name,
   pauseTimerRef,
   resumeTimerRef,
-  updatePersitentNotification,
+  updatePersistentNotification,
   timerIsActiveRef,
   timeLeftRef,
   handleReadyState,
@@ -23,10 +23,10 @@ export function usePrepareEffects({
   useEffect(
     function () {
       emitter.all.delete(`updateNotification-${name}`);
-      emitter.on(`updateNotification-${name}`, updatePersitentNotification);
+      emitter.on(`updateNotification-${name}`, updatePersistentNotification);
     },
 
-    [name, pauseTimerRef, resumeTimerRef, updatePersitentNotification]
+    [name, pauseTimerRef, resumeTimerRef, updatePersistentNotification],
   );
 
   const load = useCallback(
@@ -36,7 +36,7 @@ export function usePrepareEffects({
         updateSharedObject({ appStateBox: newAppState });
       }
     },
-    [loadTimerState]
+    [loadTimerState],
   );
 
   useEffect(
@@ -46,7 +46,7 @@ export function usePrepareEffects({
 
       return () => appStateListener.remove();
     },
-    [load, loadTimerState]
+    [load, loadTimerState],
   );
 
   useEffect(
@@ -62,12 +62,12 @@ export function usePrepareEffects({
 
             updateSharedObject({ appStateBox: newAppState });
           }
-        }
+        },
       );
       return () => {
         appStateListener.remove();
       };
     },
-    [name, saveStorage, timeLeftRef, timerIsActiveRef]
+    [name, saveStorage, timeLeftRef, timerIsActiveRef],
   );
 }

@@ -9,7 +9,7 @@ import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import useSettingsStyles from "../hooks/useSettingsStyles";
 
 export default memo(function Sound() {
-  const { settingPart, setting, heading, settingLabel, slider } =
+  const { settingSection, setting, heading, settingLabel, slider } =
     useSettingsStyles();
   const { alarmVolume, setAlarmVolume } = useSettingsData();
   const { updateSettingsInStorage } = useSettingsFunctions();
@@ -41,7 +41,7 @@ export default memo(function Sound() {
   }, [volume, setAlarmVolume]);
 
   return (
-    <View style={settingPart}>
+    <View style={settingSection}>
       <Text style={heading}>Sound</Text>
 
       <View style={setting}>

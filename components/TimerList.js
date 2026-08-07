@@ -489,6 +489,7 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
             <Arrows
               currentIndex={currentIndex}
               timers={timers}
+              flatListRef={flatListRef}
             />
           </View>
         )}

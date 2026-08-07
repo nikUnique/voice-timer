@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Animated } from "react-native";
-import { Text } from "../ui/AppText";
+
 import { Colors } from "../constants/colors";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { useSpeak } from "../hooks/useSpeak";
+import { Text } from "../ui/AppText";
 import { emitter } from "../utils/EventEmitter";
 import { formatTime } from "../utils/helpers";
-
-import { PixelRatio } from "react-native";
 
 export default function Time({
   time,
@@ -20,12 +19,9 @@ export default function Time({
 }) {
   const [timeLeft, setTimeLeft] = useState(time);
   const fadeAnimationRefCur = useRef(new Animated.Value(1)).current;
-  const fontScale = PixelRatio.getFontScale();
-
-  const { speak } = useSpeak();
   const { currentlyViewedItemRef } = useRefsData();
+  const { speak } = useSpeak();
 
-  // Time[`timeLeft${name}`] = timeLeft;
   Time[`setTimeLeft-${name}`] = setTimeLeft;
 
   const moreThenHour = timeLeft / 3600 >= 1;
@@ -61,13 +57,17 @@ export default function Time({
 
       if (!isPaused || !isActive) {
         clearInterval(animationInterval);
-
         fadeAnimationRefCur.stopAnimation(() =>
           fadeAnimationRefCur.setValue(1),
         );
       }
 
-      return () => clearInterval(animationInterval);
+      return () => {
+        clearInterval(animationInterval);
+        fadeAnimationRefCur.stopAnimation(() =>
+          fadeAnimationRefCur.setValue(1),
+        );
+      };
     },
     [fadeAnimationRefCur, fadeInAndOut, isPaused, isActive],
   );
@@ -103,17 +103,17 @@ export default function Time({
       }}
     >
       <Text
+        allowFontScaling={false}
         style={[
           {
-            fontSize: 62,
+            fontSize: 110,
             fontWeight: "bold",
             color: Colors.primaryTint90,
             textAlign: "center",
             width: "100%",
-            // slightly larger than fontSize
           },
           moreThenHour && {
-            fontSize: 36,
+            fontSize: 74,
           },
         ]}
       >

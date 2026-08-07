@@ -7,7 +7,6 @@ import { useResponsive } from "../hooks/useResponsive";
 import { Text } from "../ui/AppText";
 import IconButton from "../ui/IconButton";
 import Time from "./Time";
-import Arrows from "../ui/Arrows";
 
 export default memo(function TimerInterfaceUI({
   timerHeight,
@@ -124,7 +123,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
-    marginBottom: 48,
   },
 
   hiddenTimer: {

@@ -40,7 +40,7 @@ export function useUpdateNotification({
     [isPausedRef, timeoutRef],
   );
 
-  const updatePersitentNotification = useCallback(
+  const updatePersistentNotification = useCallback(
     async function ({ title, body, time }) {
       try {
         const isAppActive = AppState.currentState === "active";
@@ -189,7 +189,7 @@ export function useUpdateNotification({
 
   return {
     pauseListener,
-    updatePersitentNotification,
+    updatePersistentNotification,
     updateTimerLabel,
   };
 }

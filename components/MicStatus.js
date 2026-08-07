@@ -7,8 +7,8 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { useCallback, useEffect, useState } from "react";
 
-import { useCallback, useEffect, useRef, useState } from "react";
 import { Colors } from "../constants/colors";
 import {
   useRecognizerData,
@@ -25,7 +25,6 @@ export default function MicStatus() {
   const {
     voiceEnabled,
     setVoiceEnabled,
-
     microGranted,
     setMicroGranted,
   } = useSettingsData();
@@ -137,7 +136,7 @@ export default function MicStatus() {
             color={Colors.primary}
           />
           <Text style={isListeningText}>
-            {voiceEnabled && isListening /* && !isPhoneLocked */
+            {voiceEnabled && isListening
               ? "Listening..."
               : anotherAppUsesMic
                 ? "Another app is using the mic. Once that app stops using the mic, come back here and listening will resume automatically."

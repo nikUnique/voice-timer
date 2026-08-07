@@ -27,7 +27,7 @@ export function useStartTimer({
   name,
   index,
   updateLeastTimer,
-  updatePersitentNotification,
+  updatePersistentNotification,
   updateTimerLabel,
   pauseListener,
   updateTime,
@@ -136,7 +136,10 @@ export function useStartTimer({
           emitter.on(`pause-${name}`, pauseListener);
 
           emitter.all.delete(`updateNotification-${name}`);
-          emitter.on(`updateNotification-${name}`, updatePersitentNotification);
+          emitter.on(
+            `updateNotification-${name}`,
+            updatePersistentNotification,
+          );
 
           emitter.all.delete(`pauseBackground-${name}`);
           emitter.on(`pauseBackground-${name}`, pauseTimerRef.current);
@@ -188,7 +191,7 @@ export function useStartTimer({
       updateLeastTimer,
       updateTimerLabel,
       pauseListener,
-      updatePersitentNotification,
+      updatePersistentNotification,
       pauseTimerRef,
       resumeTimerRef,
       startNewTimerRef,

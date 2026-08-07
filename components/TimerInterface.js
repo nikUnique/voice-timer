@@ -57,7 +57,7 @@ function TimerInterface({
   const { loadTimerState } = useLoadTimerState(allState);
   const { saveStorage } = useSaveStorage(allState);
 
-  const { pauseListener, updatePersitentNotification, updateTimerLabel } =
+  const { pauseListener, updatePersistentNotification, updateTimerLabel } =
     useUpdateNotification({
       ...allState,
       updateLeastTimer,
@@ -74,7 +74,7 @@ function TimerInterface({
     saveStorage,
     loadTimerState,
     pauseListener,
-    updatePersitentNotification,
+    updatePersistentNotification,
     index,
     activateTimerRef,
   });
@@ -84,7 +84,7 @@ function TimerInterface({
     pauseListener,
     updateTime,
     updateTimerLabel,
-    updatePersitentNotification,
+    updatePersistentNotification,
   });
 
   useResetTimer({
@@ -95,7 +95,7 @@ function TimerInterface({
   const { startTimer } = useStartTimer({
     ...allState,
     updateLeastTimer,
-    updatePersitentNotification,
+    updatePersistentNotification,
     updateTimerLabel,
     pauseListener,
     updateTime,

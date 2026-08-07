@@ -27,7 +27,7 @@ export function usePauseResume({
   resumeTimerRef,
   pauseTimerRef,
   timeoutRef,
-  updatePersitentNotification,
+  updatePersistentNotification,
   pauseListener,
   isActive,
   isPaused,
@@ -259,7 +259,7 @@ export function usePauseResume({
         // }
 
         emitter.all.delete(`updateNotification-${name}`);
-        emitter.on(`updateNotification-${name}`, updatePersitentNotification);
+        emitter.on(`updateNotification-${name}`, updatePersistentNotification);
 
         if (
           /* !getSharedObject().appStateBox?.includes("active") && */
@@ -289,7 +289,7 @@ export function usePauseResume({
       updateLeastTimer,
       updateTimerLabel,
       timeoutRef,
-      updatePersitentNotification,
+      updatePersistentNotification,
       timeLeftRef,
       time,
       timeLabelRef,

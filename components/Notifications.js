@@ -7,7 +7,7 @@ import { openNotificationChannelSettings } from "../utils/helpers";
 import { memo } from "react";
 
 export default memo(function Notifications() {
-  const { settingPart, setting, heading, settingBtn } = useSettingsStyles();
+  const { settingSection, setting, heading, settingBtn } = useSettingsStyles();
 
   const { t } = useResponsive();
 
@@ -16,7 +16,7 @@ export default memo(function Notifications() {
     fontSize: t.subheading,
   };
   return (
-    <View style={[settingPart, styles.lastSettingPart, setting]}>
+    <View style={[settingSection, styles.lastSettingPart, setting]}>
       <Text style={heading}>Notification Settings</Text>
 
       <Pressable

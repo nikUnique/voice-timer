@@ -28,8 +28,15 @@ export default memo(function TimerBehavior() {
 
   const { t } = useResponsive();
 
-  const { settingPart, setting, heading, settingLabel, settingBtn, switchBox } =
-    useSettingsStyles();
+  const {
+    settingSection,
+    setting,
+    heading,
+    settingLabel,
+    settingBtn,
+    switchBox,
+    dividerLine,
+  } = useSettingsStyles();
   const { updateSettingsInStorage, autoStopTimeoutLabel } =
     useSettingsFunctions();
 
@@ -49,7 +56,7 @@ export default memo(function TimerBehavior() {
     fontSize: t.body,
   };
   return (
-    <View style={settingPart}>
+    <View style={settingSection}>
       <Text style={heading}>Timer Behavior</Text>
       <View style={setting}>
         <Pressable
@@ -111,7 +118,7 @@ export default memo(function TimerBehavior() {
         </View>
       </View>
 
-
+      <View style={dividerLine}></View>
 
       <View style={[switchBox, setting]}>
         <Text style={settingLabel}>Timer Vibrate</Text>

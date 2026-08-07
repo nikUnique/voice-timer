@@ -23,7 +23,7 @@ import { Colors } from "../constants/colors";
 import IconButton from "../ui/IconButton";
 import { getItemFromStorage, setItemInStorage } from "../utils/helpers";
 import Section from "./Section";
-import { BulletPoint, Label, Paragraph, Subtitle } from "./TextUnits";
+import { BulletPoint, Label, Paragraph, Subtitle } from "../ui/TextUnits";
 import { useResponsive } from "../hooks/useResponsive";
 import { useReady } from "../hooks/useReady";
 

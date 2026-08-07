@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { NativeModules, Platform } from "react-native";
 import BackgroundService from "react-native-background-actions";
+
+import { NativeModules, PermissionsAndroid, Platform } from "react-native";
 
 import { updateSharedObject } from "./sharedVariables";
 
@@ -95,9 +96,7 @@ export function capitalize(str) {
 
 export function cleanStop() {
   updateSharedObject({ isTaskRunning: false });
-  // console.log("BackgroundService stops 🇵from reset notification button 🔔");
   BackgroundService.stop();
-  // console.log("Focus released 🇵from reset notification button 🔔");
   NativeModules.AudioFocusModule.releaseAudioFocus();
   console.log("BackgroundService stopped, audio focus released 🌜");
 }
@@ -107,3 +106,21 @@ export const normalize = (str) =>
     .toLowerCase()
     .replace(/[^\w\s]/g, "")
     .trim(); // strip punctuation
+
+export const ensureBluetoothPermission = async () => {
+  if (Platform.OS !== "android" || Platform.Version < 31) {
+    return true; // not needed pre-Android 12
+  }
+
+  const granted = await PermissionsAndroid.request(
+    PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+    {
+      title: "Bluetooth Permission",
+      message: "Allow access to use your Bluetooth headset microphone",
+      buttonPositive: "Allow",
+      buttonNegative: "Deny",
+    },
+  );
+
+  return granted === PermissionsAndroid.RESULTS.GRANTED;
+};

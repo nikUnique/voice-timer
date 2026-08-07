@@ -14,14 +14,26 @@ import {
 } from "react-native";
 
 import { Colors } from "../constants/colors";
-import { useSettingsData } from "../context/VoiceRecognizerContext";
+import {
+  useRefsData,
+  useSettingsData,
+} from "../context/VoiceRecognizerContext";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import useSettingsStyles from "../hooks/useSettingsStyles";
 import BrokenMic from "./BrokenMic";
+import { ExpandableSetting } from "../ui/ExpandableSetting";
 
 export default memo(function AppBehavior() {
-  const { settingPart, setting, heading, settingLabel, switchBox, slider } =
-    useSettingsStyles();
+  const {
+    settingSection,
+    setting,
+    heading,
+    settingLabel,
+    switchBox,
+    slider,
+    settingDescription,
+    dividerLine,
+  } = useSettingsStyles();
 
   const {
     keepScreenOnCommand,
@@ -32,6 +44,8 @@ export default memo(function AppBehavior() {
     setKeepScreenDim,
     permitAnswerCallsRef,
   } = useSettingsData();
+  const { commandsRef } = useRefsData();
+
   const { updateSettingsInStorage } = useSettingsFunctions();
   const [minutes, setMinutes] = useState(keepScreenOnMinutes);
   const lastUpdatedRef = useRef(0);
@@ -42,6 +56,9 @@ export default memo(function AppBehavior() {
   const [permitAnswerCall, setPermitAnswerCall] = useState(
     permitAnswerCallsRef.current,
   );
+  const { STOP_MEDIA, PLAY_MEDIA } = commandsRef?.current
+    ? commandsRef.current
+    : {};
 
   useEffect(
     function () {
@@ -97,7 +114,7 @@ export default memo(function AppBehavior() {
 
   const steps = [1, 2, 3, 5, 10, 15, 30, 60, 90, 120, 180, 240, 300];
   return (
-    <View style={settingPart}>
+    <View style={settingSection}>
       <Text style={heading}>App Behavior</Text>
 
       <View style={[switchBox, setting]}>
@@ -115,6 +132,8 @@ export default memo(function AppBehavior() {
           }}
         />
       </View>
+
+      <View style={dividerLine}></View>
 
       {keepScreenOnCommand && (
         <View style={setting}>
@@ -174,11 +193,15 @@ export default memo(function AppBehavior() {
         </View>
       )}
 
+      <View style={dividerLine}></View>
+
       <View style={[switchBox, setting]}>
-        <Text style={settingLabel}>
-          Keep Screen Dim (Locks brightness to minimum while the app is open.
-          Useful when you prefer a dark screen without locking your device.)
-        </Text>
+        <ExpandableSetting
+          label='Keep Screen Dim'
+          labelStyle={settingLabel}
+          descriptionStyle={settingDescription}
+          description={`Locks brightness to minimum while the app is open. Useful when you prefer a dark screen without locking your device.`}
+        />
 
         <Switch
           value={keepScreenDim}
@@ -192,6 +215,7 @@ export default memo(function AppBehavior() {
           }}
         />
       </View>
+      <View style={dividerLine}></View>
 
       <View style={[switchBox, setting]}>
         <Text style={settingLabel}>Answer calls with voice</Text>
@@ -245,6 +269,7 @@ export default memo(function AppBehavior() {
           }}
         />
       </View>
+      <View style={dividerLine}></View>
       <BrokenMic />
     </View>
   );
