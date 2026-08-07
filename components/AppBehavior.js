@@ -44,7 +44,6 @@ export default memo(function AppBehavior() {
     setKeepScreenDim,
     permitAnswerCallsRef,
   } = useSettingsData();
-  const { commandsRef } = useRefsData();
 
   const { updateSettingsInStorage } = useSettingsFunctions();
   const [minutes, setMinutes] = useState(keepScreenOnMinutes);
@@ -56,9 +55,6 @@ export default memo(function AppBehavior() {
   const [permitAnswerCall, setPermitAnswerCall] = useState(
     permitAnswerCallsRef.current,
   );
-  const { STOP_MEDIA, PLAY_MEDIA } = commandsRef?.current
-    ? commandsRef.current
-    : {};
 
   useEffect(
     function () {
@@ -113,6 +109,7 @@ export default memo(function AppBehavior() {
   }, [minutes, setKeepScreenOnMinutes]);
 
   const steps = [1, 2, 3, 5, 10, 15, 30, 60, 90, 120, 180, 240, 300];
+
   return (
     <View style={settingSection}>
       <Text style={heading}>App Behavior</Text>

@@ -1,14 +1,7 @@
 /* eslint-disable react-native/no-raw-text */
 import CheckBox from "@react-native-community/checkbox";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { HeaderBackButton } from "@react-navigation/elements";
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   BackHandler,
@@ -20,12 +13,11 @@ import {
   View,
 } from "react-native";
 import { Colors } from "../constants/colors";
+import { useResponsive } from "../hooks/useResponsive";
 import IconButton from "../ui/IconButton";
+import { BulletPoint, Label, Paragraph, Subtitle } from "../ui/TextUnits";
 import { getItemFromStorage, setItemInStorage } from "../utils/helpers";
 import Section from "./Section";
-import { BulletPoint, Label, Paragraph, Subtitle } from "../ui/TextUnits";
-import { useResponsive } from "../hooks/useResponsive";
-import { useReady } from "../hooks/useReady";
 
 export default function Terms() {
   const [isAccepted, setIsAccepted] = useState(false);
@@ -139,7 +131,6 @@ export default function Terms() {
 
         <Subtitle>Definitions</Subtitle>
         <Section>
-          {/* <Paragraph> */}
           <BulletPoint>
             &quot;Software&quot; refers to the Voice Timer mobile application.
           </BulletPoint>
@@ -153,7 +144,6 @@ export default function Terms() {
             &quot;User&quot; or &quot;You&quot; means any person who installs,
             accesses, or uses the Software.
           </BulletPoint>
-          {/* </Paragraph> */}
         </Section>
 
         <Subtitle>1. Grant of License</Subtitle>
@@ -165,17 +155,14 @@ export default function Terms() {
             by the Software, subject to the terms of this Agreement.
           </Paragraph>
           <Label>You may:</Label>
-          {/* <Paragraph> */}
           <BulletPoint>
             Install and use the Software on supported devices.
           </BulletPoint>
           <BulletPoint>
             Use the Software solely for personal, non-commercial use.
           </BulletPoint>
-          {/* </Paragraph> */}
           <Label>You may not:</Label>
 
-          {/* <Paragraph> */}
           <BulletPoint>
             Modify, distribute, sell, or transfer the Software to any third
             party.
@@ -186,14 +173,12 @@ export default function Terms() {
           </BulletPoint>
 
           <BulletPoint>Use the Software for any unlawful purpose.</BulletPoint>
-          {/* </Paragraph> */}
         </Section>
 
         <Subtitle>2. Restrictions on Use</Subtitle>
 
         <Label>You may not:</Label>
         <Section>
-          {/* <Paragraph> */}
           <BulletPoint>
             Remove, alter, or obscure any copyright or other proprietary notices
             within the Software.
@@ -203,7 +188,6 @@ export default function Terms() {
             Use the Software in a way that infringes on any intellectual
             property rights, or for any unlawful activity.
           </BulletPoint>
-          {/* </Paragraph> */}
         </Section>
 
         <Subtitle>3. Intellectual Property Rights</Subtitle>
@@ -380,7 +364,6 @@ export default function Terms() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
     padding: 24,
     marginBottom: 32,
   },

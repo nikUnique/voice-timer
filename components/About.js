@@ -9,20 +9,10 @@ import { useRefsData } from "../context/VoiceRecognizerContext";
 export default function About() {
   const { commandsRef } = useRefsData();
 
-  const {
-    REPEAT,
-    STOP,
-    STOP_FINISHED,
-    DISCO,
-    TIME,
-    PLAY_MEDIA,
-    STOP_MEDIA,
-    STATUS_REPORT,
-    TIMER_WAKE_UP,
-    TIMER_GO_SLEEP,
-    VOLUME_UP,
-    VOLUME_DOWN,
-  } = commandsRef?.current ? commandsRef.current : {};
+  const { PLAY_MEDIA, STOP_MEDIA } = commandsRef?.current
+    ? commandsRef.current
+    : {};
+
   return (
     <ScrollView
       style={{
@@ -68,21 +58,16 @@ export default function About() {
 
       <Paragraph>
         If the alarm sound is loud, your voice might need to be louder too. Try
-        to speak clearly and close to the device when giving commands.
+        to speak clearly and close to the microphone, be it a phone&apos;s mic
+        or wired or Bluetooth headset&apos;s mic when giving commands.
       </Paragraph>
-
-      {/* <Paragraph>
-          If a full-screen notification appears, which happens only if the phone
-          isn&apos;t in use, then voice commands won&apos;t work.
-        </Paragraph> */}
 
       <Paragraph></Paragraph>
 
       <Subtitle>Using Media in Foreground and Background</Subtitle>
       <Paragraph>
         The app can listen for voice commands even when running in the
-        background or with the screen locked. External media - music, podcasts,
-        videos - can keep playing whether the app is open or not.
+        background or with the screen locked.
       </Paragraph>
 
       <Paragraph>
@@ -92,15 +77,9 @@ export default function About() {
       </Paragraph>
 
       <Paragraph>
-        Pausing and resuming external media only works when controlled through
-        the Voice Timer app using voice commands. If you pause external media
-        using earphone buttons or directly inside the media app, the app loses
-        control over playback and will not be able to resume it.
-      </Paragraph>
-
-      <Paragraph>
-        Voice input works with your device mic or wired earphones only -
-        Bluetooth is not supported.
+        Voice input works with your device&apos;s mic, wired earphones, or even
+        with Bluetooth headset, but the audio quality will suffer with a
+        Bluetooth headset.
       </Paragraph>
 
       <Paragraph></Paragraph>
@@ -117,16 +96,13 @@ export default function About() {
         </Paragraph>
 
         <Label>Valid examples:</Label>
-        {/* <Paragraph> */}
         <View>
           <BulletPoint>Morning Routine</BulletPoint>
           <BulletPoint>Workout Timer</BulletPoint>
           <BulletPoint>Break Time</BulletPoint>
         </View>
-        {/* </Paragraph> */}
 
         <Label>What’s not allowed:</Label>
-        {/* <Paragraph> */}
         <View>
           <BulletPoint>
             Digits: Names like &quot;Timer 1&quot;, &quot;Cooking 2&quot;, or
@@ -137,7 +113,6 @@ export default function About() {
             rejected.
           </BulletPoint>
         </View>
-        {/* </Paragraph> */}
         <Paragraph></Paragraph>
 
         <Label>Similar vs. Distinct Names</Label>

@@ -8,7 +8,6 @@ export default function useSettingsStyles() {
     () => ({
       borderBottomWidth: 1,
       borderBottomColor: Colors.primaryTint70,
-      // borderStyle: "",
       paddingHorizontal: 8,
     }),
     [],
@@ -47,7 +46,6 @@ export default function useSettingsStyles() {
       color: Colors.primaryTint90,
       fontSize: t.subheading,
       width: "90%",
-      // marginBottom: 12,
     }),
     [t.subheading],
   );
