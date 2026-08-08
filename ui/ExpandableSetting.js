@@ -8,6 +8,7 @@ import {
   Platform,
   UIManager,
 } from "react-native";
+
 import { Colors } from "../constants/colors";
 
 if (

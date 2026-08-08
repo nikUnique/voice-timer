@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { PermissionsAndroid } from "react-native";
+
 import {
   useRefsData,
   useSettingsData,
@@ -27,8 +28,6 @@ export function useSettings() {
   const requestMicrophone = useCallback(
     async function () {
       try {
-        console.log("Works everywhere");
-
         let localMicroGranted;
 
         localMicroGranted = await PermissionsAndroid.check(
@@ -41,8 +40,6 @@ export function useSettings() {
           );
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
             emitter.emit("startForegroundService");
-            console.log("It starts the service");
-
             setVoiceEnabled(true);
           } else {
             setVoiceEnabled(false);
@@ -59,8 +56,6 @@ export function useSettings() {
     function () {
       async function load() {
         try {
-          // console.log("Settings retrieved from storage 🤡");
-
           if (timers.length > 0) {
             requestMicrophone();
           }

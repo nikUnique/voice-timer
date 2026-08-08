@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
+    marginBottom: 48,
   },
 
   hiddenTimer: {

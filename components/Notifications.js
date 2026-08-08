@@ -1,10 +1,10 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { memo } from "react";
 
 import { Colors } from "../constants/colors";
 import { useResponsive } from "../hooks/useResponsive";
 import useSettingsStyles from "../hooks/useSettingsStyles";
 import { openNotificationChannelSettings } from "../utils/helpers";
-import { memo } from "react";
 
 export default memo(function Notifications() {
   const { settingSection, setting, heading, settingBtn } = useSettingsStyles();
@@ -15,6 +15,7 @@ export default memo(function Notifications() {
     color: Colors.primaryTint90,
     fontSize: t.subheading,
   };
+
   return (
     <View style={[settingSection, styles.lastSettingPart, setting]}>
       <Text style={heading}>Notification Settings</Text>

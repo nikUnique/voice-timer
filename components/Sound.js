@@ -1,8 +1,9 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
-
-import { Slider } from "@miblanchard/react-native-slider";
 import { useNavigation } from "@react-navigation/native";
+import { Slider } from "@miblanchard/react-native-slider";
+
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { memo, useEffect, useRef, useState } from "react";
+
 import { Colors } from "../constants/colors";
 import { useSettingsData } from "../context/VoiceRecognizerContext";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";

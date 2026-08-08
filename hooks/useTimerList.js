@@ -1,14 +1,20 @@
-import { useCallback, useRef, useState } from "react";
-import * as SplashScreen from "expo-splash-screen";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
-import { getItemFromStorage, setItemInStorage, sleep } from "../utils/helpers";
 import { useNavigation } from "@react-navigation/native";
+import * as SplashScreen from "expo-splash-screen";
+
+import { useCallback, useRef, useState } from "react";
+import { NativeModules } from "react-native";
+
+import TimerInterface from "../components/TimerInterface";
 import {
   useRecognizerData,
   useRefsData,
+  useSettingsData,
   useSoundData,
 } from "../context/VoiceRecognizerContext";
-import TimerInterface from "../components/TimerInterface";
+import { getItemFromStorage, setItemInStorage, sleep } from "../utils/helpers";
+import { updateSharedObject } from "../utils/sharedVariables";
+import { useSound } from "./useSound";
+import { useSpeak } from "./useSpeak";
 
 export function useTimerList({
   timers,
@@ -16,7 +22,6 @@ export function useTimerList({
   setIsReady,
   setRecognizedCommand,
   flatListRef,
-  REPEAT,
   lastCommandRef,
   containerHeight,
   setIsTaskStopped,
@@ -27,8 +32,20 @@ export function useTimerList({
   const layoutTimeoutRef = useRef(null);
   const { recognizedCommand, dynamicGrammar, alertingTimerNamesRef } =
     useRecognizerData();
-  const { activateTimerRef, secretIdentifierRef } = useRefsData();
+  const {
+    activateTimerRef,
+    secretIdentifierRef,
+    isMediaPausedRef,
+    commandsRef,
+    isMediaPausedManuallyRef,
+  } = useRefsData();
+
+  const { REPEAT } = commandsRef?.current ? commandsRef.current : {};
+  const { playSoundGeneral } = useSound();
+  const { successSound } = useSettingsData();
+
   const { soundRef } = useSoundData();
+  const { speak } = useSpeak();
 
   const handleDelete = useCallback(
     function handleDelete(timerName) {
@@ -145,8 +162,6 @@ export function useTimerList({
       }
     }
 
-    // console.log("isCommandNew", isCommandNew, numberOfRecognizedCommands);
-
     return (
       <TimerInterface
         time={item.time}
@@ -220,57 +235,44 @@ export function useTimerList({
     }
   }
 
-  const formatStatusSpeech = useCallback(function (
-    runningTimerNames,
-    pausedTimerNames,
-    alertingTimerNames,
-  ) {
-    const runningTimerNamesLength = runningTimerNames.length;
-    const pausedTimerNamesLength = pausedTimerNames.length;
-    const alertingTimerNamesLength = alertingTimerNames.length;
-    if (
-      !runningTimerNamesLength &&
-      !pausedTimerNamesLength &&
-      !alertingTimerNamesLength
-    ) {
-      return "No timers active.";
-    }
+  const pauseMedia = useCallback(
+    async function () {
+      isMediaPausedRef.current = true;
+      isMediaPausedManuallyRef.current = true;
+      playSoundGeneral({
+        fileName: successSound,
+        shouldStop: false,
+      });
+      await speak("Media paused");
+    },
+    [
+      isMediaPausedManuallyRef,
+      isMediaPausedRef,
+      playSoundGeneral,
+      speak,
+      successSound,
+    ],
+  );
 
-    const headerParts = [
-      runningTimerNamesLength
-        ? `${runningTimerNamesLength} timers running`
-        : null,
-      pausedTimerNamesLength ? `${pausedTimerNamesLength} timers paused` : null,
-      alertingTimerNamesLength
-        ? `${alertingTimerNamesLength} timers alerting`
-        : null,
-    ].filter(Boolean);
-
-    const header = headerParts.join(", ") + ".";
-
-    const timerLines = [
-      runningTimerNamesLength && "Running timers: ",
-      ...(getSharedObject().runningTimerNames.join(", ") + ". "),
-      pausedTimerNamesLength && "Paused timers: ",
-      ...(getSharedObject().pausedTimerNames.join(", ") + ". "),
-      alertingTimerNamesLength && "Alerting timers: ",
-      ...(getSharedObject().alertingTimerNames.join(", ") + ". "),
-    ]
-      .filter(Boolean)
-      .join("");
-
-    return `${header} ${timerLines}`;
-  }, []);
-
-  const formatRingingResetSpeech = useCallback(function (timerNames) {
-    if (timerNames.length === 0) return "Nothing to stop.";
-    if (timerNames.length === 1) return `timer ${timerNames[0]} stopped.`;
-
-    const last = timerNames[timerNames.length - 1];
-    const rest = timerNames.slice(0, -1);
-    const count = timerNames.length;
-    return `${count} timers stopped. ${rest.join(", ")} and ${last}.`;
-  }, []);
+  const resumeMedia = useCallback(
+    async function () {
+      await speak("Media resumed");
+      await NativeModules.NativeUtilsModule.pressHeadsetButton();
+      playSoundGeneral({
+        fileName: successSound,
+        shouldStop: false,
+      });
+      isMediaPausedRef.current = false;
+      isMediaPausedManuallyRef.current = false;
+    },
+    [
+      isMediaPausedManuallyRef,
+      isMediaPausedRef,
+      playSoundGeneral,
+      speak,
+      successSound,
+    ],
+  );
 
   return {
     handleDelete,
@@ -278,7 +280,7 @@ export function useTimerList({
     clearCommand,
     renderTimer,
     onLayoutHandler,
-    formatStatusSpeech,
-    formatRingingResetSpeech,
+    pauseMedia,
+    resumeMedia,
   };
 }

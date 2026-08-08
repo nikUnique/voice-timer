@@ -3,7 +3,7 @@ import BackgroundService from "react-native-background-actions";
 
 import { NativeModules, PermissionsAndroid, Platform } from "react-native";
 
-import { updateSharedObject } from "./sharedVariables";
+import { getSharedObject, updateSharedObject } from "./sharedVariables";
 
 export const sleep = async (time) => {
   return new Promise((resolve) => {
@@ -123,4 +123,56 @@ export const ensureBluetoothPermission = async () => {
   );
 
   return granted === PermissionsAndroid.RESULTS.GRANTED;
+};
+
+export const formatStatusSpeech = function (
+  runningTimerNames,
+  pausedTimerNames,
+  alertingTimerNames,
+) {
+  const runningTimerNamesLength = runningTimerNames.length;
+  const pausedTimerNamesLength = pausedTimerNames.length;
+  const alertingTimerNamesLength = alertingTimerNames.length;
+  if (
+    !runningTimerNamesLength &&
+    !pausedTimerNamesLength &&
+    !alertingTimerNamesLength
+  ) {
+    return "No timers active.";
+  }
+
+  const headerParts = [
+    runningTimerNamesLength
+      ? `${runningTimerNamesLength} timers running`
+      : null,
+    pausedTimerNamesLength ? `${pausedTimerNamesLength} timers paused` : null,
+    alertingTimerNamesLength
+      ? `${alertingTimerNamesLength} timers alerting`
+      : null,
+  ].filter(Boolean);
+
+  const header = headerParts.join(", ") + ".";
+
+  const timerLines = [
+    runningTimerNamesLength && "Running timers: ",
+    ...(getSharedObject().runningTimerNames.join(", ") + ". "),
+    pausedTimerNamesLength && "Paused timers: ",
+    ...(getSharedObject().pausedTimerNames.join(", ") + ". "),
+    alertingTimerNamesLength && "Alerting timers: ",
+    ...(getSharedObject().alertingTimerNames.join(", ") + ". "),
+  ]
+    .filter(Boolean)
+    .join("");
+
+  return `${header} ${timerLines}`;
+};
+
+export const formatRingingResetSpeech = function (timerNames) {
+  if (timerNames.length === 0) return "Nothing to stop.";
+  if (timerNames.length === 1) return `timer ${timerNames[0]} stopped.`;
+
+  const last = timerNames[timerNames.length - 1];
+  const rest = timerNames.slice(0, -1);
+  const count = timerNames.length;
+  return `${count} timers stopped. ${rest.join(", ")} and ${last}.`;
 };
