@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { NativeModules } from "react-native";
 
 import {
   useRefsData,
@@ -6,7 +7,6 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { sleep } from "../utils/helpers";
 
-import { NativeModules } from "react-native";
 import { getSharedObject } from "../utils/sharedVariables";
 import { useSound } from "./useSound";
 import { useSpeak } from "./useSpeak";
@@ -33,7 +33,6 @@ export function useExecuteCommand({
     commandsRef,
     isMediaPlayingRef,
     isTimerSleepingRef,
-    isListeningRef,
   } = useRefsData();
 
   const { successSound } = useSettingsData();
@@ -87,7 +86,6 @@ export function useExecuteCommand({
           console.log(
             "Stop the background media first before using other voice commands - useExecuteCommand",
           );
-
           return;
         }
 
@@ -123,14 +121,7 @@ export function useExecuteCommand({
           commandExecuted = true;
         }
 
-        let availableCommands, isCommandValid, commandExecuted;
-
-        if (!isActive) {
-          availableCommands = [START, REPEAT, STOP];
-          isCommandValid = availableCommands.some((command) =>
-            recognizedCommand?.recognizedCommand.includes(command),
-          );
-        }
+        let commandExecuted;
 
         if (
           (isActive && recognizedCommand?.recognizedCommand.includes(START)) ||
@@ -283,7 +274,6 @@ export function useExecuteCommand({
       index,
       resumeTimerRef,
       resetTimerRef,
-      isListeningRef,
       playSoundGeneral,
       successSound,
     ],
