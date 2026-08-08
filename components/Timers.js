@@ -26,15 +26,10 @@ import { getItemFromStorage, removeItemFromStorage } from "../utils/helpers";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 import TimerList from "./TimerList";
 import VoiceCommandsControl from "./VoiceCommandsControl";
-import useShake from "../hooks/useShake";
-import { useSpeak } from "../hooks/useSpeak";
-import { useSound } from "../hooks/useSound";
-import { useClapDetector } from "../hooks/useClapperDetector";
 
 export default function Timers({ navigation }) {
-  const [isAwake, setIsAwake] = useState(false);
-  const [isTaskStopped, setIsTaskStopped] = useState(false);
-  const [isMicroGranted, setIsMicroGranted] = useState(false);
+  const [isAwake] = useState(false);
+  const [setIsTaskStopped] = useState(false);
 
   const activeTimeRef = useRef(null);
   const { dimScreenRef, keepScreenDim } = useSettingsData();
@@ -51,9 +46,7 @@ export default function Timers({ navigation }) {
     alertingTimerNames,
   } = useRecognizerData();
 
-  const { keepScreenOnCommand, keepScreenOnMinutes, successSound } =
-    useSettingsData();
-  const { playSoundGeneral } = useSound();
+  const { keepScreenOnCommand, keepScreenOnMinutes } = useSettingsData();
 
   const { soundRef, soundIsPlayingRef } = useSoundData();
 
@@ -63,8 +56,6 @@ export default function Timers({ navigation }) {
     workingTimersRef,
     timers,
     isMediaPlayingRef,
-    isMediaPausedRef,
-    isMediaPausedManuallyRef,
   } = useRefsData();
 
   const { DEFAULT_PRESETS } = useDefaultTimers();
@@ -78,71 +69,10 @@ export default function Timers({ navigation }) {
   const { playSoundWrapper, stopSoundWrapper, options, backgroundTask } =
     useTimer();
 
-  const { speak } = useSpeak();
-
-  // const { start: startClapDetector, stop: stopClapDetector } = useClapDetector(
-  //   async () => {
-  //     const isMediaPlaying =
-  //       await NativeModules.AudioFocusModule.isMediaPlaying();
-  //     // speak("The phone shakes");
-  //     await NativeModules.NativeUtilsModule.pressHeadsetButton();
-  //     if (isMediaPlaying) {
-  //       isMediaPausedRef.current = true;
-  //       isMediaPausedManuallyRef.current = true;
-  //       playSoundGeneral({
-  //         fileName: successSound,
-  //         shouldStop: false,
-  //       });
-  //       await speak("Media paused");
-  //     } else {
-  //       isMediaPausedRef.current = false;
-  //       isMediaPausedManuallyRef.current = false;
-  //       playSoundGeneral({
-  //         fileName: successSound,
-  //         shouldStop: false,
-  //       });
-  //       await speak("Media resumed");
-  //     }
-  //   },
-  // );
-
-  // useEffect(() => {
-  //   startClapDetector();
-  //   return () => stopClapDetector();
-  // }, []);
-
   const forceKeepAwake = useCallback(async function (tag) {
     await deactivateKeepAwake(tag);
     await activateKeepAwakeAsync(tag);
   }, []);
-
-  // useShake({
-  //   enabled: true,
-  //   sensitivity: 0.6,
-  //   onShake: async () => {
-  //     const isMediaPlaying =
-  //       await NativeModules.AudioFocusModule.isMediaPlaying();
-  //     // speak("The phone shakes");
-  //     await NativeModules.NativeUtilsModule.pressHeadsetButton();
-  //     if (isMediaPlaying) {
-  //       isMediaPausedRef.current = true;
-  //       isMediaPausedManuallyRef.current = true;
-  //       playSoundGeneral({
-  //         fileName: successSound,
-  //         shouldStop: false,
-  //       });
-  //       await speak("Media paused");
-  //     } else {
-  //       isMediaPausedRef.current = false;
-  //       isMediaPausedManuallyRef.current = false;
-  //       playSoundGeneral({
-  //         fileName: successSound,
-  //         shouldStop: false,
-  //       });
-  //       await speak("Media resumed");
-  //     }
-  //   },
-  // });
 
   useEffect(
     function () {
@@ -182,8 +112,6 @@ export default function Timers({ navigation }) {
           if (!keepScreenOnCommand) {
             return;
           }
-
-          console.log(keepScreenOnMinutes, "our precious minutes 🤵‍♂️");
 
           await forceKeepAwake("sleep");
           activeTimeRef.current = setTimeout(
@@ -355,17 +283,9 @@ export default function Timers({ navigation }) {
 
   useEffect(
     function () {
-      // emitter.all.clear();
-      // AsyncStorage.clear();
-      // removeItemFromStorage("workingTimers");
-      // if (AppState.currentState !== "background") {
-      //   notifee.stopForegroundService();
-      // }
-
       () => {
         if (workingTimersRef.current.length === 0) {
           soundIsPlayingRef.current = false;
-          // emitter.all.clear();
           removeItemFromStorage("workingTimers");
           removeItemFromStorage("alertingTimerNames");
           soundRef.current?.stopAsync();
@@ -382,14 +302,6 @@ export default function Timers({ navigation }) {
         const parsedValue = await getItemFromStorage("workingTimers");
         workingTimersRef.current = parsedValue || [];
 
-        if (workingTimersRef.current.length === 0) {
-          console.log("All listeners are cleared");
-          // emitter.all.clear();
-        }
-
-        // Culprit of stealing at least more than 5 hours
-        // await removeItemFromStorage("alertingTimerNames");
-
         // This listener becomes stale after a transition from background to foreground, but by passing all the values directly from the event, it works as expected. Instead of doing it this way I could just keep the sound reference in the simple shared object which persists even if the app is in the background, but back then I didn't thought about this and therefore to not waste time I leave it like this
         if (!emitter.all.has("stopSound")) {
           console.log("We add new listener :)");
@@ -402,7 +314,6 @@ export default function Timers({ navigation }) {
         emitter.all.delete("startForegroundService");
         emitter.on("startForegroundService", async () => {
           console.log("foreground service is restarted with microphone");
-
           updateSharedObject({ isTaskRunning: true });
           await BackgroundService.start(backgroundTask, options);
         });
