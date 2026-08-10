@@ -33,7 +33,7 @@ export function useTimerInterfaceState({ time }) {
   // Notification
   const timeLabelRef = useRef(null);
 
-  const { appState, setAppState } = useAppState();
+  const { appState } = useAppState();
 
   const allState = useMemo(
     () => ({
@@ -61,11 +61,9 @@ export function useTimerInterfaceState({ time }) {
       timeoutRef,
       timeLabelRef,
       pauseTimerRef,
-      setAppState,
     }),
-    [appState, isActive, isAlarming, isPaused, isReset, setAppState]
+    [appState, isActive, isAlarming, isPaused, isReset],
   );
 
   return allState;
 }
-// 22 hooks untill this place

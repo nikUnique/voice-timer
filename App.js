@@ -3,13 +3,10 @@ import notifee, { AuthorizationStatus } from "@notifee/react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as Brightness from "expo-brightness";
-import BackgroundService from "react-native-background-actions";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { memo, useCallback, useEffect, useState } from "react";
 import {
-  NativeModules,
-  PermissionsAndroid,
   Platform,
   StatusBar,
   StyleSheet,
@@ -17,37 +14,34 @@ import {
 } from "react-native";
 
 import Tts from "react-native-tts";
-import AgreementAlert from "./components/AgreementAlert";
-import AlarmOverlay from "./components/AlarmOverlay";
-import ContextMenu from "./components/ContextMenu";
-import TimerNameControl from "./components/TimerNameControl";
+import AgreementAlert from "./components/TimersScreen/AgreementAlert";
+import AlarmOverlay from "./components/TimersScreen/AlarmOverlay";
+import ContextMenu from "./components/TimersScreen/ContextMenu";
+import TimerNameControl from "./components/TimersScreen/TimerNameControl";
 import { Colors } from "./constants/colors";
+import { FONT } from "./constants/typography";
 import VoiceRecognizerProvider, {
-  useRefsData,
   useSettingsData,
 } from "./context/VoiceRecognizerContext";
 import { useAppState } from "./hooks/useAppState";
-import { useResponsive } from "./hooks/useResponsive";
 import AboutScreen from "./screens/AboutScreen";
+import AttributionScreen from "./screens/AttributionScreen";
 import CommandsScreen from "./screens/CommandsScreen";
 import CreateTimerScreen from "./screens/CreateTimerScreen";
 import HistoryScreen from "./screens/HistoryScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import TermsScreen from "./screens/TermsScreen";
 import TimersScreen from "./screens/TimersScreen";
-import AttributionScreen from "./screens/AttributionScreen";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
-import { getSharedObject, updateSharedObject } from "./utils/sharedVariables";
 import { cleanStop } from "./utils/helpers";
-import { FONT } from "./constants/typography";
+import { getSharedObject } from "./utils/sharedVariables";
 
 const Stack = createNativeStackNavigator();
 
 function AppWithContext() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const { dimScreenRef, keepScreenDim, voiceEnabled } = useSettingsData();
-  const { isMediaPausedRef, currentActivityRef, leastTimeTimerRef } =
-    useRefsData();
+
   const { appState } = useAppState();
 
   useEffect(function () {

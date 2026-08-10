@@ -10,19 +10,19 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Colors } from "../constants/colors";
-import { FONT } from "../constants/typography";
+import { Colors } from "../../constants/colors";
+import { FONT } from "../../constants/typography";
 import {
   useRecognizerData,
   useRefsData,
-} from "../context/VoiceRecognizerContext";
-import { Text } from "../ui/AppText";
-import { removeItemFromStorage } from "../utils/helpers";
-import { updateSharedObject } from "../utils/sharedVariables";
+} from "../../context/VoiceRecognizerContext";
+import { Text } from "../../ui/AppText";
+import { removeItemFromStorage } from "../../utils/helpers";
+import { updateSharedObject } from "../../utils/sharedVariables";
 import HistoryItem from "./HistoryItem";
-import { SPACE } from "../constants/spacing";
-import { RADIUS } from "../constants/radius";
-import { WEIGHT } from "../constants/weight";
+import { SPACE } from "../../constants/spacing";
+import { RADIUS } from "../../constants/radius";
+import { WEIGHT } from "../../constants/weight";
 
 export default function History({ navigation }) {
   const { timersHistory } = useRecognizerData();

@@ -1,11 +1,11 @@
 import { useNavigation } from "@react-navigation/native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { Colors } from "../constants/colors";
-import { SPACE } from "../constants/spacing";
-import { FONT } from "../constants/typography";
-import { getSharedObject } from "../utils/sharedVariables";
-import { RADIUS } from "../constants/radius";
+import { Colors } from "../../constants/colors";
+import { SPACE } from "../../constants/spacing";
+import { FONT } from "../../constants/typography";
+import { getSharedObject } from "../../utils/sharedVariables";
+import { RADIUS } from "../../constants/radius";
 
 export default function ContextMenu({ onToggleModal, modalIsVisible }) {
   const navigation = useNavigation();

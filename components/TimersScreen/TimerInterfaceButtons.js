@@ -1,13 +1,16 @@
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Colors } from "../constants/colors";
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import IconButton from "../ui/IconButton";
-import { emitter } from "../utils/EventEmitter";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
-import { SPACE } from "../constants/spacing";
-import { FONT } from "../constants/typography";
+import { Colors } from "../../constants/colors";
+import { useRefsData } from "../../context/VoiceRecognizerContext";
+import IconButton from "../../ui/IconButton";
+import { emitter } from "../../utils/EventEmitter";
+import {
+  getSharedObject,
+  updateSharedObject,
+} from "../../utils/sharedVariables";
+import { SPACE } from "../../constants/spacing";
+import { FONT } from "../../constants/typography";
 
 export default function TimerInterfaceButtons({ onDelete }) {
   const navigation = useNavigation();

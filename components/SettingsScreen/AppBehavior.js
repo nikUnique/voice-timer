@@ -13,13 +13,13 @@ import {
   View,
 } from "react-native";
 
-import { Colors } from "../constants/colors";
-import { useSettingsData } from "../context/VoiceRecognizerContext";
-import useSettingsFunctions from "../hooks/useSettingsFunctions";
-import useSettingsStyles from "../hooks/useSettingsStyles";
-import { ExpandableSetting } from "../ui/ExpandableSetting";
+import { Colors } from "../../constants/colors";
+import { useSettingsData } from "../../context/VoiceRecognizerContext";
+import useSettingsFunctions from "../../hooks/useSettingsFunctions";
+import useSettingsStyles from "../../hooks/useSettingsStyles";
+import { ExpandableSetting } from "../../ui/ExpandableSetting";
 import BrokenMic from "./BrokenMic";
-import { SPACE } from "../constants/spacing";
+import { SPACE } from "../../constants/spacing";
 
 export default memo(function AppBehavior() {
   const {

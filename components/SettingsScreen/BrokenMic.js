@@ -1,14 +1,14 @@
 import { memo } from "react";
 import { Platform, Switch, UIManager, View } from "react-native";
 
-import { Colors } from "../constants/colors";
+import { Colors } from "../../constants/colors";
 import {
   useRefsData,
   useSettingsData,
-} from "../context/VoiceRecognizerContext";
-import useSettingsFunctions from "../hooks/useSettingsFunctions";
-import useSettingsStyles from "../hooks/useSettingsStyles";
-import { ExpandableSetting } from "../ui/ExpandableSetting";
+} from "../../context/VoiceRecognizerContext";
+import useSettingsFunctions from "../../hooks/useSettingsFunctions";
+import useSettingsStyles from "../../hooks/useSettingsStyles";
+import { ExpandableSetting } from "../../ui/ExpandableSetting";
 
 export default memo(function BrokenMic() {
   const { setting, settingLabel, switchBox, settingDescription } =

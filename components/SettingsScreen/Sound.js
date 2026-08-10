@@ -4,12 +4,12 @@ import { Slider } from "@miblanchard/react-native-slider";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { memo, useEffect, useRef, useState } from "react";
 
-import { Colors } from "../constants/colors";
-import { useSettingsData } from "../context/VoiceRecognizerContext";
-import useSettingsFunctions from "../hooks/useSettingsFunctions";
-import useSettingsStyles from "../hooks/useSettingsStyles";
-import { RADIUS } from "../constants/radius";
-import { SPACE } from "../constants/spacing";
+import { Colors } from "../../constants/colors";
+import { useSettingsData } from "../../context/VoiceRecognizerContext";
+import useSettingsFunctions from "../../hooks/useSettingsFunctions";
+import useSettingsStyles from "../../hooks/useSettingsStyles";
+import { RADIUS } from "../../constants/radius";
+import { SPACE } from "../../constants/spacing";
 
 export default memo(function Sound() {
   const { settingSection, setting, heading, settingLabel, slider } =

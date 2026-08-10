@@ -4,7 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useRef, useState } from "react";
 import { NativeModules } from "react-native";
 
-import TimerInterface from "../components/TimerInterface";
+import TimerInterface from "../components/TimersScreen/TimerInterface";
 import {
   useRecognizerData,
   useRefsData,
@@ -30,7 +30,7 @@ export function useTimerList({
   const navigation = useNavigation();
   const [hasMounted, setHasMounted] = useState(false);
   const layoutTimeoutRef = useRef(null);
-  
+
   const { recognizedCommand, dynamicGrammar, alertingTimerNamesRef } =
     useRecognizerData();
   const {

@@ -1,19 +1,19 @@
 import { memo, useEffect, useState } from "react";
 
-import { useExecuteCommand } from "../hooks/useExecuteCommand";
-import { useLoadTimerState } from "../hooks/useLoadTimerState";
-import { usePauseResume } from "../hooks/usePauseResume";
-import { usePrepareEffects } from "../hooks/usePrepareEffects";
-import { useResetTimer } from "../hooks/useResetTimer";
-import { useSaveStorage } from "../hooks/useSaveStorage";
-import { useStartTimer } from "../hooks/useStartTimer";
-import { useTimerInterfaceFunctions } from "../hooks/useTimerInterfaceFunctions";
-import { useTimerInterfaceState } from "../hooks/useTimerInterfaceState";
-import { useTimeUpdate } from "../hooks/useTimeUpdate";
-import { useUpdateLeastTimer } from "../hooks/useUpdateLeastTimer";
-import { useUpdateNotification } from "../hooks/useUpdateNotification";
-import { emitter } from "../utils/EventEmitter";
-import { updateSharedObject } from "../utils/sharedVariables";
+import { useExecuteCommand } from "../../hooks/useExecuteCommand";
+import { useLoadTimerState } from "../../hooks/useLoadTimerState";
+import { usePauseResume } from "../../hooks/usePauseResume";
+import { usePrepareEffects } from "../../hooks/usePrepareEffects";
+import { useResetTimer } from "../../hooks/useResetTimer";
+import { useSaveStorage } from "../../hooks/useSaveStorage";
+import { useStartTimer } from "../../hooks/useStartTimer";
+import { useTimerInterfaceFunctions } from "../../hooks/useTimerInterfaceFunctions";
+import { useTimerInterfaceState } from "../../hooks/useTimerInterfaceState";
+import { useTimeUpdate } from "../../hooks/useTimeUpdate";
+import { useUpdateLeastTimer } from "../../hooks/useUpdateLeastTimer";
+import { useUpdateNotification } from "../../hooks/useUpdateNotification";
+import { emitter } from "../../utils/EventEmitter";
+import { updateSharedObject } from "../../utils/sharedVariables";
 import TimerInterfaceUI from "./TimerInterfaceUI";
 
 function TimerInterface({

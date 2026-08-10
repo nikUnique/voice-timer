@@ -1,14 +1,14 @@
 import { memo } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 
-import { Colors } from "../constants/colors";
-import { FONT } from "../constants/typography";
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { Text } from "../ui/AppText";
-import IconButton from "../ui/IconButton";
+import { Colors } from "../../constants/colors";
+import { FONT } from "../../constants/typography";
+import { useRefsData } from "../../context/VoiceRecognizerContext";
+import { Text } from "../../ui/AppText";
+import IconButton from "../../ui/IconButton";
 import Time from "./Time";
-import { WEIGHT } from "../constants/weight";
-import { SPACE } from "../constants/spacing";
+import { WEIGHT } from "../../constants/weight";
+import { SPACE } from "../../constants/spacing";
 
 export default memo(function TimerInterfaceUI({
   timerHeight,

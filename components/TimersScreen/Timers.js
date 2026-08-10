@@ -16,14 +16,17 @@ import {
   useRefsData,
   useSettingsData,
   useSoundData,
-} from "../context/VoiceRecognizerContext";
-import { useDefaultTimers } from "../hooks/useDefaultTimers";
-import { useServiceAndSpeechControl } from "../hooks/useServiceAndSpeechControl";
-import { useTimer } from "../hooks/useTimer";
-import { DIM_PERCENTAGE, DIM_TIMEOUT } from "../utils/config";
-import { emitter } from "../utils/EventEmitter";
-import { getItemFromStorage, removeItemFromStorage } from "../utils/helpers";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
+} from "../../context/VoiceRecognizerContext";
+import { useDefaultTimers } from "../../hooks/useDefaultTimers";
+import { useServiceAndSpeechControl } from "../../hooks/useServiceAndSpeechControl";
+import { useTimer } from "../../hooks/useTimer";
+import { DIM_PERCENTAGE, DIM_TIMEOUT } from "../../utils/config";
+import { emitter } from "../../utils/EventEmitter";
+import { getItemFromStorage, removeItemFromStorage } from "../../utils/helpers";
+import {
+  getSharedObject,
+  updateSharedObject,
+} from "../../utils/sharedVariables";
 import TimerList from "./TimerList";
 import VoiceCommandsControl from "./VoiceCommandsControl";
 

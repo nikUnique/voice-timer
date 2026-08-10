@@ -1,11 +1,10 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
 import { memo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { Colors } from "../constants/colors";
-import { useResponsive } from "../hooks/useResponsive";
-import useSettingsStyles from "../hooks/useSettingsStyles";
-import { openNotificationChannelSettings } from "../utils/helpers";
-import { FONT } from "../constants/typography";
+import { Colors } from "../../constants/colors";
+import { FONT } from "../../constants/typography";
+import useSettingsStyles from "../../hooks/useSettingsStyles";
+import { openNotificationChannelSettings } from "../../utils/helpers";
 
 export default memo(function Notifications() {
   const { settingSection, setting, heading, settingBtn } = useSettingsStyles();

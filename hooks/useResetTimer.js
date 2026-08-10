@@ -3,7 +3,7 @@ import notifee from "@notifee/react-native";
 import { useCallback, useEffect } from "react";
 import { AppState, NativeModules } from "react-native";
 
-import Time from "../components/Time";
+import Time from "../components/TimersScreen/Time";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter, resetTimerEmitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";

@@ -7,18 +7,18 @@ import wordsToNumbers from "words-to-numbers";
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-import { Colors } from "../constants/colors";
+import { Colors } from "../../constants/colors";
 import {
   useRecognizerData,
   useRefsData,
   useSettingsData,
-} from "../context/VoiceRecognizerContext";
-import IconButton from "../ui/IconButton";
-import { setItemInStorage } from "../utils/helpers";
-import { updateSharedObject } from "../utils/sharedVariables";
-import { FONT } from "../constants/typography";
-import { WEIGHT } from "../constants/weight";
-import { SPACE } from "../constants/spacing";
+} from "../../context/VoiceRecognizerContext";
+import IconButton from "../../ui/IconButton";
+import { setItemInStorage } from "../../utils/helpers";
+import { updateSharedObject } from "../../utils/sharedVariables";
+import { FONT } from "../../constants/typography";
+import { WEIGHT } from "../../constants/weight";
+import { SPACE } from "../../constants/spacing";
 
 function CreateTimer() {
   const { timers, setTimers } = useRecognizerData();

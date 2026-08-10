@@ -8,19 +8,19 @@ import {
   NativeModules,
 } from "react-native";
 
-import { Colors } from "../constants/colors";
-import { SPACE } from "../constants/spacing";
-import { FONT } from "../constants/typography";
-import { WEIGHT } from "../constants/weight";
+import { Colors } from "../../constants/colors";
+import { SPACE } from "../../constants/spacing";
+import { FONT } from "../../constants/typography";
+import { WEIGHT } from "../../constants/weight";
 import {
   useRecognizerData,
   useRefsData,
   useSettingsData,
-} from "../context/VoiceRecognizerContext";
-import { useCommandsControl } from "../hooks/useCommandsControl";
-import { Text } from "../ui/AppText";
-import { cleanStop } from "../utils/helpers";
-import { getSharedObject } from "../utils/sharedVariables";
+} from "../../context/VoiceRecognizerContext";
+import { useCommandsControl } from "../../hooks/useCommandsControl";
+import { Text } from "../../ui/AppText";
+import { cleanStop } from "../../utils/helpers";
+import { getSharedObject } from "../../utils/sharedVariables";
 
 const eventEmitter = new NativeEventEmitter(NativeModules.AudioFocusModule);
 

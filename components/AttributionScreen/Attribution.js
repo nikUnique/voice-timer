@@ -7,11 +7,11 @@ import {
   View,
 } from "react-native";
 
-import { Colors } from "../constants/colors";
-import { FONT } from "../constants/typography";
-import { WEIGHT } from "../constants/weight";
-import { SPACE } from "../constants/spacing";
-import { RADIUS } from "../constants/radius";
+import { Colors } from "../../constants/colors";
+import { FONT } from "../../constants/typography";
+import { WEIGHT } from "../../constants/weight";
+import { SPACE } from "../../constants/spacing";
+import { RADIUS } from "../../constants/radius";
 
 const ATTRIBUTIONS = [
   {

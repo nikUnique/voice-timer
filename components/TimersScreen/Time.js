@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Animated } from "react-native";
 
-import { Colors } from "../constants/colors";
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { useSpeak } from "../hooks/useSpeak";
-import { Text } from "../ui/AppText";
-import { emitter } from "../utils/EventEmitter";
-import { formatTime } from "../utils/helpers";
-import { WEIGHT } from "../constants/weight";
+import { Colors } from "../../constants/colors";
+import { useRefsData } from "../../context/VoiceRecognizerContext";
+import { useSpeak } from "../../hooks/useSpeak";
+import { Text } from "../../ui/AppText";
+import { emitter } from "../../utils/EventEmitter";
+import { formatTime } from "../../utils/helpers";
+import { WEIGHT } from "../../constants/weight";
 
 export default function Time({
   time,

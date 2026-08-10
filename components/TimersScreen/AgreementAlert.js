@@ -5,10 +5,10 @@ import Dialog from "react-native-dialog";
 import { useEffect, useState } from "react";
 import { BackHandler, StyleSheet, Text, View } from "react-native";
 
-import { Colors } from "../constants/colors";
-import { getItemFromStorage, setItemInStorage } from "../utils/helpers";
-import { FONT } from "../constants/typography";
-import { WEIGHT } from "../constants/weight";
+import { Colors } from "../../constants/colors";
+import { getItemFromStorage, setItemInStorage } from "../../utils/helpers";
+import { FONT } from "../../constants/typography";
+import { WEIGHT } from "../../constants/weight";
 
 export default function AgreementAlert() {
   const navigation = useNavigation();

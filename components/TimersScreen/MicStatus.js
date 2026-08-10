@@ -9,17 +9,17 @@ import {
 } from "react-native";
 import { useCallback, useEffect, useState } from "react";
 
-import { Colors } from "../constants/colors";
+import { Colors } from "../../constants/colors";
 import {
   useRecognizerData,
   useSettingsData,
-} from "../context/VoiceRecognizerContext";
-import useSettingsFunctions from "../hooks/useSettingsFunctions";
-import { Text } from "../ui/AppText";
-import IconButton from "../ui/IconButton";
-import { FONT } from "../constants/typography";
-import { SPACE } from "../constants/spacing";
-import { RADIUS } from "../constants/radius";
+} from "../../context/VoiceRecognizerContext";
+import useSettingsFunctions from "../../hooks/useSettingsFunctions";
+import { Text } from "../../ui/AppText";
+import IconButton from "../../ui/IconButton";
+import { FONT } from "../../constants/typography";
+import { SPACE } from "../../constants/spacing";
+import { RADIUS } from "../../constants/radius";
 
 export default function MicStatus() {
   const [anotherAppUsesMic, setAnotherAppUsesMic] = useState(false);

@@ -12,15 +12,14 @@ import {
   Text,
   View,
 } from "react-native";
-import { Colors } from "../constants/colors";
-import { useResponsive } from "../hooks/useResponsive";
-import IconButton from "../ui/IconButton";
-import { BulletPoint, Label, Paragraph, Subtitle } from "../ui/TextUnits";
-import { getItemFromStorage, setItemInStorage } from "../utils/helpers";
-import Section from "./Section";
-import { FONT } from "../constants/typography";
-import { SPACE } from "../constants/spacing";
-import { WEIGHT } from "../constants/weight";
+import { Colors } from "../../constants/colors";
+import { SPACE } from "../../constants/spacing";
+import { FONT } from "../../constants/typography";
+import { WEIGHT } from "../../constants/weight";
+import IconButton from "../../ui/IconButton";
+import Section from "../../ui/Section";
+import { BulletPoint, Label, Paragraph, Subtitle } from "../../ui/TextUnits";
+import { getItemFromStorage, setItemInStorage } from "../../utils/helpers";
 
 export default function Terms() {
   const [isAccepted, setIsAccepted] = useState(false);

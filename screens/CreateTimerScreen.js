@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 
-import CreateTimer from "../components/CreateTimer";
+import CreateTimer from "../components/CreateTimerScreen/CreateTimer";
 
 function CreateTimerScreen() {
   return (

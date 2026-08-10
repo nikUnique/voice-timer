@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import Commands from "../components/Commands";
+import Commands from "../components/CommandsScreen/Commands";
 
 function CommandsScreen() {
   return (

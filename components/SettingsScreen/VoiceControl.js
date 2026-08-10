@@ -9,15 +9,15 @@ import {
 } from "react-native";
 import { memo, useState } from "react";
 
-import { Colors } from "../constants/colors";
-import { useSettingsData } from "../context/VoiceRecognizerContext";
-import { useResponsive } from "../hooks/useResponsive";
-import useSettingsFunctions from "../hooks/useSettingsFunctions";
-import useSettingsStyles from "../hooks/useSettingsStyles";
-import { VOICE_FEEDBACK_SPEEDS } from "../utils/config";
-import { FONT } from "../constants/typography";
-import { SPACE } from "../constants/spacing";
-import { RADIUS } from "../constants/radius";
+import { Colors } from "../../constants/colors";
+import { useSettingsData } from "../../context/VoiceRecognizerContext";
+import { useResponsive } from "../../hooks/useResponsive";
+import useSettingsFunctions from "../../hooks/useSettingsFunctions";
+import useSettingsStyles from "../../hooks/useSettingsStyles";
+import { VOICE_FEEDBACK_SPEEDS } from "../../utils/config";
+import { FONT } from "../../constants/typography";
+import { SPACE } from "../../constants/spacing";
+import { RADIUS } from "../../constants/radius";
 
 function getSpeedLabel(value) {
   if (+value <= 0.3) return "Slow";

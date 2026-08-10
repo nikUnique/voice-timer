@@ -1,14 +1,14 @@
 import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { memo, useState } from "react";
 
-import { useSettingsData } from "../context/VoiceRecognizerContext";
-import useSettingsFunctions from "../hooks/useSettingsFunctions";
-import useSettingsStyles from "../hooks/useSettingsStyles";
-import { Colors } from "../constants/colors";
-import { useResponsive } from "../hooks/useResponsive";
-import { FONT } from "../constants/typography";
-import { SPACE } from "../constants/spacing";
-import { RADIUS } from "../constants/radius";
+import { useSettingsData } from "../../context/VoiceRecognizerContext";
+import useSettingsFunctions from "../../hooks/useSettingsFunctions";
+import useSettingsStyles from "../../hooks/useSettingsStyles";
+import { Colors } from "../../constants/colors";
+import { useResponsive } from "../../hooks/useResponsive";
+import { FONT } from "../../constants/typography";
+import { SPACE } from "../../constants/spacing";
+import { RADIUS } from "../../constants/radius";
 
 export default memo(function TimerBehavior() {
   const [showAutoStopOptions, setShowAutoStopOptions] = useState(false);

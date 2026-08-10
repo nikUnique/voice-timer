@@ -3,17 +3,20 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AppState, FlatList, StyleSheet, View } from "react-native";
 
-import { Colors } from "../constants/colors";
+import { Colors } from "../../constants/colors";
 import {
   useRecognizerData,
   useRefsData,
-} from "../context/VoiceRecognizerContext";
-import { useGeneralVoiceCommands } from "../hooks/useGeneralVoiceCommands";
-import { useTimerList } from "../hooks/useTimerList";
-import Arrows from "../ui/Arrows";
-import { emitter } from "../utils/EventEmitter";
-import { getItemFromStorage } from "../utils/helpers";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
+} from "../../context/VoiceRecognizerContext";
+import { useGeneralVoiceCommands } from "../../hooks/useGeneralVoiceCommands";
+import { useTimerList } from "../../hooks/useTimerList";
+import Arrows from "../../ui/Arrows";
+import { emitter } from "../../utils/EventEmitter";
+import { getItemFromStorage } from "../../utils/helpers";
+import {
+  getSharedObject,
+  updateSharedObject,
+} from "../../utils/sharedVariables";
 import MicStatus from "./MicStatus";
 import TimerInterfaceButtons from "./TimerInterfaceButtons";
 

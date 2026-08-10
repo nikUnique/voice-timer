@@ -1,27 +1,20 @@
 import { useState, useEffect, useRef } from "react";
 import { AppState } from "react-native";
 
-// Custom hook to track app state (foreground/background)
 export const useAppState = () => {
   const [appState, setAppState] = useState(AppState.currentState);
-  const [prevAppState, setPrevAppState] = useState(AppState.currentState);
+  const [prevAppState, setPrevAppState] = useState(null);
   const appStateRef = useRef(AppState.currentState);
 
   useEffect(() => {
-    setAppState(AppState.currentState);
-    const appStateListener = AppState.addEventListener(
-      "change",
-      (nextAppState) => {
-        setPrevAppState(appState);
-        setAppState(nextAppState);
-      },
-    );
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      setPrevAppState(appStateRef.current);
+      appStateRef.current = nextAppState;
+      setAppState(nextAppState);
+    });
 
-    // Clean up the listener when the component unmounts
-    return () => {
-      appStateListener.remove();
-    };
-  }, [appState]);
+    return () => subscription.remove();
+  }, []);
 
-  return { appState, setAppState, appStateRef, prevAppState };
+  return { appState, prevAppState };
 };

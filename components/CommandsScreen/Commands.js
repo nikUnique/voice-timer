@@ -2,15 +2,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 
-import { Colors } from "../constants/colors";
-import { useResponsive } from "../hooks/useResponsive";
-import LoadingIndicator from "../ui/LoadingIndicator";
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { capitalize } from "../utils/helpers";
-import { FONT } from "../constants/typography";
-import { WEIGHT } from "../constants/weight";
-import { SPACE } from "../constants/spacing";
-import { RADIUS } from "../constants/radius";
+import { Colors } from "../../constants/colors";
+import { RADIUS } from "../../constants/radius";
+import { SPACE } from "../../constants/spacing";
+import { FONT } from "../../constants/typography";
+import { WEIGHT } from "../../constants/weight";
+import { useRefsData } from "../../context/VoiceRecognizerContext";
+import LoadingIndicator from "../../ui/LoadingIndicator";
+import { capitalize } from "../../utils/helpers";
 
 export default memo(function Commands() {
   const [ready, setReady] = useState(false);

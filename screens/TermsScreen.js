@@ -1,4 +1,4 @@
-import Terms from "../components/Terms";
+import Terms from "../components/TermsScreen/Terms";
 import { useReady } from "../hooks/useReady";
 import LoadingIndicator from "../ui/LoadingIndicator";
 

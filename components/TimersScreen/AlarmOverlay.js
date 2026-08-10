@@ -9,17 +9,17 @@ import {
   View,
 } from "react-native";
 
-import { Colors } from "../constants/colors";
+import { Colors } from "../../constants/colors";
 import {
   useRecognizerData,
   useRefsData,
-} from "../context/VoiceRecognizerContext";
-import IconButton from "../ui/IconButton";
-import { resetTimerEmitter } from "../utils/EventEmitter";
-import { getSharedObject } from "../utils/sharedVariables";
-import { SPACE } from "../constants/spacing";
-import { FONT } from "../constants/typography";
-import { RADIUS } from "../constants/radius";
+} from "../../context/VoiceRecognizerContext";
+import IconButton from "../../ui/IconButton";
+import { resetTimerEmitter } from "../../utils/EventEmitter";
+import { getSharedObject } from "../../utils/sharedVariables";
+import { SPACE } from "../../constants/spacing";
+import { FONT } from "../../constants/typography";
+import { RADIUS } from "../../constants/radius";
 
 const { width, height } = Dimensions.get("window");
 

@@ -1,13 +1,13 @@
 /* eslint-disable react-native/no-raw-text */
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { Colors } from "../constants/colors";
-import Section from "./Section";
-import { BulletPoint, Label, Paragraph, Subtitle } from "../ui/TextUnits";
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { SPACE } from "../constants/spacing";
-import { FONT } from "../constants/typography";
-import { WEIGHT } from "../constants/weight";
+import { Colors } from "../../constants/colors";
+import Section from "../../ui/Section";
+import { BulletPoint, Label, Paragraph, Subtitle } from "../../ui/TextUnits";
+import { useRefsData } from "../../context/VoiceRecognizerContext";
+import { SPACE } from "../../constants/spacing";
+import { FONT } from "../../constants/typography";
+import { WEIGHT } from "../../constants/weight";
 
 export default function About() {
   const { commandsRef } = useRefsData();

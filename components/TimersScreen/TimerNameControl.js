@@ -1,14 +1,17 @@
 import { useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { Colors } from "../constants/colors";
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { emitter } from "../utils/EventEmitter";
-import { setItemInStorage } from "../utils/helpers";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
-import { SPACE } from "../constants/spacing";
-import { RADIUS } from "../constants/radius";
-import { WEIGHT } from "../constants/weight";
+import { Colors } from "../../constants/colors";
+import { useRefsData } from "../../context/VoiceRecognizerContext";
+import { emitter } from "../../utils/EventEmitter";
+import { setItemInStorage } from "../../utils/helpers";
+import {
+  getSharedObject,
+  updateSharedObject,
+} from "../../utils/sharedVariables";
+import { SPACE } from "../../constants/spacing";
+import { RADIUS } from "../../constants/radius";
+import { WEIGHT } from "../../constants/weight";
 
 export default function TimerNameControl() {
   const { name, onModalIsVisible, onLoadDictionary } =
