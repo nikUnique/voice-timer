@@ -16,6 +16,8 @@ import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import useSettingsStyles from "../hooks/useSettingsStyles";
 import { VOICE_FEEDBACK_SPEEDS } from "../utils/config";
 import { FONT } from "../constants/typography";
+import { SPACE } from "../constants/spacing";
+import { RADIUS } from "../constants/radius";
 
 function getSpeedLabel(value) {
   if (+value <= 0.3) return "Slow";
@@ -54,11 +56,11 @@ export default memo(function VoiceControl() {
 
   const optionView = {
     fontSize: FONT.subheading,
-    padding: 4,
-    margin: 4,
+    padding: SPACE.sm,
+    margin: SPACE.sm,
     marginLeft: 0,
     backgroundColor: Colors.whiteAlpha20,
-    borderRadius: 8,
+    borderRadius: RADIUS.chip,
     borderBottomColor: Colors.primaryTint90,
     borderBottomWidth: 1,
   };
@@ -193,7 +195,7 @@ export default memo(function VoiceControl() {
 
 const styles = StyleSheet.create({
   unfoldedBtn: {
-    marginBottom: 16,
+    marginBottom: SPACE.xl,
   },
 
   lastOption: {

@@ -10,6 +10,7 @@ import {
 } from "react-native";
 
 import { Colors } from "../constants/colors";
+import { WEIGHT } from "../constants/weight";
 
 if (
   Platform.OS === "android" &&
@@ -56,6 +57,6 @@ const styles = StyleSheet.create({
   },
   toggleText: {
     color: Colors.primaryTint90,
-    fontWeight: "600",
+    fontWeight: WEIGHT.semibold,
   },
 });

@@ -1,9 +1,8 @@
-import React from "react";
 import { StyleSheet, View } from "react-native";
 
 import CreateTimer from "../components/CreateTimer";
 
-function CreateTimerScreen({ navigation }) {
+function CreateTimerScreen() {
   return (
     <View style={styles.container}>
       <CreateTimer />

@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     position: "absolute",
-    bottom: 48,
+    bottom: SPACE.huge,
   },
 
   iconContainer: {
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   },
 
   tipTextContainer: {
-    padding: 12,
+    padding: SPACE.lg,
     position: "absolute",
     bottom: "25%",
     transform: "translate(0, 50%)",
@@ -210,6 +210,6 @@ const styles = StyleSheet.create({
   },
   tipText: {
     color: Colors.primaryTint90,
-    fontSize: 16,
+    fontSize: FONT.subheading,
   },
 });

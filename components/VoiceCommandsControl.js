@@ -9,17 +9,18 @@ import {
 } from "react-native";
 
 import { Colors } from "../constants/colors";
+import { SPACE } from "../constants/spacing";
+import { FONT } from "../constants/typography";
+import { WEIGHT } from "../constants/weight";
 import {
   useRecognizerData,
   useRefsData,
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
 import { useCommandsControl } from "../hooks/useCommandsControl";
-import { useResponsive } from "../hooks/useResponsive";
 import { Text } from "../ui/AppText";
 import { cleanStop } from "../utils/helpers";
 import { getSharedObject } from "../utils/sharedVariables";
-import { FONT } from "../constants/typography";
 
 const eventEmitter = new NativeEventEmitter(NativeModules.AudioFocusModule);
 
@@ -214,9 +215,9 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     <Animated.View style={{ opacity: fadeAnimationRefCur }}>
       <Text
         style={{
-          marginTop: 24,
+          marginTop: SPACE.xxl,
           color: Colors.primaryTint90,
-          fontWeight: "bold",
+          fontWeight: WEIGHT.bold,
           fontSize: FONT.subheading,
         }}
       >

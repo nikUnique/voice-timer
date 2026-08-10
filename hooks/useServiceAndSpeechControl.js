@@ -4,7 +4,7 @@ import { AppState } from "react-native";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { getSharedObject } from "../utils/sharedVariables";
 
-import { registerChannelsAndService } from "../utils/channelAndServiceManaber";
+import { registerChannelsAndService } from "../utils/channelAndServiceManager";
 import { useBackgroundActions } from "./useBackgroundActions";
 import { useNotification } from "./useNotification";
 import { useTimer } from "./useTimer";

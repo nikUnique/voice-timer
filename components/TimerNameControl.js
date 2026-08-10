@@ -6,10 +6,14 @@ import { useRefsData } from "../context/VoiceRecognizerContext";
 import { emitter } from "../utils/EventEmitter";
 import { setItemInStorage } from "../utils/helpers";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
+import { SPACE } from "../constants/spacing";
+import { RADIUS } from "../constants/radius";
+import { WEIGHT } from "../constants/weight";
 
 export default function TimerNameControl() {
   const { name, onModalIsVisible, onLoadDictionary } =
     getSharedObject().changeTimerNameParams;
+
   const [timerName, setTimerName] = useState(name);
   const [isCorrect, setIsCorrect] = useState(true);
   const [isReady, setIsReady] = useState(false);
@@ -222,10 +226,10 @@ const styles = StyleSheet.create({
   },
 
   modalButton: {
-    padding: 8,
-    marginHorizontal: 8,
+    padding: SPACE.md,
+    marginHorizontal: SPACE.md,
     backgroundColor: Colors.whiteAlpha20,
-    borderRadius: 8,
+    borderRadius: RADIUS.chip,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -237,13 +241,13 @@ const styles = StyleSheet.create({
 
   buttonText: {
     color: Colors.primaryTint90,
-    fontWeight: "600",
+    fontWeight: WEIGHT.semibold,
   },
 
   textBox: {
     transform: `translateX(0) translateY(-40%)`,
     position: "absolute",
-    bottom: 24,
+    bottom: SPACE.xxl,
   },
 
   errorText: {
@@ -257,9 +261,9 @@ const styles = StyleSheet.create({
   textInput: {
     borderWidth: 1,
     borderColor: Colors.primaryTint90,
-    padding: 12,
-    marginVertical: 12,
-    borderRadius: 8,
+    padding: SPACE.lg,
+    marginVertical: SPACE.lg,
+    borderRadius: RADIUS.chip,
     color: Colors.primaryTint90,
   },
 });

@@ -1,14 +1,15 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../constants/colors";
-import { useResponsive } from "../hooks/useResponsive";
+import { SPACE } from "../constants/spacing";
 import { FONT } from "../constants/typography";
+import { WEIGHT } from "../constants/weight";
 
 export function Subtitle({ children }) {
   const styles = StyleSheet.create({
     subtitle: {
       fontSize: FONT.heading,
-      fontWeight: "bold",
-      marginBottom: 12,
+      fontWeight: WEIGHT.bold,
+      marginBottom: SPACE.lg,
       color: Colors.primaryTint90,
     },
   });
@@ -25,7 +26,7 @@ export function Paragraph({ children }) {
     paragraph: {
       color: Colors.primaryTint90,
       fontSize: FONT.subheading,
-      marginBottom: 12,
+      marginBottom: SPACE.lg,
     },
   });
 
@@ -40,9 +41,9 @@ export function Label({ children }) {
   const styles = StyleSheet.create({
     label: {
       color: Colors.primaryTint90,
-      marginBottom: 8,
+      marginBottom: SPACE.md,
       fontSize: FONT.subheading,
-      fontWeight: 600,
+      fontWeight: WEIGHT.semibold,
     },
   });
 
@@ -57,7 +58,7 @@ export function BulletPoint({ children, nested = false }) {
   const styles = StyleSheet.create({
     bulletPointContainer: {
       flexDirection: "row",
-      marginLeft: nested ? 16 : 0,
+      marginLeft: nested ? SPACE.lg : 0,
     },
     bulletPoint: {
       width: 16,

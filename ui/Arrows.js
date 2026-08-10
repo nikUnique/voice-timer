@@ -3,8 +3,11 @@ import { StyleSheet, View } from "react-native";
 import { Colors } from "../constants/colors";
 import IconButton from "./IconButton";
 import { emitter } from "../utils/EventEmitter";
+import { RADIUS } from "../constants/radius";
+import { SPACE } from "../constants/spacing";
+import { FONT } from "../constants/typography";
 
-const ARROW_SIZE = 30;
+const ARROW_SIZE = FONT.headline;
 const ACTIVE_COLOR = Colors.primaryTint40;
 const INACTIVE_COLOR = Colors.blackAlpha20;
 
@@ -53,8 +56,8 @@ export default function ScrollIndicator({ currentIndex, timers, flatListRef }) {
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    right: 8,
-    top: "50",
+    right: RADIUS.chip,
+    top: SPACE.huge,
     alignItems: "center",
     justifyContent: "center",
   },

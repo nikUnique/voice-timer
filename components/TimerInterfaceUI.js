@@ -7,6 +7,8 @@ import { useRefsData } from "../context/VoiceRecognizerContext";
 import { Text } from "../ui/AppText";
 import IconButton from "../ui/IconButton";
 import Time from "./Time";
+import { WEIGHT } from "../constants/weight";
+import { SPACE } from "../constants/spacing";
 
 export default memo(function TimerInterfaceUI({
   timerHeight,
@@ -25,7 +27,7 @@ export default memo(function TimerInterfaceUI({
   const { timers } = useRefsData();
 
   const nameText = {
-    fontWeight: 600,
+    fontWeight: WEIGHT.semibold,
     fontSize: FONT.title,
     color: Colors.primaryTint90,
     textAlign: "center",
@@ -79,7 +81,7 @@ export default memo(function TimerInterfaceUI({
           <>
             <View style={(!isPaused || !isActive) && styles.hiddenTimer}>
               <IconButton
-                size={36}
+                size={FONT.display}
                 icon='refresh-outline'
                 color={Colors.primaryTint90}
                 onPress={resetTimerRef.current}
@@ -89,7 +91,7 @@ export default memo(function TimerInterfaceUI({
             {!isActive && timeLeftRef.current <= 0 && (
               <View>
                 <IconButton
-                  size={36}
+                  size={FONT.display}
                   icon='stop'
                   color={Colors.primaryTint90}
                   onPress={resetTimerRef.current}
@@ -123,7 +125,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
-    marginBottom: 48,
+    marginBottom: SPACE.huge,
   },
 
   hiddenTimer: {
@@ -134,8 +136,8 @@ const styles = StyleSheet.create({
   paginationLabel: {
     color: Colors.grayShade30,
     position: "absolute",
-    top: 15,
-    right: 15,
+    top: SPACE.xl,
+    right: SPACE.xl,
     textAlign: "right",
   },
 
@@ -144,12 +146,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    gap: 8,
+    gap: SPACE.md,
   },
 
   refreshButton: {
     borderRadius: "50%",
-    padding: 24,
+    padding: SPACE.xxl,
     backgroundColor: Colors.whiteAlpha20,
   },
 
@@ -160,7 +162,7 @@ const styles = StyleSheet.create({
 
   resetButton: {
     borderRadius: "50%",
-    padding: 24,
+    padding: SPACE.xxl,
     backgroundColor: Colors.whiteAlpha20,
   },
 

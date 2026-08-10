@@ -1,4 +1,3 @@
-import React from "react";
 import { Text as RNText, useWindowDimensions } from "react-native";
 
 export function Text(props) {
