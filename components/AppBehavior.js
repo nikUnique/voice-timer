@@ -286,6 +286,5 @@ const styles = StyleSheet.create({
   },
   textBtn: {
     color: Colors.primary,
-    lineHeight: 18,
   },
 });

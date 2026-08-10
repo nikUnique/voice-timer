@@ -123,6 +123,5 @@ const styles = StyleSheet.create({
   textBtn: {
     color: Colors.primary,
     alignSelf: "center",
-    lineHeight: 18,
   },
 });
