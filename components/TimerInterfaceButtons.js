@@ -6,6 +6,8 @@ import { useRefsData } from "../context/VoiceRecognizerContext";
 import IconButton from "../ui/IconButton";
 import { emitter } from "../utils/EventEmitter";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
+import { SPACE } from "../constants/spacing";
+import { FONT } from "../constants/typography";
 
 export default function TimerInterfaceButtons({ onDelete }) {
   const navigation = useNavigation();
@@ -58,13 +60,13 @@ export default function TimerInterfaceButtons({ onDelete }) {
   const playButton = {
     borderRadius: "50%",
     backgroundColor: Colors.whiteAlpha20,
-    padding: 24,
+    padding: SPACE.xxl,
   };
 
   const sideBtn = {
     borderRadius: "50%",
     backgroundColor: Colors.whiteAlpha20,
-    padding: 20,
+    padding: SPACE.xl,
   };
 
   return (
@@ -79,7 +81,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
           ]}
         >
           <IconButton
-            size={36}
+            size={FONT.display}
             icon='trash'
             color={Colors.primaryTint90}
             onPress={() =>
@@ -93,7 +95,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
 
         <View style={styles.playButtonContainer}>
           <IconButton
-            size={36}
+            size={FONT.display}
             icon={
               // The ultimate solution for the right icon to be displayed: I already found out that if there is no name then it the selected timers is the last one in the array or the first one in the view. And the second condition is to know whether that name is in the runningTimerNames array or not and if it is - then the icon should be paused, otherwise it should be play.
               !getSharedObject()?.runningTimerNames.includes(
@@ -143,7 +145,7 @@ export default function TimerInterfaceButtons({ onDelete }) {
               icon='add'
               color={Colors.primaryTint90}
               onPress={onPress}
-              size={36}
+              size={FONT.display}
               style={sideBtn}
             />
           </View>
@@ -170,12 +172,6 @@ export default function TimerInterfaceButtons({ onDelete }) {
 }
 
 const styles = StyleSheet.create({
-  // deleteButton: {
-  //   borderRadius: "50%",
-  //   backgroundColor: Colors.whiteAlpha20,
-  //   padding: 24,
-  // },
-
   disabledDeleteBtn: {
     opacity: 0.5,
     pointerEvents: "none",
@@ -184,12 +180,6 @@ const styles = StyleSheet.create({
   disabledCreateBtn: {
     opacity: 0.5,
   },
-
-  // playButton: {
-  //   borderRadius: "50%",
-  //   backgroundColor: Colors.whiteAlpha20,
-  //   padding: 32,
-  // },
 
   hiddenButton: {
     opacity: 0,

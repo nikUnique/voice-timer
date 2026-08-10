@@ -2,8 +2,8 @@ import { memo } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { Colors } from "../constants/colors";
+import { FONT } from "../constants/typography";
 import { useRefsData } from "../context/VoiceRecognizerContext";
-import { useResponsive } from "../hooks/useResponsive";
 import { Text } from "../ui/AppText";
 import IconButton from "../ui/IconButton";
 import Time from "./Time";
@@ -23,10 +23,10 @@ export default memo(function TimerInterfaceUI({
   timeLeftRef,
 }) {
   const { timers } = useRefsData();
-  const { t } = useResponsive();
+
   const nameText = {
     fontWeight: 600,
-    fontSize: t.title,
+    fontSize: FONT.title,
     color: Colors.primaryTint90,
     textAlign: "center",
   };

@@ -8,6 +8,8 @@ import { Colors } from "../constants/colors";
 import { useSettingsData } from "../context/VoiceRecognizerContext";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import useSettingsStyles from "../hooks/useSettingsStyles";
+import { RADIUS } from "../constants/radius";
+import { SPACE } from "../constants/spacing";
 
 export default memo(function Sound() {
   const { settingSection, setting, heading, settingLabel, slider } =
@@ -80,7 +82,7 @@ export default memo(function Sound() {
             maximumTrackTintColor={Colors.primaryTint90}
             thumbTintColor={Colors.primaryTint90}
             style={slider}
-            trackStyle={{ height: 4, borderRadius: 2 }}
+            trackStyle={{ height: 4, borderRadius: RADIUS.minimal }}
           />
 
           <Pressable
@@ -108,7 +110,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
+    gap: SPACE.md,
   },
   stepBtn: {
     alignItems: "center",

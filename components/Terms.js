@@ -18,12 +18,14 @@ import IconButton from "../ui/IconButton";
 import { BulletPoint, Label, Paragraph, Subtitle } from "../ui/TextUnits";
 import { getItemFromStorage, setItemInStorage } from "../utils/helpers";
 import Section from "./Section";
+import { FONT } from "../constants/typography";
+import { SPACE } from "../constants/spacing";
+import { WEIGHT } from "../constants/weight";
 
 export default function Terms() {
   const [isAccepted, setIsAccepted] = useState(false);
   const [isRead, setIsRead] = useState(false);
   const navigation = useNavigation();
-  const { t } = useResponsive();
 
   function handleAccept(hasAccepted) {
     setIsAccepted(!isAccepted);
@@ -63,8 +65,8 @@ export default function Terms() {
             <IconButton
               icon='arrow-back'
               color={Colors.primaryTint90}
-              size={24}
-              style={{ marginRight: 32 }}
+              size={FONT.title}
+              style={{ marginRight: SPACE.xxxl }}
               onPress={BackHandler.exitApp}
             />
           ),
@@ -94,21 +96,21 @@ export default function Terms() {
   );
 
   const title = {
-    marginBottom: 24,
+    marginBottom: SPACE.xxl,
     color: Colors.primaryTint90,
-    fontWeight: "bold",
-    marginTop: 8,
-    fontSize: t.heading,
+    fontWeight: WEIGHT.bold,
+    marginTop: SPACE.md,
+    fontSize: FONT.heading,
   };
 
   const checkboxLabel = {
     color: Colors.primaryTint90,
-    fontSize: t.body,
+    fontSize: FONT.body,
   };
 
   const acceptedText = {
     color: Colors.primaryTint90,
-    fontSize: t.body,
+    fontSize: FONT.body,
   };
 
   return (
@@ -364,13 +366,13 @@ export default function Terms() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
-    marginBottom: 32,
+    padding: SPACE.xxl,
+    marginBottom: SPACE.xxxl,
   },
 
   content: {
     justifyContent: "center",
-    marginBottom: 48,
+    marginBottom: SPACE.huge,
   },
 
   checkboxContainer: {
@@ -378,10 +380,10 @@ const styles = StyleSheet.create({
     width: "90%",
     alignItems: "center",
     marginLeft: "-1.6%",
-    marginBottom: 12,
+    marginBottom: SPACE.lg,
   },
 
   acceptButton: {
-    marginBottom: 16,
+    marginBottom: SPACE.xl,
   },
 });

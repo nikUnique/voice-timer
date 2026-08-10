@@ -5,6 +5,9 @@ import { Colors } from "../constants/colors";
 import Section from "./Section";
 import { BulletPoint, Label, Paragraph, Subtitle } from "../ui/TextUnits";
 import { useRefsData } from "../context/VoiceRecognizerContext";
+import { SPACE } from "../constants/spacing";
+import { FONT } from "../constants/typography";
+import { WEIGHT } from "../constants/weight";
 
 export default function About() {
   const { commandsRef } = useRefsData();
@@ -16,9 +19,9 @@ export default function About() {
   return (
     <ScrollView
       style={{
-        paddingHorizontal: 24,
-        marginBottom: 32,
-        marginTop: 16,
+        paddingHorizontal: SPACE.xxl,
+        marginBottom: SPACE.xxxl,
+        marginTop: SPACE.xl,
       }}
     >
       <Text style={styles.title}>About</Text>
@@ -170,21 +173,21 @@ export default function About() {
 const styles = StyleSheet.create({
   title: {
     color: Colors.primaryTint90,
-    fontSize: 24,
-    marginBottom: 24,
-    fontWeight: 600,
+    fontSize: FONT.title,
+    marginBottom: SPACE.xxxl,
+    fontWeight: WEIGHT.semibold,
   },
 
   subtitle: {
     color: Colors.primaryTint90,
-    marginBottom: 16,
-    fontWeight: 600,
-    fontSize: 18,
+    marginBottom: SPACE.xl,
+    fontWeight: WEIGHT.semibold,
+    fontSize: FONT.heading,
   },
 
   paragraph: {
     color: Colors.primaryTint90,
-    marginBottom: 12,
-    fontSize: 16,
+    marginBottom: SPACE.lg,
+    fontSize: FONT.body,
   },
 });

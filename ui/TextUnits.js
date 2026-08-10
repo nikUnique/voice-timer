@@ -1,12 +1,12 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../constants/colors";
 import { useResponsive } from "../hooks/useResponsive";
+import { FONT } from "../constants/typography";
 
 export function Subtitle({ children }) {
-  const { t } = useResponsive();
   const styles = StyleSheet.create({
     subtitle: {
-      fontSize: t.heading,
+      fontSize: FONT.heading,
       fontWeight: "bold",
       marginBottom: 12,
       color: Colors.primaryTint90,
@@ -21,11 +21,10 @@ export function Subtitle({ children }) {
 }
 
 export function Paragraph({ children }) {
-  const { t } = useResponsive();
   const styles = StyleSheet.create({
     paragraph: {
       color: Colors.primaryTint90,
-      fontSize: t.subheading,
+      fontSize: FONT.subheading,
       marginBottom: 12,
     },
   });
@@ -38,12 +37,11 @@ export function Paragraph({ children }) {
 }
 
 export function Label({ children }) {
-  const { t } = useResponsive();
   const styles = StyleSheet.create({
     label: {
       color: Colors.primaryTint90,
       marginBottom: 8,
-      fontSize: t.subheading,
+      fontSize: FONT.subheading,
       fontWeight: 600,
     },
   });
@@ -56,8 +54,6 @@ export function Label({ children }) {
 }
 
 export function BulletPoint({ children, nested = false }) {
-  const { t } = useResponsive();
-
   const styles = StyleSheet.create({
     bulletPointContainer: {
       flexDirection: "row",
@@ -68,7 +64,7 @@ export function BulletPoint({ children, nested = false }) {
     },
     text: {
       color: Colors.primaryTint90,
-      fontSize: t.subheading,
+      fontSize: FONT.subheading,
     },
   });
 

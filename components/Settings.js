@@ -7,6 +7,7 @@ import TimerBehavior from "./TimerBehavior";
 import VoiceControl from "./VoiceControl";
 import { useReady } from "../hooks/useReady";
 import LoadingIndicator from "../ui/LoadingIndicator";
+import { SPACE } from "../constants/spacing";
 
 export default function Settings() {
   const ready = useReady();
@@ -29,11 +30,11 @@ export default function Settings() {
 
 const styles = StyleSheet.create({
   scrollView: {
-    padding: 16,
-    marginBottom: 32,
+    padding: SPACE.xl,
+    marginBottom: SPACE.xxxl,
   },
 
   settingsContainer: {
-    padding: 4,
+    padding: SPACE.sm,
   },
 });

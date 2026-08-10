@@ -14,23 +14,20 @@ import {
   useRecognizerData,
   useSettingsData,
 } from "../context/VoiceRecognizerContext";
-import { useResponsive } from "../hooks/useResponsive";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import { Text } from "../ui/AppText";
 import IconButton from "../ui/IconButton";
+import { FONT } from "../constants/typography";
+import { SPACE } from "../constants/spacing";
+import { RADIUS } from "../constants/radius";
 
 export default function MicStatus() {
   const [anotherAppUsesMic, setAnotherAppUsesMic] = useState(false);
   const { isListening } = useRecognizerData();
-  const {
-    voiceEnabled,
-    setVoiceEnabled,
-    microGranted,
-    setMicroGranted,
-  } = useSettingsData();
+  const { voiceEnabled, setVoiceEnabled, microGranted, setMicroGranted } =
+    useSettingsData();
 
   const { updateSettingsInStorage } = useSettingsFunctions();
-  const { t } = useResponsive();
 
   useEffect(
     function () {
@@ -115,7 +112,7 @@ export default function MicStatus() {
   );
 
   const isListeningText = {
-    fontSize: t.body,
+    fontSize: FONT.body,
     color: Colors.grayShade20,
     textAlignVertical: "center",
     textAlign: "left",
@@ -132,7 +129,7 @@ export default function MicStatus() {
         <View style={styles.isListeningStatus}>
           <IconButton
             icon={voiceEnabled && isListening ? "mic" : "mic-outline"}
-            size={t.title}
+            size={FONT.title}
             color={Colors.primary}
           />
           <Text style={isListeningText}>
@@ -157,15 +154,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 12,
-    borderRadius: 12,
+    padding: SPACE.lg,
+    borderRadius: RADIUS.sm,
   },
 
   isListeningStatus: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    gap: 4,
+    gap: SPACE.sm,
     textAlign: "left",
   },
 });

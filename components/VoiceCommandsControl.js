@@ -19,6 +19,7 @@ import { useResponsive } from "../hooks/useResponsive";
 import { Text } from "../ui/AppText";
 import { cleanStop } from "../utils/helpers";
 import { getSharedObject } from "../utils/sharedVariables";
+import { FONT } from "../constants/typography";
 
 const eventEmitter = new NativeEventEmitter(NativeModules.AudioFocusModule);
 
@@ -56,8 +57,6 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
   } = useRefsData();
 
   const { voiceEnabled } = useSettingsData();
-
-  const { t } = useResponsive();
 
   const { fadeInAndOut, load, unload, recordGrammar, stop, addResultListener } =
     useCommandsControl({
@@ -218,7 +217,7 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
           marginTop: 24,
           color: Colors.primaryTint90,
           fontWeight: "bold",
-          fontSize: t.subheading,
+          fontSize: FONT.subheading,
         }}
       >
         {result}

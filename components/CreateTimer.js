@@ -16,6 +16,9 @@ import {
 import IconButton from "../ui/IconButton";
 import { setItemInStorage } from "../utils/helpers";
 import { updateSharedObject } from "../utils/sharedVariables";
+import { FONT } from "../constants/typography";
+import { WEIGHT } from "../constants/weight";
+import { SPACE } from "../constants/spacing";
 
 function CreateTimer() {
   const { timers, setTimers } = useRecognizerData();
@@ -173,8 +176,8 @@ function CreateTimer() {
   }
 
   const buttonStyle = {
-    fontWeight: "600",
-    fontSize: 24,
+    fontWeight: WEIGHT.semibold,
+    fontSize: FONT.title,
     color: Colors.primaryTint90,
     backgroundColor: Colors.whiteAlpha20,
     width: 72,
@@ -182,17 +185,17 @@ function CreateTimer() {
     textAlign: "center",
     textAlignVertical: "center",
     borderRadius: 1000,
-    marginBottom: 10,
+    marginBottom: SPACE.lg,
   };
 
   const inputValueSt = {
     color: Colors.primaryTint90,
-    fontSize: 30,
+    fontSize: FONT.headline,
     alignSelf: "center",
   };
 
   const icon = {
-    padding: 24,
+    padding: SPACE.xxl,
     backgroundColor: Colors.whiteAlpha20,
     borderRadius: "50%",
   };
@@ -220,7 +223,7 @@ function CreateTimer() {
                 <Ionicons
                   name='backspace'
                   color={Colors.primaryTint90}
-                  size={30}
+                  size={FONT.headline}
                   style={buttonStyle}
                 />
               }
@@ -230,7 +233,7 @@ function CreateTimer() {
                 icon='play'
                 color={Colors.primaryTint90}
                 onPress={onCreateTimer}
-                size={30}
+                size={FONT.headline}
                 style={icon}
               />
             </View>
@@ -250,12 +253,8 @@ const styles = StyleSheet.create({
     width: "80%",
   },
 
-  keypadContainer: {
-    // flex: 3,
-  },
-
   iconContainer: {
-    marginBottom: 32,
+    marginBottom: SPACE.xxxl,
     alignItems: "center",
   },
 
@@ -265,7 +264,7 @@ const styles = StyleSheet.create({
   },
 
   unit: {
-    fontSize: 18,
+    fontSize: FONT.heading,
   },
 });
 

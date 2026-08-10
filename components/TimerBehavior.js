@@ -6,6 +6,9 @@ import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import useSettingsStyles from "../hooks/useSettingsStyles";
 import { Colors } from "../constants/colors";
 import { useResponsive } from "../hooks/useResponsive";
+import { FONT } from "../constants/typography";
+import { SPACE } from "../constants/spacing";
+import { RADIUS } from "../constants/radius";
 
 export default memo(function TimerBehavior() {
   const [showAutoStopOptions, setShowAutoStopOptions] = useState(false);
@@ -26,8 +29,6 @@ export default memo(function TimerBehavior() {
     setIsVibrating,
   } = useSettingsData();
 
-  const { t } = useResponsive();
-
   const {
     settingSection,
     setting,
@@ -41,19 +42,19 @@ export default memo(function TimerBehavior() {
     useSettingsFunctions();
 
   const optionView = {
-    fontSize: t.subheading,
-    padding: 4,
-    margin: 4,
+    fontSize: FONT.subheading,
+    padding: SPACE.sm,
+    margin: SPACE.sm,
     marginLeft: 0,
     backgroundColor: Colors.whiteAlpha20,
-    borderRadius: 8,
+    borderRadius: RADIUS.chip,
     borderBottomColor: Colors.primaryTint90,
     borderBottomWidth: 1,
   };
 
   const optionText = {
     color: Colors.primaryTint90,
-    fontSize: t.body,
+    fontSize: FONT.body,
   };
   return (
     <View style={settingSection}>
@@ -141,7 +142,7 @@ export default memo(function TimerBehavior() {
 
 const styles = StyleSheet.create({
   unfoldedBtn: {
-    marginBottom: 16,
+    marginBottom: SPACE.xl,
   },
 
   lastOption: {

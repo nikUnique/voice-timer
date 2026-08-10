@@ -35,9 +35,11 @@ import HistoryScreen from "./screens/HistoryScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import TermsScreen from "./screens/TermsScreen";
 import TimersScreen from "./screens/TimersScreen";
+import AttributionScreen from "./screens/AttributionScreen";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
 import { getSharedObject, updateSharedObject } from "./utils/sharedVariables";
 import { cleanStop } from "./utils/helpers";
+import { FONT } from "./constants/typography";
 
 const Stack = createNativeStackNavigator();
 
@@ -47,7 +49,6 @@ function AppWithContext() {
   const { isMediaPausedRef, currentActivityRef, leastTimeTimerRef } =
     useRefsData();
   const { appState } = useAppState();
-  const { t } = useResponsive();
 
   useEffect(function () {
     return () => {
@@ -146,7 +147,7 @@ function AppWithContext() {
             headerTitleStyle: {
               color: Colors.primaryTint90,
 
-              fontSize: t.heading,
+              fontSize: FONT.heading,
             },
             headerTintColor: Colors.primaryTint90,
             animation: "fade",
@@ -230,6 +231,13 @@ function AppWithContext() {
             component={HistoryScreen}
             options={{
               title: "History",
+            }}
+          />
+          <Stack.Screen
+            name='AttributionScreen'
+            component={AttributionScreen}
+            options={{
+              title: "Attribution",
             }}
           />
           {

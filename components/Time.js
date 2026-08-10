@@ -7,6 +7,7 @@ import { useSpeak } from "../hooks/useSpeak";
 import { Text } from "../ui/AppText";
 import { emitter } from "../utils/EventEmitter";
 import { formatTime } from "../utils/helpers";
+import { WEIGHT } from "../constants/weight";
 
 export default function Time({
   time,
@@ -107,7 +108,7 @@ export default function Time({
         style={[
           {
             fontSize: 110,
-            fontWeight: "bold",
+            fontWeight: WEIGHT.bold,
             color: Colors.primaryTint90,
             textAlign: "center",
             width: "100%",

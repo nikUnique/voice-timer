@@ -2,16 +2,17 @@ import { useNavigation } from "@react-navigation/native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { Colors } from "../constants/colors";
+import { SPACE } from "../constants/spacing";
+import { FONT } from "../constants/typography";
 import { getSharedObject } from "../utils/sharedVariables";
-import { useResponsive } from "../hooks/useResponsive";
+import { RADIUS } from "../constants/radius";
 
 export default function ContextMenu({ onToggleModal, modalIsVisible }) {
   const navigation = useNavigation();
-  const { t } = useResponsive();
 
   const menuItem = {
-    padding: 10,
-    fontSize: t.body,
+    padding: SPACE.lg,
+    fontSize: FONT.body,
     color: Colors.primaryTint90,
   };
   return (
@@ -67,6 +68,15 @@ export default function ContextMenu({ onToggleModal, modalIsVisible }) {
             >
               <Text style={menuItem}>History</Text>
             </Pressable>
+            <Pressable
+              onPress={() => {
+                !getSharedObject().alertingTimerNames.length &&
+                  navigation.navigate("AttributionScreen");
+                onToggleModal();
+              }}
+            >
+              <Text style={menuItem}>Attribution</Text>
+            </Pressable>
           </View>
         </Pressable>
       )}
@@ -78,9 +88,9 @@ const styles = StyleSheet.create({
   menu: {
     position: "absolute",
     backgroundColor: Colors.primaryShade30,
-    borderRadius: 8,
-    elevation: 5,
-    padding: 10,
+    borderRadius: RADIUS.chip,
+    elevation: SPACE.sm,
+    padding: SPACE.lg,
   },
 
   wrapper: {

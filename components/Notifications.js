@@ -5,15 +5,14 @@ import { Colors } from "../constants/colors";
 import { useResponsive } from "../hooks/useResponsive";
 import useSettingsStyles from "../hooks/useSettingsStyles";
 import { openNotificationChannelSettings } from "../utils/helpers";
+import { FONT } from "../constants/typography";
 
 export default memo(function Notifications() {
   const { settingSection, setting, heading, settingBtn } = useSettingsStyles();
 
-  const { t } = useResponsive();
-
   const notificationText = {
     color: Colors.primaryTint90,
-    fontSize: t.subheading,
+    fontSize: FONT.subheading,
   };
 
   return (

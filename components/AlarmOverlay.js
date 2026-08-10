@@ -17,6 +17,9 @@ import {
 import IconButton from "../ui/IconButton";
 import { resetTimerEmitter } from "../utils/EventEmitter";
 import { getSharedObject } from "../utils/sharedVariables";
+import { SPACE } from "../constants/spacing";
+import { FONT } from "../constants/typography";
+import { RADIUS } from "../constants/radius";
 
 const { width, height } = Dimensions.get("window");
 
@@ -135,14 +138,14 @@ const styles = StyleSheet.create({
   },
   timerContainer: {
     backgroundColor: Colors.primaryShade30,
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 12,
+    padding: SPACE.xxl,
+    borderRadius: RADIUS.xs,
+    marginBottom: SPACE.lg,
     width: "80%",
-    elevation: 10,
+    elevation: SPACE.lg,
   },
   title: {
-    fontSize: 18,
+    fontSize: FONT.heading,
     fontWeight: "bold",
     color: Colors.primaryTint90,
   },
@@ -155,14 +158,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: Colors.whiteAlpha20,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
+    paddingVertical: SPACE.lg,
+    paddingHorizontal: SPACE.xxl,
+    borderRadius: RADIUS.tight,
   },
   buttonText: {
     color: Colors.primaryTint90,
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: FONT.subheading,
   },
 });
 

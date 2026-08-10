@@ -15,6 +15,7 @@ import { useResponsive } from "../hooks/useResponsive";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import useSettingsStyles from "../hooks/useSettingsStyles";
 import { VOICE_FEEDBACK_SPEEDS } from "../utils/config";
+import { FONT } from "../constants/typography";
 
 function getSpeedLabel(value) {
   if (+value <= 0.3) return "Slow";
@@ -51,9 +52,8 @@ export default memo(function VoiceControl() {
     voiceFeedbackSpeedRef.current,
   );
 
-  const { t } = useResponsive();
   const optionView = {
-    fontSize: t.subheading,
+    fontSize: FONT.subheading,
     padding: 4,
     margin: 4,
     marginLeft: 0,
@@ -65,7 +65,7 @@ export default memo(function VoiceControl() {
 
   const optionText = {
     color: Colors.primaryTint90,
-    fontSize: t.body,
+    fontSize: FONT.body,
   };
 
   return (

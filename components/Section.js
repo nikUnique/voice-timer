@@ -1,4 +1,5 @@
 import { StyleSheet, View } from "react-native";
+import { SPACE } from "../constants/spacing";
 
 export default function Section({ children }) {
   return <View style={styles.container}>{children}</View>;
@@ -6,6 +7,6 @@ export default function Section({ children }) {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 24,
+    marginBottom: SPACE.xxl,
   },
 });

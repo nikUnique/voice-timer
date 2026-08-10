@@ -14,14 +14,12 @@ import {
 } from "react-native";
 
 import { Colors } from "../constants/colors";
-import {
-  useRefsData,
-  useSettingsData,
-} from "../context/VoiceRecognizerContext";
+import { useSettingsData } from "../context/VoiceRecognizerContext";
 import useSettingsFunctions from "../hooks/useSettingsFunctions";
 import useSettingsStyles from "../hooks/useSettingsStyles";
-import BrokenMic from "./BrokenMic";
 import { ExpandableSetting } from "../ui/ExpandableSetting";
+import BrokenMic from "./BrokenMic";
+import { SPACE } from "../constants/spacing";
 
 export default memo(function AppBehavior() {
   const {
@@ -276,7 +274,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: SPACE.md,
   },
   stepBtn: {
     alignItems: "center",

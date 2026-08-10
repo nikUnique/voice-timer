@@ -7,6 +7,8 @@ import { BackHandler, StyleSheet, Text, View } from "react-native";
 
 import { Colors } from "../constants/colors";
 import { getItemFromStorage, setItemInStorage } from "../utils/helpers";
+import { FONT } from "../constants/typography";
+import { WEIGHT } from "../constants/weight";
 
 export default function AgreementAlert() {
   const navigation = useNavigation();
@@ -84,15 +86,15 @@ const styles = StyleSheet.create({
   link: {
     color: Colors.primary,
     borderBottomColor: Colors.primary,
-    fontWeight: 600,
-    fontSize: 15,
+    fontWeight: WEIGHT.semibold,
+    fontSize: FONT.subheading,
     borderBottomWidth: 1,
     textDecorationLine: "underline",
   },
 
   conditionText: {
-    fontSize: 15,
+    fontSize: FONT.subheading,
     color: Colors.primary,
-    fontWeight: 600,
+    fontWeight: WEIGHT.semibold,
   },
 });

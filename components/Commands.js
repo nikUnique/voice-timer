@@ -7,6 +7,10 @@ import { useResponsive } from "../hooks/useResponsive";
 import LoadingIndicator from "../ui/LoadingIndicator";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { capitalize } from "../utils/helpers";
+import { FONT } from "../constants/typography";
+import { WEIGHT } from "../constants/weight";
+import { SPACE } from "../constants/spacing";
+import { RADIUS } from "../constants/radius";
 
 export default memo(function Commands() {
   const [ready, setReady] = useState(false);
@@ -58,7 +62,7 @@ export default memo(function Commands() {
       {
         command: `${capitalize(STOP)} [timer name]`,
         example: `${capitalize(STOP)} Focus timer`,
-        description: "STOPs the timer if it was paused, otherwise no effect.",
+        description: "Stops the timer if it was paused, otherwise no effect.",
         icon: "refresh-outline",
         badge: "STOP",
       },
@@ -169,73 +173,68 @@ export default memo(function Commands() {
     return () => clearTimeout(id);
   }, []);
 
-  const { t } = useResponsive();
-
   const title = {
-    fontSize: t.heading,
-    fontWeight: "600",
+    fontSize: FONT.heading,
+    fontWeight: WEIGHT.semibold,
     color: Colors.primaryTint90,
-    marginBottom: 16,
+    marginBottom: SPACE.xl,
   };
   const subtitle = {
-    fontSize: t.subheading,
+    fontSize: FONT.subheading,
     color: Colors.primaryTint70,
-    marginBottom: 20,
+    marginBottom: SPACE.xxl,
   };
 
-  const renderItem = useCallback(
-    function ({ item }) {
-      const { icon, badge, command, example, description } = item;
-      const badgeText = {
-        fontSize: t.label,
-        letterSpacing: 1.1,
-        color: Colors.primaryTint40,
-      };
+  const renderItem = useCallback(function ({ item }) {
+    const { icon, badge, command, example, description } = item;
+    const badgeText = {
+      fontSize: FONT.caption,
+      letterSpacing: 1.1,
+      color: Colors.primaryTint40,
+    };
 
-      const commandText = {
-        fontSize: t.body,
-        fontWeight: "600",
-        color: Colors.primaryTint90,
-      };
+    const commandText = {
+      fontSize: FONT.body,
+      fontWeight: WEIGHT.semibold,
+      color: Colors.primaryTint90,
+    };
 
-      const exampleText = {
-        fontSize: t.caption,
+    const exampleText = {
+      fontSize: FONT.caption,
 
-        color: Colors.primaryTint8,
-      };
+      color: Colors.primaryTint8,
+    };
 
-      const descriptionText = {
-        fontSize: t.caption,
-        color: Colors.grayTint20,
-        lineHeight: 18,
-      };
+    const descriptionText = {
+      fontSize: FONT.caption,
+      color: Colors.grayTint20,
+      lineHeight: 18,
+    };
 
-      return (
-        <View style={styles.card}>
-          <View style={styles.iconBox}>
-            <Ionicons
-              name={icon}
-              size={18}
-              color={Colors.primaryTint40}
-            />
-          </View>
-          <View style={styles.body}>
-            <View style={styles.badge}>
-              <Text style={badgeText}>{badge}</Text>
-            </View>
-            <Text style={commandText}>{command}</Text>
-            {example && (
-              <Text style={exampleText}>
-                <Text style={styles.prompt}>&gt; </Text>&quot;{example}&quot;
-              </Text>
-            )}
-            <Text style={descriptionText}>{description}</Text>
-          </View>
+    return (
+      <View style={styles.card}>
+        <View style={styles.iconBox}>
+          <Ionicons
+            name={icon}
+            size={18}
+            color={Colors.primaryTint40}
+          />
         </View>
-      );
-    },
-    [t.body, t.caption, t.label],
-  );
+        <View style={styles.body}>
+          <View style={styles.badge}>
+            <Text style={badgeText}>{badge}</Text>
+          </View>
+          <Text style={commandText}>{command}</Text>
+          {example && (
+            <Text style={exampleText}>
+              <Text style={styles.prompt}>&gt; </Text>&quot;{example}&quot;
+            </Text>
+          )}
+          <Text style={descriptionText}>{description}</Text>
+        </View>
+      </View>
+    );
+  }, []);
 
   const Header = useMemo(
     () => (
@@ -272,7 +271,7 @@ export default memo(function Commands() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: SPACE.xl,
   },
 
   list: {
@@ -280,41 +279,41 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: Colors.primaryShade50, // #092e34
-    borderRadius: 14,
+    borderRadius: RADIUS.sm,
     borderLeftWidth: 3,
     borderLeftColor: Colors.primary, // #0b7285
-    paddingVertical: 14,
-    paddingRight: 16,
-    paddingLeft: 13,
+    paddingVertical: SPACE.xl,
+    paddingRight: SPACE.xl,
+    paddingLeft: SPACE.lg,
     flexDirection: "row",
-    gap: 14,
-    marginBottom: 10,
+    gap: SPACE.xl,
+    marginBottom: SPACE.lg,
   },
   body: {
     flex: 1,
-    gap: 4,
+    gap: SPACE.sm,
   },
   commandItem: {
     flexDirection: "row",
     alignItems: "flex-start",
-    padding: 14,
-    marginBottom: 10,
+    padding: SPACE.xl,
+    marginBottom: SPACE.lg,
     backgroundColor: Colors.grayShade20,
-    borderRadius: 12,
+    borderRadius: RADIUS.sm,
     borderWidth: 0.5,
     borderColor: Colors.whiteAlpha10,
-    gap: 12,
+    gap: SPACE.lg,
   },
   iconBox: {
     width: 38,
     height: 38,
-    borderRadius: 10,
+    borderRadius: RADIUS.xs,
     backgroundColor: Colors.primaryTint8Alpha15,
     borderWidth: 1,
     borderColor: Colors.primaryTint8Alpha30,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 2,
+    marginTop: SPACE.xs,
   },
   textContainer: {
     flex: 1,
@@ -323,23 +322,23 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     borderWidth: 1,
     borderColor: Colors.primaryTint40Alpha40,
-    borderRadius: 5,
-    paddingHorizontal: 7,
-    paddingVertical: 2,
+    borderRadius: RADIUS.tight,
+    paddingHorizontal: SPACE.md,
+    paddingVertical: SPACE.xs,
     backgroundColor: Colors.primaryTint40Alpha8,
-    marginBottom: 1,
+    marginBottom: SPACE.xs,
   },
   badgeWrap: {
     alignSelf: "flex-start",
     backgroundColor: Colors.primaryTint8,
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 1,
-    marginBottom: 6,
+    borderRadius: RADIUS.tight,
+    paddingHorizontal: SPACE.md,
+    paddingVertical: SPACE.xs,
+    marginBottom: SPACE.md,
   },
   prompt: {
     color: Colors.primaryShade30,
-    fontWeight: "700",
-    fontSize: 14,
+    fontWeight: WEIGHT.bold,
+    fontSize: FONT.body,
   },
 });

@@ -5,6 +5,10 @@ import { memo, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { SPACE } from "../constants/spacing";
+import { RADIUS } from "../constants/radius";
+import { FONT } from "../constants/typography";
+import { WEIGHT } from "../constants/weight";
 
 function formatDuration(seconds) {
   const h = Math.floor(seconds / 3600);
@@ -182,11 +186,11 @@ export default memo(function HistoryItem({ item }) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 16,
-    padding: 14,
+    borderRadius: SPACE.xl,
+    padding: SPACE.xl,
     flexDirection: "row",
     alignItems: "center",
-    gap: 14,
+    gap: SPACE.xl,
     width: "100%",
   },
   // Running card — add a subtle border so it feels "live"
@@ -206,7 +210,7 @@ const styles = StyleSheet.create({
   iconBox: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: RADIUS.sm,
     backgroundColor: Colors.blackAlpha20,
     alignItems: "center",
     justifyContent: "center",
@@ -220,23 +224,31 @@ const styles = StyleSheet.create({
   durationDone: { color: Colors.primaryTint70 },
 
   info: { flex: 1 },
-  label: { fontSize: 15, fontWeight: "600", color: Colors.primaryTint90 },
-  time: { fontSize: 12, color: Colors.primaryTint70, marginTop: 3 },
+  label: {
+    fontSize: FONT.subheading,
+    fontWeight: WEIGHT.semibold,
+    color: Colors.primaryTint90,
+  },
+  time: { fontSize: FONT.caption, color: Colors.primaryTint70, marginTop: 3 },
   right: { alignItems: "flex-end" },
-  duration: { fontSize: 15, fontWeight: "600", color: Colors.primaryTint90 },
-  day: { fontSize: 12, color: Colors.primaryTint70, marginTop: 3 },
+  duration: {
+    fontSize: FONT.subheading,
+    fontWeight: WEIGHT.semibold,
+    color: Colors.primaryTint90,
+  },
+  day: { fontSize: FONT.caption, color: Colors.primaryTint70, marginTop: 3 },
 
   badge: {
-    borderRadius: 20,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    marginTop: 3,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACE.md,
+    paddingVertical: SPACE.xs,
+    marginTop: SPACE.xs,
   },
   runningBadge: { backgroundColor: Colors.primaryTint8 },
   pausedBadge: { backgroundColor: Colors.pausedAlpha20 },
   resetBadge: { backgroundColor: Colors.pausedAlpha15 },
 
-  badgeText: { fontSize: 11, fontWeight: "600" },
+  badgeText: { fontSize: FONT.caption, fontWeight: WEIGHT.semibold },
   runningText: { color: Colors.primaryTint90 },
   pausedText: { color: Colors.pausedColor },
   resetText: { color: Colors.resetColor },
