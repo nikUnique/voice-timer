@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Timer with commands",
-    "slug": "timer_with_commands",
+    "slug": "voice_timer",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/time_icon.png",
@@ -14,28 +14,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.moonnic.timer_with_commands"
+      "bundleIdentifier": "com.commitnobug.voice_timer"
     },
     "android": {
       "plugins": [
-        [
-          "expo-notifications",
-          {
-            "icon": "./assets/time_icon.png",
-            "color": "#ffffff",
-            "defaultChannel": "default",
-            "sounds": ["./assets/joy.mp3"],
-            "enableBackgroundRemoteNotifications": true
-          }
-        ],
-        [
-          "expo-audio",
-          {
-            "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone.",
-            "enableBackgroundPlayback": true,
-            "enableBackgroundRecording": false
-          }
-        ],
         {
           "notificationsPermission": "Allow $(PRODUCT_NAME) to send you notifications."
         }
@@ -43,18 +25,17 @@
       "permissions": [
         "WRITE_SETTINGS",
         "FOREGROUND_SERVICE",
-        "android.permission.FOREGROUND_SERVICE_DATA_SYNC",
         "android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
       ],
       "adaptiveIcon": {
         "backgroundColor": "lightblue"
       },
-      "package": "com.moonnic.timer_with_commands"
+      "package": "com.commitnobug.voice_timer"
     },
-    "scheme": "timer_with_commands",
+    "scheme": "voice_timer",
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["./lib/withNotifeeAndroidFix", "expo-audio"]
+    "plugins": ["./lib/withNotifeeAndroidFix"]
   }
 }
