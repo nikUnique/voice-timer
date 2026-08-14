@@ -189,11 +189,14 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
             {sortedTimers?.length > 0 && (
               <TimerInterfaceButtons onDelete={handleDelete} />
             )}
-            <Arrows
-              currentIndex={currentIndex}
-              timers={timers}
-              flatListRef={flatListRef}
-            />
+
+            {timers.length > 1 && (
+              <Arrows
+                currentIndex={currentIndex}
+                timers={timers}
+                flatListRef={flatListRef}
+              />
+            )}
           </View>
         )}
       </View>

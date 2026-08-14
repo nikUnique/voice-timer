@@ -1,5 +1,4 @@
 import { useMemo, useRef, useState } from "react";
-import { useAppState } from "./useAppState";
 
 export function useTimerInterfaceState({ time }) {
   // Timer state
@@ -33,12 +32,9 @@ export function useTimerInterfaceState({ time }) {
   // Notification
   const timeLabelRef = useRef(null);
 
-  const { appState } = useAppState();
-
   const allState = useMemo(
     () => ({
       isAlarming,
-      appState,
       setIsAlarming,
       isReset,
       setIsReset,
@@ -62,7 +58,7 @@ export function useTimerInterfaceState({ time }) {
       timeLabelRef,
       pauseTimerRef,
     }),
-    [appState, isActive, isAlarming, isPaused, isReset],
+    [isActive, isAlarming, isPaused, isReset],
   );
 
   return allState;

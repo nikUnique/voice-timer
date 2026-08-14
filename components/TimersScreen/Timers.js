@@ -29,6 +29,7 @@ import {
 } from "../../utils/sharedVariables";
 import TimerList from "./TimerList";
 import VoiceCommandsControl from "./VoiceCommandsControl";
+import { useControlledVolume } from "../../hooks/useControlledVolume";
 
 export default function Timers({ navigation }) {
   const [isAwake] = useState(false);
@@ -257,31 +258,44 @@ export default function Timers({ navigation }) {
     [alertingTimerNamesRef, prepareAlertingTimerNames, setAlertingTimerNames],
   );
 
-  useEffect(function () {
+  useEffect(() => {
+    let isMounted = true;
+    let subscription;
+
     async function load() {
       const localMicroGranted = await PermissionsAndroid.check(
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
       );
 
+      if (!isMounted) return;
+
       const updatedOptions = localMicroGranted
         ? options
         : { ...options, foregroundServiceType: ["specialUse"] };
 
-      if (AppState.currentState === "active") {
+      const start = () => {
         updateSharedObject({ isTaskRunning: true });
         BackgroundService.start(backgroundTask, updatedOptions);
+      };
+
+      if (AppState.currentState === "active") {
+        start();
       } else {
-        const sub = AppState.addEventListener("change", (state) => {
+        subscription = AppState.addEventListener("change", (state) => {
           if (state === "active") {
-            updateSharedObject({ isTaskRunning: true });
-            BackgroundService.start(backgroundTask, updatedOptions);
-            sub.remove();
+            start();
+            subscription.remove();
           }
         });
-        return () => sub.remove();
       }
     }
+
     load();
+
+    return () => {
+      isMounted = false;
+      subscription?.remove();
+    };
   }, []);
 
   useEffect(

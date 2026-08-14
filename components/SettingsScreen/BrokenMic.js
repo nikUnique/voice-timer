@@ -17,9 +17,8 @@ export default memo(function BrokenMic() {
   const { updateSettingsInStorage } = useSettingsFunctions();
   const { commandsRef } = useRefsData();
 
-  const { STOP_MEDIA, PLAY_MEDIA } = commandsRef?.current
-    ? commandsRef.current
-    : {};
+  const { STOP_MEDIA, PLAY_MEDIA, VOLUME_UP, VOLUME_DOWN } =
+    commandsRef?.current ? commandsRef.current : {};
 
   if (
     Platform.OS === "android" &&
@@ -34,7 +33,7 @@ export default memo(function BrokenMic() {
         label='Ignore hardware media button events'
         labelStyle={settingLabel}
         descriptionStyle={settingDescription}
-        description={`Useful if your headset's physical buttons are broken and misfiring, causing unwanted pause/resume.\n\nIf you also enabled a similar setting in your media app, turn this on too - the app will then pause/resume external media by requesting and releasing audio focus instead of sending button commands.\n\nNote: if this setting is on, and you paused media using "${STOP_MEDIA}", then fully closing or killing this app will cause the paused media to resume on its own. Also, you can resume with ${PLAY_MEDIA}, only if you paused using a command. Otherwise, you won't be able to resume with the "${PLAY_MEDIA}" command.`}
+        description={`Useful if your headset's physical buttons are broken and misfiring, causing unwanted pause/resume.\n\nIf you also enabled a similar setting in your media app, turn this on too - the app will then pause/resume external media by requesting and releasing audio focus instead of sending button commands.\n\nNote: if this setting is on, and you paused media using "${STOP_MEDIA}" command, then fully closing or killing this app will cause the paused media to resume on its own. Also, you can resume with "${PLAY_MEDIA}" command, only if you paused using a command. Otherwise, you won't be able to resume with the "${PLAY_MEDIA}" command.\n\nThis also blocks unwanted media volume changes from a misfiring headset - but as a side effect, it blocks your phone's physical volume buttons too, for media volume only. You can still change the media volume using the "${VOLUME_UP}" and "${VOLUME_DOWN}" commands.`}
       />
 
       <Switch

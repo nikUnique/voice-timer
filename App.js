@@ -35,14 +35,13 @@ import TimersScreen from "./screens/TimersScreen";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
 import { cleanStop } from "./utils/helpers";
 import { getSharedObject } from "./utils/sharedVariables";
+import { useAppStateChange } from "./hooks/useAppStateChange";
 
 const Stack = createNativeStackNavigator();
 
 function AppWithContext() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const { dimScreenRef, keepScreenDim, voiceEnabled } = useSettingsData();
-
-  const { appState } = useAppState();
 
   useEffect(function () {
     return () => {
@@ -82,15 +81,7 @@ function AppWithContext() {
     [dimScreenRef, keepScreenDim],
   );
 
-  useEffect(
-    function () {
-      checkNotificationPermission();
-      restoreBrightness();
-    },
-    [appState, restoreBrightness],
-  );
-
-  async function checkNotificationPermission() {
+  const checkNotificationPermission = useCallback(async () => {
     if (Platform.OS === "android") {
       const settings = await notifee.getNotificationSettings();
 
@@ -102,7 +93,19 @@ function AppWithContext() {
         await notifee.requestPermission();
       }, 1000);
     }
-  }
+  }, []);
+
+  const checkOnForeground = useCallback(
+    (nextAppState) => {
+      if (nextAppState === "active") {
+        checkNotificationPermission();
+        restoreBrightness();
+      }
+    },
+    [checkNotificationPermission, restoreBrightness],
+  );
+
+  useAppStateChange(checkOnForeground);
 
   function handleToggleModal() {
     setModalIsVisible(!modalIsVisible);
