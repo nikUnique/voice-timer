@@ -89,7 +89,6 @@ export function useStartTimer({
           isPausedRef.current = false;
           timerStateRef.current = "running";
           updateSharedObject({
-            appStateBox: "active",
             runningTimerNames: [
               ...new Set([...getSharedObject().runningTimerNames, name]),
             ],

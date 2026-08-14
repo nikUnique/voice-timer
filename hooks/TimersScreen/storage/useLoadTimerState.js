@@ -24,14 +24,10 @@ export function useLoadTimerState({
   pausedTimeRef,
   timerIsActiveRef,
 }) {
-  let appStateBoxAlt;
   const { setTimersHistory } = useRefsData();
 
   const loadTimerState = useCallback(async function loadTimerState() {
     try {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      appStateBoxAlt = "activeAfterBackground";
-
       const savedTime = await getItemFromStorage(`timerStarted-${name}`);
 
       const parsedTimerState = await getItemFromStorage(`timerState-${name}`);
@@ -95,8 +91,6 @@ export function useLoadTimerState({
       }
 
       handleReadyState();
-
-      return appStateBoxAlt;
     } catch (err) {
       console.error(err);
     }

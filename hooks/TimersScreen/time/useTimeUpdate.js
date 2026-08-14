@@ -163,27 +163,12 @@ export function useTimeUpdate({
   const updateDelayAndLeastTimer = useCallback(
     async function () {
       if (timeLeftRef.current <= 0) {
-        updateSharedObject({ delay: 10 });
-
         // Necessary in the end
         leastTimeTimerRef.current = await updateLeastTimer();
 
         timersTimesRef.current = timersTimesRef.current.filter(
           (timer) => timer.timerName !== name,
         );
-      }
-
-      if (timeLeftRef.current <= 10) {
-        updateSharedObject({ delay: 1 });
-      }
-
-      if (timeLeftRef.current > 0 && timeLeftRef.current % 60 < 10) {
-        const newDelay = Math.ceil(timeLeftRef.current % 60) || 1;
-        updateSharedObject({ delay: newDelay });
-      }
-
-      if (timeLeftRef.current % 60 >= 10) {
-        updateSharedObject({ delay: 1 });
       }
     },
     [leastTimeTimerRef, name, timeLeftRef, timersTimesRef, updateLeastTimer],

@@ -250,7 +250,6 @@ export function usePauseResume({
 
         emitter.emit(`pause-${name}`);
         updateSharedObject({
-          delay: 10,
           runningTimerNames: getSharedObject().runningTimerNames.filter(
             (timerName) => timerName !== name,
           ),

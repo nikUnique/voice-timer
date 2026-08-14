@@ -11,16 +11,12 @@ export function useSaveStorage({
   timeoutRef,
   timerIsActiveRef,
 }) {
-  let appStateBoxAlt;
-
   const { updateTimers } = useUpdateTimers();
 
   async function saveStorage() {
     try {
       if (AppState.currentState !== "active") {
         if (!timerIsActiveRef.current) return;
-
-        appStateBoxAlt = "background";
 
         const updateObj = {
           name,
@@ -52,8 +48,6 @@ export function useSaveStorage({
 
         setItemInStorage("timerHistory", getSharedObject().timers);
       }
-
-      return appStateBoxAlt;
     } catch (error) {
       console.error("An error occurred in saveStorage function 🩹", error);
     }

@@ -26,8 +26,7 @@ export function usePrepareEffects({
   const load = useCallback(
     async function load() {
       if (AppState.currentState === "active") {
-        const newAppState = await loadTimerState();
-        updateSharedObject({ appStateBox: newAppState });
+        await loadTimerState();
       }
     },
     [loadTimerState],
@@ -47,9 +46,7 @@ export function usePrepareEffects({
     function () {
       const appStateListener = AppState.addEventListener("change", async () => {
         if (AppState.currentState === "background" && timeLeftRef.current > 0) {
-          const newAppState = await saveStorage();
-
-          updateSharedObject({ appStateBox: newAppState });
+          await saveStorage();
         }
       });
       return () => {
