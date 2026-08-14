@@ -1,4 +1,4 @@
-package com.moonnic.timer_with_commands
+package com.commitnobug.voice_timer
 import android.util.Log
 import android.app.Activity
 import android.content.Intent

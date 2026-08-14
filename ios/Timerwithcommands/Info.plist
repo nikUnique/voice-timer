@@ -27,8 +27,8 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>timer_with_commands</string>
-          <string>com.moonnic.timer-with-commands</string>
+          <string>voice_timer</string>
+          <string>com.commitnobug.voice_timer</string>
         </array>
       </dict>
     </array>

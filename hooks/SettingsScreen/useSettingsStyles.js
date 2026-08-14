@@ -1,20 +1,23 @@
 import { useMemo } from "react";
 import { Colors } from "../../constants/colors";
 import { FONT } from "../../constants/typography";
+import { SPACE } from "../../constants/spacing";
+import { RADIUS } from "../../constants/radius";
 
 export default function useSettingsStyles() {
   const settingSection = useMemo(
     () => ({
       borderBottomWidth: 1,
       borderBottomColor: Colors.primaryTint70,
-      paddingHorizontal: 8,
+      paddingHorizontal: SPACE.md,
+      marginBottom: SPACE.xxxl,
     }),
     [],
   );
 
   const setting = useMemo(
     () => ({
-      marginBottom: 16,
+      marginBottom: SPACE.xxxl,
     }),
     [],
   );
@@ -24,7 +27,7 @@ export default function useSettingsStyles() {
       borderBottomWidth: 1,
       borderBottomColor: Colors.primaryTint70,
       borderStyle: "dotted",
-      marginBottom: 16,
+      marginBottom: SPACE.xxxl,
     }),
     [],
   );
@@ -33,9 +36,8 @@ export default function useSettingsStyles() {
     () => ({
       fontSize: FONT.heading,
       fontWeight: "bold",
-      marginBottom: 32,
+      marginBottom: SPACE.xxxl,
       color: Colors.primaryTint90,
-      marginTop: 16,
     }),
     [],
   );
@@ -54,7 +56,7 @@ export default function useSettingsStyles() {
       color: Colors.primaryTint70,
       fontSize: FONT.body,
       width: "90%",
-      marginBottom: 8,
+      marginBottom: SPACE.md,
     }),
     [],
   );
@@ -71,17 +73,17 @@ export default function useSettingsStyles() {
   const settingBtn = useMemo(
     () => ({
       backgroundColor: Colors.whiteAlpha20,
-      padding: 8,
+      padding: SPACE.md,
       width: "100%",
-      borderRadius: 8,
+      borderRadius: RADIUS.chip,
     }),
     [],
   );
 
   const slider = useMemo(
     () => ({
-      marginLeft: -10,
-      marginRight: -10,
+      marginLeft: -SPACE.md,
+      marginRight: -SPACE.md,
       color: Colors.primaryTint90,
       flex: 1,
     }),

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Timer with commands",
+    "name": "Voice Timer",
     "slug": "voice_timer",
     "version": "1.0.0",
     "orientation": "portrait",

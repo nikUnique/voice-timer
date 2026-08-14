@@ -81,7 +81,7 @@
 
         <category android:name="android.intent.category.BROWSABLE"/>
         
-        <data android:scheme="timer_with_commands" />
+        <data android:scheme="voice_timer" />
       </intent-filter>
 
     </activity>

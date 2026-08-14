@@ -1,10 +1,10 @@
-package com.moonnic.timer_with_commands
+package com.commitnobug.voice_timer
 
 import android.app.Application
 import android.content.res.Configuration
 
-import com.moonnic.timer_with_commands.NativeUtilsPackage
-import com.moonnic.timer_with_commands.AudioFocusPackage
+import com.commitnobug.voice_timer.NativeUtilsPackage
+import com.commitnobug.voice_timer.AudioFocusPackage
 import com.rnfs.RNFSPackage
 
 import com.facebook.react.PackageList

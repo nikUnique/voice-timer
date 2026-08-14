@@ -30,7 +30,8 @@ export default function Settings() {
 
 const styles = StyleSheet.create({
   scrollView: {
-    padding: SPACE.xl,
+    paddingTop: SPACE.xxxl,
+    paddingHorizontal: SPACE.xl,
     marginBottom: SPACE.xxxl,
   },
 

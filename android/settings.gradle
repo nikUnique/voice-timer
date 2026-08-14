@@ -21,7 +21,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   }
 }
 
-rootProject.name = 'timer_with_commands'
+rootProject.name = 'voice_timer'
 
 dependencyResolutionManagement {
   versionCatalogs {

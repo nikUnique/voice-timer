@@ -5,35 +5,35 @@
 5    <uses-sdk android:minSdkVersion="24" />
 6
 7    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-7-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:2:5-77
-7-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:2:22-74
+7-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:2:5-77
+7-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:2:22-74
 8    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-8-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:3:5-89
-8-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:3:22-86
+8-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:3:5-89
+8-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:3:22-86
 9    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
-9-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:4:5-88
-9-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:4:22-85
+9-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:4:5-88
+9-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:4:22-85
 10    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-10-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:5:5-71
-10-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:5:22-68
+10-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:5:5-71
+10-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:5:22-68
 11    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_BACKGROUND_TASK" />
-11-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:6:5-93
-11-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:6:22-90
+11-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:6:5-93
+11-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:6:22-90
 12
 13    <application>
-13-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:9:5-13:19
+13-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:9:5-13:19
 14        <service
-14-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:10:8-12:55
+14-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:10:8-12:55
 15            android:name="com.asterinet.react.bgactions.RNBackgroundActionsTask"
-15-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:10:17-56
+15-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:10:17-56
 16            android:foregroundServiceType="microphone|specialUse" >
-16-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:10:60-113
+16-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:10:60-113
 17            <meta-data
-17-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:10:117-12:44
+17-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:10:117-12:44
 18                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-18-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:11:9-68
+18-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:11:9-68
 19                android:value="background_timer" />
-19-->/mnt/g/Programming/React Native/working directory/Copy (1) timer_with_commands/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:12:9-41
+19-->/mnt/g/Programming/React Native/working directory/Copy (1) voice_timer/node_modules/react-native-background-actions/android/src/main/AndroidManifest.xml:12:9-41
 20        </service>
 21    </application>
 22

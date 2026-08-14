@@ -1,6 +1,6 @@
-package com.moonnic.timer_with_commands
+package com.commitnobug.voice_timer
 
-import com.moonnic.timer_with_commands.AudioFocusModule
+import com.commitnobug.voice_timer.AudioFocusModule
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext

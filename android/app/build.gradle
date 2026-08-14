@@ -88,9 +88,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.moonnic.timer_with_commands'
+    namespace 'com.commitnobug.voice_timer'
     defaultConfig {
-        applicationId 'com.moonnic.timer_with_commands'
+        applicationId 'com.commitnobug.voice_timer'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

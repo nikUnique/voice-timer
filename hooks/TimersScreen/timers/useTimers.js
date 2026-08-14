@@ -58,7 +58,7 @@ export function useTimers() {
         type: "drawable",
       },
       color: "#edf2ff",
-      linkingURI: "timer_with_commands://timer", // Optional deep linking URI
+      linkingURI: "voice_timer://timer", // Optional deep linking URI
       foregroundServiceType: /* isMicroGranted
         ?  */ ["specialUse", "microphone"],
       /*  : ["specialUse"] */
