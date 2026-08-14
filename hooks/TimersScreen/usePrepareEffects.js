@@ -1,9 +1,8 @@
 import { useCallback, useEffect } from "react";
 import { AppState } from "react-native";
 
-import { emitter } from "../utils/EventEmitter";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
-import { useRefsData } from "../context/VoiceRecognizerContext";
+import { emitter } from "../../utils/EventEmitter";
+import { updateSharedObject } from "../../utils/sharedVariables";
 
 export function usePrepareEffects({
   saveStorage,
@@ -14,12 +13,7 @@ export function usePrepareEffects({
   updatePersistentNotification,
   timerIsActiveRef,
   timeLeftRef,
-  handleReadyState,
-  index,
-  activateTimerRef,
 }) {
-  const { workingTimersRef } = useRefsData();
-
   useEffect(
     function () {
       emitter.all.delete(`updateNotification-${name}`);

@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { Colors } from "../../constants/colors";
 import { FONT } from "../../constants/typography";
-import useSettingsStyles from "../../hooks/useSettingsStyles";
+import useSettingsStyles from "../../hooks/SettingsScreen/useSettingsStyles";
 import { openNotificationChannelSettings } from "../../utils/helpers";
 
 export default memo(function Notifications() {

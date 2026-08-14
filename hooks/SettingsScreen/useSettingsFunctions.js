@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from "react";
 import { Alert, Linking } from "react-native";
 
-import { setItemInStorage } from "../utils/helpers";
-import { useSettingsData } from "../context/VoiceRecognizerContext";
+import { setItemInStorage } from "../../utils/helpers";
+import { useSettingsData } from "../../context/VoiceRecognizerContext";
 
 export default function useSettingsFunctions() {
   const {

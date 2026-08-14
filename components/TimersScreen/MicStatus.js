@@ -14,7 +14,7 @@ import {
   useRecognizerData,
   useSettingsData,
 } from "../../context/VoiceRecognizerContext";
-import useSettingsFunctions from "../../hooks/useSettingsFunctions";
+import useSettingsFunctions from "../../hooks/SettingsScreen/useSettingsFunctions";
 import { Text } from "../../ui/AppText";
 import IconButton from "../../ui/IconButton";
 import { FONT } from "../../constants/typography";

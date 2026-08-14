@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { VolumeManager } from "react-native-volume-manager";
-import { useSettingsData } from "../context/VoiceRecognizerContext";
+import { useSettingsData } from "../../context/VoiceRecognizerContext";
 
 export function useControlledVolume() {
   const { isHeadsetBroken } = useSettingsData();

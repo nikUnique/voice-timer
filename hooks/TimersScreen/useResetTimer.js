@@ -3,18 +3,21 @@ import notifee from "@notifee/react-native";
 import { useCallback, useEffect } from "react";
 import { AppState, NativeModules } from "react-native";
 
-import Time from "../components/TimersScreen/Time";
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { emitter, resetTimerEmitter } from "../utils/EventEmitter";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
+import Time from "../../components/TimersScreen/Time";
+import { useRefsData } from "../../context/VoiceRecognizerContext";
+import { emitter, resetTimerEmitter } from "../../utils/EventEmitter";
+import {
+  getSharedObject,
+  updateSharedObject,
+} from "../../utils/sharedVariables";
 import {
   cleanStop,
   removeItemFromStorage,
   setItemInStorage,
-} from "../utils/helpers";
-import { useNotification } from "./useNotification";
-import { useUpdateControlButtons } from "./useUpdateControlButtons";
-import { useUpdateTimers } from "./useUpdateTimers";
+} from "../../utils/helpers";
+import { useNotification } from "../shared/useNotification";
+import { useUpdateControlButtons } from "../useUpdateControlButtons";
+import { useUpdateTimers } from "../useUpdateTimers";
 
 export function useResetTimer({
   name,

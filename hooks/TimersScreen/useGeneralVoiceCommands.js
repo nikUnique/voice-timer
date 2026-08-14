@@ -7,18 +7,18 @@ import {
   useRecognizerData,
   useRefsData,
   useSettingsData,
-} from "../context/VoiceRecognizerContext";
-import { useSpeak } from "./useSpeak";
-import { useSound } from "./useSound";
+} from "../../context/VoiceRecognizerContext";
+import { useSpeak } from "../shared/useSpeak";
+import { useSound } from "../shared/useSound";
 import {
   formatRingingResetSpeech,
   formatStatusSpeech,
   getTimePhrase,
   normalize,
-} from "../utils/helpers";
-import { resetTimerEmitter } from "../utils/EventEmitter";
-import { getSharedObject } from "../utils/sharedVariables";
-import { useControlledVolume } from "./useControlledVolume";
+} from "../../utils/helpers";
+import { resetTimerEmitter } from "../../utils/EventEmitter";
+import { getSharedObject } from "../../utils/sharedVariables";
+import { useControlledVolume } from "../shared/useControlledVolume";
 
 export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
   const { recognizedTime, alertingTimerNamesRef } = useRecognizerData();
@@ -261,6 +261,7 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
       isHeadsetBroken,
       pauseMedia,
       resumeMedia,
+      adjustVolumeFromApp,
     ],
   );
 }

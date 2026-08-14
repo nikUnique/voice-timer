@@ -1,5 +1,5 @@
 import Terms from "../components/TermsScreen/Terms";
-import { useReady } from "../hooks/useReady";
+import { useReady } from "../hooks/shared/useReady";
 import LoadingIndicator from "../ui/LoadingIndicator";
 
 export default function TermsScreen() {

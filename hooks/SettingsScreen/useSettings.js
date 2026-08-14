@@ -4,9 +4,9 @@ import { PermissionsAndroid } from "react-native";
 import {
   useRefsData,
   useSettingsData,
-} from "../context/VoiceRecognizerContext";
-import { getItemFromStorage } from "../utils/helpers";
-import { emitter } from "../utils/EventEmitter";
+} from "../../context/VoiceRecognizerContext";
+import { getItemFromStorage } from "../../utils/helpers";
+import { emitter } from "../../utils/EventEmitter";
 
 export function useSettings() {
   const {

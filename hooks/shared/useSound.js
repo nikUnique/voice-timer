@@ -1,8 +1,11 @@
 import { useCallback, useRef } from "react";
-import { AppState, NativeModules, Vibration } from "react-native";
+import { NativeModules, Vibration } from "react-native";
 import Sound from "react-native-sound";
 
-import { useRefsData, useSoundData } from "../context/VoiceRecognizerContext";
+import {
+  useRefsData,
+  useSoundData,
+} from "../../context/VoiceRecognizerContext";
 
 function useSound() {
   const alarmSoundObjectRef = useRef(null);
@@ -210,12 +213,8 @@ function useSound() {
           if (
             !isMediaPausedRef.current &&
             isListeningRef.current &&
-            !isMediaPausedManuallyRef.current /* ||
-            AppState.currentState !== "active" */
+            !isMediaPausedManuallyRef.current
           ) {
-            console.log(AppState.currentState, "appState in sound");
-            console.log(isMediaPausedManuallyRef, " isMediaPausedManuallyRef");
-
             NativeModules.AudioFocusModule.releaseAudioFocus();
           }
           stopVibration();

@@ -5,7 +5,7 @@ import { AppState, NativeModules } from "react-native";
 import { useRefsData } from "../context/VoiceRecognizerContext";
 import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
 
-import { useNotification } from "./useNotification";
+import { useNotification } from "./shared/useNotification";
 
 let timersLabel;
 

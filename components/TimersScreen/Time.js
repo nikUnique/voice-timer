@@ -3,7 +3,7 @@ import { Animated } from "react-native";
 
 import { Colors } from "../../constants/colors";
 import { useRefsData } from "../../context/VoiceRecognizerContext";
-import { useSpeak } from "../../hooks/useSpeak";
+import { useSpeak } from "../../hooks/shared/useSpeak";
 import { Text } from "../../ui/AppText";
 import { emitter } from "../../utils/EventEmitter";
 import { formatTime } from "../../utils/helpers";

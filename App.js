@@ -23,7 +23,7 @@ import { FONT } from "./constants/typography";
 import VoiceRecognizerProvider, {
   useSettingsData,
 } from "./context/VoiceRecognizerContext";
-import { useAppState } from "./hooks/useAppState";
+import { useAppStateChange } from "./hooks/shared/useAppStateChange";
 import AboutScreen from "./screens/AboutScreen";
 import AttributionScreen from "./screens/AttributionScreen";
 import CommandsScreen from "./screens/CommandsScreen";
@@ -35,13 +35,12 @@ import TimersScreen from "./screens/TimersScreen";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
 import { cleanStop } from "./utils/helpers";
 import { getSharedObject } from "./utils/sharedVariables";
-import { useAppStateChange } from "./hooks/useAppStateChange";
 
 const Stack = createNativeStackNavigator();
 
 function AppWithContext() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
-  const { dimScreenRef, keepScreenDim, voiceEnabled } = useSettingsData();
+  const { dimScreenRef, keepScreenDim } = useSettingsData();
 
   useEffect(function () {
     return () => {

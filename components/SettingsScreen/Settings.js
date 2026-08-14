@@ -5,7 +5,7 @@ import Notifications from "./Notifications";
 import Sound from "./Sound";
 import TimerBehavior from "./TimerBehavior";
 import VoiceControl from "./VoiceControl";
-import { useReady } from "../../hooks/useReady";
+import { useReady } from "../../hooks/shared/useReady";
 import LoadingIndicator from "../../ui/LoadingIndicator";
 import { SPACE } from "../../constants/spacing";
 

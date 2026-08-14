@@ -1,12 +1,14 @@
 import { useCallback, useEffect } from "react";
-import { AppState } from "react-native";
 
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { MAX_HISTORY } from "../utils/config";
-import { emitter } from "../utils/EventEmitter";
-import { setItemInStorage } from "../utils/helpers";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
-import { useUpdateControlButtons } from "./useUpdateControlButtons";
+import { useRefsData } from "../../context/VoiceRecognizerContext";
+import { MAX_HISTORY } from "../../utils/config";
+import { emitter } from "../../utils/EventEmitter";
+import { setItemInStorage } from "../../utils/helpers";
+import {
+  getSharedObject,
+  updateSharedObject,
+} from "../../utils/sharedVariables";
+import { useUpdateControlButtons } from "../useUpdateControlButtons";
 
 export function useStartTimer({
   isActive,

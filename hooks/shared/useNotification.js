@@ -7,9 +7,9 @@ import notifee, {
 import { useCallback } from "react";
 import { AppState, NativeModules } from "react-native";
 
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { emitter } from "../utils/EventEmitter";
-import { getSharedObject } from "../utils/sharedVariables.js";
+import { useRefsData } from "../../context/VoiceRecognizerContext";
+import { emitter } from "../../utils/EventEmitter";
+import { getSharedObject } from "../../utils/sharedVariables.js";
 
 let stopServiceTimeout;
 

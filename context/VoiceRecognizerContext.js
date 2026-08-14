@@ -1,5 +1,4 @@
 import { createContext, useContext, useMemo, useRef, useState } from "react";
-import { useDefaultTimers } from "../hooks/useDefaultTimers";
 import useVoiceRecognizerContext from "./useVoiceRecognizerContext";
 
 const VoiceRecognizerContext = createContext();
@@ -59,7 +58,6 @@ export default function VoiceRecognizerProvider({ children }) {
 
   // Timers
   const workingTimersRef = useRef([]);
-  const { DEFAULT_PRESETS } = useDefaultTimers();
   const [timers, setTimers] = useState([]);
   const [editableTimers, setEditableTimers] = useState([]);
   const [timersHistory, setTimersHistory] = useState([]);

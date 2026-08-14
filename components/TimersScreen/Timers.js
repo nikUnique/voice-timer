@@ -17,9 +17,8 @@ import {
   useSettingsData,
   useSoundData,
 } from "../../context/VoiceRecognizerContext";
-import { useDefaultTimers } from "../../hooks/useDefaultTimers";
-import { useServiceAndSpeechControl } from "../../hooks/useServiceAndSpeechControl";
-import { useTimer } from "../../hooks/useTimer";
+import { useServiceAndSpeechControl } from "../../hooks/TimersScreen/useServiceAndSpeechControl";
+import { useTimers } from "../../hooks/useTimers";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "../../utils/config";
 import { emitter } from "../../utils/EventEmitter";
 import { getItemFromStorage, removeItemFromStorage } from "../../utils/helpers";
@@ -29,7 +28,6 @@ import {
 } from "../../utils/sharedVariables";
 import TimerList from "./TimerList";
 import VoiceCommandsControl from "./VoiceCommandsControl";
-import { useControlledVolume } from "../../hooks/useControlledVolume";
 
 export default function Timers({ navigation }) {
   const [isAwake] = useState(false);
@@ -62,8 +60,6 @@ export default function Timers({ navigation }) {
     isMediaPlayingRef,
   } = useRefsData();
 
-  const { DEFAULT_PRESETS } = useDefaultTimers();
-
   useServiceAndSpeechControl();
 
   const { REPEAT, STOP_FINISHED, STOP_MEDIA } = commandsRef?.current
@@ -71,7 +67,7 @@ export default function Timers({ navigation }) {
     : {};
 
   const { playSoundWrapper, stopSoundWrapper, options, backgroundTask } =
-    useTimer();
+    useTimers();
 
   const forceKeepAwake = useCallback(async function (tag) {
     await deactivateKeepAwake(tag);
@@ -160,7 +156,6 @@ export default function Timers({ navigation }) {
       isAwake,
       REPEAT,
       STOP_FINISHED,
-      DEFAULT_PRESETS,
       timers,
       keepScreenOnCommand,
       keepScreenOnMinutes,

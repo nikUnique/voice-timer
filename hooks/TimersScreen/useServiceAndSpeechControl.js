@@ -1,13 +1,12 @@
 import { useEffect } from "react";
 import { AppState } from "react-native";
 
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { getSharedObject } from "../utils/sharedVariables";
+import { useRefsData } from "../../context/VoiceRecognizerContext";
+import { getSharedObject } from "../../utils/sharedVariables";
 
-import { registerChannelsAndService } from "../utils/channelAndServiceManager";
+import { registerChannelsAndService } from "../../utils/channelAndServiceManager";
 import { useBackgroundActions } from "./useBackgroundActions";
-import { useNotification } from "./useNotification";
-import { useTimer } from "./useTimer";
+import { useNotification } from "../shared/useNotification";
 
 export function useServiceAndSpeechControl() {
   const {
@@ -19,28 +18,17 @@ export function useServiceAndSpeechControl() {
     alertingTimerNamesRef,
   } = useRefsData();
 
-  const { options, backgroundTask } = useTimer();
-
   const { onUpdateNotification } = useNotification();
 
   registerChannelsAndService();
   useBackgroundActions();
 
   useEffect(() => {
-    // setIsListening(true);
-    // isListeningRef.current = true;
-
     const appStateListener = AppState.addEventListener(
       "change",
 
       async (nextAppState) => {
         try {
-          if (nextAppState !== "active") {
-            // setIsListening(false);
-            // isListeningRef.current = false;
-            // await BackgroundService.start(backgroundTask, options);
-          }
-
           const areThereNotCompletedTimers =
             workingTimersRef.current.length &&
             workingTimersRef.current.length -
@@ -53,23 +41,11 @@ export function useServiceAndSpeechControl() {
             !leastTimeTimerRef.current?.isPaused &&
             leastTimeTimerRef.current
           ) {
-            // if (Platform.constants.Release < 12) {
-            //   await BackgroundService.start(backgroundTask, options);
-            //   console.log("Did it start");
-            // }
-
             await onUpdateNotification(
               ongoingNotificationLabelRef.current,
               getSharedObject()?.timersLabel,
               "AppStateListener in useServiceAndSpeechControl",
             );
-          }
-
-          if (AppState.currentState === "active") {
-            // isListeningRef.current = true;
-            // setIsListening(true);
-            // await BackgroundService?.stop();
-            // await notifee.stopForegroundService();
           }
         } catch (error) {
           console.error(
@@ -85,12 +61,10 @@ export function useServiceAndSpeechControl() {
     };
   }, [
     alertingTimerNamesRef,
-    backgroundTask,
     isListeningRef,
     leastTimeTimerRef,
     onUpdateNotification,
     ongoingNotificationLabelRef,
-    options,
     setIsListening,
     workingTimersRef,
   ]);

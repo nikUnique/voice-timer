@@ -13,8 +13,8 @@ import {
 } from "../context/VoiceRecognizerContext";
 import { getItemFromStorage, setItemInStorage, sleep } from "../utils/helpers";
 import { updateSharedObject } from "../utils/sharedVariables";
-import { useSound } from "./useSound";
-import { useSpeak } from "./useSpeak";
+import { useSound } from "./shared/useSound";
+import { useSpeak } from "./shared/useSpeak";
 
 export function useTimerList({
   timers,

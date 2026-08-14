@@ -7,23 +7,21 @@ import Tts from "react-native-tts";
 import {
   useRecognizerData,
   useRefsData,
-  useSettingsData,
 } from "../context/VoiceRecognizerContext";
 import { getItemFromStorage, setItemInStorage, sleep } from "../utils/helpers";
 
 import { useNavigation } from "@react-navigation/native";
 import { getSharedObject } from "../utils/sharedVariables";
-import { useSettings } from "./useSettings";
-import { useSound } from "./useSound";
+import { useSettings } from "./SettingsScreen/useSettings";
+import { useSound } from "./shared/useSound";
 
 let delay = 10800;
 
-export function useTimer() {
+export function useTimers() {
   const navigation = useNavigation();
   const [isMicroGranted, setIsMicroGranted] = useState(false);
   const { playSound, stopSound } = useSound();
   const { setTimers, setEditableTimers } = useRecognizerData();
-  const { isVoiceFeedbackEnabled } = useSettingsData();
 
   const {
     notificationIdRef,
@@ -36,7 +34,6 @@ export function useTimer() {
     alertingTimerNamesRef,
     allTimersRef,
     isMediaPausedRef,
-    ignoreUntilRef,
     isMediaPausedManuallyRef,
     currentSpeechRef,
   } = useRefsData();
@@ -140,24 +137,12 @@ export function useTimer() {
     async function doneTalking(e) {
       releaseAudioFocus();
 
-      if (isVoiceFeedbackEnabled) {
-        // currentSpeechRef.current = "";
-        // ignoreUntilRef.current = Date.now() + 2000;
-      }
-
-      // await sleep(2 - voiceFeedbackSpeedRef.current);
       console.log("Done talking");
       currentSpeechRef.current = "";
       isListeningRef.current = true;
       setIsListening(true);
     },
-    [
-      currentSpeechRef,
-      isListeningRef,
-      isVoiceFeedbackEnabled,
-      releaseAudioFocus,
-      setIsListening,
-    ],
+    [currentSpeechRef, isListeningRef, releaseAudioFocus, setIsListening],
   );
 
   const errorTalking = useCallback(

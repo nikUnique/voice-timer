@@ -8,7 +8,7 @@ import {
   useRecognizerData,
   useRefsData,
 } from "../../context/VoiceRecognizerContext";
-import { useGeneralVoiceCommands } from "../../hooks/useGeneralVoiceCommands";
+import { useGeneralVoiceCommands } from "../../hooks/TimersScreen/useGeneralVoiceCommands";
 import { useTimerList } from "../../hooks/useTimerList";
 import Arrows from "../../ui/Arrows";
 import { emitter } from "../../utils/EventEmitter";

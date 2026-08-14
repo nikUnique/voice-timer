@@ -1,9 +1,12 @@
 import { useCallback } from "react";
 
-import Time from "../components/TimersScreen/Time";
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { getItemFromStorage, removeItemFromStorage } from "../utils/helpers";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
+import Time from "../../components/TimersScreen/Time";
+import { useRefsData } from "../../context/VoiceRecognizerContext";
+import { getItemFromStorage, removeItemFromStorage } from "../../utils/helpers";
+import {
+  getSharedObject,
+  updateSharedObject,
+} from "../../utils/sharedVariables";
 
 export function useLoadTimerState({
   setIsActive,
@@ -23,6 +26,7 @@ export function useLoadTimerState({
 
   const loadTimerState = useCallback(async function loadTimerState() {
     try {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       appStateBoxAlt = "activeAfterBackground";
 
       const savedTime = await getItemFromStorage(`timerStarted-${name}`);

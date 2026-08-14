@@ -4,12 +4,12 @@ import { NativeModules } from "react-native";
 import {
   useRefsData,
   useSettingsData,
-} from "../context/VoiceRecognizerContext";
-import { sleep } from "../utils/helpers";
+} from "../../context/VoiceRecognizerContext";
+import { sleep } from "../../utils/helpers";
 
-import { getSharedObject } from "../utils/sharedVariables";
-import { useSound } from "./useSound";
-import { useSpeak } from "./useSpeak";
+import { getSharedObject } from "../../utils/sharedVariables";
+import { useSound } from "../shared/useSound";
+import { useSpeak } from "../shared/useSpeak";
 
 export function useExecuteCommand({
   recognizedCommand,

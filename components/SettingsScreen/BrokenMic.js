@@ -6,8 +6,8 @@ import {
   useRefsData,
   useSettingsData,
 } from "../../context/VoiceRecognizerContext";
-import useSettingsFunctions from "../../hooks/useSettingsFunctions";
-import useSettingsStyles from "../../hooks/useSettingsStyles";
+import useSettingsFunctions from "../../hooks/SettingsScreen/useSettingsFunctions";
+import useSettingsStyles from "../../hooks/SettingsScreen/useSettingsStyles";
 import { ExpandableSetting } from "../../ui/ExpandableSetting";
 
 export default memo(function BrokenMic() {

@@ -1,8 +1,7 @@
 import { AppState } from "react-native";
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { useUpdateTimers } from "../hooks/useUpdateTimers";
-import { setItemInStorage } from "../utils/helpers";
-import { getSharedObject } from "../utils/sharedVariables";
+import { useUpdateTimers } from "../useUpdateTimers";
+import { setItemInStorage } from "../../utils/helpers";
+import { getSharedObject } from "../../utils/sharedVariables";
 
 export function useSaveStorage({
   name,
@@ -14,7 +13,6 @@ export function useSaveStorage({
 }) {
   let appStateBoxAlt;
 
-  const { allTimersRef } = useRefsData();
   const { updateTimers } = useUpdateTimers();
 
   async function saveStorage() {

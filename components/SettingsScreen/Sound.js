@@ -6,8 +6,8 @@ import { memo, useEffect, useRef, useState } from "react";
 
 import { Colors } from "../../constants/colors";
 import { useSettingsData } from "../../context/VoiceRecognizerContext";
-import useSettingsFunctions from "../../hooks/useSettingsFunctions";
-import useSettingsStyles from "../../hooks/useSettingsStyles";
+import useSettingsFunctions from "../../hooks/SettingsScreen/useSettingsFunctions";
+import useSettingsStyles from "../../hooks/SettingsScreen/useSettingsStyles";
 import { RADIUS } from "../../constants/radius";
 import { SPACE } from "../../constants/spacing";
 

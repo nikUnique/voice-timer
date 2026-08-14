@@ -1,7 +1,6 @@
 import { useMemo } from "react";
-import { Colors } from "../constants/colors";
-import { useResponsive } from "./useResponsive";
-import { FONT } from "../constants/typography";
+import { Colors } from "../../constants/colors";
+import { FONT } from "../../constants/typography";
 
 export default function useSettingsStyles() {
   const settingSection = useMemo(
@@ -38,7 +37,7 @@ export default function useSettingsStyles() {
       color: Colors.primaryTint90,
       marginTop: 16,
     }),
-    [FONT.heading],
+    [],
   );
 
   const settingLabel = useMemo(
@@ -47,7 +46,7 @@ export default function useSettingsStyles() {
       fontSize: FONT.subheading,
       width: "90%",
     }),
-    [FONT.subheading],
+    [],
   );
 
   const settingDescription = useMemo(
@@ -57,7 +56,7 @@ export default function useSettingsStyles() {
       width: "90%",
       marginBottom: 8,
     }),
-    [FONT.body],
+    [],
   );
 
   const switchBox = useMemo(

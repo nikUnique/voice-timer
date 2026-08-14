@@ -1,12 +1,12 @@
 import { memo, useEffect, useState } from "react";
 
-import { useExecuteCommand } from "../../hooks/useExecuteCommand";
-import { useLoadTimerState } from "../../hooks/useLoadTimerState";
-import { usePauseResume } from "../../hooks/usePauseResume";
-import { usePrepareEffects } from "../../hooks/usePrepareEffects";
-import { useResetTimer } from "../../hooks/useResetTimer";
-import { useSaveStorage } from "../../hooks/useSaveStorage";
-import { useStartTimer } from "../../hooks/useStartTimer";
+import { useExecuteCommand } from "../../hooks/TimersScreen/useExecuteCommand";
+import { useLoadTimerState } from "../../hooks/TimersScreen/useLoadTimerState";
+import { usePauseResume } from "../../hooks/TimersScreen/usePauseResume";
+import { usePrepareEffects } from "../../hooks/TimersScreen/usePrepareEffects";
+import { useResetTimer } from "../../hooks/TimersScreen/useResetTimer";
+import { useSaveStorage } from "../../hooks/TimersScreen/useSaveStorage";
+import { useStartTimer } from "../../hooks/TimersScreen/useStartTimer";
 import { useTimerInterfaceFunctions } from "../../hooks/useTimerInterfaceFunctions";
 import { useTimerInterfaceState } from "../../hooks/useTimerInterfaceState";
 import { useTimeUpdate } from "../../hooks/useTimeUpdate";
