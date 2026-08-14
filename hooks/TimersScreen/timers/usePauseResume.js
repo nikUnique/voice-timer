@@ -1,19 +1,19 @@
 import { useCallback, useEffect } from "react";
 
 import BackgroundService from "react-native-background-actions";
-import { emitter } from "../../utils/EventEmitter";
+import { emitter } from "../../../utils/EventEmitter";
 import {
   getSharedObject,
   updateSharedObject,
-} from "../../utils/sharedVariables";
+} from "../../../utils/sharedVariables";
 
 import { AppState } from "react-native";
-import { setItemInStorage } from "../../utils/helpers";
+import { setItemInStorage } from "../../../utils/helpers";
 
-import { useRefsData } from "../../context/VoiceRecognizerContext";
-import { useUpdateControlButtons } from "../useUpdateControlButtons";
-import { useUpdateLeastTimer } from "../useUpdateLeastTimer";
-import { useUpdateTimers } from "../useUpdateTimers";
+import { useRefsData } from "../../../context/VoiceRecognizerContext";
+import { useUpdateControlButtons } from "./useUpdateControlButtons";
+import { useUpdateLeastTimer } from "../notifications/useUpdateLeastTimer";
+import { useUpdateTimers } from "./useUpdateTimers";
 
 export function usePauseResume({
   timerStartedRef,

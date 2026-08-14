@@ -3,9 +3,9 @@ import { InteractionManager } from "react-native";
 import RNFS from "react-native-fs";
 import Typo from "typo-js";
 
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { emitter } from "../utils/EventEmitter";
-import { getItemFromStorage } from "../utils/helpers";
+import { useRefsData } from "../../../context/VoiceRecognizerContext";
+import { emitter } from "../../../utils/EventEmitter";
+import { getItemFromStorage } from "../../../utils/helpers";
 
 export function useTimerInterfaceFunctions({
   isActive,

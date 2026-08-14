@@ -1,12 +1,15 @@
 import { useCallback } from "react";
 
-import Time from "../../components/TimersScreen/Time";
-import { useRefsData } from "../../context/VoiceRecognizerContext";
-import { getItemFromStorage, removeItemFromStorage } from "../../utils/helpers";
+import Time from "../../../components/TimersScreen/Time";
+import { useRefsData } from "../../../context/VoiceRecognizerContext";
+import {
+  getItemFromStorage,
+  removeItemFromStorage,
+} from "../../../utils/helpers";
 import {
   getSharedObject,
   updateSharedObject,
-} from "../../utils/sharedVariables";
+} from "../../../utils/sharedVariables";
 
 export function useLoadTimerState({
   setIsActive,

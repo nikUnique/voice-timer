@@ -1,7 +1,10 @@
 import { useCallback } from "react";
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { setItemInStorage } from "../utils/helpers";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
+import { useRefsData } from "../../../context/VoiceRecognizerContext";
+import { setItemInStorage } from "../../../utils/helpers";
+import {
+  getSharedObject,
+  updateSharedObject,
+} from "../../../utils/sharedVariables";
 
 export function useTimeUpdateFunctions(name, setAlertingTimersNames) {
   const { alertingTimerNamesRef } = useRefsData();
@@ -32,7 +35,6 @@ export function useTimeUpdateFunctions(name, setAlertingTimersNames) {
       }
 
       setItemInStorage("alertingTimerNames", alertingTimerNamesRef.current);
-
     },
     [alertingTimerNamesRef, name, setAlertingTimersNames],
   );

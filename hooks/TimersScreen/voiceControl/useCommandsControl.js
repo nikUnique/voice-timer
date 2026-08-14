@@ -4,8 +4,8 @@ import {
   useRecognizerData,
   useRefsData,
   useSettingsData,
-} from "../../context/VoiceRecognizerContext";
-import { ensureBluetoothPermission, normalize } from "../../utils/helpers";
+} from "../../../context/VoiceRecognizerContext";
+import { ensureBluetoothPermission, normalize } from "../../../utils/helpers";
 
 export function useCommandsControl({
   fadeAnimationRefCur,

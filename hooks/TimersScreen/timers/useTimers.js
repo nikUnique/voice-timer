@@ -2,18 +2,21 @@
 import notifee from "@notifee/react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AppState, NativeModules, PermissionsAndroid } from "react-native";
-import Tts from "react-native-tts";
 
 import {
   useRecognizerData,
   useRefsData,
-} from "../context/VoiceRecognizerContext";
-import { getItemFromStorage, setItemInStorage, sleep } from "../utils/helpers";
+} from "../../../context/VoiceRecognizerContext";
+import {
+  getItemFromStorage,
+  setItemInStorage,
+  sleep,
+} from "../../../utils/helpers";
 
 import { useNavigation } from "@react-navigation/native";
-import { getSharedObject } from "../utils/sharedVariables";
-import { useSettings } from "./SettingsScreen/useSettings";
-import { useSound } from "./shared/useSound";
+import { getSharedObject } from "../../../utils/sharedVariables";
+import { useSettings } from "../../SettingsScreen/useSettings";
+import { useSound } from "../../shared/useSound";
 
 let delay = 10800;
 
@@ -29,13 +32,8 @@ export function useTimers() {
     appStateRef,
     wasActiveBeforeLockRef,
     previousLockedRef,
-    isListeningRef,
-    setIsListening,
     alertingTimerNamesRef,
     allTimersRef,
-    isMediaPausedRef,
-    isMediaPausedManuallyRef,
-    currentSpeechRef,
   } = useRefsData();
 
   useSettings();
@@ -111,72 +109,6 @@ export function useTimers() {
     },
     [alertingTimerNamesRef],
   );
-  const releaseAudioFocus = useCallback(
-    function () {
-      if (
-        !isMediaPausedRef.current &&
-        !isMediaPausedManuallyRef.current &&
-        !getSharedObject().alertingTimerNames.length
-      ) {
-        console.log("Is it released 🎱");
-        NativeModules.AudioFocusModule.releaseAudioFocus();
-      }
-    },
-    [isMediaPausedManuallyRef, isMediaPausedRef],
-  );
-
-  const startTalking = useCallback(
-    function startTalking() {
-      isListeningRef.current = false;
-      setIsListening(false);
-    },
-    [isListeningRef, setIsListening],
-  );
-
-  const doneTalking = useCallback(
-    async function doneTalking(e) {
-      releaseAudioFocus();
-
-      console.log("Done talking");
-      currentSpeechRef.current = "";
-      isListeningRef.current = true;
-      setIsListening(true);
-    },
-    [currentSpeechRef, isListeningRef, releaseAudioFocus, setIsListening],
-  );
-
-  const errorTalking = useCallback(
-    function errorTalking() {
-      releaseAudioFocus();
-      console.error("An error occurred during speech utterance");
-    },
-    [releaseAudioFocus],
-  );
-
-  useEffect(
-    function () {
-      Tts.removeAllListeners("tts-start");
-      Tts.removeAllListeners("tts-finish");
-      Tts.removeAllListeners("tts-error");
-      Tts.removeAllListeners("tts-cancel");
-      Tts.addEventListener("tts-start", startTalking);
-      Tts.addEventListener("tts-finish", (e) => {
-        doneTalking(e);
-      });
-      Tts.addEventListener("tts-cancel", releaseAudioFocus);
-      Tts.addEventListener("tts-error", errorTalking);
-    },
-    [doneTalking, errorTalking, releaseAudioFocus, startTalking],
-  );
-
-  useEffect(function () {
-    return () => {
-      Tts.removeAllListeners("tts-start");
-      Tts.removeAllListeners("tts-finish");
-      Tts.removeAllListeners("tts-error");
-      Tts.removeAllListeners("tts-cancel");
-    };
-  }, []);
 
   useEffect(
     function () {

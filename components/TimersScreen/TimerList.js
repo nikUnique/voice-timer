@@ -8,8 +8,8 @@ import {
   useRecognizerData,
   useRefsData,
 } from "../../context/VoiceRecognizerContext";
-import { useGeneralVoiceCommands } from "../../hooks/TimersScreen/useGeneralVoiceCommands";
-import { useTimerList } from "../../hooks/useTimerList";
+import { useGeneralVoiceCommands } from "../../hooks/TimersScreen/voiceControl/useGeneralVoiceCommands";
+import { useTimerList } from "../../hooks/TimersScreen/timers/useTimerList";
 import Arrows from "../../ui/Arrows";
 import { emitter } from "../../utils/EventEmitter";
 import { getItemFromStorage } from "../../utils/helpers";

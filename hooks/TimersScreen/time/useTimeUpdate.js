@@ -1,14 +1,17 @@
 import notifee from "@notifee/react-native";
 import { useCallback, useEffect, useRef } from "react";
 
-import Time from "../components/TimersScreen/Time";
+import Time from "../../../components/TimersScreen/Time";
 import {
   useRefsData,
   useSettingsData,
-} from "../context/VoiceRecognizerContext";
-import { emitter } from "../utils/EventEmitter";
-import { setItemInStorage } from "../utils/helpers";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
+} from "../../../context/VoiceRecognizerContext";
+import { emitter } from "../../../utils/EventEmitter";
+import { setItemInStorage } from "../../../utils/helpers";
+import {
+  getSharedObject,
+  updateSharedObject,
+} from "../../../utils/sharedVariables";
 import { useTimeUpdateFunctions } from "./useTimeUpdateFunctions";
 
 export function useTimeUpdate({

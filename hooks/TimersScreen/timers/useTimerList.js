@@ -4,17 +4,21 @@ import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useRef, useState } from "react";
 import { NativeModules } from "react-native";
 
-import TimerInterface from "../components/TimersScreen/TimerInterface";
+import TimerInterface from "../../../components/TimersScreen/TimerInterface";
 import {
   useRecognizerData,
   useRefsData,
   useSettingsData,
   useSoundData,
-} from "../context/VoiceRecognizerContext";
-import { getItemFromStorage, setItemInStorage, sleep } from "../utils/helpers";
-import { updateSharedObject } from "../utils/sharedVariables";
-import { useSound } from "./shared/useSound";
-import { useSpeak } from "./shared/useSpeak";
+} from "../../../context/VoiceRecognizerContext";
+import {
+  getItemFromStorage,
+  setItemInStorage,
+  sleep,
+} from "../../../utils/helpers";
+import { updateSharedObject } from "../../../utils/sharedVariables";
+import { useSound } from "../../shared/useSound";
+import { useSpeak } from "../../shared/useSpeak";
 
 export function useTimerList({
   timers,

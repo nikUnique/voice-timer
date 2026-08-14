@@ -2,17 +2,19 @@ import notifee from "@notifee/react-native";
 import { useCallback } from "react";
 import { AppState, NativeModules } from "react-native";
 
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { getSharedObject, updateSharedObject } from "../utils/sharedVariables";
+import { useRefsData } from "../../../context/VoiceRecognizerContext";
+import {
+  getSharedObject,
+  updateSharedObject,
+} from "../../../utils/sharedVariables";
 
-import { useNotification } from "./shared/useNotification";
+import { useNotification } from "../../shared/useNotification";
 
 let timersLabel;
 
 export function useUpdateNotification({
   timeoutRef,
   name,
-  timeLeftRef,
   timeLabelRef,
   isPausedRef,
 }) {
@@ -50,7 +52,7 @@ export function useUpdateNotification({
         const isPhoneLocked =
           await NativeModules.NativeUtilsModule.isPhoneLocked();
 
-        if (/* (isPhoneLocked && isTimeUp) || */ isTimeUp) {
+        if (isTimeUp) {
           let newBody = `${name} is complete.`;
 
           if (getSharedObject().alertingTimerNames.length > 1) {

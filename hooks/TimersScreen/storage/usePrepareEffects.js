@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from "react";
 import { AppState } from "react-native";
 
-import { emitter } from "../../utils/EventEmitter";
-import { updateSharedObject } from "../../utils/sharedVariables";
+import { emitter } from "../../../utils/EventEmitter";
+import { updateSharedObject } from "../../../utils/sharedVariables";
 
 export function usePrepareEffects({
   saveStorage,
@@ -45,19 +45,13 @@ export function usePrepareEffects({
 
   useEffect(
     function () {
-      const appStateListener = AppState.addEventListener(
-        "change",
-        async (nextAppState) => {
-          if (
-            AppState.currentState === "background" &&
-            timeLeftRef.current > 0
-          ) {
-            const newAppState = await saveStorage();
+      const appStateListener = AppState.addEventListener("change", async () => {
+        if (AppState.currentState === "background" && timeLeftRef.current > 0) {
+          const newAppState = await saveStorage();
 
-            updateSharedObject({ appStateBox: newAppState });
-          }
-        },
-      );
+          updateSharedObject({ appStateBox: newAppState });
+        }
+      });
       return () => {
         appStateListener.remove();
       };

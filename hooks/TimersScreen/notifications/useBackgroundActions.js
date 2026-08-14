@@ -3,14 +3,14 @@ import notifee, { EventType } from "@notifee/react-native";
 import { useCallback, useEffect } from "react";
 import { NativeModules } from "react-native";
 
-import { useRefsData } from "../../context/VoiceRecognizerContext";
-import { STOP } from "../../utils/en_commands";
-import { emitter, resetTimerEmitter } from "../../utils/EventEmitter";
-import { cleanStop } from "../../utils/helpers";
+import { useRefsData } from "../../../context/VoiceRecognizerContext";
+import { STOP } from "../../../utils/en_commands";
+import { emitter, resetTimerEmitter } from "../../../utils/EventEmitter";
+import { cleanStop } from "../../../utils/helpers";
 import {
   getSharedObject,
   updateSharedObject,
-} from "../../utils/sharedVariables";
+} from "../../../utils/sharedVariables";
 
 export function useBackgroundActions() {
   const { workingTimersRef, leastTimeTimerRef, currentActivityRef } =

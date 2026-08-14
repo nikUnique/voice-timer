@@ -1,14 +1,14 @@
 import { useCallback, useEffect } from "react";
 
-import { useRefsData } from "../../context/VoiceRecognizerContext";
-import { MAX_HISTORY } from "../../utils/config";
-import { emitter } from "../../utils/EventEmitter";
-import { setItemInStorage } from "../../utils/helpers";
+import { useRefsData } from "../../../context/VoiceRecognizerContext";
+import { MAX_HISTORY } from "../../../utils/config";
+import { emitter } from "../../../utils/EventEmitter";
+import { setItemInStorage } from "../../../utils/helpers";
 import {
   getSharedObject,
   updateSharedObject,
-} from "../../utils/sharedVariables";
-import { useUpdateControlButtons } from "../useUpdateControlButtons";
+} from "../../../utils/sharedVariables";
+import { useUpdateControlButtons } from "./useUpdateControlButtons";
 
 export function useStartTimer({
   isActive,

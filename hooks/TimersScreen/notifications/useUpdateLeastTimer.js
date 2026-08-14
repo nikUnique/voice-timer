@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { updateSharedObject } from "../utils/sharedVariables";
+import { useRefsData } from "../../../context/VoiceRecognizerContext";
+import { updateSharedObject } from "../../../utils/sharedVariables";
 
 export function useUpdateLeastTimer({
   name,
@@ -15,7 +15,7 @@ export function useUpdateLeastTimer({
   const updateLeastTimer = useCallback(
     async function () {
       try {
-        let pausedrunningTimerNames, allTimers;
+        let pausedRunningTimerNames, allTimers;
 
         const newTimer = {
           timerName: name,
@@ -52,30 +52,30 @@ export function useUpdateLeastTimer({
             });
           }
 
-          const onlyrunningTimerNames = allTimers.filter(
+          const onlyRunningTimerNames = allTimers.filter(
             (timer) => timer.isPaused !== true,
           );
 
-          const onlypausedTimerNames = allTimers.filter(
+          const onlyPausedTimerNames = allTimers.filter(
             (timer) => timer.isPaused === true,
           );
 
           timersTimesRef.current = [
-            ...onlyrunningTimerNames,
-            ...onlypausedTimerNames,
+            ...onlyRunningTimerNames,
+            ...onlyPausedTimerNames,
           ];
 
-          pausedrunningTimerNames = onlyrunningTimerNames?.length
-            ? onlyrunningTimerNames
-            : onlypausedTimerNames;
+          pausedRunningTimerNames = onlyRunningTimerNames?.length
+            ? onlyRunningTimerNames
+            : onlyPausedTimerNames;
         }
 
         if (timersTimesRef.current?.length === 0) {
           timersTimesRef.current = [newTimer];
-          pausedrunningTimerNames = timersTimesRef?.current;
+          pausedRunningTimerNames = timersTimesRef?.current;
         }
 
-        leastTimeTimerRef.current = pausedrunningTimerNames
+        leastTimeTimerRef.current = pausedRunningTimerNames
           .filter((timer) => timer.timeLeft >= 0)
           .slice()
           .sort((a, b) => b?.timerStarted - a?.timerStarted)

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import { useRefsData } from "../context/VoiceRecognizerContext";
-import { setItemInStorage } from "../utils/helpers";
+import { useRefsData } from "../../../context/VoiceRecognizerContext";
+import { setItemInStorage } from "../../../utils/helpers";
 
 export function useUpdateTimers() {
   const { allTimersRef } = useRefsData();
@@ -15,7 +15,7 @@ export function useUpdateTimers() {
 
       setItemInStorage("state", allTimersRef.current);
     },
-    [allTimersRef]
+    [allTimersRef],
   );
 
   return { updateTimers };

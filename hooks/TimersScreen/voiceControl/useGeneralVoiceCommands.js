@@ -7,18 +7,18 @@ import {
   useRecognizerData,
   useRefsData,
   useSettingsData,
-} from "../../context/VoiceRecognizerContext";
-import { useSpeak } from "../shared/useSpeak";
-import { useSound } from "../shared/useSound";
+} from "../../../context/VoiceRecognizerContext";
+import { useSpeak } from "../../shared/useSpeak";
+import { useSound } from "../../shared/useSound";
 import {
   formatRingingResetSpeech,
   formatStatusSpeech,
   getTimePhrase,
   normalize,
-} from "../../utils/helpers";
-import { resetTimerEmitter } from "../../utils/EventEmitter";
-import { getSharedObject } from "../../utils/sharedVariables";
-import { useControlledVolume } from "../shared/useControlledVolume";
+} from "../../../utils/helpers";
+import { resetTimerEmitter } from "../../../utils/EventEmitter";
+import { getSharedObject } from "../../../utils/sharedVariables";
+import { useControlledVolume } from "../../shared/useControlledVolume";
 
 export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
   const { recognizedTime, alertingTimerNamesRef } = useRecognizerData();

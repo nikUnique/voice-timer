@@ -17,8 +17,8 @@ import {
   useSettingsData,
   useSoundData,
 } from "../../context/VoiceRecognizerContext";
-import { useServiceAndSpeechControl } from "../../hooks/TimersScreen/useServiceAndSpeechControl";
-import { useTimers } from "../../hooks/useTimers";
+import { useOngoingNotification } from "../../hooks/TimersScreen/notifications/useOngoingNotification";
+import { useTimers } from "../../hooks/TimersScreen/timers/useTimers";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "../../utils/config";
 import { emitter } from "../../utils/EventEmitter";
 import { getItemFromStorage, removeItemFromStorage } from "../../utils/helpers";
@@ -28,6 +28,7 @@ import {
 } from "../../utils/sharedVariables";
 import TimerList from "./TimerList";
 import VoiceCommandsControl from "./VoiceCommandsControl";
+import { useTTS } from "../../hooks/shared/useTTS";
 
 export default function Timers({ navigation }) {
   const [isAwake] = useState(false);
@@ -60,7 +61,8 @@ export default function Timers({ navigation }) {
     isMediaPlayingRef,
   } = useRefsData();
 
-  useServiceAndSpeechControl();
+  useOngoingNotification();
+  useTTS();
 
   const { REPEAT, STOP_FINISHED, STOP_MEDIA } = commandsRef?.current
     ? commandsRef.current

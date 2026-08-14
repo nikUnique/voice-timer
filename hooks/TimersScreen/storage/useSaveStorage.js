@@ -1,7 +1,7 @@
 import { AppState } from "react-native";
-import { useUpdateTimers } from "../useUpdateTimers";
-import { setItemInStorage } from "../../utils/helpers";
-import { getSharedObject } from "../../utils/sharedVariables";
+import { useUpdateTimers } from "../timers/useUpdateTimers";
+import { setItemInStorage } from "../../../utils/helpers";
+import { getSharedObject } from "../../../utils/sharedVariables";
 
 export function useSaveStorage({
   name,

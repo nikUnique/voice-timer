@@ -1,14 +1,14 @@
 import { useEffect } from "react";
 import { AppState } from "react-native";
 
-import { useRefsData } from "../../context/VoiceRecognizerContext";
-import { getSharedObject } from "../../utils/sharedVariables";
+import { useRefsData } from "../../../context/VoiceRecognizerContext";
+import { getSharedObject } from "../../../utils/sharedVariables";
 
-import { registerChannelsAndService } from "../../utils/channelAndServiceManager";
+import { registerChannelsAndService } from "../../../utils/channelAndServiceManager";
 import { useBackgroundActions } from "./useBackgroundActions";
-import { useNotification } from "../shared/useNotification";
+import { useNotification } from "../../shared/useNotification";
 
-export function useServiceAndSpeechControl() {
+export function useOngoingNotification() {
   const {
     setIsListening,
     isListeningRef,
