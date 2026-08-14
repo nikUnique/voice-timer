@@ -3,7 +3,6 @@ import notifee, { AndroidImportance } from "@notifee/react-native";
 export function registerChannelsAndService() {
   // Ensure the channel exists
   async function prepareChannel() {
-    // await notifee.deleteChannel("full-screen-channel");
     await notifee.createChannel({
       id: "full-screen-channel",
       name: "Channel with custom sound",
@@ -27,8 +26,6 @@ export function registerChannelsAndService() {
 
   prepareSecondChannel();
 
-  // notifee.deleteChannel("non-pop-up-notification-channel");
-
   // Ensure the channel exists
   async function loadChannel() {
     await notifee.createChannel({
@@ -40,14 +37,4 @@ export function registerChannelsAndService() {
   }
 
   loadChannel();
-
-  // notifee.registerForegroundService(async () => {
-  //   updateSharedObject({ isTaskRunning: true });
-  //   while (getSharedObject().isTaskRunning) {
-  //     console.log("Foreground service is running...");
-
-  //     if (!getSharedObject().isTaskRunning) return;
-  //     await sleep(getSharedObject().foregroundTaskDelay);
-  //   }
-  // });
 }

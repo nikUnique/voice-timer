@@ -130,8 +130,6 @@ export function useLoadTimerState({
 
         const remainingTime = Math.floor(time - elapsedSeconds);
 
-        console.log(Date.now(), "in useLoadTimerState");
-
         Time[`setTimeLeft-${name}`](remainingTime);
         timeLeftRef.current = remainingTime;
 

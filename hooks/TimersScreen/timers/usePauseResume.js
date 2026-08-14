@@ -257,17 +257,10 @@ export function usePauseResume({
           pausedTimerNames: [...getSharedObject().pausedTimerNames, name],
         });
 
-        // if (getSharedObject().runningTimerNames.length === 0) {
-        //   BackgroundService.stop();
-        // }
-
         emitter.all.delete(`updateNotification-${name}`);
         emitter.on(`updateNotification-${name}`, updatePersistentNotification);
 
-        if (
-          /* !getSharedObject().appStateBox?.includes("active") && */
-          timeLeftRef.current > 0
-        ) {
+        if (timeLeftRef.current > 0) {
           emitter.emit(`updateNotification-${name}`, {
             title: timeLabelRef.current,
             body: getSharedObject().timersLabel,

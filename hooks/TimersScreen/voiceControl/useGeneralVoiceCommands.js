@@ -159,7 +159,6 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
           const percent = Math.round((volume + 0.1) * 10) / 10;
 
           if (percent <= 1) {
-            // await VolumeManager.setVolume(percent, { type: "music" });
             adjustVolumeFromApp(percent);
             playSoundGeneral({
               fileName: successSound,
@@ -173,7 +172,6 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
           const { volume } = await VolumeManager.getVolume("music");
           const percent = Math.round((volume - 0.1) * 10) / 10;
 
-          // await VolumeManager.setVolume(percent, { type: "music" });
           adjustVolumeFromApp(percent);
           playSoundGeneral({
             fileName: successSound,

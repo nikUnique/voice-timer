@@ -17,8 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import { getSharedObject } from "../../../utils/sharedVariables";
 import { useSettings } from "../../SettingsScreen/useSettings";
 import { useSound } from "../../shared/useSound";
-
-let delay = 10800;
+import { BACKGROUND_DELAY } from "../../../utils/config";
 
 export function useTimers() {
   const navigation = useNavigation();
@@ -76,7 +75,7 @@ export function useTimers() {
 
         console.log("background task works 🤴");
 
-        await sleep(delay);
+        await sleep(BACKGROUND_DELAY);
       }
     } catch (error) {
       console.error("Error with task:", error);

@@ -50,18 +50,6 @@ export function useStartTimer({
   const startTimer = useCallback(
     async function (repeat) {
       try {
-        // if (Platform.constants.Release >= 12) {
-        // }
-        // emitter.emit("startForegroundService");
-
-        // if (!AppState.currentState.includes("active")) {
-        //   console.log(
-        //     "The app is already in the background 🐈‍⬛",
-        //     AppState.currentState,
-        //   );
-        //   return;
-        // }
-
         if ((!isActive || repeat) && timeLeftRef.current > 0) {
           if (workingTimersRef.current.length >= 5) {
             console.log(

@@ -1,7 +1,6 @@
 let sharedObject = {
   timersLabel: "",
   delay: 1,
-  foregroundTaskDelay: 900,
   appStateBox: "",
   isTaskRunning: false,
   alertingTimerNames: [],

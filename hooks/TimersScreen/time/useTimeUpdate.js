@@ -239,16 +239,6 @@ export function useTimeUpdate({
           await sendNotification();
         }
 
-        // if (
-        //   !workingTimersRef.current?.length &&
-        //   !alertingTimerNamesRef.current?.length
-        // ) {
-        //   console.log("Background service stops...");
-
-        //   updateSharedObject({ isTaskRunning: false });
-        //   BackgroundService?.stop();
-        // }
-
         clearTimeout(timeoutRef.current);
 
         let improvedTime;
@@ -267,15 +257,15 @@ export function useTimeUpdate({
           Date.now().toString().slice(-3) <
           timerStartedRef.current.toString().slice(-3)
         ) {
-          const leftOverUntill1000 =
+          const leftOverUntil1000 =
             1000 - timerStartedRef.current.toString().slice(-3);
 
-          improvedTime = +Date.now().toString().slice(-3) + +leftOverUntill1000;
+          improvedTime = +Date.now().toString().slice(-3) + +leftOverUntil1000;
         }
 
         if (timeLeftRef.current > 0) {
           timeoutRef.current = setTimeout(
-            /* updateTime */ updateTimeCallbackRef.current,
+            updateTimeCallbackRef.current,
             1000 - improvedTime,
           );
           updateSharedObject({ [`timeoutId-${name}`]: timeoutRef.current });

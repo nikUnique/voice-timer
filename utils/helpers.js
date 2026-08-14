@@ -21,8 +21,6 @@ export const formatTime = (seconds) => {
   return `${hours ? String(hours).padStart(2, "0") + ":" : ""}${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 };
 
-export const letVarsObj = { timersLabel: "", delay: 1, appStateBox: "" };
-
 export async function setItemInStorage(key, value) {
   try {
     const stringValue = JSON.stringify(value);
