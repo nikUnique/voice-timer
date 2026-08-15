@@ -38,8 +38,6 @@ export default function TimerNameControl() {
       }
 
       if (!isReady) {
-        // console.log(`Please wait a second, the dictionary is loading... ⌛`);
-
         return;
       }
 
@@ -116,9 +114,8 @@ export default function TimerNameControl() {
       );
 
       setTimers(newTimersArr);
-      /* await */ setItemInStorage("timers", newTimersArr);
+      setItemInStorage("timers", newTimersArr);
 
-      // onModalIsVisible();
       emitter.emit("goBack");
     } catch (error) {
       console.error(`An error occurred in the changeTimerName handler`, error);
@@ -129,7 +126,6 @@ export default function TimerNameControl() {
     if (!isReady && isTapped) return;
     setTimerName(name);
     setIsCorrect(true);
-    // onModalIsVisible();
     emitter.emit("goBack");
   }
 
@@ -145,7 +141,6 @@ export default function TimerNameControl() {
 
   return (
     <View style={styles.outerModalBox}>
-      {/* <Modal visible={modalIsVisible} animationType='slide' transparent> */}
       <View>
         <View style={styles.innerModalBox}>
           <View style={styles.insideModal}>
@@ -214,7 +209,6 @@ export default function TimerNameControl() {
           </View>
         </View>
       </View>
-      {/* </Modal> */}
     </View>
   );
 }

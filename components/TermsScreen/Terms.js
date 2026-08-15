@@ -122,11 +122,12 @@ export default function Terms() {
         <Subtitle>Introduction</Subtitle>
         <Section>
           <Paragraph>
-            This End User License Agreement (&quot;Agreement&quot;) is a legal
-            agreement between you (&quot;User&quot;) and the developer and
-            publisher of Voice Timer (&quot;Licensor&quot;). By installing,
-            accessing, or using the Software, you agree to be bound by the terms
-            and conditions of this Agreement.
+            These Terms of Use (&quot;Agreement&quot;) apply between you
+            (&quot;User&quot;) and the developer of Voice Timer
+            (&quot;Developer&quot;). By installing, accessing, or using the
+            Software, you agree to these terms. Voice Timer&apos;s source code
+            is licensed under the MIT License; these terms cover your use of the
+            app itself, not your rights to the code.
           </Paragraph>
         </Section>
 
@@ -137,8 +138,8 @@ export default function Terms() {
           </BulletPoint>
 
           <BulletPoint>
-            &quot;Licensor&quot; means the individual developer or legal owner
-            of the Software.
+            &quot;Developer&quot; means the individual developer of the
+            Software.
           </BulletPoint>
 
           <BulletPoint>
@@ -147,68 +148,25 @@ export default function Terms() {
           </BulletPoint>
         </Section>
 
-        <Subtitle>1. Grant of License</Subtitle>
+        <Subtitle>1. Acceptable Use</Subtitle>
         <Section>
-          <Paragraph>
-            The Licensor grants the User a non-exclusive, non-transferable
-            license to use the Software on a personal, non-commercial basis on
-            one or more devices for the purpose of using the features provided
-            by the Software, subject to the terms of this Agreement.
-          </Paragraph>
-          <Label>You may:</Label>
-          <BulletPoint>
-            Install and use the Software on supported devices.
-          </BulletPoint>
-          <BulletPoint>
-            Use the Software solely for personal, non-commercial use.
-          </BulletPoint>
           <Label>You may not:</Label>
 
-          <BulletPoint>
-            Modify, distribute, sell, or transfer the Software to any third
-            party.
-          </BulletPoint>
-
-          <BulletPoint>
-            Reverse engineer, decompile, or disassemble the Software.
-          </BulletPoint>
-
           <BulletPoint>Use the Software for any unlawful purpose.</BulletPoint>
-        </Section>
-
-        <Subtitle>2. Restrictions on Use</Subtitle>
-
-        <Label>You may not:</Label>
-        <Section>
-          <BulletPoint>
-            Remove, alter, or obscure any copyright or other proprietary notices
-            within the Software.
-          </BulletPoint>
 
           <BulletPoint>
-            Use the Software in a way that infringes on any intellectual
-            property rights, or for any unlawful activity.
+            Use the Software in a way that infringes on any third party&apos;s
+            intellectual property rights.
           </BulletPoint>
         </Section>
 
-        <Subtitle>3. Intellectual Property Rights</Subtitle>
+        <Subtitle>2. Third-Party Media</Subtitle>
         <Section>
           <Paragraph>
-            All rights, title, and interest in the Software, including but not
-            limited to any intellectual property rights such as copyrights,
-            patents, and trademarks, are owned by the Licensor or its licensors.
-          </Paragraph>
-
-          <Paragraph>
-            The Software is licensed to you, not sold, and you do not gain any
-            ownership interest in the Software.
-          </Paragraph>
-
-          <Paragraph>
-            Some of the media, images, sounds, and other content used within the
-            Software may be the property of third parties (“Third-Party Media”).
-            The Licensor has obtained the necessary rights or licenses to use
-            such Third-Party Media within the Software.
+            Some media, images, sounds, or other content used within the
+            Software may be the property of third parties (&quot;Third-Party
+            Media&quot;). The Developer has obtained the necessary rights or
+            licenses to use such Third-Party Media within the Software.
           </Paragraph>
 
           <Paragraph>
@@ -218,21 +176,7 @@ export default function Terms() {
           </Paragraph>
         </Section>
 
-        <Subtitle>4. Termination</Subtitle>
-        <Section>
-          <Paragraph>
-            This Agreement will terminate automatically without notice if you
-            breach any of its terms. Upon termination, you must immediately
-            cease using the Software and delete all copies from your devices.
-          </Paragraph>
-
-          <Paragraph>
-            Termination of this Agreement does not affect any rights or
-            obligations that have accrued prior to termination.
-          </Paragraph>
-        </Section>
-
-        <Subtitle>5. Disclaimer and Limitation of Liability</Subtitle>
+        <Subtitle>3. Disclaimer and Limitation of Liability</Subtitle>
         <Section>
           <Paragraph>
             The Software is provided &quot;AS IS&quot;, without warranty of any
@@ -240,75 +184,56 @@ export default function Terms() {
             implied warranties of &quot;MERCHANTABILITY&quot; and &quot;FITNESS
             FOR A PARTICULAR PURPOSE&quot;.
           </Paragraph>
+
           <Paragraph>
-            The Licensor does not warrant that the Software will meet your
+            The Developer does not warrant that the Software will meet your
             requirements or that it will be &quot;ERROR-FREE&quot;.
           </Paragraph>
+
           <Paragraph>
-            To the fullest extent permitted by applicable law, the Licensor
+            To the fullest extent permitted by applicable law, the Developer
             shall not be liable for any &quot;INDIRECT&quot;,
             &quot;INCIDENTAL&quot;, &quot;SPECIAL&quot;, or &quot;CONSEQUENTIAL
             DAMAGES&quot;, including loss of profits, arising out of or related
             to your use of or inability to use the Software, even if the
-            Licensor has been advised of the possibility of such damages.
+            Developer has been advised of the possibility of such damages.
           </Paragraph>
         </Section>
 
-        <Subtitle>6. Support and Updates</Subtitle>
+        <Subtitle>4. Support and Updates</Subtitle>
         <Section>
           <Paragraph>
-            The Licensor may, but is not obligated to, provide updates, bug
+            The Developer may, but is not obligated to, provide updates, bug
             fixes, or other support for the Software. Updates may be provided at
-            the discretion of the Licensor, and it is your responsibility to
+            the discretion of the Developer, and it is your responsibility to
             install them as they become available.
           </Paragraph>
         </Section>
 
-        <Subtitle>7. Privacy and Data Collection</Subtitle>
+        <Subtitle>5. Privacy and Data Collection</Subtitle>
         <Section>
           <Paragraph>
             The Software does not collect personal data from users.
           </Paragraph>
-
-          <Paragraph>
-            However, it may display third-party advertisements, such as from
-            Meta Audience Network. These third parties may collect limited
-            technical or device data for ad delivery purposes.
-          </Paragraph>
-
-          <Paragraph>
-            The Licensor does not access or store this data. Please refer to the
-            respective third-party privacy policies for details.
-          </Paragraph>
         </Section>
 
-        <Subtitle>8. Governing Law and Jurisdiction</Subtitle>
-        <Section>
-          <Paragraph>
-            This Agreement shall be governed by and construed in accordance with
-            the laws of Kazakhstan. Any legal actions or proceedings arising
-            under or in connection with this Agreement shall be brought
-            exclusively in the courts located in Kazakhstan.
-          </Paragraph>
-        </Section>
-
-        <Subtitle>9. Entire Agreement</Subtitle>
+        <Subtitle>6. Entire Agreement</Subtitle>
         <Section>
           <Paragraph>
             This Agreement constitutes the entire agreement between you and the
-            Licensor concerning the use of the Software, and supersedes all
+            Developer concerning the use of the Software, and supersedes all
             prior or contemporaneous communications and proposals, whether
-            electronic, oral, or written, between you and the Licensor.
+            electronic, oral, or written, between you and the Developer.
           </Paragraph>
         </Section>
 
-        <Subtitle>10. Amendments</Subtitle>
+        <Subtitle>7. Amendments</Subtitle>
         <Section>
           <Paragraph>
-            The Licensor reserves the right to amend or modify this Agreement at
-            any time. Any amendments or updates will be posted in the Software
-            or on the Licensor’s website. Your continued use of the Software
-            constitutes your acceptance of any changes.
+            The Developer reserves the right to amend or modify this Agreement
+            at any time. Any amendments or updates will be posted in the
+            Software or on the Developer&apos;s website. Your continued use of
+            the Software constitutes your acceptance of any changes.
           </Paragraph>
         </Section>
 
@@ -317,6 +242,7 @@ export default function Terms() {
             By using the Software, you acknowledge that you have read and
             understand this Agreement and agree to be bound by its terms.
           </Paragraph>
+
           <Paragraph>
             If you do not agree to the terms of this Agreement, you must
             discontinue use of the Software and uninstall it from your device.
