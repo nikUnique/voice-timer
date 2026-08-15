@@ -2,7 +2,10 @@ import { useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { Colors } from "../../constants/colors";
-import { useRefsData } from "../../context/VoiceRecognizerContext";
+import {
+  useRefsData,
+  useSettingsData,
+} from "../../context/VoiceRecognizerContext";
 import { emitter } from "../../utils/EventEmitter";
 import { setItemInStorage } from "../../utils/helpers";
 import {
@@ -25,6 +28,7 @@ export default function TimerNameControl() {
   const inputRef = useRef(null);
 
   const { timers, dictionaryTypoRef, setTimers } = useRefsData();
+  const { setVoiceEnabled, voiceEnabled } = useSettingsData();
 
   async function changeTimerName() {
     try {
@@ -91,6 +95,14 @@ export default function TimerNameControl() {
       setIsCorrect(true);
       setTimerName(lowerCaseName);
       updateSharedObject({ name: lowerCaseName });
+
+      // Restart vosk
+      if (voiceEnabled) {
+        setVoiceEnabled(false);
+        setTimeout(function () {
+          setVoiceEnabled(true);
+        }, 100);
+      }
 
       const allListeners = [...emitter.all].filter((listener) =>
         listener[0].includes(name),
