@@ -256,7 +256,7 @@ export default function Timers({ navigation }) {
   );
 
   useEffect(() => {
-    let isMounted = true;
+    // let isMounted = true;
     let subscription;
 
     async function load() {
@@ -264,7 +264,7 @@ export default function Timers({ navigation }) {
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
       );
 
-      if (!isMounted) return;
+      // if (!isMounted) return;
 
       const updatedOptions = localMicroGranted
         ? options
@@ -276,9 +276,13 @@ export default function Timers({ navigation }) {
       };
 
       if (AppState.currentState === "active") {
+        console.log("state is active 👍");
+
         start();
       } else {
         subscription = AppState.addEventListener("change", (state) => {
+          console.log("state is", state);
+
           if (state === "active") {
             start();
             subscription.remove();
@@ -290,7 +294,7 @@ export default function Timers({ navigation }) {
     load();
 
     return () => {
-      isMounted = false;
+      // isMounted = false;
       subscription?.remove();
     };
   }, []);

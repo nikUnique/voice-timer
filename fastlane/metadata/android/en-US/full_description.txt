@@ -1,0 +1,15 @@
+Voice Timer is a hands-free timer app that listens for your voice to control timers and more, no internet connection required.
+
+Features:
+
+- Full offline voice recognition (powered by Vosk) - no data leaves your device
+- Background listening, so voice commands keep working even after you switch to another app (works over Bluetooth headphones too)
+- A rich set of voice commands beyond just starting and stopping timers - check the time, get a status report on everything running, ask about one timer by name, control media playback and volume, or limit/expand which commands it responds to with "timer sleep"/"timer wake up"
+- Answer phone calls by voice while the app is running
+- Timer history so you can see both past sessions and live, currently ticking timers
+- Adjustable voice feedback speed
+- Optional screen dim mode to keep the screen dimmed while the app is in the foreground
+- Settings to ignore hardware media button presses, useful if a worn headset sends phantom button events
+- No ads, no trackers, no analytics
+
+Voice Timer is free and open source software (MIT licensed). No account, no internet permission required for the app to function, and no third-party ad or analytics SDKs are bundled.

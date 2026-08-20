@@ -1,90 +1,91 @@
-  <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-  <uses-permission android:name="android.permission.INTERNET"/>
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-  <uses-permission android:name="android.permission.VIBRATE"/>
-  <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_BACKGROUND_TIMER" />
-  <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-  <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-  <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
-  <uses-permission android:name="android.permission.WAKE_LOCK"/>
-  <uses-permission android:name="android.permission.BLUETOOTH" />
-  <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-  <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS"/>
-  <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!-- Audio / voice -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
 
+    <!-- Phone call answering -->
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
-  <queries>
-    <intent>
-      <action android:name="android.intent.action.VIEW"/>
-      <category android:name="android.intent.category.BROWSABLE"/>
-      <data android:scheme="https"/>
-    </intent>
-  </queries>
+    <!-- Foreground service / background timers -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
-  <application android:name=".MainApplication" android:label="Voice Timer" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="true" android:theme="@style/AppTheme" 
-  android:usesCleartextTraffic="true"
-  android:supportsRtl="true">
+    <!-- Notifications / alerts -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
-    <!-- <service android:name=".RNBackgroundActionsTask" android:foregroundServiceType="microphone|specialUse" android:exported="false">  
-      <meta-data
-        android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-        android:value="background_timer" /> 
-    </service>  -->
-
-    <service
-    android:name="com.asterinet.react.bgactions.RNBackgroundActionsTask"
-    android:foregroundServiceType="specialUse|microphone"
-    tools:node="merge"
-    tools:replace="android:foregroundServiceType">
-    <property
-        android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-        android:value="voice-timer-background-task"
-        tools:node="merge" />
-</service>
-   
-    
-    <service
-        android:name="me.carda.awesome_notifications.notifications.services.NotificationService"
-        android:permission="android.permission.BLUETOOTH_ADMIN" />
-
-   
-    <meta-data android:name="expo.modules.updates.ENABLED" android:value="false"/>
+    <!-- System settings -->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
   
-    <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <category android:name="android.intent.category.BROWSABLE"/>
+            <data android:scheme="https"/>
+        </intent>
+    </queries>
 
-    <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0"/>
+    <application
+        android:name=".MainApplication"
+        android:label="Voice Timer"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:allowBackup="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
+        android:supportsRtl="true">
 
-    <activity android:name=".MainActivity" 
-    android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize"   android:theme="@android:style/Theme.NoTitleBar.Fullscreen" 
-    android:exported="true" android:screenOrientation="portrait">
+        <service
+            android:name="com.asterinet.react.bgactions.RNBackgroundActionsTask"
+            android:foregroundServiceType="specialUse|microphone"
+            tools:node="merge"
+            tools:replace="android:foregroundServiceType">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="voice-timer-background-task"
+                tools:node="merge"/>
+        </service>
 
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter> 
+        <service
+            android:name="me.carda.awesome_notifications.notifications.services.NotificationService"
+            android:permission="android.permission.BLUETOOTH_ADMIN"/>
 
-       <intent-filter>
-        <action android:name="android.intent.action.VIEW"/>
+        <meta-data android:name="expo.modules.updates.ENABLED" android:value="false"/>
+        <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>
+        <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0"/>
 
-        <category android:name="android.intent.category.DEFAULT"/>
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:exported="true"
+            android:screenOrientation="portrait">
 
-        <category android:name="android.intent.category.BROWSABLE"/>
-        
-        <data android:scheme="voice_timer" />
-      </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
 
-    </activity>
- 
-  </application>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="voice_timer"/>
+            </intent-filter>
+
+        </activity>
+    </application>
 </manifest>
