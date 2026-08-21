@@ -48,40 +48,6 @@ export function useTimers() {
     [isMicroGranted],
   );
 
-  const options = useMemo(
-    () => ({
-      taskName: "Timer",
-      taskTitle: "App is keeping your timer active",
-      taskDesc: "Keeps your timer active. You can hide this notification.",
-      taskIcon: {
-        name: "ic_launcher_notification",
-        type: "drawable",
-      },
-      color: "#edf2ff",
-      linkingURI: "voice_timer://timer", // Optional deep linking URI
-      foregroundServiceType: /* isMicroGranted
-        ?  */ ["specialUse", "microphone"],
-      /*  : ["specialUse"] */
-    }),
-    [],
-  );
-
-  const backgroundTask = useCallback(async () => {
-    try {
-      while (true) {
-        if (!getSharedObject()?.isTaskRunning) {
-          break;
-        }
-
-        console.log("background task works 🤴");
-
-        await sleep(BACKGROUND_DELAY);
-      }
-    } catch (error) {
-      console.error("Error with task:", error);
-    }
-  }, []);
-
   const playSoundWrapper = useCallback(
     async ({ ...properties }) => {
       await playSound({ ...properties });
@@ -225,8 +191,6 @@ export function useTimers() {
   );
 
   return {
-    options,
-    backgroundTask,
     playSoundWrapper,
     stopSoundWrapper,
     updateAlertingTimerNames,

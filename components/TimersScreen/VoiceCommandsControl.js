@@ -87,20 +87,16 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     [load, unload],
   );
 
-  useEffect(
-    function () {
-      return () => {
-        if (
-          !getSharedObject().runningTimerNames.length &&
-          !getSharedObject().alertingTimerNames.length
-        ) {
-          unload();
-          cleanStop();
-        }
-      };
-    },
-    [unload],
-  );
+  useEffect(function () {
+    return () => {
+      if (
+        !getSharedObject().runningTimerNames.length &&
+        !getSharedObject().alertingTimerNames.length
+      ) {
+        unload();
+      }
+    };
+  }, []);
 
   useEffect(
     function () {

@@ -3,13 +3,7 @@ import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import BackgroundService from "react-native-background-actions";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  AppState,
-  NativeModules,
-  PermissionsAndroid,
-  StyleSheet,
-  View,
-} from "react-native";
+import { AppState, NativeModules, StyleSheet, View } from "react-native";
 
 import {
   useRecognizerData,
@@ -17,18 +11,22 @@ import {
   useSettingsData,
   useSoundData,
 } from "../../context/VoiceRecognizerContext";
+import { useTTS } from "../../hooks/shared/useTTS";
 import { useOngoingNotification } from "../../hooks/TimersScreen/notifications/useOngoingNotification";
 import { useTimers } from "../../hooks/TimersScreen/timers/useTimers";
-import { DIM_PERCENTAGE, DIM_TIMEOUT } from "../../utils/config";
+import { DIM_PERCENTAGE, DIM_TIMEOUT, options } from "../../utils/config";
 import { emitter } from "../../utils/EventEmitter";
-import { getItemFromStorage, removeItemFromStorage } from "../../utils/helpers";
+import {
+  backgroundTask,
+  getItemFromStorage,
+  removeItemFromStorage,
+} from "../../utils/helpers";
 import {
   getSharedObject,
   updateSharedObject,
 } from "../../utils/sharedVariables";
 import TimerList from "./TimerList";
 import VoiceCommandsControl from "./VoiceCommandsControl";
-import { useTTS } from "../../hooks/shared/useTTS";
 
 export default function Timers({ navigation }) {
   const [isAwake] = useState(false);
@@ -68,8 +66,7 @@ export default function Timers({ navigation }) {
     ? commandsRef.current
     : {};
 
-  const { playSoundWrapper, stopSoundWrapper, options, backgroundTask } =
-    useTimers();
+  const { playSoundWrapper, stopSoundWrapper } = useTimers();
 
   const forceKeepAwake = useCallback(async function (tag) {
     await deactivateKeepAwake(tag);
@@ -255,50 +252,6 @@ export default function Timers({ navigation }) {
     [alertingTimerNamesRef, prepareAlertingTimerNames, setAlertingTimerNames],
   );
 
-  useEffect(() => {
-    let isMounted = true;
-    let subscription;
-
-    async function load() {
-      const localMicroGranted = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-      );
-
-      if (!isMounted) return;
-
-      const updatedOptions = localMicroGranted
-        ? options
-        : { ...options, foregroundServiceType: ["specialUse"] };
-
-      const start = () => {
-        updateSharedObject({ isTaskRunning: true });
-        BackgroundService.start(backgroundTask, updatedOptions);
-      };
-
-      if (AppState.currentState === "active") {
-        console.log("state is active 👍");
-
-        start();
-      } else {
-        subscription = AppState.addEventListener("change", (state) => {
-          console.log("state is", state);
-
-          if (state === "active") {
-            start();
-            subscription.remove();
-          }
-        });
-      }
-    }
-
-    load();
-
-    return () => {
-      isMounted = false;
-      subscription?.remove();
-    };
-  }, []);
-
   useEffect(
     function () {
       () => {
@@ -338,13 +291,7 @@ export default function Timers({ navigation }) {
       }
       load();
     },
-    [
-      backgroundTask,
-      options,
-      playSoundWrapper,
-      stopSoundWrapper,
-      workingTimersRef,
-    ],
+    [playSoundWrapper, stopSoundWrapper, workingTimersRef],
   );
 
   useEffect(

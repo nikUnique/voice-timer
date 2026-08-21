@@ -8,3 +8,16 @@ export const VOICE_FEEDBACK_SPEEDS = [
   { label: "Fast", value: 0.8 },
   { label: "Super Fast", value: 1 },
 ];
+
+export const options = {
+  taskName: "Timer",
+  taskTitle: "App is keeping your timer active",
+  taskDesc: "Keeps your timer active. You can hide this notification.",
+  taskIcon: {
+    name: "ic_launcher_notification",
+    type: "drawable",
+  },
+  color: "#edf2ff",
+  linkingURI: "voice_timer://timer",
+  foregroundServiceType: ["specialUse", "microphone"],
+};

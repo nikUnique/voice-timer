@@ -35,6 +35,7 @@ import TimersScreen from "./screens/TimersScreen";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
 import { cleanStop } from "./utils/helpers";
 import { getSharedObject } from "./utils/sharedVariables";
+import { useForegroundService } from "./hooks/TimersScreen/timers/useForegroundService";
 
 const Stack = createNativeStackNavigator();
 
@@ -253,6 +254,8 @@ function AppWithContext() {
 }
 
 export default memo(function App() {
+  useForegroundService();
+
   return (
     <>
       <VoiceRecognizerProvider>

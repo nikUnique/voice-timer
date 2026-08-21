@@ -4,6 +4,7 @@ import BackgroundService from "react-native-background-actions";
 import { NativeModules, PermissionsAndroid, Platform } from "react-native";
 
 import { getSharedObject, updateSharedObject } from "./sharedVariables";
+import { BACKGROUND_DELAY } from "./config";
 
 export const sleep = async (time) => {
   return new Promise((resolve) => {
@@ -173,4 +174,21 @@ export const formatRingingResetSpeech = function (timerNames) {
   const rest = timerNames.slice(0, -1);
   const count = timerNames.length;
   return `${count} timers stopped. ${rest.join(", ")} and ${last}.`;
+};
+
+export const backgroundTask = async () => {
+  try {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      if (!getSharedObject()?.isTaskRunning) {
+        break;
+      }
+
+      console.log("background task works 🤴");
+
+      await sleep(BACKGROUND_DELAY);
+    }
+  } catch (error) {
+    console.error("Error with task:", error);
+  }
 };
