@@ -34,4 +34,3 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
-lib/react-native-background-actions/android/build/
