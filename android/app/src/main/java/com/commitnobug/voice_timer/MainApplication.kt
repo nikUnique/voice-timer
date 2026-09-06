@@ -1,12 +1,11 @@
 package com.commitnobug.voice_timer
 
+// import com.commitnobug.voice_timer.NativeUtilsPackage
+// import com.commitnobug.voice_timer.AudioFocusPackage
+
 import android.app.Application
 import android.content.res.Configuration
-
-import com.commitnobug.voice_timer.NativeUtilsPackage
-import com.commitnobug.voice_timer.AudioFocusPackage
 import com.rnfs.RNFSPackage
-
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeHost
@@ -33,7 +32,7 @@ class MainApplication : Application(), ReactApplication {
             packages.add(NativeUtilsPackage())
             packages.add(RNFSPackage())
             packages.add(AudioFocusPackage())
-            // packages.add(SpellCheckerPackage())
+            packages.add(VolumeObserverPackage())
 
            
             // Packages that cannot be autolinked yet can be added manually here, for example:

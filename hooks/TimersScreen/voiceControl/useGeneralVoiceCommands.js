@@ -1,7 +1,7 @@
 import { VolumeManager } from "react-native-volume-manager";
 
 import { useEffect } from "react";
-import { NativeModules } from "react-native";
+import { NativeEventEmitter, NativeModules } from "react-native";
 
 import {
   useRecognizerData,
