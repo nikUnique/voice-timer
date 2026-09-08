@@ -9,7 +9,6 @@ class VolumeObserver(
 ) : ContentObserver(handler) {
 
     override fun onChange(selfChange: Boolean) {
-      println("onChange raw fire, selfChange=$selfChange")
         onVolumeChange()
     }    
 }

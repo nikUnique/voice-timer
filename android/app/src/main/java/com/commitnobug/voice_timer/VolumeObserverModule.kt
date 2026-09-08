@@ -27,7 +27,6 @@ class VolumeObserverModule(reactContext: ReactApplicationContext) : ReactContext
         lastMusicVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
         val onVolumeChange: () -> Unit = { 
             val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-            println("onChange fired, currentVolume=$currentVolume, lastMusicVolume=$lastMusicVolume")
 
             if (currentVolume != lastMusicVolume) {
                 lastMusicVolume = currentVolume
@@ -72,7 +71,6 @@ class VolumeObserverModule(reactContext: ReactApplicationContext) : ReactContext
         val audioManager = reactApplicationContext.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         val streamVolume = (volume * maxVolume).roundToInt()
-         println("setVolume called with volume=$volume, computed streamVolume=$streamVolume")
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, streamVolume, AudioManager.FLAG_SHOW_UI)
         lastMusicVolume = streamVolume
     }
