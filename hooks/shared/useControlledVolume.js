@@ -15,12 +15,6 @@ export function useControlledVolume() {
       lastVolume.current = volume;
     });
 
-    console.log("isHeadsetBroken", isHeadsetBroken);
-    console.log(
-      "VolumeObserver module:",
-      NativeModules.VolumeObserver.setVolume,
-    );
-
     const subscription = volumeEmitter.addListener(
       "volumeChanged",
       (result) => {
@@ -31,6 +25,8 @@ export function useControlledVolume() {
         }
 
         if (isHeadsetBroken) {
+          console.log("lastVolumeRef", lastVolume.current);
+
           NativeModules.VolumeObserver.setVolume(lastVolume.current);
         } else {
           lastVolume.current = result.volume;
