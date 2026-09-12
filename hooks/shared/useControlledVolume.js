@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { VolumeManager } from "react-native-volume-manager";
 import { useSettingsData } from "../../context/VoiceRecognizerContext";
 import { NativeEventEmitter, NativeModules } from "react-native";
@@ -38,10 +38,10 @@ export function useControlledVolume() {
     };
   }, [isHeadsetBroken]);
 
-  const adjustVolumeFromApp = async (newVolume) => {
+  const adjustVolumeFromApp = useCallback(async (newVolume) => {
     isAppChange.current = true;
     await VolumeManager.setVolume(newVolume, { type: "music", showUI: true });
-  };
+  }, []);
 
   return { adjustVolumeFromApp };
 }

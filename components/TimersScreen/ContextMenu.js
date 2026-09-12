@@ -77,6 +77,15 @@ export default function ContextMenu({ onToggleModal, modalIsVisible }) {
             >
               <Text style={menuItem}>Attribution</Text>
             </Pressable>
+            <Pressable
+              onPress={() => {
+                !getSharedObject().alertingTimerNames.length &&
+                  navigation.navigate("ContactsScreen");
+                onToggleModal();
+              }}
+            >
+              <Text style={menuItem}>Contacts</Text>
+            </Pressable>
           </View>
         </Pressable>
       )}

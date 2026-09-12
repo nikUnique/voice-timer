@@ -11,6 +11,7 @@ export function useTTS() {
     isMediaPausedRef,
     isMediaPausedManuallyRef,
     currentSpeechRef,
+    ignoreUntilRef,
   } = useRefsData();
   const releaseAudioFocus = useCallback(
     function () {
@@ -39,11 +40,18 @@ export function useTTS() {
       releaseAudioFocus();
 
       console.log("Done talking");
+      ignoreUntilRef.current = Date.now() + 1500;
       currentSpeechRef.current = "";
       isListeningRef.current = true;
       setIsListening(true);
     },
-    [currentSpeechRef, isListeningRef, releaseAudioFocus, setIsListening],
+    [
+      currentSpeechRef,
+      ignoreUntilRef,
+      isListeningRef,
+      releaseAudioFocus,
+      setIsListening,
+    ],
   );
 
   const errorTalking = useCallback(

@@ -21,6 +21,7 @@ import TimerNameControl from "./components/TimersScreen/TimerNameControl";
 import { Colors } from "./constants/colors";
 import { FONT } from "./constants/typography";
 import VoiceRecognizerProvider, {
+  useContactsData,
   useSettingsData,
 } from "./context/VoiceRecognizerContext";
 import { useAppStateChange } from "./hooks/shared/useAppStateChange";
@@ -33,15 +34,17 @@ import SettingsScreen from "./screens/SettingsScreen";
 import TermsScreen from "./screens/TermsScreen";
 import TimersScreen from "./screens/TimersScreen";
 import { DIM_PERCENTAGE, DIM_TIMEOUT } from "./utils/config";
-import { cleanStop } from "./utils/helpers";
+import { cleanStop, getItemFromStorage } from "./utils/helpers";
 import { getSharedObject } from "./utils/sharedVariables";
 import { useForegroundService } from "./hooks/TimersScreen/timers/useForegroundService";
+import ContactsScreen from "./screens/ContactsScreen";
 
 const Stack = createNativeStackNavigator();
 
 function AppWithContext() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const { dimScreenRef, keepScreenDim } = useSettingsData();
+  const { setContacts } = useContactsData();
 
   useEffect(function () {
     return () => {
@@ -66,6 +69,25 @@ function AppWithContext() {
     return () => {
       Tts.stop();
     };
+  }, []);
+
+  useEffect(function () {
+    async function load() {
+      try {
+        const contacts = await getItemFromStorage("contacts");
+        console.log(contacts, "contact");
+
+        if (contacts) {
+          setContacts(contacts);
+        }
+      } catch (error) {
+        console.error(
+          `An error occurred in the loading of Contacts from async storage`,
+          error,
+        );
+      }
+    }
+    load();
   }, []);
 
   const restoreBrightness = useCallback(
@@ -235,6 +257,13 @@ function AppWithContext() {
             component={AttributionScreen}
             options={{
               title: "Attribution",
+            }}
+          />
+          <Stack.Screen
+            name='ContactsScreen'
+            component={ContactsScreen}
+            options={{
+              title: "Contacts",
             }}
           />
           {

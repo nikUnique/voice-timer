@@ -6,7 +6,7 @@ import {
   useRefsData,
   useSettingsData,
 } from "../../context/VoiceRecognizerContext";
-import { VOICE_FEEDBACK_SPEEDS } from "../../utils/config";
+import { TTS_TIMEOUT, VOICE_FEEDBACK_SPEEDS } from "../../utils/config";
 import { sleep } from "../../utils/helpers";
 
 export function useSpeak() {
@@ -35,31 +35,34 @@ export function useSpeak() {
     });
   }, []);
 
-  const voiceOptions = useMemo(
-    () => ({
-      onStart: () => {
-        console.log("Started talking...");
-        isListeningRef.current = false;
-        setIsListening(false);
-      },
-      onStopped: () => {
-        isListeningRef.current = true;
-        setIsListening(true);
-        console.log("Speech stopped");
-      },
-      onDone: () => {
-        isListeningRef.current = true;
-        setIsListening(true);
-      },
-      onError: () => {
-        console.error("An error occurred during speech utterance");
-      },
-    }),
-    [isListeningRef, setIsListening],
-  );
+  // const voiceOptions = useMemo(
+  //   () => ({
+  //     onStart: () => {
+  //       console.log("Started talking...");
+  //       isListeningRef.current = false;
+  //       setIsListening(false);
+  //     },
+  //     onStopped: () => {
+  //       isListeningRef.current = true;
+  //       setIsListening(true);
+  //       console.log("Speech stopped");
+  //     },
+  //     onDone: () => {
+  //       isListeningRef.current = true;
+  //       setIsListening(true);
+  //     },
+  //     onError: () => {
+  //       console.error("An error occurred during speech utterance");
+  //     },
+  //   }),
+  //   [isListeningRef, setIsListening],
+  // );
 
   const speak = useCallback(
     async function speak(text) {
+      // return new Promise((resolve, reject) => {
+
+      // })
       try {
         if (!isVoiceFeedbackEnabled) {
           return;
@@ -81,7 +84,51 @@ export function useSpeak() {
           if (NativeModules.AudioFocusModule.isWiredHeadsetConnected()) {
             await sleep(0.5);
           }
-          await Tts.speak(text, voiceOptions);
+
+          return new Promise((resolve, reject) => {
+            let settled = false;
+
+            const timer = setTimeout(() => {
+              if (settled) return;
+              settled = true;
+              cleanup();
+              reject(new Error(`TTS timed out after ${TTS_TIMEOUT}ms`));
+            }, TTS_TIMEOUT);
+
+            function cleanup() {
+              finishListener.remove();
+              cancelListener.remove();
+              errorListener.remove();
+              clearTimeout(timer);
+            }
+            const finishListener = Tts.addEventListener("tts-finish", () => {
+              if (settled) return;
+              settled = true;
+              cleanup();
+              resolve({ status: "finished" });
+            });
+
+            const cancelListener = Tts.addEventListener("tts-cancel", () => {
+              if (settled) return;
+              settled = true;
+              cleanup();
+              resolve({ status: "cancelled" });
+            });
+
+            const errorListener = Tts.addEventListener("tts-error", (err) => {
+              if (settled) return;
+              settled = true;
+              cleanup();
+              reject(err);
+            });
+
+            Tts.speak(text).catch((err) => {
+              if (settled) return;
+              settled = true;
+              cleanup();
+              reject(err);
+            });
+          });
         }
       } catch (error) {
         console.error("An error occurred in the speak function 🤯", error);
@@ -94,7 +141,6 @@ export function useSpeak() {
       resultEventRef,
       setIsListening,
       voiceFeedbackSpeedRef,
-      voiceOptions,
     ],
   );
 

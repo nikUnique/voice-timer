@@ -1,8 +1,5 @@
 package com.commitnobug.voice_timer
 
-// import com.commitnobug.voice_timer.NativeUtilsPackage
-// import com.commitnobug.voice_timer.AudioFocusPackage
-
 import android.app.Application
 import android.content.res.Configuration
 import com.rnfs.RNFSPackage
@@ -33,6 +30,7 @@ class MainApplication : Application(), ReactApplication {
             packages.add(RNFSPackage())
             packages.add(AudioFocusPackage())
             packages.add(VolumeObserverPackage())
+            packages.add(CallPackage())
 
            
             // Packages that cannot be autolinked yet can be added manually here, for example:

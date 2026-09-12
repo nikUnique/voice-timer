@@ -41,6 +41,7 @@ export default memo(function AppBehavior() {
     keepScreenDim,
     setKeepScreenDim,
     permitAnswerCallsRef,
+    makePhoneCallsRef,
   } = useSettingsData();
 
   const { updateSettingsInStorage } = useSettingsFunctions();
@@ -52,6 +53,9 @@ export default memo(function AppBehavior() {
   minutesRef.current = minutes; // always latest, no re-subscribe
   const [permitAnswerCall, setPermitAnswerCall] = useState(
     permitAnswerCallsRef.current,
+  );
+  const [makePhoneCalls, setMakePhoneCalls] = useState(
+    makePhoneCallsRef.current,
   );
 
   useEffect(
@@ -213,7 +217,7 @@ export default memo(function AppBehavior() {
       <View style={dividerLine}></View>
 
       <View style={[switchBox, setting]}>
-        <Text style={settingLabel}>Answer calls with voice</Text>
+        <Text style={settingLabel}>Make and answer calls with voice</Text>
         <Switch
           value={permitAnswerCall}
           onValueChange={async (value) => {
@@ -222,6 +226,7 @@ export default memo(function AppBehavior() {
                 PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
                 PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
                 PermissionsAndroid.PERMISSIONS.ANSWER_PHONE_CALLS,
+                PermissionsAndroid.PERMISSIONS.CALL_PHONE,
               ]);
 
               const allGranted = Object.values(results).every(
@@ -233,6 +238,7 @@ export default memo(function AppBehavior() {
                   .filter(([_, r]) => r !== PermissionsAndroid.RESULTS.GRANTED)
                   .map(([perm]) => perm);
                 console.warn("Permissions denied: ", denied);
+                console.log(results, "results");
 
                 const isPermanentlyDenied = Object.values(results).includes(
                   PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN,
@@ -265,6 +271,54 @@ export default memo(function AppBehavior() {
         />
       </View>
       <View style={dividerLine}></View>
+      {/* <View style={[switchBox, setting]}>
+        <Text style={settingLabel}>Make phone calls with voice</Text>
+        <Switch
+          value={makePhoneCalls}
+          onValueChange={async (value) => {
+            if (value === true) {
+              const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.CALL_PHONE,
+              );
+              console.log(granted);
+
+              if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+                console.warn("Permissions denied: ", granted);
+
+                const isPermanentlyDenied = granted.includes(
+                  PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN,
+                );
+                console.log(
+                  isPermanentlyDenied,
+                  PermissionsAndroid.RESULTS.GRANTED,
+                );
+
+                if (isPermanentlyDenied) {
+                  Alert.alert(
+                    "Permission required",
+                    "Please enable make phone calls permission in app settings.",
+                    [
+                      { text: "Cancel", style: "cancel" },
+                      {
+                        text: "Open settings",
+                        onPress: () => Linking.openSettings(),
+                      },
+                    ],
+                  );
+                }
+                return;
+              }
+            }
+            makePhoneCallsRef.current = value;
+            setMakePhoneCalls(value);
+            updateSettingsInStorage("makePhoneCalls", value);
+          }}
+          thumbColor={Colors.primaryTint90}
+          trackColor={{
+            true: Colors.primaryTint40,
+          }}
+        />
+      </View> */}
       <BrokenMic />
     </View>
   );

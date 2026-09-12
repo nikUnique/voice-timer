@@ -16,6 +16,7 @@ export default function useSettingsFunctions() {
     isVibrating,
     keepScreenDim,
     permitAnswerCallsRef,
+    makePhoneCallsRef,
     isHeadsetBroken,
   } = useSettingsData();
 
@@ -31,6 +32,7 @@ export default function useSettingsFunctions() {
       keepScreenDim,
       voiceFeedbackSpeed: voiceFeedbackSpeedRef.current,
       permitAnswerCalls: permitAnswerCallsRef.current,
+      makePhoneCalls: makePhoneCallsRef.current,
       isHeadsetBroken,
     }),
     [
@@ -42,6 +44,7 @@ export default function useSettingsFunctions() {
       keepScreenDim,
       keepScreenOnCommand,
       keepScreenOnMinutes,
+      makePhoneCallsRef,
       permitAnswerCallsRef,
       voiceEnabled,
       voiceFeedbackSpeedRef,

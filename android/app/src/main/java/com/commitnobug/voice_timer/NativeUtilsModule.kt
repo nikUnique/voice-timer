@@ -21,11 +21,9 @@ import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 import android.os.Handler
 import android.os.Looper
-
-
+import android.os.SystemClock
 
 private val TAG = "Call"
-
 
 class NativeUtilsModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
@@ -43,7 +41,6 @@ class NativeUtilsModule(private val reactContext: ReactApplicationContext) : Rea
         }
     }
 
-
     @ReactMethod
     fun checkExactAlarmPermission(promise: Promise) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -55,7 +52,7 @@ class NativeUtilsModule(private val reactContext: ReactApplicationContext) : Rea
         }
     }
 
-  @ReactMethod
+    @ReactMethod
     fun requestExactAlarmPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val alarmManager = reactContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -69,106 +66,106 @@ class NativeUtilsModule(private val reactContext: ReactApplicationContext) : Rea
         }
     }
 
-@ReactMethod
-fun openNotificationChannel(channelId: String) {
-    val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        Intent().apply {
-            action = Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS
-            putExtra(Settings.EXTRA_APP_PACKAGE, reactApplicationContext.packageName)
-            putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    @ReactMethod
+    fun openNotificationChannel(channelId: String) {
+        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Intent().apply {
+                action = Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS
+                putExtra(Settings.EXTRA_APP_PACKAGE, reactApplicationContext.packageName)
+                putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+        } else {
+            // API 24–25: no channel settings screen, fall back to app notification settings
+            Intent().apply {
+                action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                putExtra("app_package", reactApplicationContext.packageName)
+                putExtra("app_uid", reactApplicationContext.applicationInfo.uid)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
         }
-    } else {
-        // API 24–25: no channel settings screen, fall back to app notification settings
-        Intent().apply {
-            action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
-            putExtra("app_package", reactApplicationContext.packageName)
-            putExtra("app_uid", reactApplicationContext.applicationInfo.uid)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
+
+        reactApplicationContext.startActivity(intent)
     }
 
-    reactApplicationContext.startActivity(intent)
-}
+    @ReactMethod
+    fun permitShowingWhenLocked() {
+        val activity = currentActivity
 
-  @ReactMethod
-fun permitShowingWhenLocked() {
-  val activity = currentActivity
-
-  if (activity != null && activity is MainActivity) {
-    activity.run {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-        // Android 8.1+
-        setShowWhenLocked(true)
-        setTurnScreenOn(true)
-      } else {
-        // Android 7 and below
-        window.addFlags(
-          WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-          WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-        )
-      }
+        if (activity != null && activity is MainActivity) {
+            activity.run {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                // Android 8.1+
+                setShowWhenLocked(true)
+                setTurnScreenOn(true)
+            } else {
+                // Android 7 and below
+                window.addFlags(
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                )
+            }
+            }
+        }
     }
-  }
-}
 
     @ReactMethod
     fun forbidShowingWhenLocked() {
-    val activity = currentActivity
+        val activity = currentActivity
 
-    activity?.runOnUiThread {
-    if(activity !== null && activity is MainActivity && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-    activity.setShowWhenLocked(false)
-    activity.setTurnScreenOn(false)
-    }
-    else if(activity !== null && activity is MainActivity ) {
-      activity.window.clearFlags(
-        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-      )
-    }
-    }
+        activity?.runOnUiThread {
+            if(activity !== null && activity is MainActivity && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                activity.setShowWhenLocked(false)
+                activity.setTurnScreenOn(false)
+            }
+            else if(activity !== null && activity is MainActivity ) {
+                activity.window.clearFlags(
+                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                )
+            }
+        }
  }
-    @ReactMethod
-    fun closeMainActivity() {
-    val activity = currentActivity
-   // ✅ clean version
-  if (activity != null && activity is MainActivity) {
-     activity?.runOnUiThread {
-    activity.moveTaskToBack(true)
-}
-  }
-    }
+        @ReactMethod
+        fun closeMainActivity() {
+            val activity = currentActivity
+            // ✅ clean version
+            if (activity != null && activity is MainActivity) {
+                activity?.runOnUiThread {
+                    activity.moveTaskToBack(true)
+                }
+            }
+        }
 
     @ReactMethod
     fun moveAppToBackground() {
-    val activity = currentActivity
+        val activity = currentActivity
 
-    val keyguardManager = reactApplicationContext?.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        val keyguardManager = reactApplicationContext?.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
 
-    val isLocked = keyguardManager.isDeviceLocked
-    if(activity !== null && activity is MainActivity && isLocked) {
-  activity?.runOnUiThread {
-    activity.moveTaskToBack(true)
-}
+        val isLocked = keyguardManager.isDeviceLocked
+        if(activity !== null && activity is MainActivity && isLocked) {
+            activity?.runOnUiThread {
+                activity.moveTaskToBack(true)
+            }
+        }
     }
+
+
+    @ReactMethod
+    fun isDeviceLocked(callback: Callback) {
+        val keyguardManager = reactApplicationContext
+            .getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+
+        callback.invoke(null, keyguardManager.isDeviceLocked)
     }
-
-
-@ReactMethod
-fun isDeviceLocked(callback: Callback) {
-    val keyguardManager = reactApplicationContext
-        .getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-
-    callback.invoke(null, keyguardManager.isDeviceLocked)
-}
 
     @ReactMethod
     fun isPhoneLocked(promise: Promise) {
-    val keyguardManager = reactApplicationContext?.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        val keyguardManager = reactApplicationContext?.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
 
-    // val isLocked = keyguardManager.isDeviceLocked
-    val isLocked = keyguardManager.isKeyguardLocked
-    promise.resolve(isLocked)
+        // val isLocked = keyguardManager.isDeviceLocked
+        val isLocked = keyguardManager.isKeyguardLocked
+        promise.resolve(isLocked)
     }
 
     @ReactMethod
@@ -214,29 +211,48 @@ fun isDeviceLocked(callback: Callback) {
 
     @ReactMethod
     fun answerCall(): Boolean {
-    val tm = reactApplicationContext
-        .getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-    if (tm.callState != TelephonyManager.CALL_STATE_RINGING) {
-        return false
-    }
-
-    val audio = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val telecom = reactApplicationContext
-            .getSystemService(Context.TELECOM_SERVICE) as TelecomManager
-        try {
-            telecom.acceptRingingCall()                   
-        } catch (e: Exception) {
-            Log.e("Call", "accept failed", e)
+        val tm = reactApplicationContext
+            .getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        if (tm.callState != TelephonyManager.CALL_STATE_RINGING) {
+            return false
         }
-    } else {
-        val headsetHook = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_HEADSETHOOK)
-        val releaseHook = KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK)
-        audio.dispatchMediaKeyEvent(headsetHook)
-        audio.dispatchMediaKeyEvent(releaseHook)
+
+        val audio = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val telecom = reactApplicationContext
+                .getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+            try {
+                telecom.acceptRingingCall()                   
+            } catch (e: Exception) {
+                Log.e("Call", "accept failed", e)
+            }
+        } else {
+            val headsetHook = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_HEADSETHOOK)
+            val releaseHook = KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK)
+            audio.dispatchMediaKeyEvent(headsetHook)
+            audio.dispatchMediaKeyEvent(releaseHook)
+        }
+
+        return true
     }
 
-    return true
+    private fun sendMediaKey(keyCode: Int) {
+        val audioManager = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val eventTime = SystemClock.uptimeMillis()
+
+        audioManager.dispatchMediaKeyEvent(KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, keyCode, 0))
+        audioManager.dispatchMediaKeyEvent(KeyEvent(eventTime, eventTime, KeyEvent.ACTION_UP, keyCode, 0))
+    }
+
+    @ReactMethod
+    fun skipNext() {
+        sendMediaKey(KeyEvent.KEYCODE_MEDIA_NEXT)
+    }
+
+
+    @ReactMethod
+    fun skipPrevious() {
+        sendMediaKey(KeyEvent.KEYCODE_MEDIA_PREVIOUS)
     }
 }

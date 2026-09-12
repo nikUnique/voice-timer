@@ -10,6 +10,8 @@
     <!-- Phone call answering -->
     <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <!-- Call someone -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <!-- Foreground service / background timers -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>

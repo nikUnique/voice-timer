@@ -4,6 +4,7 @@ export default function useVoiceRecognizerContext({
   commandsRef,
   language,
   timers,
+  contacts,
   secretIdentifierRef,
 }) {
   const getCommands = useCallback(
@@ -35,6 +36,11 @@ export default function useVoiceRecognizerContext({
     VOLUME_UP,
     VOLUME_DOWN,
     ANSWER_CALL,
+    SKIP_NEXT,
+    SKIP_PREVIOUS,
+    CALL,
+    YES,
+    NO,
   } = commandsRef.current ? commandsRef.current : {};
 
   useEffect(
@@ -51,12 +57,18 @@ export default function useVoiceRecognizerContext({
     [RESUME, PAUSE, STOP, START, STATUS],
   );
 
+  const allContactsNames = useMemo(
+    () => contacts.map((contact) => contact.name.toLowerCase()),
+    [contacts],
+  );
+
   const dynamicGrammarFirst = useMemo(
     () =>
       [
         ...timers.map((timer) =>
           allActions.map((action) => `${action} ${timer.name}`.toLowerCase()),
         ),
+        allContactsNames.map((contact) => `${CALL} ${contact}`),
         REPEAT,
         STOP_FINISHED,
         DISCO,
@@ -69,25 +81,35 @@ export default function useVoiceRecognizerContext({
         VOLUME_UP,
         VOLUME_DOWN,
         ANSWER_CALL,
+        SKIP_NEXT,
+        SKIP_PREVIOUS,
+        YES,
+        NO,
       ]
         .flatMap((command) => command)
         .map((item) => `${item} ${secretIdentifierRef.current}`.trim()),
     [
-      ANSWER_CALL,
-      DISCO,
-      PLAY_MEDIA,
+      timers,
+      allContactsNames,
       REPEAT,
       STOP_FINISHED,
-      STATUS_REPORT,
-      STOP_MEDIA,
+      DISCO,
       TIME,
-      TIMER_GO_SLEEP,
+      PLAY_MEDIA,
+      STOP_MEDIA,
+      STATUS_REPORT,
       TIMER_WAKE_UP,
-      VOLUME_DOWN,
+      TIMER_GO_SLEEP,
       VOLUME_UP,
+      VOLUME_DOWN,
+      ANSWER_CALL,
+      SKIP_NEXT,
+      SKIP_PREVIOUS,
+      YES,
+      NO,
       allActions,
+      CALL,
       secretIdentifierRef,
-      timers,
     ],
   );
 
@@ -95,6 +117,8 @@ export default function useVoiceRecognizerContext({
     () => [...dynamicGrammarFirst, ["unk"]],
     [dynamicGrammarFirst],
   );
+
+  // console.log(dynamicGrammar, "grammar");
 
   useEffect(
     function () {

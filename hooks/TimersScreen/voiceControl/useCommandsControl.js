@@ -22,6 +22,7 @@ export function useCommandsControl({
 
   const {
     recognizedCommandRef,
+    prevRecognizedCommandRef,
     setIsListening,
     isListeningRef,
     ignoreUntilRef,
@@ -153,7 +154,10 @@ export function useCommandsControl({
           }
 
           if (Date.now() < ignoreUntilRef.current) {
-            console.log("Ignoring speech to prevent TTS making a difference");
+            console.log(
+              "Ignoring speech to prevent TTS making a difference",
+              res,
+            );
             return;
           }
 

@@ -5,11 +5,9 @@ const VoiceRecognizerContext = createContext();
 const SoundContext = createContext();
 const RefsContext = createContext();
 const SettingsContext = createContext();
+const ContactsContext = createContext();
 
 export default function VoiceRecognizerProvider({ children }) {
-  const [recognizedCommand, setRecognizedCommand] = useState();
-  const [recognizedTime, setRecognizedTime] = useState();
-  const [isListening, setIsListening] = useState(false);
   const [isAlarmingScreen, setIsAlarmingScreen] = useState(false);
   const [alertingTimerNames, setAlertingTimerNames] = useState([]);
   const [language, setLanguage] = useState("en");
@@ -44,7 +42,11 @@ export default function VoiceRecognizerProvider({ children }) {
   const timersTimesRef = useRef([]);
 
   // Command recognition
+  const [recognizedCommand, setRecognizedCommand] = useState();
+  const [recognizedTime, setRecognizedTime] = useState();
+  const [isListening, setIsListening] = useState(false);
   const recognizedCommandRef = useRef(null);
+  const prevRecognizedCommandRef = useRef(null);
   const secretIdentifierRef = useRef("");
   const commandsRef = useRef(null);
   const currentSpeechRef = useRef(null);
@@ -90,12 +92,33 @@ export default function VoiceRecognizerProvider({ children }) {
   const dimScreenRef = useRef(null);
   const voiceFeedbackSpeedRef = useRef(0.8);
   const permitAnswerCallsRef = useRef(false);
+  const makePhoneCallsRef = useRef(false);
+
+  // Contacts
+  const [contacts, setContacts] = useState([
+    { id: "1", name: "James Carter", phone: "+15551234567" },
+    { id: "2", name: "Maria Lopez", phone: "+15552345678" },
+    { id: "3", name: "David Kim", phone: "+15553456789" },
+    { id: "4", name: "Sarah Johnson", phone: "+15554567890" },
+    { id: "5", name: "Michael Brown", phone: "+15555678901" },
+    { id: "6", name: "Emily Davis", phone: "+15556789012" },
+    { id: "7", name: "Daniel Wilson", phone: "+15557890123" },
+    { id: "8", name: "Olivia Martinez", phone: "+15558901234" },
+    { id: "9", name: "Ryan Anderson", phone: "+15559012345" },
+    { id: "10", name: "Sophia Thomas", phone: "+15550123456" },
+    { id: "11", name: "Ethan Moore", phone: "+15551987654" },
+    { id: "12", name: "Grace Taylor", phone: "+15552876543" },
+    { id: "13", name: "Noah Jackson", phone: "+15553765432" },
+    { id: "14", name: "Ava White", phone: "+15554654321" },
+    { id: "15", name: "Liam Harris", phone: "+15555543210" },
+  ]);
 
   const { allTimers, dynamicGrammar, allActions } = useVoiceRecognizerContext({
     commandsRef,
     language,
     timers,
     secretIdentifierRef,
+    contacts,
   });
 
   const value = useMemo(
@@ -164,6 +187,7 @@ export default function VoiceRecognizerProvider({ children }) {
       timersTimesRef,
       workingTimersRef,
       recognizedCommandRef,
+      prevRecognizedCommandRef,
       commandsRef,
       isListeningRef,
       notificationBodyRef,
@@ -226,6 +250,7 @@ export default function VoiceRecognizerProvider({ children }) {
       setKeepScreenDim,
       voiceFeedbackSpeedRef,
       permitAnswerCallsRef,
+      makePhoneCallsRef,
       isHeadsetBroken,
       setIsHeadsetBroken,
     }),
@@ -247,12 +272,22 @@ export default function VoiceRecognizerProvider({ children }) {
     ],
   );
 
+  const contactsData = useMemo(
+    () => ({
+      contacts,
+      setContacts,
+    }),
+    [contacts],
+  );
+
   return (
     <VoiceRecognizerContext.Provider value={value}>
       <SoundContext.Provider value={soundData}>
         <RefsContext.Provider value={refsData}>
           <SettingsContext.Provider value={settingsData}>
-            {children}
+            <ContactsContext.Provider value={contactsData}>
+              {children}
+            </ContactsContext.Provider>
           </SettingsContext.Provider>
         </RefsContext.Provider>
       </SoundContext.Provider>
@@ -292,6 +327,16 @@ export function useSettingsData() {
   if (context === undefined) {
     throw new Error(
       "Settings context was used outside of VoiceRecognizerProvider",
+    );
+  }
+  return context;
+}
+
+export function useContactsData() {
+  const context = useContext(ContactsContext);
+  if (context === undefined) {
+    throw new Error(
+      "Contacts context was used outside of VoiceRecognizerProvider",
     );
   }
   return context;

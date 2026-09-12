@@ -190,7 +190,8 @@ export function useExecuteCommand({
               .toLocaleLowerCase()
               .trim(),
           ) &&
-          isPaused
+          isPaused &&
+          isActive
         ) {
           resumeTimerRef.current();
           activateTimerRef.current(index);

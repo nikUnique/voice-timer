@@ -32,6 +32,8 @@ export default memo(function Commands() {
     TIMER_GO_SLEEP,
     VOLUME_UP,
     VOLUME_DOWN,
+    SKIP_NEXT,
+    SKIP_PREVIOUS,
   } = commandsRef?.current ? commandsRef.current : {};
 
   const commands = useMemo(() => {
@@ -148,23 +150,41 @@ export default memo(function Commands() {
         icon: "volume-low-outline",
         badge: "VOL-",
       },
+      {
+        command: `${capitalize(SKIP_NEXT)}`,
+        example: `${capitalize(SKIP_NEXT)}`,
+        description:
+          "Lets you control media playback without interacting with the media app directly. Sends the next media command to the active media app, which determines the exact action.",
+        icon: "play-skip-forward-outline",
+        badge: "NEXT",
+      },
+      {
+        command: `${capitalize(SKIP_PREVIOUS)}`,
+        example: `${capitalize(SKIP_PREVIOUS)}`,
+        description:
+          "Lets you control media playback without interacting with the media app directly. Sends the previous media command to the active media app, which determines the exact action.",
+        icon: "play-skip-back-outline",
+        badge: "PREV",
+      },
     ];
   }, [
-    RESUME,
-    PAUSE,
-    PLAY_MEDIA,
-    REPEAT,
-    STOP,
-    STOP_FINISHED,
     START,
-    STATUS,
-    STATUS_REPORT,
-    STOP_MEDIA,
+    PAUSE,
+    RESUME,
+    STOP,
+    REPEAT,
+    STOP_FINISHED,
     TIME,
-    TIMER_GO_SLEEP,
+    PLAY_MEDIA,
+    STOP_MEDIA,
+    STATUS_REPORT,
+    STATUS,
     TIMER_WAKE_UP,
-    VOLUME_DOWN,
+    TIMER_GO_SLEEP,
     VOLUME_UP,
+    VOLUME_DOWN,
+    SKIP_NEXT,
+    SKIP_PREVIOUS,
   ]);
 
   useEffect(() => {

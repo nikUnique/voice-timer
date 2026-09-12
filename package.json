@@ -25,6 +25,7 @@
     "expo-brightness": "~13.0.3",
     "expo-keep-awake": "~14.0.1",
     "expo-splash-screen": "^0.27.5",
+    "libphonenumber-js": "^1.13.12",
     "mitt": "^3.0.1",
     "number-to-words": "^1.2.4",
     "react": "18.3.1",
