@@ -1,386 +1,450 @@
-import { isValidPhoneNumber } from "libphonenumber-js";
-import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { FlatList, StyleSheet, Text, View } from "react-native";
+
+import { Colors } from "../../constants/colors";
+import { RADIUS } from "../../constants/radius";
+import { SPACE } from "../../constants/spacing";
+import { FONT } from "../../constants/typography";
+import { WEIGHT } from "../../constants/weight";
 import {
-  KeyboardAvoidingView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { SPACE } from "../constants/spacing";
-import { FONT } from "../constants/typography";
-import { Colors } from "../constants/colors";
-import {
-  useContactsData,
   useRefsData,
   useSettingsData,
-} from "../context/VoiceRecognizerContext";
-import { normalize, setItemInStorage } from "../utils/helpers";
-import { callNumber } from "../utils/nativeHelpers";
-import { useDictionary } from "../hooks/shared/useDictionary";
-import { exists } from "react-native-fs";
-import { call } from "typo-js";
+} from "../../context/VoiceRecognizerContext";
+import LoadingIndicator from "../../ui/LoadingIndicator";
+import { capitalize } from "../../utils/helpers";
 
-const AVATAR_COLORS = [
-  Colors.primaryTint8,
-  Colors.pausedColor,
-  Colors.resetColor,
-  Colors.dangerColor,
-  Colors.primary,
-  Colors.primaryTint40,
-];
-
-const getInitials = (fullName) =>
-  fullName
-    .trim()
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase())
-    .join("");
-
-const getAvatarColor = (fullName) => {
-  const hash = fullName
-    .split("")
-    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
-};
-
-export default function ContactsScreen() {
-  const [name, setName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("+");
-  const [error, setError] = useState("");
-  const [showForm, setShowForm] = useState(false);
-  const { contacts, setContacts } = useContactsData();
-  const { dictionaryTypoRef } = useRefsData();
-  const { setVoiceEnabled, voiceEnabled } = useSettingsData();
-  const [isCorrect, setIsCorrect] = useState(true);
-
-  const { loadDictionary } = useDictionary();
-
-  function handleAdd() {
-    const firstWord = normalize(name).split(" ")[0];
-    const secondWord = normalize(name).split(" ")[1];
-
-    const isFirstWordCorrect = dictionaryTypoRef.current.check(firstWord);
-    const isSecondWordCorrect = secondWord
-      ? dictionaryTypoRef.current.check(secondWord)
-      : true;
-
-    const areBothWordsCorrect = isFirstWordCorrect && isSecondWordCorrect;
-
-    if (!areBothWordsCorrect || normalize(name).split(" ").length > 2) {
-      setIsCorrect(false);
-      return;
-    }
-
-    if (normalize(name).length < 3) {
-      return;
-    }
-
-    const areOnlyLetters = /^[A-Za-z]+( [A-Za-z]+)?$/.test(normalize(name));
-
-    if (!areOnlyLetters) {
-      return;
-    }
-
-    const contactWithSameName = contacts.find(
-      (contact) => normalize(contact.name) === normalize(name),
-    );
-    if (contactWithSameName && contactWithSameName.name !== name) {
-      return contacts;
-    }
-
-    setIsCorrect(true);
-    setName(normalize(name));
-
-    if (!isValidPhoneNumber(phoneNumber)) {
-      setError("Please enter a valid phone number");
-      return;
-    }
-
-    const newContact = { id: Date.now().toString(), name, phoneNumber };
-
-    setContacts((prev) => [...prev, newContact]);
-    setItemInStorage("contacts", [...contacts, newContact]);
-    setName("");
-    setPhoneNumber("");
-    setError("");
-    setShowForm(false);
-    if (voiceEnabled) {
-      setVoiceEnabled(false);
-      setTimeout(function () {
-        setVoiceEnabled(true);
-      }, 100);
-    }
-  }
-
-  async function handleCall(number) {
-    const success = await callNumber(number);
-    if (!success) setError("Could not place the call.");
-  }
-
-  function handleDelete(id) {
-    setContacts((prev) => prev.filter((c) => c.id !== id));
-    setItemInStorage(
-      "contacts",
-      contacts.filter((c) => c.id !== id),
-    );
-  }
-
-  const includesName = contacts.find(
-    (contact) => normalize(contact.name) === normalize(name),
+const VoiceDisabledBanner = memo(function VoiceDisabledBanner() {
+  return (
+    <View style={styles.banner}>
+      <View style={[styles.iconBox, styles.dangerIconBox]}>
+        <Ionicons
+          name='mic-off-outline'
+          size={18}
+          color={Colors.dangerColor}
+        />
+      </View>
+      <View>
+        <Text style={styles.commandText}>Voice commands are off</Text>
+        <Text style={styles.descriptionText}>
+          Turn them on in Settings to control the timer hands-free.
+        </Text>
+      </View>
+    </View>
   );
+});
+
+const ListHeader = memo(function ListHeader({ voiceEnabled }) {
+  return (
+    <>
+      <Text style={styles.title}>Voice Commands</Text>
+      {voiceEnabled && (
+        <Text style={styles.subtitle}>
+          Use the following voice commands to control the timer hands-free.
+        </Text>
+      )}
+    </>
+  );
+});
+
+export default memo(function Commands() {
+  const [ready, setReady] = useState(false);
+  const {
+    isSkipCommandsEnabledRef,
+    permitAnswerCallsRef,
+    isVoiceFeedbackEnabled,
+    voiceEnabled,
+  } = useSettingsData();
+  const { commandsRef } = useRefsData();
+
+  const [isSkipEnabled, setIsSkipEnabled] = useState(
+    () => isSkipCommandsEnabledRef?.current ?? false,
+  );
+
+  const [permitAnswerCalls, setPermitAnswerCalls] = useState(
+    () => permitAnswerCallsRef?.current ?? false,
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsSkipEnabled(isSkipCommandsEnabledRef?.current ?? false);
+      setPermitAnswerCalls(permitAnswerCallsRef?.current ?? false);
+    }, [isSkipCommandsEnabledRef, permitAnswerCallsRef]),
+  );
+
+  const {
+    REPEAT = "",
+    STOP = "",
+    STOP_FINISHED = "",
+    TIME = "",
+    START = "",
+    PAUSE = "",
+    PLAY_MEDIA = "",
+    STOP_MEDIA = "",
+    RESUME = "",
+    STATUS_REPORT = "",
+    STATUS = "",
+    TIMER_WAKE_UP = "",
+    TIMER_GO_SLEEP = "",
+    VOLUME_UP = "",
+    VOLUME_DOWN = "",
+    SKIP_NEXT = "",
+    SKIP_PREVIOUS = "",
+    CALL = "",
+    RING = "",
+  } = commandsRef?.current ?? {};
+
+  const commands = useMemo(
+    () => [
+      {
+        command: `${capitalize(START)} [timer name]`,
+        example: `${capitalize(START)} Focus timer`,
+        description: "Starts the named timer with its default duration.",
+        icon: "play-outline",
+        badge: "START",
+      },
+      {
+        command: `${capitalize(PAUSE)} [timer name]`,
+        example: `${capitalize(PAUSE)} Focus timer`,
+        description: "Pauses the timer if it is running, otherwise no effect.",
+        icon: "pause-outline",
+        badge: "PAUSE",
+      },
+      {
+        command: `${capitalize(RESUME)} [timer name]`,
+        example: `${capitalize(RESUME)} Focus timer`,
+        description:
+          'Resumes the timer if paused. "Resume" is avoided as it can be misheard as "STOP".',
+        icon: "play-skip-forward-outline",
+        badge: "RESUME",
+      },
+      {
+        command: `${capitalize(STOP)} [timer name]`,
+        example: `${capitalize(STOP)} Focus timer`,
+        description: "Stops the timer if it was paused, otherwise no effect.",
+        icon: "refresh-outline",
+        badge: "STOP",
+      },
+      {
+        command: `${capitalize(REPEAT)}`,
+        example: `${capitalize(REPEAT)}`,
+        description:
+          "Restarts the timer from the last individual timer command. Any command that used a specific timer counts - that timer will be restarted. E.g. if you last said 'start twenty minutes' or 'STOP twenty minutes', where 'twenty minutes' is one of your timers, saying 'Repeat' restarts the 'twenty-minutes' timer.",
+        icon: "repeat-outline",
+        badge: "REPEAT",
+      },
+      {
+        command: `${capitalize(STOP_FINISHED)}`,
+        example: `${capitalize(STOP_FINISHED)}`,
+        description: "STOPs all timers that have run out of time.",
+        icon: "checkmark-done-outline",
+        badge: "BULK",
+      },
+      {
+        command: `${capitalize(TIME)}`,
+        example: `${capitalize(TIME)}`,
+        description: "Tells you the exact time.",
+        icon: "time-outline",
+        badge: "TIME",
+        disabled: !isVoiceFeedbackEnabled,
+      },
+      {
+        command: `${capitalize(PLAY_MEDIA)}`,
+        example: `${capitalize(PLAY_MEDIA)}`,
+        description: `Resumes external media playback. While media is playing, only the "${capitalize(STOP_MEDIA)}" command is accepted - all other commands are ignored.`,
+        icon: "play-circle-outline",
+        badge: "PLAY",
+      },
+      {
+        command: `${capitalize(STOP_MEDIA)}`,
+        example: `${capitalize(STOP_MEDIA)}`,
+        description:
+          "Pauses external media and restores full voice control. Required before any other command will be accepted - while media is playing, this is the only command that works.",
+        icon: "stop-circle-outline",
+        badge: "STOP",
+      },
+      {
+        command: `${capitalize(STATUS_REPORT)}`,
+        example: `${capitalize(STATUS_REPORT)}`,
+        description:
+          "Reads out all timers and their current state - how many are running, paused, alarming, or not active.",
+        icon: "list-outline",
+        badge: "STATUS",
+        disabled: !isVoiceFeedbackEnabled,
+      },
+      {
+        command: `${capitalize(STATUS)} [timer name]`,
+        example: `${capitalize(STATUS)} Focus timer`,
+        description:
+          "Reads the current state of a single timer - whether it is running, paused, alarming, or not active, and how much time is left.",
+        icon: "timer-outline",
+        badge: "STATUS",
+        disabled: !isVoiceFeedbackEnabled,
+      },
+      {
+        command: `${capitalize(TIMER_WAKE_UP)}`,
+        example: `${capitalize(TIMER_WAKE_UP)}`,
+        description:
+          "Activates voice command listening. Timer will now respond to spoken commands.",
+        icon: "mic-outline",
+        badge: "WAKE",
+      },
+      {
+        command: `${capitalize(TIMER_GO_SLEEP)}`,
+        example: `${capitalize(TIMER_GO_SLEEP)}`,
+        description:
+          "Deactivates voice command listening. Timer will stop responding to spoken commands until woken up again. 'Stop all media' and 'play all media' still work while sleeping. Say 'timer wake up' to resume commands.",
+        icon: "mic-off-outline",
+        badge: "SLEEP",
+      },
+      {
+        command: `${capitalize(VOLUME_UP)}`,
+        example: `${capitalize(VOLUME_UP)}`,
+        description: "Increases media volume by one step.",
+        icon: "volume-high-outline",
+        badge: "VOL+",
+      },
+      {
+        command: `${capitalize(VOLUME_DOWN)}`,
+        example: `${capitalize(VOLUME_DOWN)}`,
+        description: "Decreases media volume by one step.",
+        icon: "volume-low-outline",
+        badge: "VOL-",
+      },
+      {
+        command: `${capitalize(SKIP_NEXT)}`,
+        example: `${capitalize(SKIP_NEXT)}`,
+        description:
+          "Lets you control media playback without interacting with the media app directly. Sends the next media command to the active media app, which determines the exact action.",
+        icon: "play-skip-forward-outline",
+        badge: "NEXT",
+        disabled: !isSkipEnabled,
+      },
+      {
+        command: `${capitalize(SKIP_PREVIOUS)}`,
+        example: `${capitalize(SKIP_PREVIOUS)}`,
+        description:
+          "Lets you control media playback without interacting with the media app directly. Sends the previous media command to the active media app, which determines the exact action.",
+        icon: "play-skip-back-outline",
+        badge: "PREV",
+        disabled: !isSkipEnabled,
+      },
+      {
+        command: `${capitalize(CALL)}`,
+        example: `${capitalize(CALL)} John`,
+        description: "Places a call to the specified contact.",
+        icon: "call-outline",
+        badge: "CALL",
+        disabled: !permitAnswerCalls,
+      },
+      {
+        command: `${capitalize(RING)}`,
+        example: `${capitalize(RING)} John`,
+        description:
+          "Places a call and automatically ends it if unanswered after a timeout.",
+        icon: "notifications-outline",
+        badge: "RING",
+        disabled: !permitAnswerCalls,
+      },
+    ],
+    [
+      START,
+      PAUSE,
+      RESUME,
+      STOP,
+      REPEAT,
+      STOP_FINISHED,
+      TIME,
+      isVoiceFeedbackEnabled,
+      PLAY_MEDIA,
+      STOP_MEDIA,
+      STATUS_REPORT,
+      STATUS,
+      TIMER_WAKE_UP,
+      TIMER_GO_SLEEP,
+      VOLUME_UP,
+      VOLUME_DOWN,
+      SKIP_NEXT,
+      isSkipEnabled,
+      SKIP_PREVIOUS,
+      CALL,
+      permitAnswerCalls,
+      RING,
+    ],
+  );
+
+  useEffect(() => {
+    const id = setTimeout(() => setReady(true), 0);
+    return () => clearTimeout(id);
+  }, []);
+
+  const renderItem = useCallback(({ item }) => {
+    const isDisabled = Boolean(item.disabled);
+
+    return (
+      <View style={[styles.card, isDisabled && styles.disabledCard]}>
+        <View style={styles.iconBox}>
+          <Ionicons
+            name={item.icon}
+            size={18}
+            color={isDisabled ? Colors.grayTint20 : Colors.primaryTint40}
+          />
+        </View>
+        <View style={styles.body}>
+          <View style={[styles.badge, isDisabled && styles.disabledBadge]}>
+            <Text
+              style={[styles.badgeText, isDisabled && styles.disabledBadgeText]}
+            >
+              {isDisabled ? `${item.badge} (DISABLED)` : item.badge}
+            </Text>
+          </View>
+          <Text style={styles.commandText}>{item.command}</Text>
+          {item.example && (
+            <Text style={styles.exampleText}>
+              <Text style={styles.prompt}>&gt; </Text>&quot;{item.example}&quot;
+            </Text>
+          )}
+          <Text style={styles.descriptionText}>{item.description}</Text>
+        </View>
+      </View>
+    );
+  }, []);
+
+  if (!ready) {
+    return <LoadingIndicator />;
+  }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior='height'
-    >
-      {contacts?.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyTitle}>No contacts yet</Text>
-          <Text style={styles.emptyBody}>
-            Add someone to call them by name.
-          </Text>
+    <View style={styles.container}>
+      {!voiceEnabled ? (
+        <View style={styles.list}>
+          <ListHeader voiceEnabled={voiceEnabled} />
+          <VoiceDisabledBanner />
         </View>
       ) : (
-        <View style={styles.listWrapper}>
-          <ScrollView keyboardShouldPersistTaps='handled'>
-            {contacts.map((item) => (
-              <View
-                key={item.id}
-                style={styles.row}
-              >
-                <TouchableOpacity
-                  style={styles.rowMain}
-                  onPress={() => handleCall(item.phoneNumber)}
-                >
-                  <View
-                    style={[
-                      styles.avatar,
-                      { backgroundColor: getAvatarColor(item.name) },
-                    ]}
-                  >
-                    <Text style={styles.avatarText}>
-                      {getInitials(item.name)}
-                    </Text>
-                  </View>
-                  <View style={styles.rowText}>
-                    <Text style={styles.rowName}>{item.name}</Text>
-                    <Text style={styles.rowNumber}>{item.phoneNumber}</Text>
-                  </View>
-                  <View style={styles.callBadge}>
-                    <Text style={styles.callBadgeText}>call</Text>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={() => handleDelete(item.id)}
-                >
-                  <Text style={styles.deleteText}>×</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-          </ScrollView>
-        </View>
+        <FlatList
+          data={commands}
+          renderItem={renderItem}
+          ListHeaderComponent={() => <ListHeader voiceEnabled={voiceEnabled} />}
+          style={styles.list}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item, index) => `${item.badge}-${index}`}
+          initialNumToRender={10}
+          maxToRenderPerBatch={10}
+          windowSize={5}
+          removeClippedSubviews={false}
+        />
       )}
-
-      {showForm ? (
-        <View style={styles.form}>
-          {!isCorrect && !includesName && (
-            <Text style={styles.error}>
-              Enter 1-2 correctly spelled words using only English letters, 3
-              letters minimum
-            </Text>
-          )}
-          {includesName && (
-            <Text style={styles.error}>
-              Contact with this name already exists
-            </Text>
-          )}
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder='Name must be 1-2 words (John Smith)'
-            placeholderTextColor={Colors.grayTint70}
-            autoCapitalize='words'
-            onFocus={async () => {
-              setTimeout(async () => {
-                await loadDictionary();
-              }, 2000);
-            }}
-          />
-          {error !== "" && <Text style={styles.error}>{error}</Text>}
-          <TextInput
-            style={styles.input}
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            placeholder='Phone number (+1 234 567 8900)'
-            placeholderTextColor={Colors.grayTint70}
-            keyboardType='phone-pad'
-          />
-          <Text style={styles.helperText}>Include country code, e.g. +1</Text>
-
-          <TouchableOpacity
-            style={styles.buttonPrimary}
-            onPress={handleAdd}
-          >
-            <Text style={styles.buttonText}>Save contact</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        contacts.length < 20 && (
-          <TouchableOpacity
-            style={styles.buttonPrimary}
-            onPress={() => setShowForm(true)}
-          >
-            <Text style={styles.buttonText}>+ Add contact</Text>
-          </TouchableOpacity>
-        )
-      )}
-    </KeyboardAvoidingView>
+    </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: SPACE.lg,
-    marginBottom: SPACE.huge,
-    backgroundColor: Colors.grayShade30,
+    padding: SPACE.xl,
   },
-
-  emptyState: {
-    marginTop: SPACE.huge,
-    alignItems: "center",
+  list: {
+    flex: 1,
   },
-  emptyTitle: {
-    fontSize: FONT.lg,
+  title: {
+    fontSize: FONT.heading,
+    fontWeight: WEIGHT.semibold,
     color: Colors.primaryTint90,
-    fontWeight: "600",
+    marginBottom: SPACE.xl,
   },
-  emptyBody: {
-    fontSize: FONT.sm,
-    color: Colors.grayTint70,
-    marginTop: SPACE.xs,
+  subtitle: {
+    fontSize: FONT.subheading,
+    color: Colors.primaryTint70,
+    marginBottom: SPACE.xxl,
   },
-
-  listWrapper: {
-    flex: 1,
-  },
-
-  row: {
+  card: {
+    backgroundColor: Colors.primaryShade50,
+    borderRadius: RADIUS.sm,
+    borderLeftWidth: 3,
+    borderLeftColor: Colors.primary,
+    paddingVertical: SPACE.xl,
+    paddingRight: SPACE.xl,
+    paddingLeft: SPACE.lg,
     flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: Colors.grayShade20,
-    borderWidth: 1,
-    borderColor: Colors.whiteAlpha10,
-    borderRadius: 12,
-    paddingVertical: SPACE.sm,
-    paddingHorizontal: SPACE.sm,
-    marginBottom: SPACE.sm,
+    gap: SPACE.xl,
+    marginBottom: SPACE.lg,
   },
-
-  rowMain: {
+  disabledCard: {
+    opacity: 0.8,
+    borderLeftColor: Colors.grayTint20,
+  },
+  body: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
+    gap: SPACE.sm,
   },
-
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: SPACE.sm,
-  },
-  avatarText: {
-    color: Colors.grayShade30,
-    fontSize: FONT.sm,
-    fontWeight: "700",
-  },
-
-  rowText: {
-    flex: 1,
-  },
-  rowName: {
-    fontSize: FONT.md,
-    color: Colors.primaryTint90,
-    fontWeight: "600",
-  },
-  rowNumber: {
-    fontSize: FONT.sm,
-    color: Colors.grayTint70,
-    marginTop: 2,
-  },
-
-  callBadge: {
+  iconBox: {
+    width: 38,
+    height: 38,
+    borderRadius: RADIUS.xs,
     backgroundColor: Colors.primaryTint8Alpha15,
     borderWidth: 1,
     borderColor: Colors.primaryTint8Alpha30,
-    borderRadius: 8,
-    paddingVertical: 4,
-    paddingHorizontal: SPACE.sm,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: SPACE.xs,
   },
-  callBadgeText: {
-    color: Colors.primaryTint8,
-    fontSize: FONT.xs ?? 10,
-    fontWeight: "600",
-  },
-
-  deleteButton: {
-    backgroundColor: Colors.dangerIconBg,
+  badge: {
+    alignSelf: "flex-start",
     borderWidth: 1,
-    borderColor: Colors.dangerBorder,
-    borderRadius: 8,
-    paddingHorizontal: SPACE.sm,
+    borderColor: Colors.primaryTint40Alpha40,
+    borderRadius: RADIUS.tight,
+    paddingHorizontal: SPACE.md,
     paddingVertical: SPACE.xs,
-    marginLeft: SPACE.sm,
+    backgroundColor: Colors.primaryTint40Alpha8,
+    marginBottom: SPACE.xs,
   },
-  deleteText: {
-    fontSize: FONT.md,
-    color: Colors.dangerColor,
+  disabledBadge: {
+    borderColor: Colors.grayTint20,
+    backgroundColor: "transparent",
   },
-
-  form: {
-    marginTop: SPACE.lg,
+  badgeText: {
+    fontSize: FONT.caption,
+    letterSpacing: 1.1,
+    color: Colors.primaryTint40,
   },
-  input: {
-    fontSize: FONT.md,
+  disabledBadgeText: {
+    color: Colors.grayTint20,
+  },
+  commandText: {
+    fontSize: FONT.body,
+    fontWeight: WEIGHT.semibold,
     color: Colors.primaryTint90,
-    backgroundColor: Colors.grayShade20,
-    borderWidth: 1,
-    borderColor: Colors.whiteAlpha10,
-    borderRadius: 10,
-    padding: SPACE.sm,
-    marginBottom: SPACE.sm,
   },
-  helperText: {
-    fontSize: FONT.xs ?? 10,
-    color: Colors.grayTint70,
+  exampleText: {
+    fontSize: FONT.caption,
+    color: Colors.primaryTint8,
+  },
+  descriptionText: {
+    fontSize: FONT.caption,
+    color: Colors.grayTint20,
+    lineHeight: 18,
+  },
+  prompt: {
+    color: Colors.primaryShade30,
+    fontWeight: WEIGHT.bold,
+    fontSize: FONT.body,
+  },
+  banner: {
+    backgroundColor: Colors.primaryShade50,
+    borderRadius: RADIUS.sm,
+    borderLeftWidth: 3,
+    borderLeftColor: Colors.danger,
+    paddingVertical: SPACE.xl,
+    paddingRight: SPACE.xl,
+    paddingLeft: SPACE.lg,
+    flexDirection: "row",
+    gap: SPACE.xl,
     marginBottom: SPACE.lg,
   },
-  error: {
-    fontSize: FONT.sm,
-    color: Colors.dangerColor,
-    marginBottom: SPACE.sm,
-  },
-
-  buttonPrimary: {
-    marginTop: SPACE.md,
-    padding: SPACE.md,
-    backgroundColor: Colors.primary,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  buttonText: {
-    fontSize: FONT.lg,
-    color: Colors.primaryTint90,
-    fontWeight: "700",
+  dangerIconBox: {
+    borderColor: Colors.dangerAlpha30 ?? Colors.danger,
+    backgroundColor: Colors.dangerAlpha15 ?? "rgba(255,107,107,0.15)",
   },
 });

@@ -42,3 +42,27 @@ export async function callNumber(phoneNumber) {
     return false;
   }
 }
+
+export async function endCall() {
+  if (!CallModule) return false;
+
+  const granted = await PermissionsAndroid.request(
+    PermissionsAndroid.PERMISSIONS.ANSWER_PHONE_CALLS,
+    {
+      title: "End call permission",
+      message: "This lets the app hang up a call it placed on your behalf.",
+    },
+  );
+
+  if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+    return false;
+  }
+
+  try {
+    const ended = await CallModule.endCall();
+    return ended;
+  } catch (err) {
+    console.warn("endCall failed:", err.message);
+    return false;
+  }
+}

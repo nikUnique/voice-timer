@@ -98,7 +98,7 @@ export function useCommandsControl({
         try {
           await NativeModules.AudioFocusModule.startBluetoothMic();
         } catch (error) {
-          console.error(error);
+          console.log(error);
         }
       }
 

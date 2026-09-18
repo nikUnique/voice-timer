@@ -20,8 +20,8 @@ export function useSettings() {
     setKeepScreenDim,
     voiceFeedbackSpeedRef,
     permitAnswerCallsRef,
-    makePhoneCallsRef,
     setIsHeadsetBroken,
+    isSkipCommandsEnabledRef,
   } = useSettingsData();
 
   const { timers } = useRefsData();
@@ -75,7 +75,8 @@ export function useSettings() {
           setKeepScreenDim(retrievedSettings.keepScreenDim);
           voiceFeedbackSpeedRef.current = +retrievedSettings.voiceFeedbackSpeed;
           permitAnswerCallsRef.current = retrievedSettings.permitAnswerCalls;
-          makePhoneCallsRef.current = retrievedSettings.makePhoneCallsRef;
+          isSkipCommandsEnabledRef.current =
+            retrievedSettings.isSkipCommandsEnabled;
           setIsHeadsetBroken(retrievedSettings.isHeadsetBroken);
         } catch (error) {
           console.error(
@@ -88,7 +89,7 @@ export function useSettings() {
       load();
     },
     [
-      makePhoneCallsRef,
+      isSkipCommandsEnabledRef,
       permitAnswerCallsRef,
       requestMicrophone,
       setAlarmVolume,

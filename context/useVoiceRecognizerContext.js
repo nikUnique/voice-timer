@@ -39,6 +39,7 @@ export default function useVoiceRecognizerContext({
     SKIP_NEXT,
     SKIP_PREVIOUS,
     CALL,
+    RING,
     YES,
     NO,
   } = commandsRef.current ? commandsRef.current : {};
@@ -69,6 +70,7 @@ export default function useVoiceRecognizerContext({
           allActions.map((action) => `${action} ${timer.name}`.toLowerCase()),
         ),
         allContactsNames.map((contact) => `${CALL} ${contact}`),
+        allContactsNames.map((contact) => `${RING} ${contact}`),
         REPEAT,
         STOP_FINISHED,
         DISCO,
@@ -109,6 +111,7 @@ export default function useVoiceRecognizerContext({
       NO,
       allActions,
       CALL,
+      RING,
       secretIdentifierRef,
     ],
   );

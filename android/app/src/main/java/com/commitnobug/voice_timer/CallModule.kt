@@ -41,4 +41,19 @@ class CallModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
             promise.reject("CALL_FAILED", e.message)
         }
     }
+
+    @ReactMethod
+    fun endCall(promise: Promise) {
+        if (ContextCompat.checkSelfPermission(reactApplicationContext, Manifest.permission.ANSWER_PHONE_CALLS)
+            != PackageManager.PERMISSION_GRANTED) {
+            promise.reject("PERMISSION_DENIED", "ANSWER_PHONE_CALLS not granted")
+            return
+        }
+        try {
+            val telecomManager = reactApplicationContext.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+            promise.resolve(telecomManager.endCall())
+        } catch (e: Exception) {
+            promise.reject("END_CALL_FAILED", e.message, e)
+        }
+    }
 }

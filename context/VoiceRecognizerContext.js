@@ -89,10 +89,10 @@ export default function VoiceRecognizerProvider({ children }) {
   const [keepScreenDim, setKeepScreenDim] = useState(false);
   const [isVibrating, setIsVibrating] = useState(false);
   const [isHeadsetBroken, setIsHeadsetBroken] = useState(false);
+  const isSkipCommandsEnabledRef = useRef(false);
   const dimScreenRef = useRef(null);
   const voiceFeedbackSpeedRef = useRef(0.8);
   const permitAnswerCallsRef = useRef(false);
-  const makePhoneCallsRef = useRef(false);
 
   // Contacts
   const [contacts, setContacts] = useState([
@@ -250,9 +250,9 @@ export default function VoiceRecognizerProvider({ children }) {
       setKeepScreenDim,
       voiceFeedbackSpeedRef,
       permitAnswerCallsRef,
-      makePhoneCallsRef,
       isHeadsetBroken,
       setIsHeadsetBroken,
+      isSkipCommandsEnabledRef,
     }),
     [
       screenTimeout,

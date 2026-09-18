@@ -20,6 +20,7 @@ import useSettingsStyles from "../../hooks/SettingsScreen/useSettingsStyles";
 import { ExpandableSetting } from "../../ui/ExpandableSetting";
 import BrokenMic from "./BrokenMic";
 import { SPACE } from "../../constants/spacing";
+import SkipCommands from "./SkipCommands";
 
 export default memo(function AppBehavior() {
   const {
@@ -41,7 +42,6 @@ export default memo(function AppBehavior() {
     keepScreenDim,
     setKeepScreenDim,
     permitAnswerCallsRef,
-    makePhoneCallsRef,
   } = useSettingsData();
 
   const { updateSettingsInStorage } = useSettingsFunctions();
@@ -53,9 +53,6 @@ export default memo(function AppBehavior() {
   minutesRef.current = minutes; // always latest, no re-subscribe
   const [permitAnswerCall, setPermitAnswerCall] = useState(
     permitAnswerCallsRef.current,
-  );
-  const [makePhoneCalls, setMakePhoneCalls] = useState(
-    makePhoneCallsRef.current,
   );
 
   useEffect(
@@ -217,7 +214,12 @@ export default memo(function AppBehavior() {
       <View style={dividerLine}></View>
 
       <View style={[switchBox, setting]}>
-        <Text style={settingLabel}>Make and answer calls with voice</Text>
+        <ExpandableSetting
+          label='Make and answer calls with voice'
+          labelStyle={settingLabel}
+          descriptionStyle={settingDescription}
+          description={`Answer incoming calls by voice at any time. Making calls by voice requires Voice Feedback to be on, since it needs to confirm who you're calling before dialing.`}
+        />
         <Switch
           value={permitAnswerCall}
           onValueChange={async (value) => {
@@ -271,55 +273,9 @@ export default memo(function AppBehavior() {
         />
       </View>
       <View style={dividerLine}></View>
-      {/* <View style={[switchBox, setting]}>
-        <Text style={settingLabel}>Make phone calls with voice</Text>
-        <Switch
-          value={makePhoneCalls}
-          onValueChange={async (value) => {
-            if (value === true) {
-              const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.CALL_PHONE,
-              );
-              console.log(granted);
 
-              if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-                console.warn("Permissions denied: ", granted);
-
-                const isPermanentlyDenied = granted.includes(
-                  PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN,
-                );
-                console.log(
-                  isPermanentlyDenied,
-                  PermissionsAndroid.RESULTS.GRANTED,
-                );
-
-                if (isPermanentlyDenied) {
-                  Alert.alert(
-                    "Permission required",
-                    "Please enable make phone calls permission in app settings.",
-                    [
-                      { text: "Cancel", style: "cancel" },
-                      {
-                        text: "Open settings",
-                        onPress: () => Linking.openSettings(),
-                      },
-                    ],
-                  );
-                }
-                return;
-              }
-            }
-            makePhoneCallsRef.current = value;
-            setMakePhoneCalls(value);
-            updateSettingsInStorage("makePhoneCalls", value);
-          }}
-          thumbColor={Colors.primaryTint90}
-          trackColor={{
-            true: Colors.primaryTint40,
-          }}
-        />
-      </View> */}
       <BrokenMic />
+      <SkipCommands />
     </View>
   );
 });

@@ -17,6 +17,7 @@ export const VOLUME_UP = "volume up";
 export const VOLUME_DOWN = "volume down";
 export const ANSWER_CALL = "answer call";
 export const CALL = "call";
+export const RING = "ring";
 export const YES = "yes";
 export const NO = "no";
 export const SKIP_NEXT = "skip next";

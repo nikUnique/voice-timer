@@ -17,6 +17,7 @@ import { useSettingsData } from "../../context/VoiceRecognizerContext";
 import useSettingsFunctions from "../../hooks/SettingsScreen/useSettingsFunctions";
 import useSettingsStyles from "../../hooks/SettingsScreen/useSettingsStyles";
 import { VOICE_FEEDBACK_SPEEDS } from "../../utils/config";
+import { ExpandableSetting } from "../../ui/ExpandableSetting";
 
 function getSpeedLabel(value) {
   if (+value <= 0.3) return "Slow";
@@ -35,6 +36,7 @@ export default memo(function VoiceControl() {
     switchBox,
     settingBtn,
     dividerLine,
+    settingDescription,
   } = useSettingsStyles();
 
   const { updateSettingsInStorage, openSettings } = useSettingsFunctions();
@@ -123,7 +125,12 @@ export default memo(function VoiceControl() {
         <View style={dividerLine}></View>
 
         <View style={[switchBox, setting]}>
-          <Text style={settingLabel}>Enable Voice Feedback</Text>
+          <ExpandableSetting
+            label='Enable Voice Feedback'
+            labelStyle={settingLabel}
+            descriptionStyle={settingDescription}
+            description={`Spoken responses for commands. Calling and other confirmation-based commands require this to be on. Some commands, like a time or status report, also rely on speech to respond and won't work without it.`}
+          />
 
           <Switch
             value={isVoiceFeedbackEnabled}
@@ -137,9 +144,9 @@ export default memo(function VoiceControl() {
             }}
           />
         </View>
-        <View style={dividerLine}></View>
         {isVoiceFeedbackEnabled && (
           <View style={setting}>
+            <View style={dividerLine}></View>
             <Pressable
               onPress={() => {
                 setShowVoiceFeedbackSpeed(!showVoiceFeedbackSpeed);

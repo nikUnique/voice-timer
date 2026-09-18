@@ -1,7 +1,7 @@
 import { VolumeManager } from "react-native-volume-manager";
 
 import { useEffect } from "react";
-import { NativeEventEmitter, NativeModules } from "react-native";
+import { NativeModules } from "react-native";
 
 import {
   useContactsData,
@@ -9,20 +9,21 @@ import {
   useRefsData,
   useSettingsData,
 } from "../../../context/VoiceRecognizerContext";
-import { useSpeak } from "../../shared/useSpeak";
-import { useSound } from "../../shared/useSound";
+import { CALL_TIMEOUT, RING_TIMEOUT } from "../../../utils/config";
+import { resetTimerEmitter } from "../../../utils/EventEmitter";
 import {
   formatRingingResetSpeech,
   formatStatusSpeech,
   getTimePhrase,
   normalize,
 } from "../../../utils/helpers";
-import { callNumber } from "../../../utils/nativeHelpers";
-import { resetTimerEmitter } from "../../../utils/EventEmitter";
+import { callNumber, endCall } from "../../../utils/nativeHelpers";
 import { getSharedObject } from "../../../utils/sharedVariables";
 import { useControlledVolume } from "../../shared/useControlledVolume";
+import { useSound } from "../../shared/useSound";
+import { useSpeak } from "../../shared/useSpeak";
 
-let callTimeout;
+let callTimeout, callId;
 export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
   const { recognizedTime, alertingTimerNamesRef } = useRecognizerData();
   const {
@@ -54,11 +55,18 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
     SKIP_NEXT,
     SKIP_PREVIOUS,
     CALL,
+    RING,
     YES,
     NO,
   } = commandsRef?.current ? commandsRef.current : {};
 
-  const { successSound, discoSound, isHeadsetBroken } = useSettingsData();
+  const {
+    successSound,
+    discoSound,
+    isHeadsetBroken,
+    isSkipCommandsEnabledRef,
+    isVoiceFeedbackEnabled,
+  } = useSettingsData();
 
   const { contacts } = useContactsData();
 
@@ -69,63 +77,10 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
   useEffect(
     function () {
       async function load() {
-        clearTimeout(callTimeout);
-        if (recognizedCommandRef.current.includes(`${CALL}`)) {
-          const contactToCall = contacts.find((contact) =>
-            recognizedCommandRef.current.includes(normalize(contact.name)),
-          );
-
-          console.log(contactToCall);
-          await speak(`Are you sure you want to reach ${contactToCall.name}?`);
-
-          callTimeout = setTimeout(async function () {
-            prevRecognizedCommandRef.current = null;
-            await speak("Never mind, didn't hear you in time.");
-          }, 7000);
-        }
-
-        console.log(prevRecognizedCommandRef.current, "previous command");
-
-        if (
-          recognizedCommandRef.current.includes(YES) &&
-          prevRecognizedCommandRef.current.includes(`${CALL}`)
-        ) {
-          clearTimeout(callTimeout);
-          const contactToCall = contacts.find((contact) =>
-            prevRecognizedCommandRef.current.includes(normalize(contact.name)),
-          );
-
-          console.log(contactToCall);
-          await speak(`Calling ${contactToCall.name}?`);
-
-          callNumber(contactToCall.phoneNumber);
-        }
-
-        if (
-          recognizedCommandRef.current.includes(NO) &&
-          prevRecognizedCommandRef.current.includes(
-            `${CALL}` && !isMediaPlayingRef.current,
-          )
-        ) {
-          clearTimeout(callTimeout);
-          prevRecognizedCommandRef.current = null;
-          await speak(`Okay, cancelled.`);
-        }
-
-        prevRecognizedCommandRef.current = recognizedCommandRef.current;
-
-        if (recognizedCommandRef.current.includes(SKIP_NEXT)) {
-          NativeModules.NativeUtilsModule.skipNext();
-        }
-
-        if (recognizedCommandRef.current.includes(SKIP_PREVIOUS)) {
-          NativeModules.NativeUtilsModule.skipPrevious();
-        }
-
         isMediaPlayingRef.current =
           await NativeModules.AudioFocusModule.isMediaPlaying();
         if (isMediaPlayingRef.current) {
-          if (recognizedCommandRef.current.includes(STOP_MEDIA)) {
+          if (recognizedCommandRef.current?.includes(STOP_MEDIA)) {
             if (!isHeadsetBroken) {
               await NativeModules.NativeUtilsModule.pressHeadsetButton();
               pauseMedia();
@@ -141,10 +96,29 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
             }
           }
         }
+
+        if (
+          recognizedCommandRef.current?.includes(SKIP_NEXT) &&
+          isMediaPlayingRef.current &&
+          isSkipCommandsEnabledRef.current
+        ) {
+          NativeModules.NativeUtilsModule.skipNext();
+          speak("Next");
+        }
+
+        if (
+          recognizedCommandRef.current?.includes(SKIP_PREVIOUS) &&
+          isMediaPlayingRef.current &&
+          isSkipCommandsEnabledRef.current
+        ) {
+          NativeModules.NativeUtilsModule.skipPrevious();
+          speak("Previous");
+        }
+
         if (
           isMediaPlayingRef.current &&
-          !recognizedCommandRef.current.includes(STOP_MEDIA) &&
-          !recognizedCommandRef.current.includes(ANSWER_CALL)
+          !recognizedCommandRef.current?.includes(STOP_MEDIA) &&
+          !recognizedCommandRef.current?.includes(ANSWER_CALL)
         ) {
           console.log(
             "Stop the background media first before using other voice commands",
@@ -158,7 +132,7 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
           recognizedCommandRef.current
             ?.toLowerCase()
             .trim()
-            .includes(PLAY_MEDIA) &&
+            ?.includes(PLAY_MEDIA) &&
           PLAY_MEDIA &&
           !isMediaPlayingRef.current
         ) {
@@ -167,9 +141,7 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
             await NativeModules.NativeUtilsModule.pressHeadsetButton();
           }
           if (isHeadsetBroken) {
-            NativeModules.AudioFocusModule.toggleMedia(async (shouldTake) => {
-              await resumeMedia();
-            });
+            await resumeMedia();
           }
         }
 
@@ -178,7 +150,7 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
           recognizedCommandRef.current
             .trim()
             .toLowerCase()
-            .includes(ANSWER_CALL.toLowerCase())
+            ?.includes(ANSWER_CALL.toLowerCase())
         ) {
           NativeModules.NativeUtilsModule.answerCall();
         }
@@ -186,16 +158,112 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
         if (
           isTimerSleepingRef.current &&
           recognizedCommandRef.current &&
-          !recognizedCommandRef.current.includes(TIMER_WAKE_UP) &&
-          !recognizedCommandRef.current.includes(STOP_MEDIA) &&
-          !recognizedCommandRef.current.trim().toLowerCase().includes(STOP)
+          !recognizedCommandRef.current?.includes(TIMER_WAKE_UP) &&
+          !recognizedCommandRef.current?.includes(STOP_MEDIA) &&
+          !recognizedCommandRef.current?.trim().toLowerCase().includes(STOP)
         ) {
           recognizedCommandRef.current = null;
           return;
         }
 
+        clearTimeout(callTimeout);
         if (
-          recognizedCommandRef.current.includes(TIMER_GO_SLEEP) &&
+          (recognizedCommandRef.current?.includes(`${CALL}`) ||
+            recognizedCommandRef.current?.includes(`${RING}`)) &&
+          !prevRecognizedCommandRef.current?.includes(`${CALL}`) &&
+          !prevRecognizedCommandRef.current?.includes(`${RING}`) &&
+          isVoiceFeedbackEnabled
+        ) {
+          const contactToCall = contacts.find((contact) =>
+            recognizedCommandRef.current?.includes(normalize(contact.name)),
+          );
+
+          if (!contactToCall) {
+            await speak("I didn't recognize that contact.");
+            return;
+          }
+
+          const action = recognizedCommandRef.current?.includes(`${RING}`)
+            ? "ring"
+            : "call";
+
+          console.log(contactToCall);
+          await speak(
+            `Are you sure you want to ${action} ${contactToCall.name}?`,
+          );
+
+          callTimeout = setTimeout(async function () {
+            prevRecognizedCommandRef.current = null;
+            await speak("Never mind, didn't hear you in time.");
+          }, CALL_TIMEOUT);
+
+          prevRecognizedCommandRef.current = recognizedCommandRef.current;
+          return;
+        }
+
+        console.log(prevRecognizedCommandRef.current, "previous command");
+
+        if (
+          recognizedCommandRef.current?.includes(YES) &&
+          (prevRecognizedCommandRef.current?.includes(`${CALL}`) ||
+            prevRecognizedCommandRef.current?.includes(`${RING}`)) &&
+          isVoiceFeedbackEnabled
+        ) {
+          clearTimeout(callTimeout);
+
+          const contactToCall = contacts.find((contact) =>
+            prevRecognizedCommandRef.current?.includes(normalize(contact.name)),
+          );
+
+          if (!contactToCall) {
+            prevRecognizedCommandRef.current = null;
+            await speak("I lost track of who to call.");
+            return;
+          }
+
+          const confirmsName = recognizedCommandRef.current?.includes(
+            normalize(contactToCall.name),
+          );
+
+          if (!confirmsName) {
+            prevRecognizedCommandRef.current = null;
+            await speak("Okay, cancelled.");
+            return;
+          }
+
+          const wasRING = prevRecognizedCommandRef.current?.includes(`${RING}`);
+          const action = wasRING ? "Ringing" : "Calling";
+
+          console.log(contactToCall);
+          await speak(`${action} ${contactToCall.name}.`);
+          callNumber(contactToCall.phoneNumber);
+
+          clearTimeout(callId);
+          if (wasRING) {
+            callId = setTimeout(function () {
+              endCall();
+            }, RING_TIMEOUT);
+          }
+
+          prevRecognizedCommandRef.current = null;
+          return;
+        }
+
+        if (
+          recognizedCommandRef.current?.includes(NO) &&
+          (prevRecognizedCommandRef.current?.includes(`${CALL}`) ||
+            prevRecognizedCommandRef.current?.includes(`${RING}`))
+        ) {
+          clearTimeout(callTimeout);
+          prevRecognizedCommandRef.current = null;
+          await speak(`Okay, cancelled.`);
+          return;
+        }
+
+        prevRecognizedCommandRef.current = recognizedCommandRef.current;
+
+        if (
+          recognizedCommandRef.current?.includes(TIMER_GO_SLEEP) &&
           !isTimerSleepingRef.current
         ) {
           playSoundGeneral({
@@ -207,7 +275,7 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
         }
 
         if (
-          recognizedCommandRef.current.includes(TIMER_WAKE_UP) &&
+          recognizedCommandRef.current?.includes(TIMER_WAKE_UP) &&
           isTimerSleepingRef.current
         ) {
           playSoundGeneral({
@@ -219,7 +287,7 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
         }
 
         // Volume place
-        if (recognizedCommandRef.current.includes(VOLUME_UP)) {
+        if (recognizedCommandRef.current?.includes(VOLUME_UP)) {
           const { volume } = await VolumeManager.getVolume("music");
           const percent = Math.round((volume + 0.1) * 10) / 10;
 
@@ -233,7 +301,7 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
           }
         }
 
-        if (recognizedCommandRef.current.includes(VOLUME_DOWN)) {
+        if (recognizedCommandRef.current?.includes(VOLUME_DOWN)) {
           const { volume } = await VolumeManager.getVolume("music");
           const percent = Math.round((volume - 0.1) * 10) / 10;
 
@@ -268,7 +336,7 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
 
         const words = recognizedCommandRef.current?.split(" ").map(normalize);
 
-        if (words.includes(TIME) && TIME) {
+        if (words?.includes(TIME) && TIME) {
           speak(getTimePhrase());
         }
 
@@ -291,7 +359,9 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
         recognizedCommandRef.current = null;
       }
 
-      load();
+      load().catch((error) => {
+        console.error("useGeneralVoiceCommands load() failed:", error);
+      });
     },
     [
       ANSWER_CALL,
@@ -331,6 +401,9 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
       contacts,
       YES,
       NO,
+      isSkipCommandsEnabledRef,
+      RING,
+      isVoiceFeedbackEnabled,
     ],
   );
 }

@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 
@@ -7,37 +8,93 @@ import { RADIUS } from "../../constants/radius";
 import { SPACE } from "../../constants/spacing";
 import { FONT } from "../../constants/typography";
 import { WEIGHT } from "../../constants/weight";
-import { useRefsData } from "../../context/VoiceRecognizerContext";
+import {
+  useRefsData,
+  useSettingsData,
+} from "../../context/VoiceRecognizerContext";
 import LoadingIndicator from "../../ui/LoadingIndicator";
 import { capitalize } from "../../utils/helpers";
 
+const VoiceDisabledEmptyState = memo(function VoiceDisabledEmptyState() {
+  return (
+    <View style={styles.emptyStateContainer}>
+      <View style={styles.emptyState}>
+        <View style={styles.emptyStateIconBox}>
+          <Ionicons
+            name='mic-off-outline'
+            size={32}
+            color={Colors.dangerColor}
+          />
+        </View>
+        <Text style={styles.emptyStateTitle}>Voice commands are off</Text>
+        <Text style={styles.emptyStateSubtitle}>
+          Turn them on in Settings to control the timer hands-free.
+        </Text>
+      </View>
+    </View>
+  );
+});
+
+const ListHeader = memo(function ListHeader() {
+  return (
+    <>
+      <Text style={styles.title}>Voice Commands</Text>
+      <Text style={styles.subtitle}>
+        Use the following voice commands to control the timer hands-free.
+      </Text>
+    </>
+  );
+});
+
 export default memo(function Commands() {
   const [ready, setReady] = useState(false);
-
+  const {
+    isSkipCommandsEnabledRef,
+    permitAnswerCallsRef,
+    isVoiceFeedbackEnabled,
+    voiceEnabled,
+  } = useSettingsData();
   const { commandsRef } = useRefsData();
 
-  const {
-    REPEAT,
-    STOP,
-    STOP_FINISHED,
-    TIME,
-    START,
-    PAUSE,
-    PLAY_MEDIA,
-    STOP_MEDIA,
-    RESUME,
-    STATUS_REPORT,
-    STATUS,
-    TIMER_WAKE_UP,
-    TIMER_GO_SLEEP,
-    VOLUME_UP,
-    VOLUME_DOWN,
-    SKIP_NEXT,
-    SKIP_PREVIOUS,
-  } = commandsRef?.current ? commandsRef.current : {};
+  const [isSkipEnabled, setIsSkipEnabled] = useState(
+    () => isSkipCommandsEnabledRef?.current ?? false,
+  );
 
-  const commands = useMemo(() => {
-    return [
+  const [permitAnswerCalls, setPermitAnswerCalls] = useState(
+    () => permitAnswerCallsRef?.current ?? false,
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsSkipEnabled(isSkipCommandsEnabledRef?.current ?? false);
+      setPermitAnswerCalls(permitAnswerCallsRef?.current ?? false);
+    }, [isSkipCommandsEnabledRef, permitAnswerCallsRef]),
+  );
+
+  const {
+    REPEAT = "",
+    STOP = "",
+    STOP_FINISHED = "",
+    TIME = "",
+    START = "",
+    PAUSE = "",
+    PLAY_MEDIA = "",
+    STOP_MEDIA = "",
+    RESUME = "",
+    STATUS_REPORT = "",
+    STATUS = "",
+    TIMER_WAKE_UP = "",
+    TIMER_GO_SLEEP = "",
+    VOLUME_UP = "",
+    VOLUME_DOWN = "",
+    SKIP_NEXT = "",
+    SKIP_PREVIOUS = "",
+    CALL = "",
+    RING = "",
+  } = commandsRef?.current ?? {};
+
+  const commands = useMemo(
+    () => [
       {
         command: `${capitalize(START)} [timer name]`,
         example: `${capitalize(START)} Focus timer`,
@@ -88,6 +145,7 @@ export default memo(function Commands() {
         description: "Tells you the exact time.",
         icon: "time-outline",
         badge: "TIME",
+        disabled: !isVoiceFeedbackEnabled,
       },
       {
         command: `${capitalize(PLAY_MEDIA)}`,
@@ -111,6 +169,7 @@ export default memo(function Commands() {
           "Reads out all timers and their current state - how many are running, paused, alarming, or not active.",
         icon: "list-outline",
         badge: "STATUS",
+        disabled: !isVoiceFeedbackEnabled,
       },
       {
         command: `${capitalize(STATUS)} [timer name]`,
@@ -119,6 +178,7 @@ export default memo(function Commands() {
           "Reads the current state of a single timer - whether it is running, paused, alarming, or not active, and how much time is left.",
         icon: "timer-outline",
         badge: "STATUS",
+        disabled: !isVoiceFeedbackEnabled,
       },
       {
         command: `${capitalize(TIMER_WAKE_UP)}`,
@@ -157,6 +217,7 @@ export default memo(function Commands() {
           "Lets you control media playback without interacting with the media app directly. Sends the next media command to the active media app, which determines the exact action.",
         icon: "play-skip-forward-outline",
         badge: "NEXT",
+        disabled: !isSkipEnabled,
       },
       {
         command: `${capitalize(SKIP_PREVIOUS)}`,
@@ -165,125 +226,112 @@ export default memo(function Commands() {
           "Lets you control media playback without interacting with the media app directly. Sends the previous media command to the active media app, which determines the exact action.",
         icon: "play-skip-back-outline",
         badge: "PREV",
+        disabled: !isSkipEnabled,
       },
-    ];
-  }, [
-    START,
-    PAUSE,
-    RESUME,
-    STOP,
-    REPEAT,
-    STOP_FINISHED,
-    TIME,
-    PLAY_MEDIA,
-    STOP_MEDIA,
-    STATUS_REPORT,
-    STATUS,
-    TIMER_WAKE_UP,
-    TIMER_GO_SLEEP,
-    VOLUME_UP,
-    VOLUME_DOWN,
-    SKIP_NEXT,
-    SKIP_PREVIOUS,
-  ]);
+      {
+        command: `${capitalize(CALL)}`,
+        example: `${capitalize(CALL)} John`,
+        description: "Places a call to the specified contact.",
+        icon: "call-outline",
+        badge: "CALL",
+        disabled: !permitAnswerCalls,
+      },
+      {
+        command: `${capitalize(RING)}`,
+        example: `${capitalize(RING)} John`,
+        description:
+          "Places a call and automatically ends it if unanswered after a timeout.",
+        icon: "notifications-outline",
+        badge: "RING",
+        disabled: !permitAnswerCalls,
+      },
+    ],
+    [
+      START,
+      PAUSE,
+      RESUME,
+      STOP,
+      REPEAT,
+      STOP_FINISHED,
+      TIME,
+      isVoiceFeedbackEnabled,
+      PLAY_MEDIA,
+      STOP_MEDIA,
+      STATUS_REPORT,
+      STATUS,
+      TIMER_WAKE_UP,
+      TIMER_GO_SLEEP,
+      VOLUME_UP,
+      VOLUME_DOWN,
+      SKIP_NEXT,
+      isSkipEnabled,
+      SKIP_PREVIOUS,
+      CALL,
+      permitAnswerCalls,
+      RING,
+    ],
+  );
 
   useEffect(() => {
     const id = setTimeout(() => setReady(true), 0);
     return () => clearTimeout(id);
   }, []);
 
-  const title = {
-    fontSize: FONT.heading,
-    fontWeight: WEIGHT.semibold,
-    color: Colors.primaryTint90,
-    marginBottom: SPACE.xl,
-  };
-  const subtitle = {
-    fontSize: FONT.subheading,
-    color: Colors.primaryTint70,
-    marginBottom: SPACE.xxl,
-  };
-
-  const renderItem = useCallback(function ({ item }) {
-    const { icon, badge, command, example, description } = item;
-    const badgeText = {
-      fontSize: FONT.caption,
-      letterSpacing: 1.1,
-      color: Colors.primaryTint40,
-    };
-
-    const commandText = {
-      fontSize: FONT.body,
-      fontWeight: WEIGHT.semibold,
-      color: Colors.primaryTint90,
-    };
-
-    const exampleText = {
-      fontSize: FONT.caption,
-
-      color: Colors.primaryTint8,
-    };
-
-    const descriptionText = {
-      fontSize: FONT.caption,
-      color: Colors.grayTint20,
-      lineHeight: 18,
-    };
+  const renderItem = useCallback(({ item }) => {
+    const isDisabled = Boolean(item.disabled);
 
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, isDisabled && styles.disabledCard]}>
         <View style={styles.iconBox}>
           <Ionicons
-            name={icon}
+            name={item.icon}
             size={18}
-            color={Colors.primaryTint40}
+            color={isDisabled ? Colors.grayTint20 : Colors.primaryTint40}
           />
         </View>
         <View style={styles.body}>
-          <View style={styles.badge}>
-            <Text style={badgeText}>{badge}</Text>
+          <View style={[styles.badge, isDisabled && styles.disabledBadge]}>
+            <Text
+              style={[styles.badgeText, isDisabled && styles.disabledBadgeText]}
+            >
+              {isDisabled ? `${item.badge} (DISABLED)` : item.badge}
+            </Text>
           </View>
-          <Text style={commandText}>{command}</Text>
-          {example && (
-            <Text style={exampleText}>
-              <Text style={styles.prompt}>&gt; </Text>&quot;{example}&quot;
+          <Text style={styles.commandText}>{item.command}</Text>
+          {item.example && (
+            <Text style={styles.exampleText}>
+              <Text style={styles.prompt}>&gt; </Text>&quot;{item.example}&quot;
             </Text>
           )}
-          <Text style={descriptionText}>{description}</Text>
+          <Text style={styles.descriptionText}>{item.description}</Text>
         </View>
       </View>
     );
   }, []);
 
-  const Header = useMemo(
-    () => (
-      <>
-        <Text style={title}>Voice Commands</Text>
-        <Text style={subtitle}>
-          Use the following voice commands to control the timer hands-free.
-        </Text>
-      </>
-    ),
-    [],
-  );
+  if (!ready) {
+    return <LoadingIndicator />;
+  }
 
-  return ready ? (
+  if (!voiceEnabled) {
+    return <VoiceDisabledEmptyState />;
+  }
+
+  return (
     <View style={styles.container}>
       <FlatList
         data={commands}
         renderItem={renderItem}
-        ListHeaderComponent={Header}
+        ListHeaderComponent={ListHeader}
         style={styles.list}
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item.command}
-        initialNumToRender={20}
+        keyExtractor={(item, index) => `${item.badge}-${index}`}
+        initialNumToRender={10}
         maxToRenderPerBatch={10}
         windowSize={5}
         removeClippedSubviews={false}
       />
     </View>
-  ) : (
-    <LoadingIndicator />
   );
 });
 
@@ -292,15 +340,25 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: SPACE.xl,
   },
-
   list: {
     flex: 1,
   },
+  title: {
+    fontSize: FONT.heading,
+    fontWeight: WEIGHT.semibold,
+    color: Colors.primaryTint90,
+    marginBottom: SPACE.xl,
+  },
+  subtitle: {
+    fontSize: FONT.subheading,
+    color: Colors.primaryTint70,
+    marginBottom: SPACE.xxl,
+  },
   card: {
-    backgroundColor: Colors.primaryShade50, // #092e34
+    backgroundColor: Colors.primaryShade50,
     borderRadius: RADIUS.sm,
     borderLeftWidth: 3,
-    borderLeftColor: Colors.primary, // #0b7285
+    borderLeftColor: Colors.primary,
     paddingVertical: SPACE.xl,
     paddingRight: SPACE.xl,
     paddingLeft: SPACE.lg,
@@ -308,20 +366,13 @@ const styles = StyleSheet.create({
     gap: SPACE.xl,
     marginBottom: SPACE.lg,
   },
+  disabledCard: {
+    opacity: 0.8,
+    borderLeftColor: Colors.grayTint20,
+  },
   body: {
     flex: 1,
     gap: SPACE.sm,
-  },
-  commandItem: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    padding: SPACE.xl,
-    marginBottom: SPACE.lg,
-    backgroundColor: Colors.grayShade20,
-    borderRadius: RADIUS.sm,
-    borderWidth: 0.5,
-    borderColor: Colors.whiteAlpha10,
-    gap: SPACE.lg,
   },
   iconBox: {
     width: 38,
@@ -334,9 +385,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: SPACE.xs,
   },
-  textContainer: {
-    flex: 1,
-  },
   badge: {
     alignSelf: "flex-start",
     borderWidth: 1,
@@ -347,17 +395,67 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primaryTint40Alpha8,
     marginBottom: SPACE.xs,
   },
-  badgeWrap: {
-    alignSelf: "flex-start",
-    backgroundColor: Colors.primaryTint8,
-    borderRadius: RADIUS.tight,
-    paddingHorizontal: SPACE.md,
-    paddingVertical: SPACE.xs,
-    marginBottom: SPACE.md,
+  disabledBadge: {
+    borderColor: Colors.grayTint20,
+    backgroundColor: "transparent",
+  },
+  badgeText: {
+    fontSize: FONT.caption,
+    letterSpacing: 1.1,
+    color: Colors.primaryTint40,
+  },
+  disabledBadgeText: {
+    color: Colors.grayTint20,
+  },
+  commandText: {
+    fontSize: FONT.body,
+    fontWeight: WEIGHT.semibold,
+    color: Colors.primaryTint90,
+  },
+  exampleText: {
+    fontSize: FONT.caption,
+    color: Colors.primaryTint8,
+  },
+  descriptionText: {
+    fontSize: FONT.caption,
+    color: Colors.primaryTint40,
+    lineHeight: 18,
   },
   prompt: {
     color: Colors.primaryShade30,
     fontWeight: WEIGHT.bold,
     fontSize: FONT.body,
+  },
+  emptyStateContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: SPACE.xxl,
+  },
+  emptyState: {
+    alignItems: "center",
+    gap: SPACE.lg,
+  },
+  emptyStateIconBox: {
+    width: 64,
+    height: 64,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: Colors.dangerBorder,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: SPACE.sm,
+  },
+  emptyStateTitle: {
+    fontSize: FONT.subheading,
+    fontWeight: WEIGHT.semibold,
+    color: Colors.primaryTint90,
+    textAlign: "center",
+  },
+  emptyStateSubtitle: {
+    fontSize: FONT.body,
+    color: Colors.primaryTint90,
+    textAlign: "center",
+    lineHeight: 20,
   },
 });

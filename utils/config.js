@@ -4,6 +4,8 @@ export const DIM_TIMEOUT = 60;
 export const BACKGROUND_DELAY = 10800;
 export const TTS_TIMEOUT = 10000;
 export const CONTACT_LIMIT = 20;
+export const CALL_TIMEOUT = 7000;
+export const RING_TIMEOUT = 12000;
 export const VOICE_FEEDBACK_SPEEDS = [
   { label: "Slow", value: 0.3 },
   { label: "Normal", value: 0.5 },

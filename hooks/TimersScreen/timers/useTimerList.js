@@ -261,14 +261,13 @@ export function useTimerList({
 
   const resumeMedia = useCallback(
     async function () {
+      isMediaPausedRef.current = false;
+      isMediaPausedManuallyRef.current = false;
       await speak("Media resumed");
-      await NativeModules.NativeUtilsModule.pressHeadsetButton();
       playSoundGeneral({
         fileName: successSound,
         shouldStop: false,
       });
-      isMediaPausedRef.current = false;
-      isMediaPausedManuallyRef.current = false;
     },
     [
       isMediaPausedManuallyRef,
