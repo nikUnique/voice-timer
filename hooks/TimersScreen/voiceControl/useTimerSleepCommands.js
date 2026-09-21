@@ -2,30 +2,23 @@ import {
   useRefsData,
   useSettingsData,
 } from "../../../context/VoiceRecognizerContext";
+import { hasPhrase } from "../../../utils/helpers";
 import { useSound } from "../../shared/useSound";
 import { useSpeak } from "../../shared/useSpeak";
 
 export function useTimerSleepCommands() {
-  const {
-    recognizedCommandRef,
-
-    isTimerSleepingRef,
-
-    commandsRef,
-  } = useRefsData();
+  const { recognizedCommandRef, isTimerSleepingRef, commandsRef } =
+    useRefsData();
 
   const { speak } = useSpeak();
-  const { TIMER_WAKE_UP, TIMER_GO_SLEEP } = commandsRef?.current
-    ? commandsRef.current
-    : {};
+  const { TIMER_WAKE_UP, TIMER_GO_SLEEP } = commandsRef?.current ?? {};
 
   const { successSound } = useSettingsData();
-
   const { playSoundGeneral } = useSound();
 
   function handleGoSleep() {
     if (
-      !recognizedCommandRef.current?.includes(TIMER_GO_SLEEP) ||
+      !hasPhrase(recognizedCommandRef.current, TIMER_GO_SLEEP) ||
       isTimerSleepingRef.current
     )
       return;
@@ -36,7 +29,7 @@ export function useTimerSleepCommands() {
 
   function handleWakeUp() {
     if (
-      !recognizedCommandRef.current?.includes(TIMER_WAKE_UP) ||
+      !hasPhrase(recognizedCommandRef.current, TIMER_WAKE_UP) ||
       !isTimerSleepingRef.current
     )
       return;

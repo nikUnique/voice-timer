@@ -3,6 +3,7 @@ import {
   useRefsData,
   useSettingsData,
 } from "../../../context/VoiceRecognizerContext";
+import { hasPhrase } from "../../../utils/helpers";
 import { useSpeak } from "../../shared/useSpeak";
 
 export function useMediaCommands({ pauseMedia, resumeMedia }) {
@@ -22,7 +23,7 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
 
   async function handleStopMedia() {
     if (!isMediaPlayingRef.current) return;
-    if (!recognizedCommandRef.current?.includes(STOP_MEDIA)) return;
+    if (!hasPhrase(recognizedCommandRef.current, STOP_MEDIA)) return;
 
     if (!isHeadsetBroken) {
       await NativeModules.NativeUtilsModule.pressHeadsetButton();
@@ -38,12 +39,12 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
   function handleSkip() {
     if (!isMediaPlayingRef.current || !isSkipCommandsEnabledRef.current) return;
 
-    if (recognizedCommandRef.current?.includes(SKIP_NEXT)) {
+    if (hasPhrase(recognizedCommandRef.current, SKIP_NEXT)) {
       NativeModules.NativeUtilsModule.skipNext();
       speak("Next");
     }
 
-    if (recognizedCommandRef.current?.includes(SKIP_PREVIOUS)) {
+    if (hasPhrase(recognizedCommandRef.current, SKIP_PREVIOUS)) {
       NativeModules.NativeUtilsModule.skipPrevious();
       speak("Previous");
     }
@@ -51,10 +52,7 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
 
   async function handlePlayMedia() {
     if (isMediaPlayingRef.current || !PLAY_MEDIA) return;
-    if (
-      !recognizedCommandRef.current?.toLowerCase().trim().includes(PLAY_MEDIA)
-    )
-      return;
+    if (!hasPhrase(recognizedCommandRef.current, PLAY_MEDIA)) return;
 
     await resumeMedia();
     if (!isHeadsetBroken) {
@@ -66,12 +64,7 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
   }
 
   function handleAnswerCall() {
-    if (
-      recognizedCommandRef.current
-        ?.trim()
-        .toLowerCase()
-        .includes(ANSWER_CALL.toLowerCase())
-    ) {
+    if (hasPhrase(recognizedCommandRef.current, ANSWER_CALL)) {
       NativeModules.NativeUtilsModule.answerCall();
     }
   }

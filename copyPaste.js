@@ -1,131 +1,45 @@
-import { callNumber, endCall } from "../../../utils/nativeHelpers";
-import { normalize, hasPhrase } from "../../../utils/helpers";
-import { CALL_TIMEOUT, RING_TIMEOUT } from "../../../utils/config";
+import { VolumeManager } from "react-native-volume-manager";
 import {
-  useContactsData,
   useRefsData,
   useSettingsData,
 } from "../../../context/VoiceRecognizerContext";
+import { hasPhrase } from "../../../utils/helpers";
 import { useSpeak } from "../../shared/useSpeak";
+import { useSound } from "../../shared/useSound";
+import { useControlledVolume } from "../../shared/useControlledVolume";
 
-let callTimeout, callId;
-
-export function useCallConfirmationFlow() {
-  const { recognizedCommandRef, prevRecognizedCommandRef, commandsRef } =
-    useRefsData();
+export function useVolumeCommands() {
+  const { recognizedCommandRef, commandsRef } = useRefsData();
 
   const { speak } = useSpeak();
-  const { CALL, RING, YES, NO } = commandsRef?.current ?? {};
+  const { VOLUME_UP, VOLUME_DOWN } = commandsRef?.current ?? {};
 
-  const { isVoiceFeedbackEnabled } = useSettingsData();
-  const { contacts } = useContactsData();
+  const { successSound } = useSettingsData();
+  const { playSoundGeneral } = useSound();
+  const { adjustVolumeFromApp } = useControlledVolume();
 
-  function isCallOrRing(command) {
-    return hasPhrase(command, CALL) || hasPhrase(command, RING);
+  async function handleVolumeUp() {
+    if (!hasPhrase(recognizedCommandRef.current, VOLUME_UP)) return;
+
+    const { volume } = await VolumeManager.getVolume("music");
+    const percent = Math.round((volume + 0.1) * 10) / 10;
+    if (percent > 1) return;
+
+    adjustVolumeFromApp(percent);
+    playSoundGeneral({ fileName: successSound, shouldStop: false });
+    speak(`Volume ${percent * 100}`);
   }
 
-  function findContact(command) {
-    return contacts.find((contact) =>
-      hasPhrase(command, normalize(contact.name)),
-    );
+  async function handleVolumeDown() {
+    if (!hasPhrase(recognizedCommandRef.current, VOLUME_DOWN)) return;
+
+    const { volume } = await VolumeManager.getVolume("music");
+    const percent = Math.round((volume - 0.1) * 10) / 10;
+
+    adjustVolumeFromApp(percent);
+    playSoundGeneral({ fileName: successSound, shouldStop: false });
+    speak(`Volume ${percent * 100}`);
   }
 
-  async function startConfirmation() {
-    clearTimeout(callTimeout);
-
-    if (
-      !isCallOrRing(recognizedCommandRef.current) ||
-      !isVoiceFeedbackEnabled
-    ) {
-      return false;
-    }
-
-    const contactToCall = findContact(recognizedCommandRef.current);
-
-    if (!contactToCall) {
-      await speak("I didn't recognize that contact.");
-      return true;
-    }
-
-    const action = hasPhrase(recognizedCommandRef.current, RING)
-      ? "ring"
-      : "call";
-    await speak(
-      `Are you sure you want to ${action} ${contactToCall.name}? Say "yes, ${action} ${contactToCall.name}" to confirm.`,
-    );
-
-    callTimeout = setTimeout(async function () {
-      prevRecognizedCommandRef.current = null;
-      await speak("Never mind, didn't hear you in time.");
-    }, CALL_TIMEOUT);
-
-    prevRecognizedCommandRef.current = recognizedCommandRef.current;
-    return true;
-  }
-
-  async function handleYes() {
-    const command = recognizedCommandRef.current;
-    const pending = prevRecognizedCommandRef.current;
-
-    if (
-      !hasPhrase(command, YES) ||
-      !isCallOrRing(pending) ||
-      !isVoiceFeedbackEnabled
-    ) {
-      return false;
-    }
-
-    clearTimeout(callTimeout);
-
-    const contactToCall = findContact(pending);
-
-    if (!contactToCall) {
-      prevRecognizedCommandRef.current = null;
-      await speak("I lost track of who to call.");
-      return true;
-    }
-
-    const wasRING = hasPhrase(pending, RING);
-    const actionWord = wasRING ? RING : CALL;
-
-    const confirmsAction = hasPhrase(command, actionWord);
-    const confirmsName = hasPhrase(command, normalize(contactToCall.name));
-
-    if (!confirmsAction || !confirmsName) {
-      prevRecognizedCommandRef.current = null;
-      await speak("Okay, cancelled.");
-      return true;
-    }
-
-    const action = wasRING ? "Ringing" : "Calling";
-
-    await speak(`${action} ${contactToCall.name}.`);
-    callNumber(contactToCall.phoneNumber);
-
-    clearTimeout(callId);
-    if (wasRING) {
-      callId = setTimeout(function () {
-        endCall();
-      }, RING_TIMEOUT);
-    }
-
-    prevRecognizedCommandRef.current = null;
-    return true;
-  }
-
-  async function handleNo() {
-    if (
-      !hasPhrase(recognizedCommandRef.current, NO) ||
-      !isCallOrRing(prevRecognizedCommandRef.current)
-    ) {
-      return false;
-    }
-
-    clearTimeout(callTimeout);
-    prevRecognizedCommandRef.current = null;
-    await speak("Okay, cancelled.");
-    return true;
-  }
-
-  return { startConfirmation, handleYes, handleNo };
+  return { handleVolumeUp, handleVolumeDown };
 }

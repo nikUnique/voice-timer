@@ -6,18 +6,13 @@ import {
 import { useSpeak } from "../../shared/useSpeak";
 import { useSound } from "../../shared/useSound";
 import { useControlledVolume } from "../../shared/useControlledVolume";
+import { hasPhrase } from "../../../utils/helpers";
 
 export function useVolumeCommands() {
-  const {
-    recognizedCommandRef,
-
-    commandsRef,
-  } = useRefsData();
+  const { recognizedCommandRef, commandsRef } = useRefsData();
 
   const { speak } = useSpeak();
-  const { VOLUME_UP, VOLUME_DOWN } = commandsRef?.current
-    ? commandsRef.current
-    : {};
+  const { VOLUME_UP, VOLUME_DOWN } = commandsRef?.current ?? {};
 
   const { successSound } = useSettingsData();
 
@@ -25,7 +20,7 @@ export function useVolumeCommands() {
 
   const { adjustVolumeFromApp } = useControlledVolume();
   async function handleVolumeUp() {
-    if (!recognizedCommandRef.current?.includes(VOLUME_UP)) return;
+    if (!hasPhrase(recognizedCommandRef.current, VOLUME_UP)) return;
 
     const { volume } = await VolumeManager.getVolume("music");
     const percent = Math.round((volume + 0.1) * 10) / 10;
@@ -37,10 +32,11 @@ export function useVolumeCommands() {
   }
 
   async function handleVolumeDown() {
-    if (!recognizedCommandRef.current?.includes(VOLUME_DOWN)) return;
-
+    if (!hasPhrase(recognizedCommandRef.current, VOLUME_DOWN)) return;
     const { volume } = await VolumeManager.getVolume("music");
     const percent = Math.round((volume - 0.1) * 10) / 10;
+
+    if (percent < 0) return;
 
     adjustVolumeFromApp(percent);
     playSoundGeneral({ fileName: successSound, shouldStop: false });

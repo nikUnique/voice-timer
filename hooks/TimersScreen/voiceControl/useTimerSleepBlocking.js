@@ -1,20 +1,20 @@
 import { useRefsData } from "../../../context/VoiceRecognizerContext";
+import { hasPhrase } from "../../../utils/helpers";
 
 export function useTimerSleepBlocking() {
   const { recognizedCommandRef, isTimerSleepingRef, commandsRef } =
     useRefsData();
 
-  const { STOP, STOP_MEDIA, TIMER_WAKE_UP } = commandsRef?.current
-    ? commandsRef.current
-    : {};
+  const { STOP, STOP_MEDIA, TIMER_WAKE_UP } = commandsRef?.current ?? {};
 
   function isTimerSleepBlocking() {
-    return (
+    const command = recognizedCommandRef.current;
+    return Boolean(
       isTimerSleepingRef.current &&
-      recognizedCommandRef.current &&
-      !recognizedCommandRef.current.includes(TIMER_WAKE_UP) &&
-      !recognizedCommandRef.current.includes(STOP_MEDIA) &&
-      !recognizedCommandRef.current.trim().toLowerCase().includes(STOP)
+        command &&
+        !hasPhrase(command, TIMER_WAKE_UP) &&
+        !hasPhrase(command, STOP_MEDIA) &&
+        !hasPhrase(command, STOP),
     );
   }
 
