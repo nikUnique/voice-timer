@@ -1,5 +1,5 @@
 import { callNumber, endCall } from "../../../utils/nativeHelpers";
-import { normalize, hasPhrase } from "../../../utils/helpers";
+import { hasPhrase, normalize } from "../../../utils/helpers";
 import { CALL_TIMEOUT, RING_TIMEOUT } from "../../../utils/config";
 import {
   useContactsData,
@@ -15,9 +15,12 @@ export function useCallConfirmationFlow() {
     useRefsData();
 
   const { speak } = useSpeak();
-  const { CALL, RING, YES, NO } = commandsRef?.current ?? {};
+  const { CALL, RING, YES, NO } = commandsRef?.current
+    ? commandsRef.current
+    : {};
 
   const { isVoiceFeedbackEnabled } = useSettingsData();
+
   const { contacts } = useContactsData();
 
   function isCallOrRing(command) {

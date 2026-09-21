@@ -106,6 +106,12 @@ export const normalize = (str) =>
     .replace(/[^\w\s]/g, "")
     .trim(); // strip punctuation
 
+export function hasPhrase(text, phrase) {
+  if (!text || !phrase) return false;
+  return ` ${text.toLowerCase().trim()} `.includes(
+    ` ${phrase.toLowerCase().trim()} `,
+  );
+}
 export const ensureBluetoothPermission = async () => {
   if (Platform.OS !== "android" || Platform.Version < 31) {
     return true; // not needed pre-Android 12
