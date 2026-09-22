@@ -51,15 +51,15 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
   }
 
   async function handlePlayMedia() {
-    if (isMediaPlayingRef.current || !PLAY_MEDIA) return;
+    if (isMediaPlayingRef.current) return;
     if (!hasPhrase(recognizedCommandRef.current, PLAY_MEDIA)) return;
 
     await resumeMedia();
-    if (!isHeadsetBroken) {
-      await NativeModules.NativeUtilsModule.pressHeadsetButton();
-    }
+
     if (isHeadsetBroken) {
       await NativeModules.AudioFocusModule.releaseAudioFocus();
+    } else {
+      await NativeModules.NativeUtilsModule.pressHeadsetButton();
     }
   }
 

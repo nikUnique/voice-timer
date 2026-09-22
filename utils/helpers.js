@@ -130,47 +130,33 @@ export const ensureBluetoothPermission = async () => {
   return granted === PermissionsAndroid.RESULTS.GRANTED;
 };
 
-export const formatStatusSpeech = function (
+export function formatStatusSpeech(
   runningTimerNames,
   pausedTimerNames,
   alertingTimerNames,
 ) {
-  const runningTimerNamesLength = runningTimerNames.length;
-  const pausedTimerNamesLength = pausedTimerNames.length;
-  const alertingTimerNamesLength = alertingTimerNames.length;
-  if (
-    !runningTimerNamesLength &&
-    !pausedTimerNamesLength &&
-    !alertingTimerNamesLength
-  ) {
-    return "No timers active.";
-  }
+  const groups = [
+    { label: "running", names: runningTimerNames },
+    { label: "paused", names: pausedTimerNames },
+    { label: "alerting", names: alertingTimerNames },
+  ].filter(({ names }) => names.length);
 
-  const headerParts = [
-    runningTimerNamesLength
-      ? `${runningTimerNamesLength} timers running`
-      : null,
-    pausedTimerNamesLength ? `${pausedTimerNamesLength} timers paused` : null,
-    alertingTimerNamesLength
-      ? `${alertingTimerNamesLength} timers alerting`
-      : null,
-  ].filter(Boolean);
+  if (!groups.length) return "No timers active.";
 
-  const header = headerParts.join(", ") + ".";
+  const header =
+    groups
+      .map(
+        ({ label, names }) =>
+          `${names.length} ${names.length === 1 ? "timer" : "timers"} ${label}`,
+      )
+      .join(", ") + ".";
 
-  const timerLines = [
-    runningTimerNamesLength && "Running timers: ",
-    ...(getSharedObject().runningTimerNames.join(", ") + ". "),
-    pausedTimerNamesLength && "Paused timers: ",
-    ...(getSharedObject().pausedTimerNames.join(", ") + ". "),
-    alertingTimerNamesLength && "Alerting timers: ",
-    ...(getSharedObject().alertingTimerNames.join(", ") + ". "),
-  ]
-    .filter(Boolean)
-    .join("");
+  const details = groups
+    .map(({ label, names }) => `${label} timers: ${names.join(", ")}.`)
+    .join(" ");
 
-  return `${header} ${timerLines}`;
-};
+  return `${header} ${details}`;
+}
 
 export const formatRingingResetSpeech = function (timerNames) {
   if (timerNames.length === 0) return "Nothing to stop.";
