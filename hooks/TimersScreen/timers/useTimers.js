@@ -1,23 +1,17 @@
 /* eslint-disable no-constant-condition */
 import notifee from "@notifee/react-native";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AppState, NativeModules, PermissionsAndroid } from "react-native";
 
 import {
   useRecognizerData,
   useRefsData,
 } from "../../../context/VoiceRecognizerContext";
-import {
-  getItemFromStorage,
-  setItemInStorage,
-  sleep,
-} from "../../../utils/helpers";
+import { getItemFromStorage, setItemInStorage } from "../../../utils/helpers";
 
 import { useNavigation } from "@react-navigation/native";
-import { getSharedObject } from "../../../utils/sharedVariables";
 import { useSettings } from "../../SettingsScreen/useSettings";
 import { useSound } from "../../shared/useSound";
-import { BACKGROUND_DELAY } from "../../../utils/config";
 
 export function useTimers() {
   const navigation = useNavigation();

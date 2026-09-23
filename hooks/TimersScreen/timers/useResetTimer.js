@@ -151,6 +151,11 @@ export function useResetTimer({
           }),
         });
 
+        setItemInStorage(
+          "pausedTimerNames",
+          getSharedObject().pausedTimerNames,
+        );
+
         setTimersHistory((cur) =>
           cur.map((timer) => {
             return timer?.label.trim().toLowerCase() ===

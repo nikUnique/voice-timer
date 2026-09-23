@@ -23,9 +23,9 @@ export function useReportCommands() {
 
     speak(
       formatStatusSpeech(
-        getSharedObject().runningTimerNames,
-        getSharedObject().pausedTimerNames,
-        getSharedObject().alertingTimerNames,
+        getSharedObject()?.runningTimerNames,
+        getSharedObject()?.pausedTimerNames,
+        getSharedObject()?.alertingTimerNames,
       ),
     );
   }

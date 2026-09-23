@@ -114,6 +114,11 @@ export function usePauseResume({
           ].filter(Boolean),
         });
 
+        setItemInStorage(
+          "pausedTimerNames",
+          getSharedObject().pausedTimerNames,
+        );
+
         if (
           getSharedObject().runningTimerNames.length > 0 &&
           !BackgroundService.isRunning()
@@ -255,6 +260,10 @@ export function usePauseResume({
           ),
           pausedTimerNames: [...getSharedObject().pausedTimerNames, name],
         });
+        setItemInStorage(
+          "pausedTimerNames",
+          getSharedObject().pausedTimerNames,
+        );
 
         emitter.all.delete(`updateNotification-${name}`);
         emitter.on(`updateNotification-${name}`, updatePersistentNotification);

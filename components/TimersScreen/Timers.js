@@ -27,6 +27,8 @@ import {
 } from "../../utils/sharedVariables";
 import TimerList from "./TimerList";
 import VoiceCommandsControl from "./VoiceCommandsControl";
+import { useAppStateChange } from "../../hooks/shared/useAppStateChange";
+import { updatePausedTimerNames } from "../../utils/storageHelpers";
 
 export default function Timers({ navigation }) {
   const [isAwake] = useState(false);
@@ -68,6 +70,7 @@ export default function Timers({ navigation }) {
 
   const { playSoundWrapper, stopSoundWrapper } = useTimers();
 
+  useAppStateChange(updatePausedTimerNames);
   const forceKeepAwake = useCallback(async function (tag) {
     await deactivateKeepAwake(tag);
     await activateKeepAwakeAsync(tag);
@@ -220,13 +223,6 @@ export default function Timers({ navigation }) {
 
           setAlertingTimerNames(alertingTimerNamesRef.current);
         }
-
-        if (!parsedValue) {
-          const isPhoneLocked =
-            await NativeModules.NativeUtilsModule?.isPhoneLocked();
-
-          if (isPhoneLocked) return;
-        }
       } catch (error) {
         console.error(
           "An error occurred in the prepareAlertingTimerNames function: ",
@@ -239,7 +235,7 @@ export default function Timers({ navigation }) {
 
   useEffect(
     function () {
-      prepareAlertingTimerNames(true);
+      prepareAlertingTimerNames();
       const appStateListener = AppState.addEventListener(
         "change",
         prepareAlertingTimerNames,

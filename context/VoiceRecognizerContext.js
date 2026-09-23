@@ -29,7 +29,6 @@ export default function VoiceRecognizerProvider({ children }) {
   const soundIsPlayingRef = useRef(false);
 
   // Alerting
-  const alertingTimerNamesRef = useRef([]);
   const alertTimeoutRef = useRef(null);
 
   // Notification
@@ -61,6 +60,7 @@ export default function VoiceRecognizerProvider({ children }) {
   // Timers
   const workingTimersRef = useRef([]);
   const [timers, setTimers] = useState([]);
+  const alertingTimerNamesRef = useRef([]);
   const [editableTimers, setEditableTimers] = useState([]);
   const [timersHistory, setTimersHistory] = useState([]);
   const [timerHeight, setTimerHeight] = useState(0);
