@@ -6,7 +6,8 @@ import {
   useSettingsData,
 } from "../../context/VoiceRecognizerContext";
 import { capitalize, normalize } from "../../utils/helpers";
-import { CALL_TIMEOUT, RING_TIMEOUT } from "../../utils/config";
+import { CALL_TIMEOUT, PHONE_TIMEOUT } from "../../utils/config";
+import * as defaultCommands from "../../utils/en_commands";
 
 export function useCommandsList() {
   const {
@@ -15,6 +16,11 @@ export function useCommandsList() {
     isVoiceFeedbackEnabled,
   } = useSettingsData();
   const { commandsRef } = useRefsData();
+
+  // Commands are loaded asynchronously into a ref. The Commands screen can
+  // mount before that load finishes, so render the bundled English commands
+  // until the active command set is available rather than showing blank rows.
+  const commands = commandsRef?.current ?? defaultCommands;
 
   const [isSkipEnabled, setIsSkipEnabled] = useState(
     () => isSkipCommandsEnabledRef?.current ?? false,
@@ -50,8 +56,8 @@ export function useCommandsList() {
     SKIP_NEXT = "",
     SKIP_PREVIOUS = "",
     CALL = "",
-    RING = "",
-  } = commandsRef?.current ?? {};
+    PHONE = "",
+  } = commands;
 
   return useMemo(
     () => [
@@ -184,7 +190,7 @@ export function useCommandsList() {
         disabled: !isSkipEnabled,
       },
       {
-        command: `${capitalize(CALL)}`,
+        command: `${capitalize(CALL)} [contact name]`,
         example: `${capitalize(CALL)} John`,
         description: `Asks you to confirm by voice, then calls the contact. No confirmation within ${CALL_TIMEOUT / 1000} seconds cancels it.`,
         icon: "call-outline",
@@ -192,11 +198,11 @@ export function useCommandsList() {
         disabled: !permitAnswerCalls || !isVoiceFeedbackEnabled,
       },
       {
-        command: `${capitalize(RING)}`,
-        example: `${capitalize(RING)} John`,
-        description: `Same voice confirmation as call, then places the call and ends it automatically if unanswered after ${RING_TIMEOUT / 1000} seconds .`,
+        command: `${capitalize(PHONE)} [contact name]`,
+        example: `${capitalize(PHONE)} John`,
+        description: `Uses the same voice confirmation as call, then places the call and ends it automatically after ${PHONE_TIMEOUT / 1000} seconds.`,
         icon: "notifications-outline",
-        badge: "RING",
+        badge: "PHONE",
         disabled: !permitAnswerCalls || !isVoiceFeedbackEnabled,
       },
     ],
@@ -222,7 +228,7 @@ export function useCommandsList() {
       SKIP_PREVIOUS,
       CALL,
       permitAnswerCalls,
-      RING,
+      PHONE,
     ],
   );
 }

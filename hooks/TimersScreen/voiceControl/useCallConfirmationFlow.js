@@ -45,10 +45,10 @@ export function useCallConfirmationFlow() {
 
     const contactToCall = findContact(recognizedCommandRef.current);
 
-    if (!contactToCall) {
-      await speak("I didn't recognize that contact.");
-      return true;
-    }
+    // if (!contactToCall) {
+    //   await speak("I didn't recognize that contact.");
+    //   return true;
+    // }
 
     const action = hasPhrase(recognizedCommandRef.current, PHONE)
       ? "phone"
