@@ -1,6 +1,6 @@
 import { callNumber, endCall } from "../../../utils/nativeHelpers";
 import { hasPhrase, normalize } from "../../../utils/helpers";
-import { CALL_TIMEOUT, RING_TIMEOUT } from "../../../utils/config";
+import { CALL_TIMEOUT, PHONE_TIMEOUT } from "../../../utils/config";
 import {
   useContactsData,
   useRefsData,
@@ -15,7 +15,7 @@ export function useCallConfirmationFlow() {
     useRefsData();
 
   const { speak } = useSpeak();
-  const { CALL, RING, YES, NO } = commandsRef?.current
+  const { CALL, PHONE, YES, NO } = commandsRef?.current
     ? commandsRef.current
     : {};
 
@@ -23,8 +23,8 @@ export function useCallConfirmationFlow() {
 
   const { contacts } = useContactsData();
 
-  function isCallOrRing(command) {
-    return hasPhrase(command, CALL) || hasPhrase(command, RING);
+  function isCallOrPhone(command) {
+    return hasPhrase(command, CALL) || hasPhrase(command, PHONE);
   }
 
   function findContact(command) {
@@ -37,7 +37,7 @@ export function useCallConfirmationFlow() {
     clearTimeout(callTimeout);
 
     if (
-      !isCallOrRing(recognizedCommandRef.current) ||
+      !isCallOrPhone(recognizedCommandRef.current) ||
       !isVoiceFeedbackEnabled
     ) {
       return false;
@@ -50,8 +50,8 @@ export function useCallConfirmationFlow() {
       return true;
     }
 
-    const action = hasPhrase(recognizedCommandRef.current, RING)
-      ? "ring"
+    const action = hasPhrase(recognizedCommandRef.current, PHONE)
+      ? "phone"
       : "call";
     await speak(
       `Are you sure you want to ${action} ${contactToCall.name}? Say "yes, ${action} ${contactToCall.name}" to confirm.`,
@@ -72,7 +72,7 @@ export function useCallConfirmationFlow() {
 
     if (
       !hasPhrase(command, YES) ||
-      !isCallOrRing(pending) ||
+      !isCallOrPhone(pending) ||
       !isVoiceFeedbackEnabled
     ) {
       return false;
@@ -88,8 +88,8 @@ export function useCallConfirmationFlow() {
       return true;
     }
 
-    const wasRING = hasPhrase(pending, RING);
-    const actionWord = wasRING ? RING : CALL;
+    const wasPhone = hasPhrase(pending, PHONE);
+    const actionWord = wasPhone ? PHONE : CALL;
 
     const confirmsAction = hasPhrase(command, actionWord);
     const confirmsName = hasPhrase(command, normalize(contactToCall.name));
@@ -100,16 +100,16 @@ export function useCallConfirmationFlow() {
       return true;
     }
 
-    const action = wasRING ? "Ringing" : "Calling";
+    const action = wasPhone ? "Phoning" : "Calling";
 
     await speak(`${action} ${contactToCall.name}.`);
     callNumber(contactToCall.phoneNumber);
 
     clearTimeout(callId);
-    if (wasRING) {
+    if (wasPhone) {
       callId = setTimeout(function () {
         endCall();
-      }, RING_TIMEOUT);
+      }, PHONE_TIMEOUT);
     }
 
     prevRecognizedCommandRef.current = null;
@@ -119,7 +119,7 @@ export function useCallConfirmationFlow() {
   async function handleNo() {
     if (
       !hasPhrase(recognizedCommandRef.current, NO) ||
-      !isCallOrRing(prevRecognizedCommandRef.current)
+      !isCallOrPhone(prevRecognizedCommandRef.current)
     ) {
       return false;
     }

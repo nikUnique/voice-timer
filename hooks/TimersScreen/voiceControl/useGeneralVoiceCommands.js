@@ -72,6 +72,7 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
 
         await media.refreshMediaState();
         await media.handleStopMedia();
+
         media.handleSkip();
 
         if (
@@ -85,6 +86,7 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
 
         await media.handlePlayMedia();
         media.handleAnswerCall();
+        alarmReset.handleResetAlarm();
 
         if (isTimerSleepBlocking()) {
           recognizedCommandRef.current = null;
@@ -101,7 +103,6 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
         timerSleep.handleWakeUp();
         await volume.handleVolumeUp();
         await volume.handleVolumeDown();
-        alarmReset.handleResetAlarm();
         report.handleTimeReport();
         report.handleStatusReport();
 
