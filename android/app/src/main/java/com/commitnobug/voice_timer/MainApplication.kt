@@ -31,6 +31,8 @@ class MainApplication : Application(), ReactApplication {
             packages.add(AudioFocusPackage())
             packages.add(VolumeObserverPackage())
             packages.add(CallPackage())
+            packages.add(LogcatPackage())
+
 
            
             // Packages that cannot be autolinked yet can be added manually here, for example:

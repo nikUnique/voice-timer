@@ -7,6 +7,7 @@ import {
   useSettingsData,
 } from "../../../context/VoiceRecognizerContext";
 import { useSpeak } from "../../shared/useSpeak";
+import { NativeModules } from "react-native";
 
 let callTimeout, callId;
 
@@ -84,7 +85,7 @@ export function useCallConfirmationFlow() {
 
     if (!contactToCall) {
       prevRecognizedCommandRef.current = null;
-      await speak("I lost track of who to call.");
+      await speak("Track was lost of who to call.");
       return true;
     }
 
@@ -107,7 +108,11 @@ export function useCallConfirmationFlow() {
 
     clearTimeout(callId);
     if (wasPhone) {
-      callId = setTimeout(function () {
+      callId = setTimeout(async function () {
+        const isMicInUseByOtherApp =
+          await NativeModules.AudioFocusModule.isMicInUse();
+        console.log(isMicInUseByOtherApp, "Is mic in use?");
+
         endCall();
       }, PHONE_TIMEOUT);
     }

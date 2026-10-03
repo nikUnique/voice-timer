@@ -35,16 +35,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.facebook.react.bridge.Arguments
 
-
-
-
-
-
 private val TAG = "AudioFocusModule"
 private var hasFocus = false
-
-
-
 
 class AudioFocusModule(private val reactContext: ReactApplicationContext) :
     ReactContextBaseJavaModule(reactContext) {
@@ -58,9 +50,6 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
     private var callback: AudioManager.AudioRecordingCallback? = null
     private var scoTimeoutRunnable: Runnable? = null
     private var previousAudioMode: Int? = null
-
-
-     
 
     private var scoReceiverRegistered = false
     private var pendingStartCallback: ((Boolean) -> Unit)? = null
@@ -82,169 +71,170 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
         }
     }
 
-private fun hasConnectedBluetoothMic(callback: (Boolean) -> Unit) {
-    val bluetoothManager =
-        reactApplicationContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-    val adapter = bluetoothManager.adapter
+    private fun hasConnectedBluetoothMic(callback: (Boolean) -> Unit) {
+        val bluetoothManager =
+            reactApplicationContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        val adapter = bluetoothManager.adapter
 
-    if (adapter == null || !adapter.isEnabled) {
-        callback(false)
-        return
+        if (adapter == null || !adapter.isEnabled) {
+            callback(false)
+            return
+        }
+
+        adapter.getProfileProxy(
+            reactApplicationContext,
+            object : BluetoothProfile.ServiceListener {
+                override fun onServiceConnected(profile: Int, proxy: BluetoothProfile) {
+                    val connected = proxy.connectedDevices.isNotEmpty()
+                    adapter.closeProfileProxy(profile, proxy)
+                    callback(connected)
+                }
+
+                override fun onServiceDisconnected(profile: Int) {
+                    callback(false)
+                }
+            },
+            BluetoothProfile.HEADSET
+        )
     }
 
-    adapter.getProfileProxy(
-        reactApplicationContext,
-        object : BluetoothProfile.ServiceListener {
-            override fun onServiceConnected(profile: Int, proxy: BluetoothProfile) {
-                val connected = proxy.connectedDevices.isNotEmpty()
-                adapter.closeProfileProxy(profile, proxy)
-                callback(connected)
+    private fun hasWiredMic(): Boolean {
+        val devices = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
+        return devices.any {
+            it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+            it.type == AudioDeviceInfo.TYPE_USB_HEADSET ||
+            it.type == AudioDeviceInfo.TYPE_USB_DEVICE
+        }
+    }
+
+
+    @ReactMethod
+    fun startBluetoothMic(promise: Promise) {
+        if (hasWiredMic()) {
+            promise.reject("WIRED_MIC_PRESENT", "Wired/USB mic connected, skipping Bluetooth SCO")
+            return
+        }
+
+        // Guard against overlapping calls stomping each other's callback
+        if (pendingStartCallback != null) {
+            promise.reject("ALREADY_STARTING", "A Bluetooth SCO start is already in progress")
+            return
+        }
+
+        // Idempotent short-circuit if SCO is already up
+        if (audioManager.isBluetoothScoOn && audioManager.mode == AudioManager.MODE_IN_COMMUNICATION) {
+            promise.resolve(true)
+            return
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            ActivityCompat.checkSelfPermission(
+                reactApplicationContext, Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            promise.reject("PERMISSION_DENIED", "BLUETOOTH_CONNECT not granted")
+            return
+        }
+
+        hasConnectedBluetoothMic { connected ->
+            if (!connected) {
+                promise.reject("NO_DEVICE_CONNECTED", "No Bluetooth headset currently connected")
+                return@hasConnectedBluetoothMic
             }
 
-            override fun onServiceDisconnected(profile: Int) {
-                callback(false)
+            if (!audioManager.isBluetoothScoAvailableOffCall) {
+                promise.reject("SCO_UNAVAILABLE", "Device does not support SCO off-call")
+                return@hasConnectedBluetoothMic
             }
-        },
-        BluetoothProfile.HEADSET
-    )
-}
 
-private fun hasWiredMic(): Boolean {
-    val devices = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
-    return devices.any {
-        it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
-        it.type == AudioDeviceInfo.TYPE_USB_HEADSET ||
-        it.type == AudioDeviceInfo.TYPE_USB_DEVICE
-    }
-}
+            // Save whatever mode we were in so stop() can restore it accurately
+            previousAudioMode = audioManager.mode
+            audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
 
+            if (!scoReceiverRegistered) {
+                reactApplicationContext.registerReceiver(
+                    scoStateReceiver,
+                    IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED)
+                )
+                scoReceiverRegistered = true
+            }
 
-@ReactMethod
-fun startBluetoothMic(promise: Promise) {
-    if (hasWiredMic()) {
-        promise.reject("WIRED_MIC_PRESENT", "Wired/USB mic connected, skipping Bluetooth SCO")
-        return
-    }
+            pendingStartCallback = { connectedSco ->
+                // Cancel the timeout the moment we get a real answer, success or failure
+                scoTimeoutRunnable?.let { Handler(Looper.getMainLooper()).removeCallbacks(it) }
+                scoTimeoutRunnable = null
 
-    // Guard against overlapping calls stomping each other's callback
-    if (pendingStartCallback != null) {
-        promise.reject("ALREADY_STARTING", "A Bluetooth SCO start is already in progress")
-        return
-    }
+                if (connectedSco) {
+                    promise.resolve(true)
+                } else {
+                    // Roll back mode change on failure, don't leave the device stuck
+                    audioManager.mode = previousAudioMode ?: AudioManager.MODE_NORMAL
+                    promise.reject("SCO_FAILED", "Bluetooth SCO did not connect")
+                }
+            }
 
-    // Idempotent short-circuit if SCO is already up
-    if (audioManager.isBluetoothScoOn && audioManager.mode == AudioManager.MODE_IN_COMMUNICATION) {
-        promise.resolve(true)
-        return
-    }
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-        ActivityCompat.checkSelfPermission(
-            reactApplicationContext, Manifest.permission.BLUETOOTH_CONNECT
-        ) != PackageManager.PERMISSION_GRANTED
-    ) {
-        promise.reject("PERMISSION_DENIED", "BLUETOOTH_CONNECT not granted")
-        return
-    }
-
-    hasConnectedBluetoothMic { connected ->
-        if (!connected) {
-            promise.reject("NO_DEVICE_CONNECTED", "No Bluetooth headset currently connected")
-            return@hasConnectedBluetoothMic
-        }
-
-        if (!audioManager.isBluetoothScoAvailableOffCall) {
-            promise.reject("SCO_UNAVAILABLE", "Device does not support SCO off-call")
-            return@hasConnectedBluetoothMic
-        }
-
-        // Save whatever mode we were in so stop() can restore it accurately
-        previousAudioMode = audioManager.mode
-        audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
-
-        if (!scoReceiverRegistered) {
-            reactApplicationContext.registerReceiver(
-                scoStateReceiver,
-                IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED)
-            )
-            scoReceiverRegistered = true
-        }
-
-        pendingStartCallback = { connectedSco ->
-            // Cancel the timeout the moment we get a real answer, success or failure
-            scoTimeoutRunnable?.let { Handler(Looper.getMainLooper()).removeCallbacks(it) }
-            scoTimeoutRunnable = null
-
-            if (connectedSco) {
-                promise.resolve(true)
-            } else {
-                // Roll back mode change on failure, don't leave the device stuck
+            try {
+                audioManager.isBluetoothScoOn = true
+                audioManager.startBluetoothSco()
+            } catch (e: Exception) {
                 audioManager.mode = previousAudioMode ?: AudioManager.MODE_NORMAL
-                promise.reject("SCO_FAILED", "Bluetooth SCO did not connect")
-            }
-        }
-
-        try {
-            audioManager.isBluetoothScoOn = true
-            audioManager.startBluetoothSco()
-        } catch (e: Exception) {
-            audioManager.mode = previousAudioMode ?: AudioManager.MODE_NORMAL
-            pendingStartCallback = null
-            promise.reject("SCO_EXCEPTION", "startBluetoothSco threw: ${e.message}")
-            return@hasConnectedBluetoothMic
-        }
-
-        scoTimeoutRunnable = Runnable {
-            if (pendingStartCallback != null) {
-                pendingStartCallback?.invoke(false)
                 pendingStartCallback = null
+                promise.reject("SCO_EXCEPTION", "startBluetoothSco threw: ${e.message}")
+                return@hasConnectedBluetoothMic
             }
+
+            scoTimeoutRunnable = Runnable {
+                if (pendingStartCallback != null) {
+                    pendingStartCallback?.invoke(false)
+                    pendingStartCallback = null
+                }
+            }
+            Handler(Looper.getMainLooper()).postDelayed(scoTimeoutRunnable!!, 15000)
         }
-        Handler(Looper.getMainLooper()).postDelayed(scoTimeoutRunnable!!, 15000)
     }
-}
-@ReactMethod
-fun stopBluetoothMic() {
-    audioManager.stopBluetoothSco()
-    audioManager.mode = AudioManager.MODE_NORMAL
-    audioManager.isBluetoothScoOn = false
-    if (scoReceiverRegistered) {
-        reactApplicationContext.unregisterReceiver(scoStateReceiver)
-        scoReceiverRegistered = false
-    }
-}
-
-
-  @ReactMethod
-fun requestAudioFocus(callback: Callback) {
-
-    val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
-            .setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                    .build()
-            )
-            .setOnAudioFocusChangeListener { focusChange ->
-                Log.d("AudioFocusModule", "Focus changed: $focusChange")
-            }
-            .build()
-        audioManager?.requestAudioFocus(focusRequest!!)
-    } else {
-        @Suppress("DEPRECATION")
-        audioManager?.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+    @ReactMethod
+    fun stopBluetoothMic() {
+        audioManager.stopBluetoothSco()
+        audioManager.mode = AudioManager.MODE_NORMAL
+        audioManager.isBluetoothScoOn = false
+        if (scoReceiverRegistered) {
+            reactApplicationContext.unregisterReceiver(scoStateReceiver)
+            scoReceiverRegistered = false
+        }
     }
 
-    val granted = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-    Log.d("AudioFocusModule", "requestAudioFocus result: $result, granted: $granted")
 
-    val delay = if (granted && isWiredHeadsetConnected()) 500L else 0L
+    @ReactMethod
+    fun requestAudioFocus(callback: Callback) {
 
-    Handler(Looper.getMainLooper()).postDelayed({
-        callback(granted)
-    }, delay)
-}
+        val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+                .setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build()
+                )
+                .setOnAudioFocusChangeListener { focusChange ->
+                    Log.d("AudioFocusModule", "Focus changed: $focusChange")
+                }
+                .build()
+            audioManager?.requestAudioFocus(focusRequest!!)
+        } else {
+            @Suppress("DEPRECATION")
+            audioManager?.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+        }
+
+        val granted = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+        Log.d("AudioFocusModule", "requestAudioFocus result: $result, granted: $granted")
+
+        val delay = if (granted && isWiredHeadsetConnected()) 500L else 0L
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            callback(granted)
+        }, delay)
+    }
+
     @ReactMethod
     fun isWiredHeadsetConnected(): Boolean {
         val devices = audioManager?.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
@@ -258,7 +248,7 @@ fun requestAudioFocus(callback: Callback) {
     fun releaseAudioFocus() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             focusRequest?.let { audioManager?.abandonAudioFocusRequest(it) }
-              Log.d(TAG, "requestAudioFocus released")
+                Log.d(TAG, "requestAudioFocus released")
         } else {
             @Suppress("DEPRECATION")
             audioManager?.abandonAudioFocus(null)
@@ -283,7 +273,7 @@ fun requestAudioFocus(callback: Callback) {
     @ReactMethod
     fun isMicInUse(promise: Promise) {
         val configs = audioManager.activeRecordingConfigurations
-        promise.resolve(configs.size-1 > 0)
+        promise.resolve(configs.size - 1 > 0)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -319,8 +309,5 @@ fun requestAudioFocus(callback: Callback) {
         audioManager.unregisterAudioRecordingCallback(recordingCallback)
         promise.resolve(true)
     }
-
-
-
-    
+   
 }

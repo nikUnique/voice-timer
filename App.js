@@ -38,6 +38,7 @@ import { cleanStop, getItemFromStorage } from "./utils/helpers";
 import { getSharedObject } from "./utils/sharedVariables";
 import { useForegroundService } from "./hooks/TimersScreen/timers/useForegroundService";
 import ContactsScreen from "./screens/ContactsScreen";
+import LogsScreen from "./screens/LogsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -264,6 +265,13 @@ function AppWithContext() {
             component={ContactsScreen}
             options={{
               title: "Contacts",
+            }}
+          />
+          <Stack.Screen
+            name='LogsScreen'
+            component={LogsScreen}
+            options={{
+              title: "Logs",
             }}
           />
           {
