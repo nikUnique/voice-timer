@@ -25,6 +25,7 @@ export function ExpandableSetting({
   labelStyle,
   descriptionStyle,
   collapsedLines = 2,
+  style,
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -34,7 +35,7 @@ export function ExpandableSetting({
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <Text style={labelStyle}>{label}</Text>
       <Text
         style={descriptionStyle}

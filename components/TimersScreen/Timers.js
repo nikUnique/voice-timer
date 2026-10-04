@@ -33,6 +33,7 @@ import { updatePausedTimerNames } from "../../utils/storageHelpers";
 export default function Timers({ navigation }) {
   const [isAwake] = useState(false);
   const [setIsTaskStopped] = useState(false);
+  const [isTimerSleeping, setIsTimerSleeping] = useState(false);
 
   const activeTimeRef = useRef(null);
   const { dimScreenRef, keepScreenDim } = useSettingsData();
@@ -80,11 +81,14 @@ export default function Timers({ navigation }) {
     function () {
       async function confirmCommand() {
         try {
+          timers.forEach((timer) => console.log(timer?.name));
+          console.log(timers, "timers");
+
           let isTimerSpecificCommand = dynamicGrammar.find(
             (command) =>
               typeof command !== "object" &&
               timers.find((timer) =>
-                command.toLowerCase().includes(timer.name.toLowerCase()),
+                command.toLowerCase().includes(timer?.name.toLowerCase()),
               ) &&
               recognizedCommand?.includes(command?.toLowerCase()),
           );
@@ -168,6 +172,10 @@ export default function Timers({ navigation }) {
       forceKeepAwake,
     ],
   );
+
+  const handleTimerSleepChange = useCallback(function (isSleeping) {
+    setIsTimerSleeping(isSleeping);
+  }, []);
 
   useEffect(
     function () {
@@ -320,6 +328,8 @@ export default function Timers({ navigation }) {
         <TimerList
           lastCommandRef={lastCommandRef}
           setIsTaskStopped={setIsTaskStopped}
+          isTimerSleeping={isTimerSleeping}
+          onTimerSleepChange={handleTimerSleepChange}
         />
       }
       <View style={styles.voiceRecognizerContainer}>
@@ -338,5 +348,8 @@ const styles = StyleSheet.create({
     top: "15%",
     left: "50%",
     transform: "translate(-50%, -50%)",
+    // Spoken-command feedback sits above the SleepNotice so it stays legible
+    // when the notice is showing at the top of the screen.
+    zIndex: 10,
   },
 });

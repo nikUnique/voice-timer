@@ -6,7 +6,7 @@ import { hasPhrase } from "../../../utils/helpers";
 import { useSound } from "../../shared/useSound";
 import { useSpeak } from "../../shared/useSpeak";
 
-export function useTimerSleepCommands() {
+export function useTimerSleepCommands({ onSleepStateChange } = {}) {
   const { recognizedCommandRef, isTimerSleepingRef, commandsRef } =
     useRefsData();
 
@@ -25,6 +25,7 @@ export function useTimerSleepCommands() {
     playSoundGeneral({ fileName: successSound, shouldStop: false });
     speak("Timer went to sleep");
     isTimerSleepingRef.current = true;
+    onSleepStateChange?.(true);
   }
 
   function handleWakeUp() {
@@ -36,6 +37,7 @@ export function useTimerSleepCommands() {
     playSoundGeneral({ fileName: successSound, shouldStop: false });
     speak("Timer ready");
     isTimerSleepingRef.current = false;
+    onSleepStateChange?.(false);
   }
 
   return { handleGoSleep, handleWakeUp };

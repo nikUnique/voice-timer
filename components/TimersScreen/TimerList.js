@@ -18,11 +18,17 @@ import {
   updateSharedObject,
 } from "../../utils/sharedVariables";
 import MicStatus from "./MicStatus";
+import SleepNotice from "./SleepNotice";
 import TimerInterfaceButtons from "./TimerInterfaceButtons";
 
 SplashScreen.preventAutoHideAsync();
 
-export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
+export default function TimerList({
+  lastCommandRef,
+  setIsTaskStopped,
+  isTimerSleeping,
+  onTimerSleepChange,
+}) {
   const [isReady, setIsReady] = useState(false);
   const [updateList, setUpdateList] = useState(false);
   const [containerHeight, setContainerHeight] = useState();
@@ -32,8 +38,17 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
   const flatListViewRef = useRef(null);
 
   const { setRecognizedCommand, timers, setTimers } = useRecognizerData();
-  const { activateTimerRef, leastTimeTimerRef, workingTimersRef } =
-    useRefsData();
+  const {
+    activateTimerRef,
+    leastTimeTimerRef,
+    workingTimersRef,
+    isTimerSleepingRef,
+  } = useRefsData();
+
+  // useEffect(() => {
+  //   isTimerSleepingRef.current = true;
+  //   onTimerSleepChange(true);
+  // }, []); // eslint will warn about deps; fine for a temporary test
 
   const {
     handleDelete,
@@ -78,7 +93,11 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
     [updateList],
   );
 
-  useGeneralVoiceCommands({ pauseMedia, resumeMedia });
+  useGeneralVoiceCommands({
+    pauseMedia,
+    resumeMedia,
+    onTimerSleepChange,
+  });
 
   useEffect(
     function () {
@@ -185,6 +204,8 @@ export default function TimerList({ lastCommandRef, setIsTaskStopped }) {
                 itemVisiblePercentThreshold: 30,
               }}
             />
+
+            <SleepNotice isTimerSleeping={isTimerSleeping} />
 
             {sortedTimers?.length > 0 && (
               <TimerInterfaceButtons onDelete={handleDelete} />

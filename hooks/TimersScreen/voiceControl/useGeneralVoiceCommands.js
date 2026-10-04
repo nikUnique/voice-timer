@@ -13,7 +13,11 @@ import { useTimerSleepBlocking } from "./useTimerSleepBlocking";
 import { useTimerSleepCommands } from "./useTimerSleepCommands";
 import { useVolumeCommands } from "./useVolumeCommands";
 
-export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
+export function useGeneralVoiceCommands({
+  pauseMedia,
+  resumeMedia,
+  onTimerSleepChange,
+}) {
   const { recognizedTime } = useRecognizerData();
   const {
     recognizedCommandRef,
@@ -37,7 +41,9 @@ export function useGeneralVoiceCommands({ pauseMedia, resumeMedia }) {
 
   const volume = useVolumeCommands();
 
-  const timerSleep = useTimerSleepCommands();
+  const timerSleep = useTimerSleepCommands({
+    onSleepStateChange: onTimerSleepChange,
+  });
 
   const alarmReset = useAlarmResetCommand();
 

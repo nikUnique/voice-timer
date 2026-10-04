@@ -9,6 +9,7 @@ import {
 } from "react-native";
 
 import { Colors } from "../../constants/colors";
+import { RADIUS } from "../../constants/radius";
 import { SPACE } from "../../constants/spacing";
 import { FONT } from "../../constants/typography";
 import { WEIGHT } from "../../constants/weight";
@@ -208,10 +209,18 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
   );
 
   return (
-    <Animated.View style={{ opacity: fadeAnimationRefCur }}>
+    <Animated.View
+      style={{
+        opacity: fadeAnimationRefCur,
+        marginTop: SPACE.xxl,
+        backgroundColor: Colors.primaryShade30,
+        borderRadius: RADIUS.sm,
+        paddingVertical: SPACE.md,
+        paddingHorizontal: SPACE.lg,
+      }}
+    >
       <Text
         style={{
-          marginTop: SPACE.xxl,
           color: Colors.primaryTint90,
           fontWeight: WEIGHT.bold,
           fontSize: FONT.subheading,
