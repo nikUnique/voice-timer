@@ -10,16 +10,33 @@ import { capitalize, normalize } from "../../utils/helpers";
 import { CALL_TIMEOUT, PHONE_TIMEOUT } from "../../utils/config";
 import * as defaultCommands from "../../utils/en_commands";
 
-// Mirrors the runtime gating in useGeneralVoiceCommands and useExecuteCommand:
-// while media is playing only stopping the media is accepted, and while the
-// timer is asleep only waking it, stopping the media and stopping a timer are.
-const WORKS_WHILE_ASLEEP = new Set(["WAKE", "MEDIA", "STOP"]);
-const WORKS_WHILE_MEDIA_PLAYING = new Set(["MEDIA"]);
+// Mirrors the real gating in useGeneralVoiceCommands, useExecuteCommand,
+// useTimerSleepBlocking and useAlarmResetCommand.
+//
+// Order matters in useGeneralVoiceCommands: the media commands, skip, answer
+// call and stop finished are all handled BEFORE the sleep check, so they still
+// work while the timer sleeps. Everything after it does not.
+//
+// While media plays, only pausing it and skipping tracks are accepted.
+const WORKS_WHILE_ASLEEP = new Set([
+  "MEDIA",
+  "NEXT",
+  "PREV",
+  "PLAY",
+  "BULK",
+  "STOP",
+  "WAKE",
+]);
+const WORKS_WHILE_MEDIA_PLAYING = new Set(["MEDIA", "NEXT", "PREV"]);
+// These describe media that is currently playing, so they do nothing while it
+// is paused. "PLAY" is the opposite: it only makes sense when media is paused.
 const NEEDS_MEDIA_PLAYING = new Set(["MEDIA", "NEXT", "PREV"]);
 
-const ASLEEP_NOTE = "Not available while the timer is asleep";
-const MEDIA_PLAYING_NOTE = "Not available while media is playing";
-const NO_MEDIA_NOTE = "Not available, nothing is playing right now";
+const ASLEEP_NOTE = "not available while the timer is asleep";
+const MEDIA_PLAYING_NOTE =
+  "not available while media is playing, pause it first";
+const NO_MEDIA_NOTE = "not available, nothing is playing right now";
+const ALREADY_PLAYING_NOTE = "not available, media is already playing";
 
 export function useCommandsList() {
   const {
@@ -46,13 +63,13 @@ export function useCommandsList() {
   // so an enabled command never claims to be switched off.
   const skipNote = isSkipEnabled
     ? undefined
-    : "Skip commands are off in Settings";
+    : "skip commands are switched off in Settings";
   const voiceNote = isVoiceFeedbackEnabled
     ? undefined
-    : "Voice feedback is off, so the answer cannot be spoken";
+    : "voice feedback is off, so the answer cannot be spoken";
   const callNote = permitAnswerCalls
     ? voiceNote
-    : "Answering calls by voice is off in Settings";
+    : "answering calls by voice is switched off in Settings";
 
   // Media and sleep state live in refs because the command handlers read them
   // synchronously. They are copied into state here so the list can render, and
@@ -109,6 +126,8 @@ export function useCommandsList() {
 
       if (asleep && !WORKS_WHILE_ASLEEP.has(badge)) {
         notes.stateNote = ASLEEP_NOTE;
+      } else if (mediaPlaying && badge === "PLAY") {
+        notes.stateNote = ALREADY_PLAYING_NOTE;
       } else if (mediaPlaying && !WORKS_WHILE_MEDIA_PLAYING.has(badge)) {
         notes.stateNote = MEDIA_PLAYING_NOTE;
       } else if (NEEDS_MEDIA_PLAYING.has(badge) && !mediaPlaying) {
@@ -198,14 +217,15 @@ export function useCommandsList() {
         {
           command: `${capitalize(PLAY_MEDIA)}`,
           example: `${capitalize(PLAY_MEDIA)}`,
-          description: "Resumes external media playback. ",
+          description:
+            "Resumes external media playback, so it only works while the media is paused.",
           icon: "play-circle-outline",
           badge: "PLAY",
         },
         {
           command: `${capitalize(STOP_MEDIA)}`,
           example: `${capitalize(STOP_MEDIA)}`,
-          description: `Pauses external media. ${capitalize(SKIP_NEXT)} and ${capitalize(SKIP_PREVIOUS)} also work during playback if enabled in Settings.`,
+          description: `Pauses external media, so it only works while something is playing. It and ${capitalize(SKIP_NEXT)} and ${capitalize(SKIP_PREVIOUS)} are the only commands that keep working once media is playing.`,
           icon: "stop-circle-outline",
           badge: "MEDIA",
         },
@@ -237,7 +257,7 @@ export function useCommandsList() {
         {
           command: `${capitalize(TIMER_GO_SLEEP)}`,
           example: `${capitalize(TIMER_GO_SLEEP)}`,
-          description: `Puts the timer to sleep. Spoken commands are ignored until you say "${capitalize(TIMER_WAKE_UP)}". Only "${capitalize(TIMER_WAKE_UP)}", "${capitalize(STOP_MEDIA)}" and "${capitalize(STOP)} [timer name]" still work.`,
+          description: `Puts the timer to sleep. Spoken commands are ignored until you say "${capitalize(TIMER_WAKE_UP)}". These still work while asleep: "${capitalize(TIMER_WAKE_UP)}", "${capitalize(STOP_MEDIA)}", "${capitalize(PLAY_MEDIA)}", "${capitalize(SKIP_NEXT)}", "${capitalize(SKIP_PREVIOUS)}", "${capitalize(STOP_FINISHED)}" and "${capitalize(STOP)} [timer name]".`,
           icon: "mic-off-outline",
           badge: "SLEEP",
         },

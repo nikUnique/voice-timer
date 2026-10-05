@@ -11,7 +11,7 @@ function VoiceDisabledEmptyState() {
       <View style={styles.emptyState}>
         <View style={styles.emptyStateIconBox}>
           <Ionicons
-            name='mic-off-outline'
+            name="mic-off-outline"
             size={32}
             color={Colors.dangerColor}
           />

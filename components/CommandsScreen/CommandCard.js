@@ -56,13 +56,13 @@ function CommandCard({ item }) {
         {item.settingNote && (
           <Text style={styles.noteText}>
             <Text style={styles.noteLabel}>Off: </Text>
-            {item.settingNote.toLowerCase()}
+            {item.settingNote}
           </Text>
         )}
         {item.stateNote && (
           <Text style={styles.noteText}>
             <Text style={styles.noteLabel}>Blocked: </Text>
-            {item.stateNote.toLowerCase()}
+            {item.stateNote}
           </Text>
         )}
       </View>

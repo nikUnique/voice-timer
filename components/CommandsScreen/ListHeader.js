@@ -18,10 +18,11 @@ function ListHeader() {
         </Text>
         <Text style={styles.legendText}>
           <Text style={styles.noteLabel}>Blocked</Text> means it is on, but
-          something else stops it right now. Media must be stopped before any
-          other command works, and a sleeping timer ignores everything except
-          the wake, stop media and stop commands. These clear on their own, so
-          reopen this screen to see the current state.
+          something else stops it right now. While media is playing, only the
+          media commands and the skip commands still work. While the timer is
+          asleep, the media commands, skip, stop finished, stop and the wake
+          command still work. Blocking clears on its own, so reopen this screen
+          to see the current state.
         </Text>
       </View>
     </>
