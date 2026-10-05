@@ -73,31 +73,46 @@ xdotool getwindowfocus getwindowname
 `--clearmodifiers` avoids the shortcut being swallowed by a stuck modifier, and
 `--window` targets the window explicitly rather than relying on current focus.
 
-**Terminals, when asked for:**
+**Order matters: defocus → close terminals → close editor tabs.**
+
+Defocus first with `Ctrl+`` (View: Toggle Terminal). Toggling the panel moves
+focus into the editor, which is what makes `ctrl+alt+k` land at all — while the
+terminal itself holds focus it is silently ignored. Do **not** defocus with
+`ctrl+shift+e`: that switches the sidebar to the Explorer, and the Cline tab
+should stay active.
 
 ```bash
-# Defocus the terminal first — ctrl+alt+k is ignored while the terminal
-# itself holds focus. ctrl+shift+e moves focus to the Explorer.
-xdotool key --window "$WID" --clearmodifiers ctrl+shift+e
-sleep 2
-xdotool key --window "$WID" --clearmodifiers ctrl+alt+k
+WID=$(xdotool search --name 'VSCodium' | head -1)
+xdotool windowactivate --sync "$WID"
+
+xdotool key --window "$WID" --clearmodifiers ctrl+grave    # defocus terminal panel
+sleep 1
+xdotool key --window "$WID" --clearmodifiers ctrl+alt+k    # kill all terminals
+sleep 1
+xdotool key --window "$WID" --clearmodifiers ctrl+shift+w   # close all editor tabs
 ```
 
-Skipping the defocus step makes `ctrl+alt+k` a silent no-op. Either way the
-command kills the shell running it, so run the whole thing detached if the
-caller needs to survive:
+`xdotool` names the backtick key **`grave`**, not `` ` `` or `` ` ``.
+
+Closing terminals also kills the shell running the command, so run the whole
+sequence detached if the caller needs to survive it:
 
 ```bash
 setsid nohup bash -c 'sleep 2; WID=$(xdotool search --name "VSCodium" | head -1); \
   xdotool windowactivate --sync "$WID"; \
-  xdotool key --window "$WID" --clearmodifiers ctrl+shift+e; sleep 2; \
-  xdotool key --window "$WID" --clearmodifiers ctrl+alt+k' \
-  > /tmp/term_closed.txt 2>&1 &
+  xdotool key --window "$WID" --clearmodifiers ctrl+grave; sleep 1; \
+  xdotool key --window "$WID" --clearmodifiers ctrl+alt+k; sleep 1; \
+  xdotool key --window "$WID" --clearmodifiers ctrl+shift+w' \
+  > /tmp/closed.txt 2>&1 &
 ```
 
-Success looks like the tool reporting "Terminal closed while the command was
-running" — that is the expected outcome, not a failure. Verify afterwards from
-a fresh shell.
+Verify afterwards from a fresh shell — the window title should have no tab name
+prefix. Success on the terminal step looks like the tool reporting "Terminal
+closed while the command was running"; that is expected, not a failure.
+
+**Keep timeouts short.** Use `timeout 5` or so on `xdotool` calls and short
+`sleep` gaps. Long timeouts stall the whole task over a keystroke, and this
+window responds in well under a second.
 
 Do **not** script this through the editor CLI. The editor is the VSCodium
 **snap**, and that route is a dead end:

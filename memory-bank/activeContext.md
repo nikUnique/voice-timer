@@ -20,10 +20,18 @@ substitute.
 
 ## Open items
 
-1. **The Logs context-menu item is unreachable while a timer is alerting.** The
-   handler short-circuits on a non-empty `alertingTimerNames`. Reads as
-   intentional, but it is a user-facing behaviour change riding along with a
-   cosmetic commit.
+None outstanding.
+
+## Deliberate behaviours (do not "fix" these)
+
+- **The Logs entry in the timers context menu is blocked while a timer is
+  alerting.** `ContextMenu.js` short-circuits navigation on a non-empty
+  `alertingTimerNames`. This is **intended**: the user must stop the alarm first
+  before leaving the timers screen. Confirmed by the user — it is a safety
+  behaviour, not an oversight, and should not be logged as an issue.
+- **Redundant JSX wrapper in `ContextMenu.js`** and an **unused
+  `prevRecognizedCommandRef` destructure in `useCommandsControl.js`** were both
+  cleaned up.
 
 ## Known cosmetic issues
 

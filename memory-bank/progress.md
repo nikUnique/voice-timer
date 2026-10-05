@@ -19,9 +19,11 @@ design tokens, fix a command-banner timing bug, and add Cline configuration.
 
 ## Known issues
 
-| Issue | Severity |
-| --- | --- |
-| Logs screen unreachable while a timer is alerting | Low — likely intended |
+None outstanding.
+
+The Logs screen is intentionally unreachable from the timers context menu while a
+timer is alerting — the user must stop the alarm first. That is a safety
+behaviour, not a defect.
 
 The banner fade fix (`c5e47b5`) was verified by the user on-device: the banner
 now stays pinned through a burst of commands and fades 5s after the last one.

@@ -59,9 +59,10 @@ testing.
   `cannot execute binary file`; `/usr/bin/snap run codium --version` works
   (1.105.17075) but `--command` always exits 1, because snap confinement blocks
   the IPC socket. Use `xdotool` instead — `DISPLAY` is already `:0.0`.
-  Editor tabs close with `ctrl+shift+w`, terminals with `ctrl+alt+k` — but
-  defocus the terminal first (e.g. `ctrl+shift+e`), or `ctrl+alt+k` is ignored.
-  See `.cline/skills/wrap-up-session/SKILL.md`.
+  Editor tabs close with `ctrl+shift+w`, terminals with `ctrl+alt+k`. Defocus
+  first with `ctrl+grave` (backtick), then terminals, then tabs — and keep
+  timeouts short (`timeout 5`). See
+  `.cline/skills/wrap-up-session/SKILL.md`.
 
 ## Constraints
 
