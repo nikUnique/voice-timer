@@ -54,11 +54,12 @@ testing.
   <cmd> > /tmp/out.txt 2>&1; echo "EXIT=$?" >> /tmp/out.txt; cat /tmp/out.txt
   ```
   Treat the captured exit code as the source of truth, not the tool result.
-- **The VSCodium CLI cannot drive the running editor.** `codium` on PATH is a
-  symlink to `/usr/bin/snap` and fails with `cannot execute binary file`;
-  `/usr/bin/snap run codium --version` works (1.105.17075) but `--command` always
-  exits 1 with no output, because snap confinement blocks the IPC socket. To close
-  editor tabs, ask the user to press `Ctrl+Shift+W`. Do not script it — see
+- **The VSCodium CLI cannot drive the running editor**, but `xdotool` can.
+  `codium` on PATH is a symlink to `/usr/bin/snap` and fails with
+  `cannot execute binary file`; `/usr/bin/snap run codium --version` works
+  (1.105.17075) but `--command` always exits 1, because snap confinement blocks
+  the IPC socket. Use `xdotool` instead — `DISPLAY` is already `:0.0`.
+  Editor tabs close with `ctrl+shift+w`, terminals with `ctrl+alt+k`. See
   `.cline/skills/wrap-up-session/SKILL.md`.
 
 ## Constraints

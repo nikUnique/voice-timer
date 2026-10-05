@@ -18,8 +18,7 @@ Be precise about this, and say plainly when something is out of reach.
 - Shell sessions left running in background.
 - Temporary files written during the task (`/tmp/*.txt` and similar scratch
   output).
-- Editor **tabs**, but only by asking the user to press `Ctrl+Shift+W` — the
-  snap-packaged editor has no usable CLI for this (see step 3).
+- Editor **tabs and terminal panels**, via `xdotool` keystrokes (see step 3).
 
 **Cannot be closed from here:**
 - Terminal panels or editor windows the *user* opened by hand.
@@ -55,24 +54,50 @@ Scratch output written during the task, e.g. `/tmp/lint.txt`, `/tmp/state.txt`,
 
 ### 3. Close tabs
 
-**Ask the user to press `Ctrl+Shift+W`** (View: Close All Editors). That is one
-keystroke for them and instant, which beats any scripted alternative.
+`xdotool` works here and is the way to do this:
 
-Do **not** try to script this. The editor here is the VSCodium **snap**, and its
-CLI is not a usable route:
+```bash
+# Focus the editor first, then send the shortcut.
+WID=$(xdotool search --name 'VSCodium' | head -1)
+xdotool windowactivate --sync "$WID"
+xdotool key --window "$WID" --clearmodifiers ctrl+shift+w    # close all tabs
+```
 
-- `codium` on `PATH` is a symlink to `/usr/bin/snap`. Invoking it through the
+Verify it landed — the window title loses its leading tab name:
+
+```bash
+xdotool getwindowfocus getwindowname
+```
+
+`DISPLAY` is already `:0.0` in this environment, so no export is needed.
+`--clearmodifiers` avoids the shortcut being swallowed by a stuck modifier, and
+`--window` targets the window explicitly rather than relying on current focus.
+
+**Terminals, when asked for:**
+
+```bash
+xdotool key --window "$WID" --clearmodifiers ctrl+alt+k
+```
+
+Note this kills the shell running the command, so run it detached if the caller
+needs to survive it:
+
+```bash
+setsid nohup bash -c 'sleep 2; xdotool key --window '"$WID"' \
+  --clearmodifiers ctrl+alt+k' > /tmp/term_closed.txt 2>&1 &
+```
+
+Do **not** script this through the editor CLI. The editor is the VSCodium
+**snap**, and that route is a dead end:
+
+- `codium` on `PATH` is a symlink to `/usr/bin/snap`; invoking it through the
   symlink fails with `cannot execute binary file`, even though the binary is
   fine and `snap version` works.
-- Bypassing with `/usr/bin/snap run codium --command ...` gets as far as
-  `--version` (`1.105.17075`) but `--command` still exits `1` with no output,
-  because snap confinement blocks the IPC socket to the running window.
+- `/usr/bin/snap run codium --command ...` handles `--version` (`1.105.17075`)
+  but `--command` always exits `1` with no output — snap confinement blocks the
+  IPC socket to the running window.
 
-So `workbench.action.closeAllEditors` via CLI is a dead end on this machine, and
-the shortcut reaches the same command without the confined IPC hop. Don't
-rediscover this.
-
-Terminals are a separate question — see below.
+`xdotool` sidesteps all of it by talking to X11 directly.
 
 ### 4. Confirm the tree state
 
@@ -94,8 +119,8 @@ End the task with a short account:
   implying completion.
 - Anything deliberately left alone, with the reason, so it is not rediscovered
   as a surprise.
-- Background processes: stopped here. Tabs and terminals: handed to the user as
-  a keystroke, because they cannot be closed from here.
+- Background processes: stopped here. Tabs and terminals: closed here via
+  `xdotool`, unless the user asked to keep them.
 
 Keep `activeContext.md` current if a Memory Bank exists — it is where the
 open items from this task should be recorded before context resets.
@@ -103,9 +128,8 @@ open items from this task should be recorded before context resets.
 ## When a scripted step fails
 
 Report it and stop — do not keep iterating on a workaround. A step that exits
-non-zero with no output is a dead end, and the user can usually finish it in one
-keystroke. Burning several rounds diagnosing a CLI that cannot work is worse
-than asking.
+non-zero with no output is a dead end. If it cannot be fixed in one attempt,
+hand it back and say so plainly rather than burning rounds on it.
 
 Say plainly what was and was not done. Never imply a cleanup happened when it
 did not.
