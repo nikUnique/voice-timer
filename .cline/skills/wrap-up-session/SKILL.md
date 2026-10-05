@@ -62,17 +62,37 @@ the binary exists first with `command -v`, and do not assume the VS Code name:
 # On this machine the editor is the VSCodium snap.
 command -v codium   # -> /snap/bin/codium
 
-codium --command workbench.action.closeAllEditors
-codium --command workbench.action.closeAllGroups
+codium --command workbench.action.closeAllEditors    # close all editor tabs
+codium --command workbench.action.terminal.killAll    # kill all terminal panels
 ```
 
 `code` is **not** on `PATH` here, so the VS Code command name will fail. The
 snap wrapper is at `/snap/bin/codium`; there is no
 `/snap/codium/current/usr/bin/codium`.
 
-Closing *terminal panels* specifically is `workbench.action.closeAllGroups`
-under View > Appearance, or close them via the command palette — pass the
-matching command id if a terminal-specific one is needed.
+All three command ids below were confirmed against the installed Codium at
+`/snap/codium/current/usr/share/codium/resources/app/out/vs/workbench/workbench.desktop.main.js`:
+
+| Command id | Effect |
+| --- | --- |
+| `workbench.action.closeAllEditors` | Close every open editor **tab** |
+| `workbench.action.terminal.killAll` | Kill every integrated **terminal** |
+| `workbench.action.closeAllGroups` | Close entire editor **groups/panes** — stronger, and unnecessary for a tidy-up |
+
+**Do not use `closeAllGroups` for routine cleanup.** It tears down the whole
+group layout, not just the tabs, which is more disruptive than intended. Use
+`closeAllEditors` plus `terminal.killAll`.
+
+**Killing all terminals kills the shell this is running in.** When the skill is
+performed mid-task, detach the commands so they survive their own execution:
+
+```bash
+setsid nohup bash -c 'sleep 2; codium --command workbench.action.closeAllEditors; \
+  codium --command workbench.action.terminal.killAll' > /tmp/tabs_closed.txt 2>&1 &
+```
+
+Report that this was launched detached, and that its own terminal is expected
+to disappear.
 
 If no IDE CLI is available, do not try to emulate this by killing processes —
 instead **tell the user which tabs and terminals to close**, by name. Never
