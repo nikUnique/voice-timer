@@ -18,8 +18,8 @@ Be precise about this, and say plainly when something is out of reach.
 - Shell sessions left running in background.
 - Temporary files written during the task (`/tmp/*.txt` and similar scratch
   output).
-- Editor **tabs and terminal panels**, via the IDE CLI if one is available
-  (see below).
+- Editor **tabs**, but only by asking the user to press `Ctrl+Shift+W` — the
+  snap-packaged editor has no usable CLI for this (see step 3).
 
 **Cannot be closed from here:**
 - Terminal panels or editor windows the *user* opened by hand.
@@ -53,50 +53,26 @@ blanket `pkill java`.
 Scratch output written during the task, e.g. `/tmp/lint.txt`, `/tmp/state.txt`,
 `/tmp/verify.txt`. Keep anything the user asked to keep.
 
-### 3. Close tabs and terminals opened during the work
+### 3. Close tabs
 
-If an IDE CLI is on `PATH`, use it — this is the only reliable way. Confirm
-the binary exists first with `command -v`, and do not assume the VS Code name:
+**Ask the user to press `Ctrl+Shift+W`** (View: Close All Editors). That is one
+keystroke for them and instant, which beats any scripted alternative.
 
-```bash
-# On this machine the editor is the VSCodium snap.
-command -v codium   # -> /snap/bin/codium
+Do **not** try to script this. The editor here is the VSCodium **snap**, and its
+CLI is not a usable route:
 
-codium --command workbench.action.closeAllEditors    # close all editor tabs
-codium --command workbench.action.terminal.killAll    # kill all terminal panels
-```
+- `codium` on `PATH` is a symlink to `/usr/bin/snap`. Invoking it through the
+  symlink fails with `cannot execute binary file`, even though the binary is
+  fine and `snap version` works.
+- Bypassing with `/usr/bin/snap run codium --command ...` gets as far as
+  `--version` (`1.105.17075`) but `--command` still exits `1` with no output,
+  because snap confinement blocks the IPC socket to the running window.
 
-`code` is **not** on `PATH` here, so the VS Code command name will fail. The
-snap wrapper is at `/snap/bin/codium`; there is no
-`/snap/codium/current/usr/bin/codium`.
+So `workbench.action.closeAllEditors` via CLI is a dead end on this machine, and
+the shortcut reaches the same command without the confined IPC hop. Don't
+rediscover this.
 
-All three command ids below were confirmed against the installed Codium at
-`/snap/codium/current/usr/share/codium/resources/app/out/vs/workbench/workbench.desktop.main.js`:
-
-| Command id | Effect |
-| --- | --- |
-| `workbench.action.closeAllEditors` | Close every open editor **tab** |
-| `workbench.action.terminal.killAll` | Kill every integrated **terminal** |
-| `workbench.action.closeAllGroups` | Close entire editor **groups/panes** — stronger, and unnecessary for a tidy-up |
-
-**Do not use `closeAllGroups` for routine cleanup.** It tears down the whole
-group layout, not just the tabs, which is more disruptive than intended. Use
-`closeAllEditors` plus `terminal.killAll`.
-
-**Killing all terminals kills the shell this is running in.** When the skill is
-performed mid-task, detach the commands so they survive their own execution:
-
-```bash
-setsid nohup bash -c 'sleep 2; codium --command workbench.action.closeAllEditors; \
-  codium --command workbench.action.terminal.killAll' > /tmp/tabs_closed.txt 2>&1 &
-```
-
-Report that this was launched detached, and that its own terminal is expected
-to disappear.
-
-If no IDE CLI is available, do not try to emulate this by killing processes —
-instead **tell the user which tabs and terminals to close**, by name. Never
-leave the impression that tabs were closed when they were not.
+Terminals are a separate question — see below.
 
 ### 4. Confirm the tree state
 
@@ -118,7 +94,18 @@ End the task with a short account:
   implying completion.
 - Anything deliberately left alone, with the reason, so it is not rediscovered
   as a surprise.
-- Background processes and tabs: closed, or handed to the user to close.
+- Background processes: stopped here. Tabs and terminals: handed to the user as
+  a keystroke, because they cannot be closed from here.
 
 Keep `activeContext.md` current if a Memory Bank exists — it is where the
 open items from this task should be recorded before context resets.
+
+## When a scripted step fails
+
+Report it and stop — do not keep iterating on a workaround. A step that exits
+non-zero with no output is a dead end, and the user can usually finish it in one
+keystroke. Burning several rounds diagnosing a CLI that cannot work is worse
+than asking.
+
+Say plainly what was and was not done. Never imply a cleanup happened when it
+did not.
