@@ -1,0 +1,67 @@
+# .clineignore — files excluded from Cline's file access.
+# Works like .gitignore: matching paths are hidden from reads, searches, and
+# listings. Use it to keep large generated trees and secrets out of context.
+
+# --- Dependencies (2.2G) ---
+node_modules/
+
+# --- Android build output (5.3G total) ---
+# These are the two genuinely huge generated trees in this project.
+android/app/build/
+android/app/.cxx/
+android/.gradle/
+android/build/
+*.apk
+*.aab
+*.iml
+
+# --- iOS ---
+ios/Pods/
+ios/build/
+*.xcuserstate
+xcuserdata/
+
+# --- Expo ---
+.expo/
+dist/
+web-build/
+
+# --- Secrets and credentials ---
+# No .env files are committed in this repo, but ignore them if one appears
+# locally so values are never echoed into context.
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+*.p12
+*.p8
+*.key
+*.mobileprovision
+*.pem
+android/app/debug.keystore
+google-services.json
+GoogleService-Info.plist
+
+# --- Logs, caches, OS noise ---
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.DS_Store
+Thumbs.db
+
+# --- Non-source scripts and metadata ---
+# One-off repo maintenance scripts; not relevant to app changes.
+git-filter-repo.py
+
+# --- VCS internals ---
+.git/
+
+# --- Note on deliberate exceptions ---
+# The native project files are intentionally NOT ignored, since they often
+# need editing for permissions, audio focus, and the logcat module:
+#   android/app/src/
+#   android/build.gradle
+#   ios/Timerwithcommands/
+# Ignore those individually if a task turns out not to need them.
