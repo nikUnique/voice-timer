@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { Colors } from "../../constants/colors";
@@ -6,6 +6,7 @@ import {
   useRefsData,
   useSettingsData,
 } from "../../context/VoiceRecognizerContext";
+import { useDictionary } from "../../hooks/shared/useDictionary";
 import { emitter } from "../../utils/EventEmitter";
 import { setItemInStorage } from "../../utils/helpers";
 import {
@@ -21,11 +22,45 @@ export default function TimerNameControl() {
 
   const [timerName, setTimerName] = useState(name);
   const [isCorrect, setIsCorrect] = useState(true);
+  const [isDictionaryLoaded, setIsDictionaryLoaded] = useState(false);
 
   const inputRef = useRef(null);
 
-  const { timers, setTimers } = useRefsData();
+  const { timers, dictionaryTypoRef, setTimers } = useRefsData();
   const { setVoiceEnabled, voiceEnabled } = useSettingsData();
+  const { loadDictionary } = useDictionary();
+
+  // Loaded only to warn, never to block. It is read off screen so the rename
+  // dialog opens instantly.
+  useEffect(
+    function () {
+      let isActive = true;
+
+      loadDictionary().finally(() => {
+        if (isActive) setIsDictionaryLoaded(true);
+      });
+
+      return function () {
+        isActive = false;
+      };
+    },
+    [loadDictionary],
+  );
+
+  // Vosk only knows the words in its acoustic model, and an unusual word is
+  // matched against the nearest phrase it does know, which can start the wrong
+  // timer. The dictionary is only a rough proxy for that vocabulary, so this
+  // is a hint and not a restriction.
+  const unrecognizableWords = useMemo(() => {
+    const dictionary = dictionaryTypoRef.current;
+
+    if (!isDictionaryLoaded || !dictionary || !timerName.trim()) return [];
+
+    return timerName
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((word) => word.length > 0 && !dictionary.check(word));
+  }, [dictionaryTypoRef, isDictionaryLoaded, timerName]);
 
   async function changeTimerName() {
     try {
@@ -125,6 +160,16 @@ export default function TimerNameControl() {
                   Timer with this name already exists
                 </Text>
               )}
+              {unrecognizableWords.length > 0 && (
+                <Text style={styles.warningText}>
+                  {unrecognizableWords.length > 1
+                    ? `${unrecognizableWords.join(
+                        ", ",
+                      )} may be hard for voice recognition`
+                    : `${unrecognizableWords[0]} may be hard for voice recognition`}
+                  . You can still save it, or try a more common word.
+                </Text>
+              )}
 
               <TextInput
                 value={timerName}
@@ -203,6 +248,10 @@ const styles = StyleSheet.create({
 
   errorText: {
     color: Colors.primaryTint90,
+  },
+
+  warningText: {
+    color: Colors.pausedColor,
   },
 
   textInputContainer: {
