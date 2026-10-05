@@ -1,11 +1,7 @@
 import { useCallback, useEffect } from "react";
-import { InteractionManager } from "react-native";
-import RNFS from "react-native-fs";
-import Typo from "typo-js";
 
-import { useRefsData } from "../../../context/VoiceRecognizerContext";
+import { useDictionary } from "../../shared/useDictionary";
 import { emitter } from "../../../utils/EventEmitter";
-import { getItemFromStorage } from "../../../utils/helpers";
 
 export function useTimerInterfaceFunctions({
   isActive,
@@ -16,7 +12,7 @@ export function useTimerInterfaceFunctions({
   name,
   modalIsVisible,
 }) {
-  const { dictionaryTypoRef } = useRefsData();
+  const { loadDictionary } = useDictionary();
 
   const controlTimer = useCallback(
     async function () {
@@ -45,58 +41,17 @@ export function useTimerInterfaceFunctions({
     [controlTimer, name],
   );
 
-  async function createDictionary(affData, dicData) {
-    return new Promise((resolve, reject) => {
-      InteractionManager.runAfterInteractions(async () => {});
-      const dictionary = new Typo("en_US", affData, dicData, {});
-      dictionaryTypoRef.current = dictionary;
-      resolve(dictionary);
-      if (!dictionary)
-        reject(
-          `An error occurred in createDictionary function while creating dictionary`,
-        );
-    });
-  }
-
-  async function loadDictionary() {
-    try {
-      if (dictionaryTypoRef.current) {
-        return;
-      }
-
-      const affPath = `index.aff`;
-      const dicPath = `index.dic`;
-
-      let affData = await getItemFromStorage("affData");
-      let dicData = await getItemFromStorage("dicData");
-
-      if (!affData) {
-        // Read files asynchronously
-        affData = await RNFS.readFileAssets(affPath, "utf8");
-        dicData = await RNFS.readFileAssets(dicPath, "utf8");
-      }
-
-      if (affData && dicData) {
-        createDictionary(affData, dicData);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   async function startChangeNameHandler() {
     emitter.emit("navigation", {
       screen: "ChangeTimerNameScreen",
       name,
       modalIsVisible,
       onModalIsVisible: startChangeNameHandler,
-      onLoadDictionary: loadDictionary,
     });
   }
 
   return {
     controlTimer,
-    createDictionary,
     startChangeNameHandler,
     loadDictionary,
   };

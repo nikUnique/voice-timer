@@ -17,66 +17,35 @@ import { RADIUS } from "../../constants/radius";
 import { WEIGHT } from "../../constants/weight";
 
 export default function TimerNameControl() {
-  const { name, onModalIsVisible, onLoadDictionary } =
-    getSharedObject().changeTimerNameParams;
+  const { name } = getSharedObject().changeTimerNameParams;
 
   const [timerName, setTimerName] = useState(name);
   const [isCorrect, setIsCorrect] = useState(true);
-  const [isReady, setIsReady] = useState(false);
-  const [isTapped, setIsTapped] = useState(false);
 
   const inputRef = useRef(null);
 
-  const { timers, dictionaryTypoRef, setTimers } = useRefsData();
+  const { timers, setTimers } = useRefsData();
   const { setVoiceEnabled, voiceEnabled } = useSettingsData();
 
   async function changeTimerName() {
     try {
-      if (!isTapped) {
-        onModalIsVisible();
-        return;
-      }
-
-      if (!isReady) {
-        return;
-      }
-
       const lowerCaseName = (
         timerName[0].trim() + timerName.slice(1).toLowerCase().trim()
       )
         .replace(/\s+/g, " ")
         .trim();
 
-      const firstWord = lowerCaseName.split(" ")[0];
-      const secondWord = lowerCaseName.split(" ")[1];
-
-      const isFirstWordCorrect = dictionaryTypoRef.current.check(firstWord);
-      const isSecondWordCorrect = secondWord
-        ? dictionaryTypoRef.current.check(secondWord)
-        : true;
-
-      const areBothWordsCorrect = isFirstWordCorrect && isSecondWordCorrect;
-
-      if (!areBothWordsCorrect || lowerCaseName.split(" ").length > 2) {
-        console.log(
-          "Please check your spelling and try again.",
-          lowerCaseName.split(" ").length,
-        );
-        setIsCorrect(false);
-        return;
-      }
-
-      if (lowerCaseName.length < 3) {
-        console.log("The timer name should contains at least 3 characters");
-        return;
-      }
-
+      // The Vosk grammar is built straight from the stored timer names, so any
+      // name the user can pronounce works. These rules only keep names
+      // recognisable: 1-2 words, letters only, at least 3 characters.
+      const wordCount = lowerCaseName.split(" ").length;
       const areOnlyLetters = /^[A-Za-z]+( [A-Za-z]+)?$/.test(lowerCaseName);
 
-      if (!areOnlyLetters) {
+      if (wordCount > 2 || !areOnlyLetters || lowerCaseName.length < 3) {
         console.log(
-          `The timerName ${lowerCaseName} contains other characters except letters, but only letters are allowed, please change your timer name to follow this rule 🚅`,
+          `The timer name "${lowerCaseName}" should be 1-2 words of letters only, at least 3 characters`,
         );
+        setIsCorrect(false);
         return;
       }
 
@@ -123,7 +92,6 @@ export default function TimerNameControl() {
   }
 
   function cancelUpdate() {
-    if (!isReady && isTapped) return;
     setTimerName(name);
     setIsCorrect(true);
     emitter.emit("goBack");
@@ -148,8 +116,7 @@ export default function TimerNameControl() {
               <View style={styles.textBox}>
                 {!isCorrect && (
                   <Text style={styles.errorText}>
-                    Enter 1-2 correctly spelled words using only english
-                    letters, 3 letters least
+                    Use 1-2 words of english letters only, at least 3 characters
                   </Text>
                 )}
               </View>
@@ -163,14 +130,6 @@ export default function TimerNameControl() {
                 value={timerName}
                 onChangeText={setTimerName}
                 ref={inputRef}
-                onFocus={async () => {
-                  setIsTapped(true);
-
-                  setTimeout(async () => {
-                    await onLoadDictionary();
-                    setIsReady(true);
-                  }, 2000);
-                }}
                 placeholder={`Enter timer name`}
                 placeholderTextColor={Colors.primaryTint90}
                 cursorColor={Colors.primaryTint90}
@@ -184,25 +143,13 @@ export default function TimerNameControl() {
             </View>
             <View style={styles.modalButtonsContainer}>
               <Pressable onPress={cancelUpdate}>
-                <View
-                  style={[
-                    styles.modalButton,
-                    !isReady && isTapped && styles.forbiddenModalButton,
-                  ]}
-                >
+                <View style={styles.modalButton}>
                   <Text style={styles.buttonText}>Cancel</Text>
                 </View>
               </Pressable>
               <Pressable onPress={changeTimerName}>
-                <View
-                  style={[
-                    styles.modalButton,
-                    !isReady && isTapped && styles.forbiddenModalButton,
-                  ]}
-                >
-                  <Text style={styles.buttonText}>
-                    {!isReady && isTapped ? "Loading..." : "Confirm"}
-                  </Text>
+                <View style={styles.modalButton}>
+                  <Text style={styles.buttonText}>Confirm</Text>
                 </View>
               </Pressable>
             </View>
@@ -241,11 +188,6 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.chip,
     justifyContent: "center",
     alignItems: "center",
-  },
-
-  forbiddenModalButton: {
-    backgroundColor: Colors.whiteAlpha10,
-    pointerEvents: "none",
   },
 
   buttonText: {
