@@ -68,9 +68,6 @@ export default function VoiceRecognizerProvider({ children }) {
   const freshlyCreatedTimerRef = useRef(null);
   const lastTimerStartedRef = useRef(null);
   const activateTimerRef = useRef(null);
-  const dictionaryRef = useRef(null);
-  const dictionary2Ref = useRef(null);
-  const dictionaryTypoRef = useRef(null);
   const currentlyViewedItemRef = useRef(null);
   const isFocusedRef = useRef(null);
 
@@ -199,9 +196,6 @@ export default function VoiceRecognizerProvider({ children }) {
       ongoingNotificationLabelRef,
       freshlyCreatedTimerRef,
       activateTimerRef,
-      dictionaryRef,
-      dictionary2Ref,
-      dictionaryTypoRef,
       lastTimerStartedRef,
       allTimersRef,
       editableTimers,

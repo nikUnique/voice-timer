@@ -1,6 +1,5 @@
 import { useCallback, useEffect } from "react";
 
-import { useDictionary } from "../../shared/useDictionary";
 import { emitter } from "../../../utils/EventEmitter";
 
 export function useTimerInterfaceFunctions({
@@ -12,7 +11,6 @@ export function useTimerInterfaceFunctions({
   name,
   modalIsVisible,
 }) {
-  const { loadDictionary } = useDictionary();
 
   const controlTimer = useCallback(
     async function () {
@@ -53,6 +51,5 @@ export function useTimerInterfaceFunctions({
   return {
     controlTimer,
     startChangeNameHandler,
-    loadDictionary,
   };
 }

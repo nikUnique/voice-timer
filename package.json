@@ -42,7 +42,6 @@
     "react-native-tts": "^4.1.1",
     "react-native-volume-manager": "^2.0.8",
     "react-native-vosk": "^0.3.2",
-    "typo-js": "^1.2.5",
     "words-to-numbers": "^1.5.1"
   },
   "devDependencies": {
@@ -51,7 +50,6 @@
     "@babel/preset-react": "^7.27.1",
     "@types/intl": "^1.2.2",
     "@types/react": "^18.3.18",
-    "@types/typo-js": "^1.2.2",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "eslint": "^8.57.1",
     "eslint-config-expo": "^7.1.2",
