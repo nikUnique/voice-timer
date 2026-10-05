@@ -16,10 +16,9 @@ function ListHeader() {
           A command is unavailable either because you switched it off in
           Settings, which stays until you turn it back on, or because of what
           the app is doing right now, which clears on its own. While media is
-          playing, only the media commands and the skip commands still work.
-          While the timer is asleep, the media commands, skip, stop finished,
-          stop and the wake command still work. Reopen this screen to see the
-          current state.
+          playing, only &quot;pause all media&quot; still works. While the timer is
+          asleep, the media commands, stop finished, stop and the wake command
+          still work. Reopen this screen to see the current state.
         </Text>
       </View>
     </>
