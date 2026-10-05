@@ -27,6 +27,9 @@ Be precise about this, and say plainly when something is out of reach.
 When something cannot be closed, say so in the summary rather than implying it
 was handled. Do not claim a cleanup that did not happen.
 
+**Do not take screenshots.** Not to verify, not to confirm, not to check whether a
+keystroke landed. See step 3. The user will ask if they want one.
+
 ## Steps
 
 ### 1. Stop background processes
@@ -113,6 +116,24 @@ closed while the command was running"; that is expected, not a failure.
 **Keep timeouts short.** Use `timeout 5` or so on `xdotool` calls and short
 `sleep` gaps. Long timeouts stall the whole task over a keystroke, and this
 window responds in well under a second.
+
+### Never take screenshots
+
+Do not capture the screen — not with `xwd`, `import`, `scrot`, `gnome-screenshot`,
+or any other tool — unless the user explicitly asks for one. This includes
+"visual verification" of a result.
+
+Verify by other means instead:
+
+- **Window state** — `xdotool getwindowfocus getwindowname` (the title loses its
+  tab-name prefix when tabs close).
+- **Exit codes** — captured explicitly, not inferred from the tool result.
+- **Lint and scripts** — `npx eslint`, `bash scripts/check-styles.sh`.
+- **Git state** — `git status`, `git log`.
+- **The user's own report** — for on-device behaviour, just ask.
+
+If a result genuinely seems unverifiable without a screenshot, say that and
+leave it unverified rather than capturing one unprompted.
 
 Do **not** script this through the editor CLI. The editor is the VSCodium
 **snap**, and that route is a dead end:
