@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Animated, NativeModules, PermissionsAndroid } from "react-native";
 import {
   useRecognizerData,
@@ -6,6 +6,9 @@ import {
   useSettingsData,
 } from "../../../context/VoiceRecognizerContext";
 import { ensureBluetoothPermission, normalize } from "../../../utils/helpers";
+
+const FADE_DURATION = 500;
+const HOLD_DURATION = 5000;
 
 export function useCommandsControl({
   fadeAnimationRefCur,
@@ -30,23 +33,61 @@ export function useCommandsControl({
     currentSpeechRef,
   } = useRefsData();
 
+  // Keep a handle on the running fade sequence so a newly recognized command
+  // can stop it. Without this, two sequences animate the same value at once
+  // and the banner follows the oldest one's schedule instead of the latest.
+  const fadeAnimationRef = useRef(null);
+  // Tracks whether the banner is currently on screen. Preferred over reading
+  // the Animated.Value directly, since __getValue is private API and warns
+  // when the value is driven natively.
+  const isVisibleRef = useRef(false);
+
   const fadeInAndOut = useCallback(
     function () {
-      Animated.sequence([
+      if (!recognizedCommandRef.current) return;
+
+      // A new command restarts the 5s window: stop the in-flight sequence so
+      // its pending fade-out never fires.
+      fadeAnimationRef.current?.stop();
+
+      const wasVisible = isVisibleRef.current;
+      isVisibleRef.current = true;
+
+      fadeAnimationRef.current = Animated.sequence([
+        // Already on screen from an earlier command: snap straight back to full
+        // opacity instead of re-fading in, which would flash.
         Animated.timing(fadeAnimationRefCur, {
           toValue: 1,
-          duration: 500,
+          duration: wasVisible ? 0 : FADE_DURATION,
           useNativeDriver: true,
         }),
-        Animated.delay(5000),
+        Animated.delay(HOLD_DURATION),
         Animated.timing(fadeAnimationRefCur, {
           toValue: 0,
-          duration: 500,
+          duration: FADE_DURATION,
           useNativeDriver: true,
         }),
-      ]).start();
+      ]);
+
+      fadeAnimationRef.current.start(({ finished }) => {
+        // A stopped animation reports finished: false; leave the flag alone so
+        // the replacement sequence that just took over stays in charge.
+        if (!finished) return;
+        isVisibleRef.current = false;
+        fadeAnimationRef.current = null;
+      });
     },
-    [fadeAnimationRefCur],
+    [fadeAnimationRefCur, recognizedCommandRef],
+  );
+
+  // Stop any in-flight animation when the screen unmounts.
+  useEffect(
+    function () {
+      return function () {
+        fadeAnimationRef.current?.stop();
+      };
+    },
+    [],
   );
 
   // Loading vosk modal
