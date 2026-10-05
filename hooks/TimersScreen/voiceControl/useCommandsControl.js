@@ -25,7 +25,6 @@ export function useCommandsControl({
 
   const {
     recognizedCommandRef,
-    prevRecognizedCommandRef,
     setIsListening,
     isListeningRef,
     ignoreUntilRef,

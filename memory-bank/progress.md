@@ -21,10 +21,10 @@ design tokens, fix a command-banner timing bug, and add Cline configuration.
 
 | Issue | Severity |
 | --- | --- |
-| Banner fade fix (`c5e47b5`) unverified on-device | Needs testing |
 | Logs screen unreachable while a timer is alerting | Low — likely intended |
-| Redundant JSX wrapper in `ContextMenu.js` | Cosmetic |
-| Unused `prevRecognizedCommandRef` lint warning | Cosmetic |
+
+The banner fade fix (`c5e47b5`) was verified by the user on-device: the banner
+now stays pinned through a burst of commands and fades 5s after the last one.
 
 ## Not built / not verified
 

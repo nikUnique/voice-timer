@@ -20,26 +20,22 @@ substitute.
 
 ## Open items
 
-Carried forward, both deliberate rather than forgotten:
-
-1. **The banner fade fix (`c5e47b5`) has not been verified on-device.** Static
-   analysis shows competing `Animated.sequence`s no longer overlap, but the
-   behaviour — banner stays pinned through a burst of commands, then fades 5s
-   after the *last* one — needs a real run. Check with `npm run android`, then
-   `npm run adbLog`.
-2. **The Logs context-menu item is unreachable while a timer is alerting.** The
+1. **The Logs context-menu item is unreachable while a timer is alerting.** The
    handler short-circuits on a non-empty `alertingTimerNames`. Reads as
    intentional, but it is a user-facing behaviour change riding along with a
    cosmetic commit.
 
 ## Known cosmetic issues
 
-- Redundant `{ }` wrapper around the Logs `Pressable` in
-  `components/TimersScreen/ContextMenu.js`, unlike its bare `Pressable`
-  siblings. Renders identically; left as-is on purpose.
-- `prevRecognizedCommandRef` is destructured but unused in
-  `hooks/TimersScreen/voiceControl/useCommandsControl.js` (lint warning,
-  pre-existing). Unrelated to any current work.
+None outstanding — both were cleaned up. `ContextMenu.js` had a redundant JSX
+wrapper around the Logs `Pressable` (unlike its bare siblings), and
+`useCommandsControl.js` destructured `prevRecognizedCommandRef` without using
+it.
+
+Note on the latter: that ref is **live elsewhere** — `useCallConfirmationFlow`
+and `useGeneralVoiceCommands` both rely on it to hold the pending command across
+a spoken yes/no confirmation. Only the `useCommandsControl.js` destructure was
+dead, so removing it there is safe. Do not remove the context export.
 
 ## Decisions worth remembering
 
