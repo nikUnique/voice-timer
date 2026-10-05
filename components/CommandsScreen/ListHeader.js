@@ -13,16 +13,13 @@ function ListHeader() {
       <View style={styles.legend}>
         <Text style={styles.legendTitle}>When a command is unavailable</Text>
         <Text style={styles.legendText}>
-          <Text style={styles.noteLabel}>Off</Text> means you switched it off in
-          Settings, so it stays unavailable until you turn it back on.
-        </Text>
-        <Text style={styles.legendText}>
-          <Text style={styles.noteLabel}>Blocked</Text> means it is on, but
-          something else stops it right now. While media is playing, only the
-          media commands and the skip commands still work. While the timer is
-          asleep, the media commands, skip, stop finished, stop and the wake
-          command still work. Blocking clears on its own, so reopen this screen
-          to see the current state.
+          A command is unavailable either because you switched it off in
+          Settings, which stays until you turn it back on, or because of what
+          the app is doing right now, which clears on its own. While media is
+          playing, only the media commands and the skip commands still work.
+          While the timer is asleep, the media commands, skip, stop finished,
+          stop and the wake command still work. Reopen this screen to see the
+          current state.
         </Text>
       </View>
     </>

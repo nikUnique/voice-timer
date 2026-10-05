@@ -60,9 +60,6 @@ export const styles = StyleSheet.create({
     opacity: 0.8,
     borderLeftColor: Colors.grayTint20,
   },
-  unavailableCard: {
-    borderLeftColor: Colors.pausedColor,
-  },
   body: {
     flex: 1,
     gap: SPACE.sm,
@@ -118,6 +115,9 @@ export const styles = StyleSheet.create({
     fontSize: FONT.caption,
     color: Colors.pausedColor,
     lineHeight: 18,
+  },
+  offNoteText: {
+    color: Colors.grayTint70,
   },
   noteLabel: {
     fontWeight: WEIGHT.semibold,

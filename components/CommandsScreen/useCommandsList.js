@@ -116,8 +116,8 @@ export function useCommandsList() {
   const { mediaPlaying, asleep } = runtime;
 
   // Returns why a command cannot be used right now, or an empty object when it
-  // is usable. A setting-based reason is a choice the user made; the rest come
-  // and go on their own as the app state changes.
+  // is usable. Both reasons are kept separate here so the card can show the one
+  // the user can act on, and so the colour can hint at which kind it is.
   const statusNotes = useCallback(
     function (badge, settingNote) {
       const notes = {};
@@ -312,7 +312,6 @@ export function useCommandsList() {
       ].map((entry) => ({
         ...entry,
         ...statusNotes(entry.badge, entry.settingNote),
-        disabled: Boolean(entry.settingNote),
       })),
     [
       START,
