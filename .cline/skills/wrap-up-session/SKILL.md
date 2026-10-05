@@ -76,16 +76,28 @@ xdotool getwindowfocus getwindowname
 **Terminals, when asked for:**
 
 ```bash
+# Defocus the terminal first — ctrl+alt+k is ignored while the terminal
+# itself holds focus. ctrl+shift+e moves focus to the Explorer.
+xdotool key --window "$WID" --clearmodifiers ctrl+shift+e
+sleep 2
 xdotool key --window "$WID" --clearmodifiers ctrl+alt+k
 ```
 
-Note this kills the shell running the command, so run it detached if the caller
-needs to survive it:
+Skipping the defocus step makes `ctrl+alt+k` a silent no-op. Either way the
+command kills the shell running it, so run the whole thing detached if the
+caller needs to survive:
 
 ```bash
-setsid nohup bash -c 'sleep 2; xdotool key --window '"$WID"' \
-  --clearmodifiers ctrl+alt+k' > /tmp/term_closed.txt 2>&1 &
+setsid nohup bash -c 'sleep 2; WID=$(xdotool search --name "VSCodium" | head -1); \
+  xdotool windowactivate --sync "$WID"; \
+  xdotool key --window "$WID" --clearmodifiers ctrl+shift+e; sleep 2; \
+  xdotool key --window "$WID" --clearmodifiers ctrl+alt+k' \
+  > /tmp/term_closed.txt 2>&1 &
 ```
+
+Success looks like the tool reporting "Terminal closed while the command was
+running" — that is the expected outcome, not a failure. Verify afterwards from
+a fresh shell.
 
 Do **not** script this through the editor CLI. The editor is the VSCodium
 **snap**, and that route is a dead end:
