@@ -25,6 +25,25 @@ export const styles = StyleSheet.create({
     color: Colors.primaryTint70,
     marginBottom: SPACE.xxl,
   },
+  legend: {
+    backgroundColor: Colors.grayShade30,
+    borderRadius: RADIUS.sm,
+    borderWidth: 1,
+    borderColor: Colors.whiteAlpha10,
+    padding: SPACE.lg,
+    gap: SPACE.sm,
+    marginBottom: SPACE.xxl,
+  },
+  legendTitle: {
+    fontSize: FONT.body,
+    fontWeight: WEIGHT.semibold,
+    color: Colors.primaryTint90,
+  },
+  legendText: {
+    fontSize: FONT.caption,
+    color: Colors.primaryTint70,
+    lineHeight: 18,
+  },
   card: {
     backgroundColor: Colors.primaryShade50,
     borderRadius: RADIUS.sm,
@@ -40,6 +59,9 @@ export const styles = StyleSheet.create({
   disabledCard: {
     opacity: 0.8,
     borderLeftColor: Colors.grayTint20,
+  },
+  unavailableCard: {
+    borderLeftColor: Colors.pausedColor,
   },
   body: {
     flex: 1,
@@ -91,6 +113,14 @@ export const styles = StyleSheet.create({
     fontSize: FONT.caption,
     color: Colors.primaryTint40,
     lineHeight: 18,
+  },
+  noteText: {
+    fontSize: FONT.caption,
+    color: Colors.pausedColor,
+    lineHeight: 18,
+  },
+  noteLabel: {
+    fontWeight: WEIGHT.semibold,
   },
   prompt: {
     color: Colors.primaryShade30,
