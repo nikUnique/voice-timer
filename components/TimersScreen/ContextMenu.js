@@ -86,15 +86,17 @@ export default function ContextMenu({ onToggleModal, modalIsVisible }) {
             >
               <Text style={menuItem}>Contacts</Text>
             </Pressable>
-            {/* <Pressable
-              onPress={() => {
-                !getSharedObject().alertingTimerNames.length &&
-                  navigation.navigate("LogsScreen");
-                onToggleModal();
-              }}
-            >
-              <Text style={menuItem}>Logs</Text>
-            </Pressable> */}
+            {
+              <Pressable
+                onPress={() => {
+                  !getSharedObject().alertingTimerNames.length &&
+                    navigation.navigate("LogsScreen");
+                  onToggleModal();
+                }}
+              >
+                <Text style={menuItem}>Logs</Text>
+              </Pressable>
+            }
           </View>
         </Pressable>
       )}

@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useEffect,
   useMemo,
@@ -7,16 +7,20 @@ import React, {
   useSyncExternalStore,
 } from "react";
 import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  StyleSheet,
   NativeModules,
-  Share,
   Platform,
+  Pressable,
+  ScrollView,
+  Share,
+  StyleSheet,
+  View,
 } from "react-native";
 import { Colors } from "../../constants/colors";
+import { RADIUS } from "../../constants/radius";
+import { SPACE } from "../../constants/spacing";
+import { FONT } from "../../constants/typography";
+import { WEIGHT } from "../../constants/weight";
+import { Text } from "../../ui/AppText";
 
 // ---------- JS log capture (runs once when this module loads) ----------
 let jsLogs = [];
@@ -78,7 +82,7 @@ const LEVELS = ["V", "D", "I", "W", "E"];
 const LEVEL_COLOR = {
   V: Colors.grayTint70,
   D: Colors.primaryTint40,
-  I: "#63e6be",
+  I: Colors.doneColor,
   W: Colors.pausedColor,
   E: Colors.dangerColor,
 };
@@ -178,7 +182,7 @@ export default function LogViewer({ onClose }) {
           active={source === "js"}
           onPress={() => setSource("js")}
         />
-        <View style={{ flex: 1 }} />
+        <View style={styles.spacer} />
         <Chip
           label={auto ? "Auto ●" : "Auto"}
           active={auto}
@@ -201,7 +205,7 @@ export default function LogViewer({ onClose }) {
       <ScrollView
         ref={scrollRef}
         style={styles.logBox}
-        contentContainerStyle={{ padding: 10 }}
+        contentContainerStyle={{ padding: SPACE.md }}
         onContentSizeChange={() =>
           scrollRef.current?.scrollToEnd({ animated: false })
         }
@@ -239,47 +243,65 @@ export default function LogViewer({ onClose }) {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: Colors.grayShade30, padding: 12, gap: 10 },
+  root: {
+    flex: 1,
+    backgroundColor: Colors.grayShade30,
+    padding: SPACE.lg,
+    gap: SPACE.lg,
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  title: { color: "#fff", fontSize: 18, fontWeight: "600" },
+  title: {
+    color: Colors.primaryTint90,
+    fontSize: FONT.heading,
+    fontWeight: WEIGHT.semibold,
+  },
   closeBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingHorizontal: SPACE.lg,
+    paddingVertical: SPACE.md,
+    borderRadius: RADIUS.chip,
     backgroundColor: Colors.whiteAlpha10,
   },
-  closeText: { color: Colors.grayTint70 },
-  row: { flexDirection: "row", gap: 8, alignItems: "center" },
+  closeText: {
+    color: Colors.grayTint70,
+    fontSize: FONT.body,
+    fontWeight: WEIGHT.medium,
+  },
+  row: { flexDirection: "row", gap: SPACE.md, alignItems: "center" },
+  spacer: { flex: 1 },
   chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
+    paddingHorizontal: SPACE.lg,
+    paddingVertical: SPACE.md,
+    borderRadius: RADIUS.full,
     borderWidth: 1,
     borderColor: Colors.whiteAlpha20,
   },
-  chipText: { fontSize: 13, fontWeight: "500" },
+  chipText: { fontSize: FONT.body, fontWeight: WEIGHT.medium },
   logBox: {
     flex: 1,
     backgroundColor: Colors.grayShade20,
-    borderRadius: 12,
+    borderRadius: RADIUS.sm,
     borderWidth: 1,
     borderColor: Colors.whiteAlpha10,
   },
   line: {
     fontFamily: Platform.select({ android: "monospace", ios: "Menlo" }),
-    fontSize: 11,
-    marginBottom: 2,
+    fontSize: FONT.caption,
+    marginBottom: SPACE.xs,
   },
   btn: {
     flex: 1,
     alignItems: "center",
-    paddingVertical: 12,
-    borderRadius: 10,
+    paddingVertical: SPACE.lg,
+    borderRadius: RADIUS.xs,
     backgroundColor: Colors.primary,
   },
-  btnText: { color: "#fff", fontWeight: "600" },
+  btnText: {
+    color: Colors.primaryTint90,
+    fontSize: FONT.body,
+    fontWeight: WEIGHT.semibold,
+  },
 });

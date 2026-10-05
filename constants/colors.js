@@ -37,6 +37,8 @@ export const Colors = {
 
   // shade-75 of oc-teal-3 #63e6be → rgb(99×.25, 230×.25, 190×.25) = rgb(25,58,48)
   doneShade: "#193a30",
+  // oc-teal-3 #63e6be — https://yeun.github.io/open-color (teal, row 3)
+  doneColor: "#63e6be",
 
   // shade-75 of oc-indigo-3 #91a7ff → rgb(145×.25, 167×.25, 255×.25) = rgb(36,42,64)
   resetShade: "#242a40",
