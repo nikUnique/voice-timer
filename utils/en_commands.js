@@ -18,6 +18,7 @@ export const VOLUME_DOWN = "volume down";
 export const ANSWER_CALL = "answer call";
 export const CALL = "call";
 export const SHORT_CALL = "short call";
+export const MINUTE_CALL = "minute call";
 export const YES = "yes";
 export const NO = "no";
 export const SKIP_NEXT = "skip next";

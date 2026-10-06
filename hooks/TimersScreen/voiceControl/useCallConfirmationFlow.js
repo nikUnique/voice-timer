@@ -1,6 +1,10 @@
 import { callNumber, endCall } from "../../../utils/nativeHelpers";
 import { hasPhrase, normalize } from "../../../utils/helpers";
-import { CALL_TIMEOUT, PHONE_TIMEOUT } from "../../../utils/config";
+import {
+  CALL_TIMEOUT,
+  MINUTE_CALL_TIMEOUT,
+  PHONE_TIMEOUT,
+} from "../../../utils/config";
 import {
   useContactsData,
   useRefsData,
@@ -16,7 +20,7 @@ export function useCallConfirmationFlow() {
     useRefsData();
 
   const { speak } = useSpeak();
-  const { CALL, SHORT_CALL, YES, NO } = commandsRef?.current
+  const { CALL, SHORT_CALL, MINUTE_CALL, YES, NO } = commandsRef?.current
     ? commandsRef.current
     : {};
 
@@ -24,14 +28,19 @@ export function useCallConfirmationFlow() {
 
   const { contacts } = useContactsData();
 
-  function isCallOrShortCall(command) {
-    return hasPhrase(command, CALL) || hasPhrase(command, SHORT_CALL);
+  function isCallCommand(command) {
+    return (
+      hasPhrase(command, CALL) ||
+      hasPhrase(command, SHORT_CALL) ||
+      hasPhrase(command, MINUTE_CALL)
+    );
   }
 
   // The "Make and answer calls with voice" switch in Settings. Read the ref at
   // dispatch time so flipping it takes effect on the next utterance. The
-  // Commands screen already marks call and short call unavailable when this is
-  // off, so the handlers have to agree with it or the screen is lying.
+  // Commands screen already marks call, short call and minute call unavailable
+  // when this is off, so the handlers have to agree with it or the screen is
+  // lying.
   function isCallPermissionOff() {
     return permitAnswerCallsRef?.current !== true;
   }
@@ -46,7 +55,7 @@ export function useCallConfirmationFlow() {
     clearTimeout(callTimeout);
 
     if (
-      !isCallOrShortCall(recognizedCommandRef.current) ||
+      !isCallCommand(recognizedCommandRef.current) ||
       !isVoiceFeedbackEnabled ||
       isCallPermissionOff()
     ) {
@@ -62,11 +71,20 @@ export function useCallConfirmationFlow() {
 
     // The spoken example has to contain the command phrase exactly, because
     // handleYes matches it with hasPhrase against the command. "short call"
-    // sits naturally inside "make a short call to", but "call" cannot be
-    // lengthened the same way, so the two halves are chosen separately.
-    const isShortCall = hasPhrase(recognizedCommandRef.current, SHORT_CALL);
-    const action = isShortCall ? SHORT_CALL : CALL;
-    const wants = isShortCall ? "make a short call to" : "call";
+    // sits naturally inside "make a short call to" (and "minute call" inside
+    // "make a minute call to"), but "call" cannot be lengthened the same way,
+    // so the two halves are chosen separately. Longest phrase first: "minute
+    // call" contains neither rival, but checking it last would be one
+    // reorder away from a misroute, so specificity order is load-bearing.
+    const isMinuteCall = hasPhrase(recognizedCommandRef.current, MINUTE_CALL);
+    const isShortCall =
+      !isMinuteCall && hasPhrase(recognizedCommandRef.current, SHORT_CALL);
+    const action = isMinuteCall ? MINUTE_CALL : isShortCall ? SHORT_CALL : CALL;
+    const wants = isMinuteCall
+      ? "make a minute call to"
+      : isShortCall
+        ? "make a short call to"
+        : "call";
     await speak(
       `Are you sure you want to ${wants} ${contactToCall.name}? Say "yes, ${action} ${contactToCall.name}" to confirm.`,
     );
@@ -86,7 +104,7 @@ export function useCallConfirmationFlow() {
 
     if (
       !hasPhrase(command, YES) ||
-      !isCallOrShortCall(pending) ||
+      !isCallCommand(pending) ||
       !isVoiceFeedbackEnabled ||
       isCallPermissionOff()
     ) {
@@ -103,8 +121,13 @@ export function useCallConfirmationFlow() {
       return true;
     }
 
-    const wasShortCall = hasPhrase(pending, SHORT_CALL);
-    const actionWord = wasShortCall ? SHORT_CALL : CALL;
+    const wasMinuteCall = hasPhrase(pending, MINUTE_CALL);
+    const wasShortCall = !wasMinuteCall && hasPhrase(pending, SHORT_CALL);
+    const actionWord = wasMinuteCall
+      ? MINUTE_CALL
+      : wasShortCall
+        ? SHORT_CALL
+        : CALL;
 
     const confirmsAction = hasPhrase(command, actionWord);
     const confirmsName = hasPhrase(command, normalize(contactToCall.name));
@@ -115,20 +138,29 @@ export function useCallConfirmationFlow() {
       return true;
     }
 
-    const action = wasShortCall ? "Making a short call to" : "Calling";
+    const action = wasMinuteCall
+      ? "Making a minute call to"
+      : wasShortCall
+        ? "Making a short call to"
+        : "Calling";
 
     await speak(`${action} ${contactToCall.name}.`);
     callNumber(contactToCall.phoneNumber);
 
     clearTimeout(callId);
-    if (wasShortCall) {
+    const autoHangupTimeout = wasMinuteCall
+      ? MINUTE_CALL_TIMEOUT
+      : wasShortCall
+        ? PHONE_TIMEOUT
+        : null;
+    if (autoHangupTimeout !== null) {
       callId = setTimeout(async function () {
         const isMicInUseByOtherApp =
           await NativeModules.AudioFocusModule.isMicInUse();
         console.log(isMicInUseByOtherApp, "Is mic in use?");
 
         endCall();
-      }, PHONE_TIMEOUT);
+      }, autoHangupTimeout);
     }
 
     prevRecognizedCommandRef.current = null;
@@ -138,7 +170,7 @@ export function useCallConfirmationFlow() {
   async function handleNo() {
     if (
       !hasPhrase(recognizedCommandRef.current, NO) ||
-      !isCallOrShortCall(prevRecognizedCommandRef.current)
+      !isCallCommand(prevRecognizedCommandRef.current)
     ) {
       return false;
     }

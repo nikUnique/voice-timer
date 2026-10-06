@@ -7,7 +7,11 @@ import {
   useSettingsData,
 } from "../../context/VoiceRecognizerContext";
 import { capitalize, normalize } from "../../utils/helpers";
-import { CALL_TIMEOUT, PHONE_TIMEOUT } from "../../utils/config";
+import {
+  CALL_TIMEOUT,
+  MINUTE_CALL_TIMEOUT,
+  PHONE_TIMEOUT,
+} from "../../utils/config";
 import * as defaultCommands from "../../utils/en_commands";
 
 // Mirrors the real gating in useGeneralVoiceCommands, useExecuteCommand,
@@ -164,6 +168,7 @@ export function useCommandsList() {
     SKIP_PREVIOUS = "",
     CALL = "",
     SHORT_CALL = "",
+    MINUTE_CALL = "",
   } = commands;
 
   return useMemo(
@@ -314,6 +319,14 @@ export function useCommandsList() {
           badge: "SHORT",
           settingNote: callNote,
         },
+        {
+          command: `${capitalize(MINUTE_CALL)} [contact name]`,
+          example: `${capitalize(MINUTE_CALL)} John`,
+          description: `Uses the same voice confirmation as call, then places the call and ends it automatically after ${MINUTE_CALL_TIMEOUT / 1000} seconds, whether it was picked up or not.`,
+          icon: "time-outline",
+          badge: "MIN",
+          settingNote: callNote,
+        },
       ].map((entry) => ({
         ...entry,
         ...statusNotes(entry.badge, entry.settingNote),
@@ -340,6 +353,7 @@ export function useCommandsList() {
       CALL,
       callNote,
       SHORT_CALL,
+      MINUTE_CALL,
       voiceNote,
       statusNotes,
     ],
