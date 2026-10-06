@@ -20,12 +20,20 @@ export function useCallConfirmationFlow() {
     ? commandsRef.current
     : {};
 
-  const { isVoiceFeedbackEnabled } = useSettingsData();
+  const { isVoiceFeedbackEnabled, permitAnswerCallsRef } = useSettingsData();
 
   const { contacts } = useContactsData();
 
   function isCallOrPhone(command) {
     return hasPhrase(command, CALL) || hasPhrase(command, PHONE);
+  }
+
+  // The "Make and answer calls with voice" switch in Settings. Read the ref at
+  // dispatch time so flipping it takes effect on the next utterance. The
+  // Commands screen already marks call and phone unavailable when this is off,
+  // so the handlers have to agree with it or the screen is lying.
+  function isCallPermissionOff() {
+    return permitAnswerCallsRef?.current !== true;
   }
 
   function findContact(command) {
@@ -39,7 +47,8 @@ export function useCallConfirmationFlow() {
 
     if (
       !isCallOrPhone(recognizedCommandRef.current) ||
-      !isVoiceFeedbackEnabled
+      !isVoiceFeedbackEnabled ||
+      isCallPermissionOff()
     ) {
       return false;
     }
@@ -74,7 +83,8 @@ export function useCallConfirmationFlow() {
     if (
       !hasPhrase(command, YES) ||
       !isCallOrPhone(pending) ||
-      !isVoiceFeedbackEnabled
+      !isVoiceFeedbackEnabled ||
+      isCallPermissionOff()
     ) {
       return false;
     }

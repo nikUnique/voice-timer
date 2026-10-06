@@ -14,7 +14,8 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
   const { PLAY_MEDIA, STOP_MEDIA, ANSWER_CALL, SKIP_NEXT, SKIP_PREVIOUS } =
     commandsRef?.current ? commandsRef.current : {};
 
-  const { isHeadsetBroken, isSkipCommandsEnabledRef } = useSettingsData();
+  const { isHeadsetBroken, isSkipCommandsEnabledRef, permitAnswerCallsRef } =
+    useSettingsData();
 
   async function refreshMediaState() {
     isMediaPlayingRef.current =
@@ -64,6 +65,10 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
   }
 
   function handleAnswerCall() {
+    // Same switch as call and phone: it is labelled "Make and answer calls with
+    // voice", so answering is off with the rest of them.
+    if (permitAnswerCallsRef?.current !== true) return;
+
     if (hasPhrase(recognizedCommandRef.current, ANSWER_CALL)) {
       NativeModules.NativeUtilsModule.answerCall();
     }

@@ -74,7 +74,7 @@ export function useCommandsList() {
     : "voice feedback is off, so the answer cannot be spoken";
   const callNote = permitAnswerCalls
     ? voiceNote
-    : "answering calls by voice is switched off in Settings";
+    : "making and answering calls by voice are switched off in Settings";
 
   // Media and sleep state live in refs because the command handlers read them
   // synchronously. They are copied into state here so the list can render, and
