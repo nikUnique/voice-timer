@@ -79,11 +79,11 @@ Added for this repo. Not part of the upstream text.
 
 ### Commands
 
-| Say | Effect |
-| --- | --- |
-| `initialize memory bank` | Create the initial `memory-bank/` structure |
-| `follow your custom instructions` | Read the bank and resume where we left off |
-| `update memory bank` | Review and update all bank files |
+| Say                               | Effect                                      |
+| --------------------------------- | ------------------------------------------- |
+| `initialize memory bank`          | Create the initial `memory-bank/` structure |
+| `follow your custom instructions` | Read the bank and resume where we left off  |
+| `update memory bank`              | Review and update all bank files            |
 
 ### Where the bank sits
 
@@ -96,12 +96,14 @@ readable.
 This bank is for state and history, not for conventions. Several topics are
 already covered and must be documented once, in one place:
 
-| Topic | Source of truth |
-| --- | --- |
-| Git rules (never `git stash`, commit/push policy) | `.clinerules/git.md` |
-| Screen architecture, design tokens, verify steps | `.cline/skills/add-screen/SKILL.md` |
-| Token values | `constants/*.js` — read the files, don't restate them |
-| Build / run commands | `package.json` scripts |
+| Topic                                             | Source of truth                                       |
+| ------------------------------------------------- | ----------------------------------------------------- |
+| Git rules (never `git stash`, commit/push policy) | `.clinerules/git.md`                                  |
+| Uncertainty (ask vs guess, verified vs assumed)   | `.clinerules/uncertainty.md`                          |
+| Shell timeouts (shortest that covers the command) | `.clinerules/timeouts.md`                             |
+| Screen architecture, design tokens, verify steps  | `.cline/skills/add-screen/SKILL.md`                   |
+| Token values                                      | `constants/*.js` — read the files, don't restate them |
+| Build / run commands                              | `package.json` scripts                                |
 
 In the bank, reference these by path. Duplicated conventions drift, and the
 copy in the bank is the one that goes stale.

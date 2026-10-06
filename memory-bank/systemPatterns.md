@@ -22,7 +22,10 @@ Truly shared hooks live in `hooks/shared/`.
 
 All visual values come from `constants/`: `colors.js` (`Colors`), `spacing.js`
 (`SPACE`), `radius.js` (`RADIUS`), `typography.js` (`FONT`), `weight.js`
-(`WEIGHT`). All text uses `Text` from `ui/AppText`, not `react-native`.
+(`WEIGHT`). All text uses `Text` from `ui/AppText`, not `react-native`. That was convention
+until `f3816c1`, which removed the remaining direct imports across 21 files —
+it is now true repo-wide. Note `check-styles.sh` cannot verify it (its `Text`
+pattern misses single-line imports); use a parser-based scan.
 
 **These are conventions, not enforced rules.** The ESLint config explicitly
 disables `react-native/no-color-literals` and `no-inline-styles`, and sets
@@ -80,9 +83,31 @@ These are load-bearing. Prefer extending them over reimplementing in JS.
 
 ## Command execution
 
-`useExecuteCommand` interprets a recognized command per timer, with guards for
-media playback, sleeping state, and already-started timers. Feedback goes
-through `hooks/shared/useSpeak.js` (TTS) and the command banner.
+**Two hooks run on every utterance.** This is the single most important fact
+here, and reading only one of them has produced two wrong commits:
+
+- `hooks/TimersScreen/voiceControl/useGeneralVoiceCommands.js` — media, skip,
+  sleep, volume, time/status reports, alarm reset, and the call-confirmation
+  flow.
+- `hooks/TimersScreen/voiceControl/useExecuteCommand.js` — the per-timer
+  commands, with guards for media playback, sleeping state, and
+  already-started timers.
+
+They gate on media state in ways that can look contradictory, so neither alone
+is the whole pipeline. Read both before claiming what a command does or does
+not do — see `.clinerules/uncertainty.md`.
+
+Settings-gated commands read their ref at dispatch time rather than closing
+over a render-time value: `isSkipCommandsEnabledRef` in `useMediaCommands`,
+`permitAnswerCallsRef` in `useCallConfirmationFlow` and `useMediaCommands`.
+That way flipping a switch applies on the next utterance.
+
+`components/CommandsScreen/useCommandsList.js` mirrors this in
+`WORKS_WHILE_ASLEEP`, `WORKS_WHILE_MEDIA_PLAYING` and `NEEDS_MEDIA_PLAYING`.
+Keep those sets in step with the hooks — the screen must describe the runtime,
+never the other way round.
+
+Feedback goes through `hooks/shared/useSpeak.js` (TTS) and the command banner.
 
 ## Persistence
 

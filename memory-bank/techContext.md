@@ -35,7 +35,11 @@ Config: `.eslintrc.json`, extending `eslint:recommended`, `plugin:react/recommen
 Expect exit 0 with warnings printed.
 
 There is **no prettier config file** and `prettier/prettier` is set to `off`, so
-formatting is not enforced. Match surrounding style by hand.
+ESLint does not enforce formatting. Prettier itself is installed (via
+`plugin:prettier/recommended`) and runs directly: `npx prettier --check <file>`
+uses the default `printWidth` of 80. Use it on files you touched — pre-existing
+files are not all Prettier-clean, so a repo-wide `--check` reports failures that
+are not yours. Never run `prettier --write` on files outside the task.
 
 No test setup is configured in practice. `jest` is a devDependency but there are
 no test scripts or test files — verification is lint plus on-device manual
@@ -67,6 +71,11 @@ testing.
 ## Constraints
 
 - **Never `git stash`** — see `.clinerules/git.md`.
+- **Use the shortest timeout that covers the command** — see
+  `.clinerules/timeouts.md`. Default `timeout 5`; whole-project lint takes ~10s
+  and needs `timeout 15`. Nothing here needs 30, 60 or 90.
+- **When unsure, stop and ask** — see `.clinerules/uncertainty.md`. Separate
+  what is verified from what is assumed when reporting.
 - Generated trees are enormous: `android/app/build` 4.2G, `android/app/.cxx`
   1.0G, `node_modules` 2.2G. They are in `.clineignore`; don't search them.
 - Timezone is `America/Phoenix`, so all commits are `-0700` year-round (no DST).
