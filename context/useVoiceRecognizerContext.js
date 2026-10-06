@@ -39,7 +39,7 @@ export default function useVoiceRecognizerContext({
     SKIP_NEXT,
     SKIP_PREVIOUS,
     CALL,
-    PHONE,
+    SHORT_CALL,
     YES,
     NO,
   } = commandsRef.current ? commandsRef.current : {};
@@ -70,7 +70,7 @@ export default function useVoiceRecognizerContext({
           allActions.map((action) => `${action} ${timer.name}`.toLowerCase()),
         ),
         allContactsNames.map((contact) => `${CALL} ${contact}`),
-        allContactsNames.map((contact) => `${PHONE} ${contact}`),
+        allContactsNames.map((contact) => `${SHORT_CALL} ${contact}`),
         REPEAT,
         STOP_FINISHED,
         DISCO,
@@ -111,7 +111,7 @@ export default function useVoiceRecognizerContext({
       NO,
       allActions,
       CALL,
-      PHONE,
+      SHORT_CALL,
       secretIdentifierRef,
     ],
   );

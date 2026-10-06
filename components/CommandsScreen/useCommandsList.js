@@ -163,7 +163,7 @@ export function useCommandsList() {
     SKIP_NEXT = "",
     SKIP_PREVIOUS = "",
     CALL = "",
-    PHONE = "",
+    SHORT_CALL = "",
   } = commands;
 
   return useMemo(
@@ -307,11 +307,11 @@ export function useCommandsList() {
           settingNote: callNote,
         },
         {
-          command: `${capitalize(PHONE)} [contact name]`,
-          example: `${capitalize(PHONE)} John`,
+          command: `${capitalize(SHORT_CALL)} [contact name]`,
+          example: `${capitalize(SHORT_CALL)} John`,
           description: `Uses the same voice confirmation as call, then places the call and ends it automatically after ${PHONE_TIMEOUT / 1000} seconds, whether it was picked up or not.`,
           icon: "notifications-outline",
-          badge: "PHONE",
+          badge: "SHORT",
           settingNote: callNote,
         },
       ].map((entry) => ({
@@ -339,7 +339,7 @@ export function useCommandsList() {
       SKIP_PREVIOUS,
       CALL,
       callNote,
-      PHONE,
+      SHORT_CALL,
       voiceNote,
       statusNotes,
     ],
