@@ -13,16 +13,26 @@ import * as defaultCommands from "../../utils/en_commands";
 // Mirrors the real gating in useGeneralVoiceCommands, useExecuteCommand,
 // useTimerSleepBlocking and useAlarmResetCommand.
 //
-// The pipeline is split across two hooks that both run on every utterance:
-// useGeneralVoiceCommands handles the media, skip, sleep and volume commands,
-// while useExecuteCommand handles the per-timer commands. When media is
-// playing, useExecuteCommand drops everything except STOP_MEDIA, and
-// STOP_MEDIA is the pause command ("pause all media"). useGeneralVoiceCommands
-// calls handleSkip before its own gate, so skip is never blocked there, but by
-// then useExecuteCommand has already stopped the command. So while media plays,
-// pausing it is the only thing that works.
-const WORKS_WHILE_ASLEEP = new Set(["MEDIA", "PLAY", "BULK", "STOP", "WAKE"]);
-const WORKS_WHILE_MEDIA_PLAYING = new Set(["MEDIA"]);
+// Two hooks run on every utterance. useGeneralVoiceCommands handles the media,
+// skip, sleep and volume commands; useExecuteCommand handles the per-timer
+// commands. Both gate on media state and appear to disagree — useExecuteCommand
+// returns early for anything but STOP_MEDIA while media plays, and STOP_MEDIA is
+// the pause command ("pause all media"), yet skip still works.
+//
+// Verified: handleSkip runs in useGeneralVoiceCommands before that hook's media
+// gate, and it requires media to be playing plus the skip setting to be on, so
+// skip only ever fires during playback. The interaction with useExecuteCommand's
+// early return is not fully traced; the behavior above is the one observed.
+const WORKS_WHILE_ASLEEP = new Set([
+  "MEDIA",
+  "NEXT",
+  "PREV",
+  "PLAY",
+  "BULK",
+  "STOP",
+  "WAKE",
+]);
+const WORKS_WHILE_MEDIA_PLAYING = new Set(["MEDIA", "NEXT", "PREV"]);
 // These only do anything while media is playing, so they are dead when nothing
 // is. "PLAY" is the opposite: it only makes sense when media is paused.
 const NEEDS_MEDIA_PLAYING = new Set(["MEDIA", "NEXT", "PREV"]);
@@ -220,7 +230,7 @@ export function useCommandsList() {
         {
           command: `${capitalize(STOP_MEDIA)}`,
           example: `${capitalize(STOP_MEDIA)}`,
-          description: `Pauses external media, so it only works while something is playing. It is the only command that keeps working once media is playing, so pause the media before using anything else.`,
+          description: `Pauses external media, so it only works while something is playing. This command and skip commands if enabled in Settings are the only ones that keep working once media is playing, so pause the media before using anything else.`,
           icon: "stop-circle-outline",
           badge: "MEDIA",
         },
@@ -252,7 +262,7 @@ export function useCommandsList() {
         {
           command: `${capitalize(TIMER_GO_SLEEP)}`,
           example: `${capitalize(TIMER_GO_SLEEP)}`,
-          description: `Puts the timer to sleep. Spoken commands are ignored until you say "${capitalize(TIMER_WAKE_UP)}". These still work while asleep: "${capitalize(TIMER_WAKE_UP)}", "${capitalize(STOP_MEDIA)}", "${capitalize(PLAY_MEDIA)}", "${capitalize(STOP_FINISHED)}" and "${capitalize(STOP)} [timer name]".`,
+          description: `Puts the timer to sleep. Spoken commands are ignored until you say "${capitalize(TIMER_WAKE_UP)}". These still work while asleep: "${capitalize(TIMER_WAKE_UP)}", "${capitalize(STOP_MEDIA)}", "${capitalize(PLAY_MEDIA)}", skip commands if enabled in Settings and media is playing, "${capitalize(STOP_FINISHED)}" and "${capitalize(STOP)} [timer name]".`,
           icon: "mic-off-outline",
           badge: "SLEEP",
         },

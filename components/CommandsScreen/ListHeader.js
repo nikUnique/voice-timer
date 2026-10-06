@@ -12,14 +12,28 @@ function ListHeader() {
         Use the following voice commands to control the timer hands-free.
       </Text>
       <View style={styles.legend}>
-        <Text style={styles.legendTitle}>When a command is unavailable</Text>
+        <Text style={styles.legendTitle}>
+          Why a card says &quot;Unavailable&quot;
+        </Text>
         <Text style={styles.legendText}>
-          A command is unavailable either because you switched it off in
-          Settings, which stays until you turn it back on, or because of what
-          the app is doing right now, which clears on its own. While media is
-          playing, only &quot;pause all media&quot; still works. While the timer is
-          asleep, the media commands, stop finished, stop and the wake command
-          still work. Reopen this screen to see the current state.
+          A greyed-out card ends with one reason line. It is either a setting
+          you chose, which stays until you change it back, or the current state
+          of the app, which clears on its own.
+        </Text>
+        <Text style={styles.legendText}>
+          <Text style={styles.noteLabel}>While media is playing: </Text>
+          &quot;pause all media&quot; and, when enabled in Settings, the skip
+          commands. Everything else waits for the media to pause.
+        </Text>
+        <Text style={styles.legendText}>
+          <Text style={styles.noteLabel}>While the timer is asleep: </Text>
+          &quot;timer wake up&quot;, &quot;pause all media&quot;, &quot;play all
+          media&quot;, &quot;stop finished&quot;, &quot;stop [timer name]&quot;,
+          and the skip commands when enabled. Everything else waits for the wake
+          command.
+        </Text>
+        <Text style={styles.legendText}>
+          Reopen this screen to refresh these two states.
         </Text>
       </View>
     </>
