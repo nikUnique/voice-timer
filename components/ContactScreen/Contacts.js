@@ -4,11 +4,12 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+
+import { Text } from "../../ui/AppText";
 import { Colors } from "../../constants/colors";
 import { RADIUS } from "../../constants/radius";
 import { SPACE } from "../../constants/spacing";

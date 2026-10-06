@@ -1,6 +1,8 @@
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+
+import { Text } from "../../ui/AppText";
 import { Colors } from "../../constants/colors";
 import { useRefsData } from "../../context/VoiceRecognizerContext";
 import IconButton from "../../ui/IconButton";

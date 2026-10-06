@@ -5,9 +5,10 @@ import {
   Pressable,
   StyleSheet,
   Switch,
-  Text,
   View,
 } from "react-native";
+
+import { Text } from "../../ui/AppText";
 
 import { Colors } from "../../constants/colors";
 import { RADIUS } from "../../constants/radius";

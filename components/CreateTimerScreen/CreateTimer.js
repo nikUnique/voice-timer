@@ -5,7 +5,9 @@ import SimpleKeypad from "react-native-simple-keypad";
 import wordsToNumbers from "words-to-numbers";
 
 import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+
+import { Text } from "../../ui/AppText";
 
 import { Colors } from "../../constants/colors";
 import {

@@ -1,11 +1,6 @@
-import {
-  Linking,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Linking, Pressable, ScrollView, StyleSheet, View } from "react-native";
+
+import { Text } from "../../ui/AppText";
 
 import { Colors } from "../../constants/colors";
 import { FONT } from "../../constants/typography";

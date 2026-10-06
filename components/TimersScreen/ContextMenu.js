@@ -1,5 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+
+import { Text } from "../../ui/AppText";
 
 import { Colors } from "../../constants/colors";
 import { SPACE } from "../../constants/spacing";

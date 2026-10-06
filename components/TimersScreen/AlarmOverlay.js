@@ -5,9 +5,10 @@ import {
   NativeModules,
   Pressable,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
+
+import { Text } from "../../ui/AppText";
 
 import { Colors } from "../../constants/colors";
 import {

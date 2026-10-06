@@ -1,5 +1,7 @@
 /* eslint-disable react-native/no-raw-text */
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
+
+import { Text } from "../../ui/AppText";
 
 import { Colors } from "../../constants/colors";
 import Section from "../../ui/Section";

@@ -3,7 +3,9 @@ import { useNavigation } from "@react-navigation/native";
 import Dialog from "react-native-dialog";
 
 import { useEffect, useState } from "react";
-import { BackHandler, StyleSheet, Text, View } from "react-native";
+import { BackHandler, StyleSheet, View } from "react-native";
+
+import { Text } from "../../ui/AppText";
 
 import { Colors } from "../../constants/colors";
 import { getItemFromStorage, setItemInStorage } from "../../utils/helpers";

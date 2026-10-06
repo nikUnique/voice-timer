@@ -1,13 +1,14 @@
 import { useState, useCallback } from "react";
 import {
   View,
-  Text,
   Pressable,
   StyleSheet,
   LayoutAnimation,
   Platform,
   UIManager,
 } from "react-native";
+
+import { Text } from "./AppText";
 
 import { Colors } from "../constants/colors";
 import { WEIGHT } from "../constants/weight";

@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { memo } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import { Colors } from "../../constants/colors";
+import { Text } from "../../ui/AppText";
 import { styles } from "./CommandsStyles";
 
 function CommandCard({ item }) {

@@ -1,7 +1,9 @@
 import { useNavigation } from "@react-navigation/native";
 import { Slider } from "@miblanchard/react-native-slider";
 
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+
+import { Text } from "../../ui/AppText";
 import { memo, useEffect, useRef, useState } from "react";
 
 import { Colors } from "../../constants/colors";
