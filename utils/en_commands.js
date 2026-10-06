@@ -22,4 +22,4 @@ export const MINUTE_CALL = "minute call";
 export const YES = "yes";
 export const NO = "no";
 export const SKIP_NEXT = "skip next";
-export const SKIP_PREVIOUS = "skip previous";
+export const SKIP_BACK = "skip back";

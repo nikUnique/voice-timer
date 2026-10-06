@@ -25,7 +25,7 @@ export default memo(function SkipCommands() {
         label='Enable skip commands'
         labelStyle={settingLabel}
         descriptionStyle={settingDescription}
-        description={`When disabled, "skip next" and "skip previous" voice commands will be ignored.`}
+        description={`When disabled, "skip next" and "skip back" voice commands will be ignored.`}
       />
 
       <Switch

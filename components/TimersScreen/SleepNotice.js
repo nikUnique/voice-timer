@@ -43,7 +43,7 @@ function SleepNotice({ isTimerSleeping }) {
     STOP_MEDIA = "",
     ANSWER_CALL = "",
     SKIP_NEXT = "",
-    SKIP_PREVIOUS = "",
+    SKIP_BACK = "",
   } = commands;
 
   if (!isTimerSleeping) {
@@ -53,7 +53,7 @@ function SleepNotice({ isTimerSleeping }) {
   // Skip next/previous keep working while sleeping, but only while media is
   // playing and only when enabled in Settings (handled before the sleep block).
   const extraCommands = isSkipEnabled
-    ? `, ${SKIP_NEXT}, ${SKIP_PREVIOUS} (while media is playing)`
+    ? `, ${SKIP_NEXT}, ${SKIP_BACK} (while media is playing)`
     : "";
 
   const description = `Most voice commands will not work. Still available: ${TIMER_WAKE_UP}, ${STOP} [timer name], ${STOP_FINISHED}, ${PLAY_MEDIA}, ${STOP_MEDIA}, ${ANSWER_CALL}${extraCommands}.`;

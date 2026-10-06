@@ -11,7 +11,7 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
     useRefsData();
 
   const { speak } = useSpeak();
-  const { PLAY_MEDIA, STOP_MEDIA, ANSWER_CALL, SKIP_NEXT, SKIP_PREVIOUS } =
+  const { PLAY_MEDIA, STOP_MEDIA, ANSWER_CALL, SKIP_NEXT, SKIP_BACK } =
     commandsRef?.current ? commandsRef.current : {};
 
   const { isHeadsetBroken, isSkipCommandsEnabledRef, permitAnswerCallsRef } =
@@ -45,7 +45,7 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
       speak("Next");
     }
 
-    if (hasPhrase(recognizedCommandRef.current, SKIP_PREVIOUS)) {
+    if (hasPhrase(recognizedCommandRef.current, SKIP_BACK)) {
       NativeModules.NativeUtilsModule.skipPrevious();
       speak("Previous");
     }

@@ -165,7 +165,7 @@ export function useCommandsList() {
     VOLUME_UP = "",
     VOLUME_DOWN = "",
     SKIP_NEXT = "",
-    SKIP_PREVIOUS = "",
+    SKIP_BACK = "",
     CALL = "",
     SHORT_CALL = "",
     MINUTE_CALL = "",
@@ -295,8 +295,8 @@ export function useCommandsList() {
           settingNote: skipNote,
         },
         {
-          command: `${capitalize(SKIP_PREVIOUS)}`,
-          example: `${capitalize(SKIP_PREVIOUS)}`,
+          command: `${capitalize(SKIP_BACK)}`,
+          example: `${capitalize(SKIP_BACK)}`,
           description:
             "Only works while media is playing. Sends the previous-track command to the active media app, which decides the exact action. Off by default and can trigger by accident when misheard - enable it in Settings and use at your own risk.",
           icon: "play-skip-back-outline",
@@ -349,7 +349,7 @@ export function useCommandsList() {
       VOLUME_DOWN,
       SKIP_NEXT,
       skipNote,
-      SKIP_PREVIOUS,
+      SKIP_BACK,
       CALL,
       callNote,
       SHORT_CALL,
