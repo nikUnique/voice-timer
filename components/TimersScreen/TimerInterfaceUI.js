@@ -62,7 +62,12 @@ export default memo(function TimerInterfaceUI({
 
         {
           <>
-            <View style={(!isPaused || !isActive) && styles.hiddenTimer}>
+            <View
+              style={[
+                (!isPaused || !isActive) && styles.hiddenTimer,
+                styles.buttonWrapper,
+              ]}
+            >
               <IconButton
                 size={FONT.display}
                 icon='refresh-outline'
@@ -72,7 +77,7 @@ export default memo(function TimerInterfaceUI({
               />
             </View>
             {!isActive && timeLeftRef.current <= 0 && (
-              <View style={styles.resetWrapper}>
+              <View style={styles.buttonWrapper}>
                 <IconButton
                   size={FONT.display}
                   icon='stop'
@@ -106,7 +111,6 @@ const styles = StyleSheet.create({
 
   centerItems: {
     marginBottom: SPACE.huge,
-    alignItems: "center",
   },
 
   hiddenTimer: {
@@ -130,7 +134,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
 
-  resetWrapper: {
+  buttonWrapper: {
     alignItems: "center",
   },
 
