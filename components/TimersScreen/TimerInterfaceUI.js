@@ -3,7 +3,6 @@ import { Pressable, StyleSheet, View } from "react-native";
 
 import { Colors } from "../../constants/colors";
 import { FONT } from "../../constants/typography";
-import { useRefsData } from "../../context/VoiceRecognizerContext";
 import { Text } from "../../ui/AppText";
 import IconButton from "../../ui/IconButton";
 import Time from "./Time";
@@ -23,8 +22,6 @@ export default memo(function TimerInterfaceUI({
   resetTimerRef,
   timeLeftRef,
 }) {
-  const { timers } = useRefsData();
-
   const nameText = {
     fontWeight: WEIGHT.semibold,
     fontSize: FONT.title,
@@ -34,10 +31,6 @@ export default memo(function TimerInterfaceUI({
 
   const ui = (
     <View style={styles.container}>
-      <Text style={styles.paginationLabel}>
-        {index + 1 + "/" + timers.length}
-      </Text>
-
       <View style={styles.centerItems}>
         <Pressable
           onPress={!isActive ? startChangeNameHandler : () => {}}
@@ -120,14 +113,6 @@ const styles = StyleSheet.create({
     pointerEvents: "none",
   },
 
-  paginationLabel: {
-    color: Colors.grayShade30,
-    position: "absolute",
-    top: SPACE.xl,
-    right: SPACE.xl,
-    textAlign: "right",
-  },
-
   timerLabel: {
     textAlign: "center",
     justifyContent: "center",
@@ -140,6 +125,7 @@ const styles = StyleSheet.create({
     borderRadius: "50%",
     padding: SPACE.xxl,
     backgroundColor: Colors.whiteAlpha20,
+    alignItems: "center",
   },
 
   resetHiddenButton: {

@@ -4,12 +4,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AppState, FlatList, StyleSheet, View } from "react-native";
 
 import { Colors } from "../../constants/colors";
+import { SPACE } from "../../constants/spacing";
 import {
   useRecognizerData,
   useRefsData,
 } from "../../context/VoiceRecognizerContext";
 import { useGeneralVoiceCommands } from "../../hooks/TimersScreen/voiceControl/useGeneralVoiceCommands";
 import { useTimerList } from "../../hooks/TimersScreen/timers/useTimerList";
+import { Text } from "../../ui/AppText";
 import Arrows from "../../ui/Arrows";
 import { emitter } from "../../utils/EventEmitter";
 import { getItemFromStorage } from "../../utils/helpers";
@@ -64,6 +66,15 @@ export default function TimerList({
   const sortedTimers = useMemo(() => timers.slice().reverse(), [timers]);
 
   const isSingleTimer = sortedTimers?.length === 1;
+
+  useEffect(
+    function () {
+      if (currentIndex > sortedTimers.length - 1) {
+        setCurrentIndex(Math.max(sortedTimers.length - 1, 0));
+      }
+    },
+    [currentIndex, sortedTimers.length],
+  );
 
   useEffect(
     function () {
@@ -209,6 +220,12 @@ export default function TimerList({
 
             <SleepNotice isTimerSleeping={isTimerSleeping} />
 
+            {timers.length > 1 && (
+              <Text style={styles.paginationLabel}>
+                {currentIndex + 1 + "/" + timers.length}
+              </Text>
+            )}
+
             {sortedTimers?.length > 0 && (
               <TimerInterfaceButtons onDelete={handleDelete} />
             )}
@@ -231,6 +248,13 @@ const styles = StyleSheet.create({
   timerList: {
     flex: 1,
     backgroundColor: Colors.primary,
+  },
+  paginationLabel: {
+    color: Colors.grayShade30,
+    position: "absolute",
+    top: SPACE.xl,
+    right: SPACE.xl,
+    textAlign: "right",
   },
   singleTimerWrapper: {
     flex: 1,
