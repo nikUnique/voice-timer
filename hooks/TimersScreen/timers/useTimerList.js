@@ -27,13 +27,9 @@ export function useTimerList({
   setRecognizedCommand,
   flatListRef,
   lastCommandRef,
-  containerHeight,
   setIsTaskStopped,
-  setContainerHeight,
 }) {
   const navigation = useNavigation();
-  const [hasMounted, setHasMounted] = useState(false);
-  const layoutTimeoutRef = useRef(null);
 
   const { recognizedCommand, dynamicGrammar, alertingTimerNamesRef } =
     useRecognizerData();
@@ -174,7 +170,6 @@ export function useTimerList({
         recognizedCommand={isCommandNew}
         lastCommandRef={lastCommandRef}
         index={index}
-        timerHeight={containerHeight}
         activateTimerRef={activateTimerRef}
         clearCommand={clearCommand}
         handleReadyState={handleReadyState}
@@ -184,60 +179,6 @@ export function useTimerList({
         onDelete={handleDelete}
       />
     );
-  }
-
-  async function onLayoutHandler(e) {
-    try {
-      if (hasMounted) return;
-
-      const { height } = e.nativeEvent.layout;
-
-      let heightArr = await getItemFromStorage("timerListHeights");
-
-      if (!heightArr) {
-        heightArr = [height];
-        await setItemInStorage("timerListHeights", [height]);
-      }
-
-      if (heightArr?.length >= 2) {
-        heightArr = [];
-        heightArr = [height];
-      }
-
-      if (heightArr?.length < 2) {
-        await setItemInStorage("timerListHeights", [...heightArr, height]);
-      }
-
-      let countElementObj = heightArr.reduce((acc, element) => {
-        acc[element] = (acc[element] || 0) + 1;
-        return acc;
-      }, {});
-
-      const avgHeight = Object.entries(countElementObj).reduce(
-        (acc, [key, value]) => {
-          if (+acc[1] < +value) {
-            return key;
-          }
-          return acc;
-        },
-        Object.entries(countElementObj)[0],
-      )[0];
-
-      setItemInStorage("calculatedTimerHeight", avgHeight);
-
-      if (layoutTimeoutRef.current) {
-        clearTimeout(layoutTimeoutRef.current);
-      }
-
-      updateSharedObject({ timerListHeight: height });
-      setContainerHeight(avgHeight);
-
-      layoutTimeoutRef.current = setTimeout(function () {
-        setHasMounted(true);
-      }, 1000);
-    } catch (error) {
-      console.error("An error occurred in the onLayoutHandler", error);
-    }
   }
 
   const pauseMedia = useCallback(
@@ -283,7 +224,6 @@ export function useTimerList({
     handleReadyState,
     clearCommand,
     renderTimer,
-    onLayoutHandler,
     pauseMedia,
     resumeMedia,
   };

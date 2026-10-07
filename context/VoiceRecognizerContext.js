@@ -63,7 +63,6 @@ export default function VoiceRecognizerProvider({ children }) {
   const alertingTimerNamesRef = useRef([]);
   const [editableTimers, setEditableTimers] = useState([]);
   const [timersHistory, setTimersHistory] = useState([]);
-  const [timerHeight, setTimerHeight] = useState(0);
   const allTimersRef = useRef(timers);
   const freshlyCreatedTimerRef = useRef(null);
   const lastTimerStartedRef = useRef(null);
@@ -199,8 +198,6 @@ export default function VoiceRecognizerProvider({ children }) {
       lastTimerStartedRef,
       allTimersRef,
       editableTimers,
-      timerHeight,
-      setTimerHeight,
       currentlyViewedItemRef,
       isFocusedRef,
       isMediaPausedRef,
@@ -211,7 +208,7 @@ export default function VoiceRecognizerProvider({ children }) {
       resultEventRef,
       currentSpeechRef,
     }),
-    [editableTimers, timerHeight, timers],
+    [editableTimers, timers],
   );
 
   const settingsData = useMemo(

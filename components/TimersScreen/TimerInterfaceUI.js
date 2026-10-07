@@ -11,7 +11,6 @@ import { WEIGHT } from "../../constants/weight";
 import { SPACE } from "../../constants/spacing";
 
 export default memo(function TimerInterfaceUI({
-  timerHeight,
   index,
   isActive,
   startChangeNameHandler,
@@ -34,16 +33,7 @@ export default memo(function TimerInterfaceUI({
   };
 
   const ui = (
-    <View
-      style={[
-        styles.container,
-        {
-          minHeight: timerHeight,
-        },
-
-        !timerHeight && styles.hiddenTimer,
-      ]}
-    >
+    <View style={styles.container}>
       <Text style={styles.paginationLabel}>
         {index + 1 + "/" + timers.length}
       </Text>
@@ -122,9 +112,6 @@ const styles = StyleSheet.create({
   },
 
   centerItems: {
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
     marginBottom: SPACE.huge,
   },
 

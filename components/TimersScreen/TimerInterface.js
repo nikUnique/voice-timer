@@ -26,7 +26,6 @@ function TimerInterface({
   activateTimerRef,
   handleReadyState,
   onDelete,
-  timerHeight,
 }) {
   const [setModalIsVisible] = useState(false);
   const timerInterfaceState = useTimerInterfaceState({ time });
@@ -140,7 +139,6 @@ function TimerInterface({
 
   const ui = (
     <TimerInterfaceUI
-      timerHeight={timerHeight}
       index={index}
       isActive={isActive}
       startChangeNameHandler={startChangeNameHandler}

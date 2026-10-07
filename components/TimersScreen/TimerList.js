@@ -31,11 +31,10 @@ export default function TimerList({
 }) {
   const [isReady, setIsReady] = useState(false);
   const [updateList, setUpdateList] = useState(false);
-  const [containerHeight, setContainerHeight] = useState();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [listHeight, setListHeight] = useState(0);
 
   const flatListRef = useRef(null);
-  const flatListViewRef = useRef(null);
 
   const { setRecognizedCommand, timers, setTimers } = useRecognizerData();
   const {
@@ -44,11 +43,6 @@ export default function TimerList({
     workingTimersRef,
     isTimerSleepingRef,
   } = useRefsData();
-
-  // useEffect(() => {
-  //   isTimerSleepingRef.current = true;
-  //   onTimerSleepChange(true);
-  // }, []); // eslint will warn about deps; fine for a temporary test
 
   const {
     handleDelete,
@@ -64,12 +58,12 @@ export default function TimerList({
     setRecognizedCommand,
     flatListRef,
     lastCommandRef,
-    containerHeight,
     setIsTaskStopped,
-    setContainerHeight,
   });
 
   const sortedTimers = useMemo(() => timers.slice().reverse(), [timers]);
+
+  const isSingleTimer = sortedTimers?.length === 1;
 
   useEffect(
     function () {
@@ -108,10 +102,9 @@ export default function TimerList({
         }
 
         workingTimersRef.current?.length &&
-          containerHeight &&
           activateTimerRef.current(getSharedObject()?.leastTimer?.index || 0);
 
-        if (workingTimersRef.current?.length && containerHeight) {
+        if (workingTimersRef.current?.length) {
           updateSharedObject({ notificationTap: false });
         }
       } catch (error) {
@@ -121,7 +114,7 @@ export default function TimerList({
         );
       }
     },
-    [activateTimerRef, isReady, containerHeight, workingTimersRef, timers],
+    [activateTimerRef, isReady, workingTimersRef, timers],
   );
 
   useEffect(
@@ -144,20 +137,6 @@ export default function TimerList({
     [activateTimerRef, handleReadyState, isReady, leastTimeTimerRef],
   );
 
-  useEffect(function () {
-    let isMounted = true;
-    async function load() {
-      const minHeight = await getItemFromStorage("calculatedTimerHeight");
-      if (minHeight && isMounted) {
-        setContainerHeight(minHeight);
-      }
-    }
-    load();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
   return (
     <>
       <View
@@ -171,39 +150,62 @@ export default function TimerList({
             style={[
               styles.timerList,
 
-              !isReady || (!containerHeight && styles.timerListHidden),
+              (!isReady || (!isSingleTimer && !listHeight)) &&
+                styles.timerListHidden,
             ]}
-            ref={flatListViewRef}
-            onLayout={onLayoutHandler}
+            onLayout={
+              !isSingleTimer
+                ? (e) => {
+                    const { height } = e.nativeEvent.layout;
+                    if (height && height !== listHeight) {
+                      setListHeight(height);
+                    }
+                  }
+                : undefined
+            }
           >
-            <FlatList
-              contentContainerStyle={{ paddingTop: 0 }}
-              data={sortedTimers}
-              extraData={sortedTimers}
-              renderItem={renderTimer}
-              keyExtractor={(item) => item?.id}
-              pagingEnabled={true}
-              removeClippedSubviews={false}
-              keyboardShouldPersistTaps='handled'
-              decelerationRate='fast'
-              estimatedItemSize={containerHeight}
-              showsVerticalScrollIndicator={true}
-              initialNumToRender={30}
-              onScroll={(e) => {
-                const totalHeight = e.nativeEvent.layoutMeasurement.height;
-                const yPosition = e.nativeEvent.contentOffset.y;
-                const newIndex = Math.round(yPosition / totalHeight);
+            {isSingleTimer ? (
+              <View style={styles.singleTimerWrapper}>
+                {renderTimer({ item: sortedTimers[0], index: 0 })}
+              </View>
+            ) : (
+              <FlatList
+                contentContainerStyle={{ paddingTop: 0 }}
+                data={sortedTimers}
+                extraData={sortedTimers}
+                renderItem={({ item, index }) => (
+                  <View style={{ height: listHeight }}>
+                    {renderTimer({ item, index })}
+                  </View>
+                )}
+                keyExtractor={(item) => item?.id}
+                pagingEnabled={true}
+                removeClippedSubviews={false}
+                keyboardShouldPersistTaps='handled'
+                decelerationRate='fast'
+                getItemLayout={(_data, index) => ({
+                  length: listHeight,
+                  offset: listHeight * index,
+                  index,
+                })}
+                showsVerticalScrollIndicator={true}
+                initialNumToRender={30}
+                onScroll={(e) => {
+                  const totalHeight = e.nativeEvent.layoutMeasurement.height;
+                  const yPosition = e.nativeEvent.contentOffset.y;
+                  const newIndex = Math.round(yPosition / totalHeight);
 
-                emitter.emit(`timerSelected-${newIndex}`);
-                if (newIndex !== currentIndex) {
-                  setCurrentIndex(newIndex);
-                }
-              }}
-              ref={flatListRef}
-              viewabilityConfig={{
-                itemVisiblePercentThreshold: 30,
-              }}
-            />
+                  emitter.emit(`timerSelected-${newIndex}`);
+                  if (newIndex !== currentIndex) {
+                    setCurrentIndex(newIndex);
+                  }
+                }}
+                ref={flatListRef}
+                viewabilityConfig={{
+                  itemVisiblePercentThreshold: 30,
+                }}
+              />
+            )}
 
             <SleepNotice isTimerSleeping={isTimerSleeping} />
 
@@ -229,6 +231,9 @@ const styles = StyleSheet.create({
   timerList: {
     flex: 1,
     backgroundColor: Colors.primary,
+  },
+  singleTimerWrapper: {
+    flex: 1,
   },
   timerListHidden: {
     pointerEvents: "none",
