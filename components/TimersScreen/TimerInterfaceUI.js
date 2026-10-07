@@ -72,7 +72,7 @@ export default memo(function TimerInterfaceUI({
               />
             </View>
             {!isActive && timeLeftRef.current <= 0 && (
-              <View>
+              <View style={styles.resetWrapper}>
                 <IconButton
                   size={FONT.display}
                   icon='stop'
@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
 
   centerItems: {
     marginBottom: SPACE.huge,
+    alignItems: "center",
   },
 
   hiddenTimer: {
@@ -126,6 +127,11 @@ const styles = StyleSheet.create({
     padding: SPACE.xxl,
     backgroundColor: Colors.whiteAlpha20,
     alignItems: "center",
+    alignSelf: "center",
+  },
+
+  resetWrapper: {
+    alignItems: "center",
   },
 
   resetHiddenButton: {
@@ -137,6 +143,8 @@ const styles = StyleSheet.create({
     borderRadius: "50%",
     padding: SPACE.xxl,
     backgroundColor: Colors.whiteAlpha20,
+    alignItems: "center",
+    alignSelf: "center",
   },
 
   disabled: {
