@@ -20,6 +20,7 @@ export default function Time({
 }) {
   const [timeLeft, setTimeLeft] = useState(time);
   const fadeAnimationRefCur = useRef(new Animated.Value(1)).current;
+  const blinkActiveRef = useRef(false);
   const { currentlyViewedItemRef } = useRefsData();
   const { speak } = useSpeak();
 
@@ -29,6 +30,9 @@ export default function Time({
 
   const fadeInAndOut = useCallback(
     function () {
+      if (!blinkActiveRef.current) {
+        return;
+      }
       fadeAnimationRefCur.stopAnimation();
       fadeAnimationRefCur.setValue(0);
       Animated.sequence([
@@ -51,12 +55,16 @@ export default function Time({
     function () {
       let animationInterval;
       if (isPaused && isActive) {
+        blinkActiveRef.current = true;
         animationInterval = setInterval(function () {
-          fadeInAndOut();
+          if (blinkActiveRef.current) {
+            fadeInAndOut();
+          }
         }, 1000);
       }
 
       if (!isPaused || !isActive) {
+        blinkActiveRef.current = false;
         clearInterval(animationInterval);
         fadeAnimationRefCur.stopAnimation(() =>
           fadeAnimationRefCur.setValue(1),
@@ -64,6 +72,7 @@ export default function Time({
       }
 
       return () => {
+        blinkActiveRef.current = false;
         clearInterval(animationInterval);
         fadeAnimationRefCur.stopAnimation(() =>
           fadeAnimationRefCur.setValue(1),
