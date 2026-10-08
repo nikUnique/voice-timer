@@ -81,9 +81,6 @@ export default function Timers({ navigation }) {
     function () {
       async function confirmCommand() {
         try {
-          timers.forEach((timer) => console.log(timer?.name));
-          console.log(timers, "timers");
-
           let isTimerSpecificCommand = dynamicGrammar.find(
             (command) =>
               typeof command !== "object" &&

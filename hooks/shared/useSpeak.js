@@ -31,7 +31,10 @@ export function useSpeak() {
       Tts.setDefaultLanguage("en-US");
       const available = await Tts.voices();
       const bestVoice = pickBestVoice(available);
-      await Tts.setDefaultVoice(bestVoice);
+
+      if (bestVoice) {
+        await Tts.setDefaultVoice(bestVoice.id);
+      }
     });
   }, []);
 
@@ -81,7 +84,7 @@ export function useSpeak() {
               ).value,
           );
 
-          if (NativeModules.AudioFocusModule.isWiredHeadsetConnected()) {
+          if (await NativeModules.AudioFocusModule.isWiredHeadsetConnected()) {
             await sleep(0.5);
           }
 

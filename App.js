@@ -76,7 +76,6 @@ function AppWithContext() {
     async function load() {
       try {
         const contacts = await getItemFromStorage("contacts");
-        console.log(contacts, "contact");
 
         if (contacts) {
           setContacts(contacts);

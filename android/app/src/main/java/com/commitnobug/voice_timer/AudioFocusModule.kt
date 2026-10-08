@@ -228,20 +228,24 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
         val granted = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
         Log.d("AudioFocusModule", "requestAudioFocus result: $result, granted: $granted")
 
-        val delay = if (granted && isWiredHeadsetConnected()) 500L else 0L
+        val delay = if (granted && hasWiredHeadsetConnected()) 500L else 0L
 
         Handler(Looper.getMainLooper()).postDelayed({
             callback(granted)
         }, delay)
     }
 
-    @ReactMethod
-    fun isWiredHeadsetConnected(): Boolean {
-        val devices = audioManager?.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
-        return devices?.any {
+    private fun hasWiredHeadsetConnected(): Boolean {
+        val devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+        return devices.any {
             it.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES ||
             it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET
-        } ?: false
+        }
+    }
+
+    @ReactMethod
+    fun isWiredHeadsetConnected(promise: Promise) {
+        promise.resolve(hasWiredHeadsetConnected())
     }
 
     @ReactMethod

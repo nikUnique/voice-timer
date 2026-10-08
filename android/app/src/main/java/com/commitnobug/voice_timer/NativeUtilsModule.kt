@@ -33,7 +33,7 @@ class NativeUtilsModule(private val reactContext: ReactApplicationContext) : Rea
 
     @ReactMethod
     fun getCurrentActivityName(promise: Promise) {
-        val activity = currentActivity
+        val activity = reactApplicationContext.currentActivity
         if (activity != null && activity is MainActivity) {
             promise.resolve("MainActivity")
         } else {
@@ -90,7 +90,7 @@ class NativeUtilsModule(private val reactContext: ReactApplicationContext) : Rea
 
     @ReactMethod
     fun permitShowingWhenLocked() {
-        val activity = currentActivity
+        val activity = reactApplicationContext.currentActivity
 
         if (activity != null && activity is MainActivity) {
             activity.run {
@@ -111,7 +111,7 @@ class NativeUtilsModule(private val reactContext: ReactApplicationContext) : Rea
 
     @ReactMethod
     fun forbidShowingWhenLocked() {
-        val activity = currentActivity
+        val activity = reactApplicationContext.currentActivity
 
         activity?.runOnUiThread {
             if(activity !== null && activity is MainActivity && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -127,7 +127,7 @@ class NativeUtilsModule(private val reactContext: ReactApplicationContext) : Rea
  }
         @ReactMethod
         fun closeMainActivity() {
-            val activity = currentActivity
+            val activity = reactApplicationContext.currentActivity
             // ✅ clean version
             if (activity != null && activity is MainActivity) {
                 activity?.runOnUiThread {
@@ -138,7 +138,7 @@ class NativeUtilsModule(private val reactContext: ReactApplicationContext) : Rea
 
     @ReactMethod
     fun moveAppToBackground() {
-        val activity = currentActivity
+        val activity = reactApplicationContext.currentActivity
 
         val keyguardManager = reactApplicationContext?.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
 
@@ -186,7 +186,7 @@ class NativeUtilsModule(private val reactContext: ReactApplicationContext) : Rea
 
     @ReactMethod
     fun pressBack() {
-        currentActivity?.onBackPressed()
+        reactApplicationContext.currentActivity?.onBackPressed()
     }
 
     @ReactMethod
@@ -210,31 +210,35 @@ class NativeUtilsModule(private val reactContext: ReactApplicationContext) : Rea
 
 
     @ReactMethod
-    fun answerCall(): Boolean {
+    fun answerCall() {
         val tm = reactApplicationContext
             .getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+
         if (tm.callState != TelephonyManager.CALL_STATE_RINGING) {
-            return false
+            return
         }
 
-        val audio = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val audio = reactApplicationContext
+            .getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val telecom = reactApplicationContext
                 .getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+
             try {
-                telecom.acceptRingingCall()                   
+                telecom.acceptRingingCall()
             } catch (e: Exception) {
                 Log.e("Call", "accept failed", e)
             }
         } else {
-            val headsetHook = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_HEADSETHOOK)
-            val releaseHook = KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK)
+            val headsetHook =
+                KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_HEADSETHOOK)
+            val releaseHook =
+                KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK)
+
             audio.dispatchMediaKeyEvent(headsetHook)
             audio.dispatchMediaKeyEvent(releaseHook)
         }
-
-        return true
     }
 
     private fun sendMediaKey(keyCode: Int) {

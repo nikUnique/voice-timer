@@ -2,40 +2,27 @@
   "expo": {
     "name": "Voice Timer",
     "slug": "voice_timer",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "orientation": "portrait",
-    "icon": "./assets/time_icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "androidStatusBar": {
       "barStyle": "light-content",
       "backgroundColor": "#0b7285",
       "translucent": true
     },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.commitnobug.voice_timer"
-    },
+    "plugins": ["./lib/withNotifeeAndroidFix"],
     "android": {
-      "plugins": [
-        {
-          "notificationsPermission": "Allow $(PRODUCT_NAME) to send you notifications."
-        }
-      ],
       "permissions": [
         "WRITE_SETTINGS",
         "FOREGROUND_SERVICE",
         "android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
       ],
       "adaptiveIcon": {
-        "backgroundColor": "lightblue"
+        "backgroundColor": "#ADD8E6"
       },
       "package": "com.commitnobug.voice_timer"
     },
-    "scheme": "voice_timer",
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": ["./lib/withNotifeeAndroidFix"]
+
+    "scheme": "voicetimer"
   }
 }

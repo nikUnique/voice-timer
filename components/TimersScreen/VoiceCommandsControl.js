@@ -1,4 +1,4 @@
-import Vosk from "react-native-vosk";
+import * as vosk from "react-native-vosk";
 
 import { memo, useEffect, useRef, useState } from "react";
 import {
@@ -32,11 +32,11 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
   const [result, setResult] = useState();
   const [improvedResult] = useState("");
 
-  const voskRef = useRef(null);
-  if (!voskRef.current) {
-    voskRef.current = new Vosk();
-  }
-  const vosk = voskRef.current;
+  // const voskRef = useRef(null);
+  // if (!voskRef.current) {
+  //   voskRef.current = new Vosk();
+  // }
+  // const vosk = voskRef.current;
 
   const fadeAnimationRefCur = useRef(new Animated.Value(0)).current;
 
@@ -122,7 +122,6 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
       isReady,
       recordGrammar,
       setIsListening,
-      vosk,
       voiceEnabled,
       stop,
       isListeningRef,
@@ -158,7 +157,6 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
     setRecognizedTime,
     isValidCommandRef,
     recognizedCommandRef,
-    vosk,
     isListening,
     isListeningRef,
     voiceEnabled,

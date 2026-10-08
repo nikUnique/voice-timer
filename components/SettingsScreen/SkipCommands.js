@@ -17,8 +17,6 @@ export default memo(function SkipCommands() {
     isSkipCommandsEnabledRef.current,
   );
 
-  console.log(isSkipCommandsEnabledRef, "o");
-
   return (
     <View style={[switchBox, setting]}>
       <ExpandableSetting
