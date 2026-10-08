@@ -10,7 +10,10 @@
       "backgroundColor": "#0b7285",
       "translucent": true
     },
-    "plugins": ["./lib/withNotifeeAndroidFix"],
+    "plugins": [
+      "./lib/withNotifeeAndroidFix",
+      "expo-font"
+    ],
     "android": {
       "permissions": [
         "WRITE_SETTINGS",
@@ -22,7 +25,6 @@
       },
       "package": "com.commitnobug.voice_timer"
     },
-
     "scheme": "voicetimer"
   }
 }
