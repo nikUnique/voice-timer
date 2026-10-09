@@ -85,6 +85,24 @@ export default function TimerList({
     [handleReadyState, timers?.length],
   );
 
+  const bootAnnouncedRef = useRef(false);
+
+  useEffect(
+    function () {
+      // Announce "app visually ready" only once the list clears the exact
+      // gate that hides it (timerListHidden below): isReady plus, for
+      // multi-timer, a measured listHeight. Dismissing the boot overlay any
+      // earlier reveals the interface mid-settle.
+      if (bootAnnouncedRef.current || !isReady) return;
+      if (!isSingleTimer && sortedTimers?.length > 0 && !listHeight) return;
+
+      bootAnnouncedRef.current = true;
+      updateSharedObject({ appReady: true });
+      emitter.emit("appReady");
+    },
+    [isReady, isSingleTimer, listHeight, sortedTimers],
+  );
+
   useEffect(
     function () {
       emitter.all.delete(`updateList`);
@@ -217,8 +235,8 @@ export default function TimerList({
                 keyExtractor={(item) => item?.id}
                 pagingEnabled={true}
                 removeClippedSubviews={false}
-                keyboardShouldPersistTaps='handled'
-                decelerationRate='fast'
+                keyboardShouldPersistTaps="handled"
+                decelerationRate="fast"
                 getItemLayout={(_data, index) => ({
                   length: listHeight,
                   offset: listHeight * index,

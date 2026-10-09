@@ -7,6 +7,9 @@ export const CONTACT_LIMIT = 20;
 export const CALL_TIMEOUT = 7000;
 export const PHONE_TIMEOUT = 12000;
 export const MINUTE_CALL_TIMEOUT = 60000;
+export const BOOT_MIN_MS = 700;
+export const BOOT_SAFETY_MS = 4000;
+export const BOOT_FADE_MS = 400;
 export const VOICE_FEEDBACK_SPEEDS = [
   { label: "Slow", value: 0.3 },
   { label: "Normal", value: 0.5 },

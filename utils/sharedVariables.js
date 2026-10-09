@@ -1,6 +1,7 @@
 let sharedObject = {
   timersLabel: "",
   isTaskRunning: false,
+  appReady: false,
   notificationTap: false,
   resetAllFinishedFromApp: false,
   changeTimerNameParams: {},

@@ -53,10 +53,25 @@ export function useTTS() {
       releaseAudioFocus();
 
       console.log("Done talking");
-      ignoreUntilRef.current = Date.now() + 1500;
+      ignoreUntilRef.current = Date.now() + 500;
       currentSpeechRef.current = "";
 
       resumeRecognizer();
+      setTimeout(function () {
+        resumeRecognizer();
+      }, 100);
+      setTimeout(function () {
+        resumeRecognizer();
+      }, 200);
+      setTimeout(function () {
+        resumeRecognizer();
+      }, 300);
+      setTimeout(function () {
+        resumeRecognizer();
+      }, 400);
+      setTimeout(function () {
+        resumeRecognizer();
+      }, 500);
 
       isListeningRef.current = true;
       setIsListening(true);
