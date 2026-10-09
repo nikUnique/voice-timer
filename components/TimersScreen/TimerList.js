@@ -112,14 +112,26 @@ export default function TimerList({
           return;
         }
 
-        const scrollTimeout = setTimeout(() => {
+        const scrollToLeastTimer = function () {
           workingTimersRef.current?.length &&
             activateTimerRef.current(getSharedObject()?.leastTimer?.index || 0);
 
           if (workingTimersRef.current?.length) {
             updateSharedObject({ notificationTap: false });
           }
-        }, 2000);
+        };
+
+        // A single timer is not inside a FlatList, and a multi-timer list can
+        // only be scrolled once it has been measured - listHeight comes from
+        // onLayout and feeds getItemLayout. Scroll as soon as that signal
+        // arrives instead of waiting out a fixed delay, and keep the delay
+        // only as a fallback for when the layout callback reports no height.
+        if (isSingleTimer || listHeight) {
+          scrollToLeastTimer();
+          return;
+        }
+
+        const scrollTimeout = setTimeout(scrollToLeastTimer, 2000);
 
         return () => {
           clearTimeout(scrollTimeout);
@@ -131,7 +143,14 @@ export default function TimerList({
         );
       }
     },
-    [activateTimerRef, isReady, workingTimersRef, timers],
+    [
+      activateTimerRef,
+      isReady,
+      workingTimersRef,
+      timers,
+      listHeight,
+      isSingleTimer,
+    ],
   );
 
   useEffect(
