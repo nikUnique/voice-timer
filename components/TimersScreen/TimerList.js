@@ -112,12 +112,18 @@ export default function TimerList({
           return;
         }
 
-        workingTimersRef.current?.length &&
-          activateTimerRef.current(getSharedObject()?.leastTimer?.index || 0);
+        const scrollTimeout = setTimeout(() => {
+          workingTimersRef.current?.length &&
+            activateTimerRef.current(getSharedObject()?.leastTimer?.index || 0);
 
-        if (workingTimersRef.current?.length) {
-          updateSharedObject({ notificationTap: false });
-        }
+          if (workingTimersRef.current?.length) {
+            updateSharedObject({ notificationTap: false });
+          }
+        }, 2000);
+
+        return () => {
+          clearTimeout(scrollTimeout);
+        };
       } catch (error) {
         console.error(
           `An error occurred in calling activateTimerRef.current on mount: `,

@@ -6,6 +6,11 @@ Commands-screen truthfulness, closed out. The screen is now the source of
 truth for voice-command availability, and the handlers enforce what it
 claims. Everything is committed; **14 commits are unpushed**.
 
+Uncommitted: notification-tap scroll fix — 2s delayed scroll in
+`TimerList.js` plus `activateTimerRef.current` moved into a `useEffect` in
+`useTimerList.js` (React 19 `react-hooks/refs` render error). Both verified
+on-device by the user.
+
 ## Recent changes
 
 | Commit    | What                                                   |
@@ -63,6 +68,16 @@ prompt would not have prevented the dial.
 
 These cost time; do not retry them.
 
+- **Notification-tap persistence machinery (Oct 2026).** A tap-scroll miss on
+  cold start was "fixed" with AsyncStorage tap persistence, a top-level
+  `onBackgroundEvent` in `index.js`, timer-name resolution and a
+  `getInitialNotification` fallback. It broke timer restart on reload and was
+  fully reverted. The real cause was timing: `isReady` flips on the first
+  restored timer while the FlatList still has `listHeight === 0`, so a single
+  `scrollToIndex` throws into the swallowed helper. The working fix was a 2s
+  `setTimeout` before scrolling in `TimerList.js` (plus timeout cleanup).
+  Simplest timing hypothesis first; never touch the restart path for a scroll
+  bug.
 - **Repo-wide `prettier --write` during the `Text` → `AppText` swap.** It
   reformatted 18 unrelated files (quote style, JSX attribute wrapping) to
   deliver a two-line-per-file import change. Reverted with `git restore` and

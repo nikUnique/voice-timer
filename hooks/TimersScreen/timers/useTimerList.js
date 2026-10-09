@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { NativeModules } from "react-native";
 
 import TimerInterface from "../../../components/TimersScreen/TimerInterface";
@@ -93,16 +93,25 @@ export function useTimerList({
     setRecognizedCommand(" ");
   }, []);
 
-  activateTimerRef.current = function activateTimer(index) {
-    try {
-      flatListRef?.current?.scrollToIndex({
-        index,
-        animated: true,
-      });
-    } catch (error) {
-      console.error(`An error occurred during automatic scrolling`, error);
-    }
-  };
+  // Writing activateTimerRef.current during render is unsafe under React
+  // 19 concurrent rendering (the closure can come from a discarded pass and
+  // go stale during the cold-start re-render storm). Assign it in an effect
+  // so the registered function is always the committed one.
+  useEffect(
+    function () {
+      activateTimerRef.current = function activateTimer(index) {
+        try {
+          flatListRef?.current?.scrollToIndex({
+            index,
+            animated: true,
+          });
+        } catch (error) {
+          console.error(`An error occurred during automatic scrolling`, error);
+        }
+      };
+    },
+    [activateTimerRef, flatListRef],
+  );
 
   function renderTimer({ item, index }) {
     // If the command is new then the goal is to rerender the corresponding to the command child
