@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { NativeModules } from "react-native";
 import Tts from "react-native-tts";
+import * as vosk from "react-native-vosk";
 import { useRefsData } from "../../context/VoiceRecognizerContext";
 import { getSharedObject } from "../../utils/sharedVariables";
 
@@ -27,6 +28,18 @@ export function useTTS() {
     [isMediaPausedManuallyRef, isMediaPausedRef],
   );
 
+  const resumeRecognizer = useCallback(function resumeRecognizer() {
+    // Discard the TTS echo that Vosk may have buffered/decoded just before
+    // TTS ended, so the trailing segment cannot surface as a late result
+    // after ignoreUntil expires. reset() keeps the mic running.
+    // Called on every way TTS can end (finish, cancel, error).
+    try {
+      vosk.reset();
+    } catch (error) {
+      console.error("An error occurred while resetting vosk", error);
+    }
+  }, []);
+
   const startTalking = useCallback(
     function startTalking() {
       isListeningRef.current = false;
@@ -42,6 +55,9 @@ export function useTTS() {
       console.log("Done talking");
       ignoreUntilRef.current = Date.now() + 1500;
       currentSpeechRef.current = "";
+
+      resumeRecognizer();
+
       isListeningRef.current = true;
       setIsListening(true);
     },
@@ -50,6 +66,7 @@ export function useTTS() {
       ignoreUntilRef,
       isListeningRef,
       releaseAudioFocus,
+      resumeRecognizer,
       setIsListening,
     ],
   );
@@ -57,9 +74,10 @@ export function useTTS() {
   const errorTalking = useCallback(
     function errorTalking() {
       releaseAudioFocus();
+      resumeRecognizer();
       console.error("An error occurred during speech utterance");
     },
-    [releaseAudioFocus],
+    [releaseAudioFocus, resumeRecognizer],
   );
 
   useEffect(
@@ -72,10 +90,19 @@ export function useTTS() {
       Tts.addEventListener("tts-finish", (e) => {
         doneTalking(e);
       });
-      Tts.addEventListener("tts-cancel", releaseAudioFocus);
+      Tts.addEventListener("tts-cancel", () => {
+        releaseAudioFocus();
+        resumeRecognizer();
+      });
       Tts.addEventListener("tts-error", errorTalking);
     },
-    [doneTalking, errorTalking, releaseAudioFocus, startTalking],
+    [
+      doneTalking,
+      errorTalking,
+      releaseAudioFocus,
+      resumeRecognizer,
+      startTalking,
+    ],
   );
 
   useEffect(function () {

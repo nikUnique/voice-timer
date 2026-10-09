@@ -10,7 +10,8 @@
     "bir": "cd android && ./gradlew --stop && ./gradlew assembleRelease && ./gradlew --stop && cd .. && adb install -r ./android/app/build/outputs/apk/release/app-release.apk && adb shell am start -n com.commitnobug.voice_timer/.MainActivity",
     "adbLog": "adb logcat *:S ReactNative:V ReactNativeJS:V MyApp:D AudioFocusModule Call VoskDebug:D YourTag:D AndroidRuntime:E System.err:W System.out:D *:F -v color -v long",
     "gradleClean": "cd android && ./gradlew clean && cd ..",
-    "stopGradle": "cd android && ./gradlew --stop && cd .."
+    "stopGradle": "cd android && ./gradlew --stop && cd ..",
+    "postinstall": "patch-package"
   },
   "expo": {
     "doctor": {
@@ -69,6 +70,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-native": "^4.1.0",
     "jest": "^29.7.0",
+    "patch-package": "^8.0.1",
     "prettier": "^3.9.9"
   },
   "private": true

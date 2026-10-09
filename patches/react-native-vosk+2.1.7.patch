@@ -1,0 +1,95 @@
+diff --git a/node_modules/react-native-vosk/android/src/main/java/com/vosk/VoskModule.kt b/node_modules/react-native-vosk/android/src/main/java/com/vosk/VoskModule.kt
+--- a/node_modules/react-native-vosk/android/src/main/java/com/vosk/VoskModule.kt
++++ b/node_modules/react-native-vosk/android/src/main/java/com/vosk/VoskModule.kt
+@@ -206,6 +206,10 @@
+     cleanRecognizer()
+   }
+ 
++  override fun reset() {
++    speechService?.reset()
++  }
++
+   override fun unload() {
+     cleanRecognizer()
+     cleanModel()
+diff --git a/node_modules/react-native-vosk/lib/commonjs/index.js b/node_modules/react-native-vosk/lib/commonjs/index.js
+--- a/node_modules/react-native-vosk/lib/commonjs/index.js
++++ b/node_modules/react-native-vosk/lib/commonjs/index.js
+@@ -11,6 +11,7 @@
+ exports.onTimeout = onTimeout;
+ exports.start = start;
+ exports.stop = stop;
++exports.reset = reset;
+ exports.unload = unload;
+ var _reactNative = require("react-native");
+ var _NativeVosk = _interopRequireDefault(require("./NativeVosk"));
+@@ -85,6 +86,10 @@
+   return _NativeVosk.default.stop();
+ }
+ 
++function reset() {
++  return _NativeVosk.default.reset();
++}
++
+ /**
+  * Event listener for error event
+  *
+diff --git a/node_modules/react-native-vosk/lib/module/index.js b/node_modules/react-native-vosk/lib/module/index.js
+--- a/node_modules/react-native-vosk/lib/module/index.js
++++ b/node_modules/react-native-vosk/lib/module/index.js
+@@ -73,6 +73,10 @@
+   return Vosk.stop();
+ }
+ 
++export function reset() {
++  return Vosk.reset();
++}
++
+ /**
+  * Event listener for error event
+  *
+diff --git a/node_modules/react-native-vosk/lib/typescript/src/index.d.ts b/node_modules/react-native-vosk/lib/typescript/src/index.d.ts
+--- a/node_modules/react-native-vosk/lib/typescript/src/index.d.ts
++++ b/node_modules/react-native-vosk/lib/typescript/src/index.d.ts
+@@ -43,6 +43,10 @@
+  */
+ export declare function stop(): void;
+ /**
++ * Resets the recognizer, discarding buffered audio. Mic keeps running.
++ */
++export declare function reset(): void;
++/**
+  * Event listener for error event
+  *
+  * @param cb - Callback to be called on error event
+diff --git a/node_modules/react-native-vosk/src/index.ts b/node_modules/react-native-vosk/src/index.ts
+--- a/node_modules/react-native-vosk/src/index.ts
++++ b/node_modules/react-native-vosk/src/index.ts
+@@ -74,6 +74,15 @@
+ }
+ 
+ /**
++ * Resets the recognizer, discarding any buffered/decoded audio so
++ * recognition continues from scratch. The microphone keeps running.
++ * @returns void
++ */
++export function reset() {
++  return Vosk.reset();
++}
++
++/**
+  * Event listener for error event
+  *
+  * @param cb - Callback to be called on error event
+diff --git a/node_modules/react-native-vosk/src/NativeVosk.ts b/node_modules/react-native-vosk/src/NativeVosk.ts
+--- a/node_modules/react-native-vosk/src/NativeVosk.ts
++++ b/node_modules/react-native-vosk/src/NativeVosk.ts
+@@ -20,6 +20,8 @@
+   start: (options?: VoskOptions) => Promise<void>;
+   stop: () => void;
+ 
++  reset: () => void;
++
+   addListener: (eventType: string) => void;
+   removeListeners: (count: number) => void;
+ 

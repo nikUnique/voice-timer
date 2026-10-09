@@ -80,14 +80,11 @@ export function useCommandsControl({
   );
 
   // Stop any in-flight animation when the screen unmounts.
-  useEffect(
-    function () {
-      return function () {
-        fadeAnimationRef.current?.stop();
-      };
-    },
-    [],
-  );
+  useEffect(function () {
+    return function () {
+      fadeAnimationRef.current?.stop();
+    };
+  }, []);
 
   // Loading vosk modal
   const load = useCallback(async () => {
@@ -193,13 +190,13 @@ export function useCommandsControl({
             return;
           }
 
-          if (Date.now() < ignoreUntilRef.current) {
-            console.log(
-              "Ignoring speech to prevent TTS making a difference",
-              res,
-            );
-            return;
-          }
+          // if (Date.now() < ignoreUntilRef.current) {
+          //   console.log(
+          //     "Ignoring speech to prevent TTS making a difference",
+          //     res,
+          //   );
+          //   return;
+          // }
 
           console.log(
             "An onResult event has been caught: " + res,
