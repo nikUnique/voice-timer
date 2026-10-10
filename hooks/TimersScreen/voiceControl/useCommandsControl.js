@@ -226,11 +226,17 @@ export function useCommandsControl({
           }
           console.log("CHECKED_RESPONSE", checkedResponse);
 
+          // Nothing recognizable survived filtering ([unk] only, or pure TTS
+          // echo): show nothing and match nothing downstream.
+          if (!checkedResponse.trim()) {
+            return;
+          }
+
           setResult(checkedResponse);
           setRecognizedCommand(checkedResponse);
           setRecognizedTime(Date.now());
 
-          recognizedCommandRef.current = res;
+          recognizedCommandRef.current = checkedResponse;
         });
       } catch (error) {
         console.error("An error happened in onResultListener", error);
