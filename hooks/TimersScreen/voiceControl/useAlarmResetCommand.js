@@ -1,22 +1,19 @@
 import {
   useRecognizerData,
   useRefsData,
-  useSettingsData,
 } from "../../../context/VoiceRecognizerContext";
 import { resetTimerEmitter } from "../../../utils/EventEmitter";
 import { formatRingingResetSpeech, hasPhrase } from "../../../utils/helpers";
-import { useSound } from "../../shared/useSound";
-import { useSpeak } from "../../shared/useSpeak";
+import { useCommandFeedback } from "../../shared/useCommandFeedback";
 
 export function useAlarmResetCommand() {
   const { alertingTimerNamesRef } = useRecognizerData();
   const { secretIdentifierRef, recognizedCommandRef, commandsRef } =
     useRefsData();
 
-  const { speak } = useSpeak();
   const { STOP, STOP_FINISHED } = commandsRef?.current ?? {};
-  const { successSound } = useSettingsData();
-  const { playSoundGeneral } = useSound();
+
+  const { chimeThenSpeak } = useCommandFeedback();
 
   function handleResetAlarm() {
     const identifier = secretIdentifierRef.current
@@ -27,11 +24,7 @@ export function useAlarmResetCommand() {
 
     if (!hasPhrase(recognizedCommandRef.current, target)) return;
 
-    setTimeout(function () {
-      playSoundGeneral({ fileName: successSound, shouldStop: false });
-    }, 200);
-
-    speak(formatRingingResetSpeech(alertingTimerNamesRef.current));
+    chimeThenSpeak(formatRingingResetSpeech(alertingTimerNamesRef.current));
 
     alertingTimerNamesRef.current?.forEach((alertingTimer) =>
       resetTimerEmitter.emit(`${STOP} ${alertingTimer}`),

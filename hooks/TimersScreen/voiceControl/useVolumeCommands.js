@@ -1,22 +1,15 @@
 import { VolumeManager } from "react-native-volume-manager";
-import {
-  useRefsData,
-  useSettingsData,
-} from "../../../context/VoiceRecognizerContext";
-import { useSpeak } from "../../shared/useSpeak";
-import { useSound } from "../../shared/useSound";
+import { useRefsData } from "../../../context/VoiceRecognizerContext";
+import { useCommandFeedback } from "../../shared/useCommandFeedback";
 import { useControlledVolume } from "../../shared/useControlledVolume";
 import { hasPhrase } from "../../../utils/helpers";
 
 export function useVolumeCommands() {
   const { recognizedCommandRef, commandsRef } = useRefsData();
 
-  const { speak } = useSpeak();
   const { VOLUME_UP, VOLUME_DOWN } = commandsRef?.current ?? {};
 
-  const { successSound } = useSettingsData();
-
-  const { playSoundGeneral } = useSound();
+  const { chimeThenSpeak } = useCommandFeedback();
 
   const { adjustVolumeFromApp } = useControlledVolume();
   async function handleVolumeUp() {
@@ -27,8 +20,7 @@ export function useVolumeCommands() {
     if (percent > 1) return;
 
     adjustVolumeFromApp(percent);
-    playSoundGeneral({ fileName: successSound, shouldStop: false });
-    speak(`Volume ${percent * 100}`);
+    chimeThenSpeak(`Volume ${percent * 100}`);
   }
 
   async function handleVolumeDown() {
@@ -39,8 +31,7 @@ export function useVolumeCommands() {
     if (percent < 0) return;
 
     adjustVolumeFromApp(percent);
-    playSoundGeneral({ fileName: successSound, shouldStop: false });
-    speak(`Volume ${percent * 100}`);
+    chimeThenSpeak(`Volume ${percent * 100}`);
   }
 
   return { handleVolumeUp, handleVolumeDown };

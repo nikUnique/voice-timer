@@ -4,18 +4,26 @@ import {
   useSettingsData,
 } from "../../../context/VoiceRecognizerContext";
 import { hasPhrase } from "../../../utils/helpers";
-import { useSpeak } from "../../shared/useSpeak";
+import { useCommandFeedback } from "../../shared/useCommandFeedback";
+import { useSound } from "../../shared/useSound";
 
 export function useMediaCommands({ pauseMedia, resumeMedia }) {
   const { recognizedCommandRef, isMediaPlayingRef, commandsRef } =
     useRefsData();
 
-  const { speak } = useSpeak();
   const { PLAY_MEDIA, STOP_MEDIA, ANSWER_CALL, SKIP_NEXT, SKIP_BACK } =
     commandsRef?.current ? commandsRef.current : {};
 
-  const { isHeadsetBroken, isSkipCommandsEnabledRef, permitAnswerCallsRef } =
-    useSettingsData();
+  const {
+    isHeadsetBroken,
+    isSkipCommandsEnabledRef,
+    permitAnswerCallsRef,
+    successSound,
+  } = useSettingsData();
+
+  const { chimeThenSpeak } = useCommandFeedback();
+
+  const { playSoundGeneral } = useSound();
 
   async function refreshMediaState() {
     isMediaPlayingRef.current =
@@ -42,12 +50,12 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
 
     if (hasPhrase(recognizedCommandRef.current, SKIP_NEXT)) {
       NativeModules.NativeUtilsModule.skipNext();
-      speak("Next");
+      chimeThenSpeak("Next");
     }
 
     if (hasPhrase(recognizedCommandRef.current, SKIP_BACK)) {
       NativeModules.NativeUtilsModule.skipPrevious();
-      speak("Previous");
+      chimeThenSpeak("Previous");
     }
   }
 
@@ -70,6 +78,7 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
     if (permitAnswerCallsRef?.current !== true) return;
 
     if (hasPhrase(recognizedCommandRef.current, ANSWER_CALL)) {
+      playSoundGeneral({ fileName: successSound, shouldStop: false });
       NativeModules.NativeUtilsModule.answerCall();
     }
   }

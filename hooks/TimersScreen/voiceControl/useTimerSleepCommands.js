@@ -1,20 +1,13 @@
-import {
-  useRefsData,
-  useSettingsData,
-} from "../../../context/VoiceRecognizerContext";
+import { useRefsData } from "../../../context/VoiceRecognizerContext";
 import { hasPhrase } from "../../../utils/helpers";
 import { emitter } from "../../../utils/EventEmitter";
-import { useSound } from "../../shared/useSound";
-import { useSpeak } from "../../shared/useSpeak";
+import { useCommandFeedback } from "../../shared/useCommandFeedback";
 
 export function useTimerSleepCommands({ onSleepStateChange } = {}) {
   const { recognizedCommandRef, isTimerSleepingRef, commandsRef } =
     useRefsData();
 
-  const { speak } = useSpeak();
-
-  const { successSound } = useSettingsData();
-  const { playSoundGeneral } = useSound();
+  const { chimeThenSpeak } = useCommandFeedback();
 
   function handleGoSleep() {
     const { TIMER_GO_SLEEP } = commandsRef?.current ?? {};
@@ -23,8 +16,7 @@ export function useTimerSleepCommands({ onSleepStateChange } = {}) {
       isTimerSleepingRef.current
     )
       return;
-    playSoundGeneral({ fileName: successSound, shouldStop: false });
-    speak("Timer app went to sleep");
+    chimeThenSpeak("Timer app went to sleep");
     isTimerSleepingRef.current = true;
     onSleepStateChange?.(true);
     emitter.emit("timerSleepChange", true);
@@ -37,8 +29,7 @@ export function useTimerSleepCommands({ onSleepStateChange } = {}) {
       !isTimerSleepingRef.current
     )
       return;
-    playSoundGeneral({ fileName: successSound, shouldStop: false });
-    speak("Timer ready");
+    chimeThenSpeak("Timer ready");
     isTimerSleepingRef.current = false;
     onSleepStateChange?.(false);
     emitter.emit("timerSleepChange", false);

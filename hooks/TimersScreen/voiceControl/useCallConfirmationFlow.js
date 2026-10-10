@@ -10,6 +10,7 @@ import {
   useRefsData,
   useSettingsData,
 } from "../../../context/VoiceRecognizerContext";
+import { useCommandFeedback } from "../../shared/useCommandFeedback";
 import { useSpeak } from "../../shared/useSpeak";
 import { NativeModules } from "react-native";
 
@@ -25,6 +26,8 @@ export function useCallConfirmationFlow() {
     : {};
 
   const { isVoiceFeedbackEnabled, permitAnswerCallsRef } = useSettingsData();
+
+  const { chimeThenSpeak } = useCommandFeedback();
 
   const { contacts } = useContactsData();
 
@@ -85,7 +88,7 @@ export function useCallConfirmationFlow() {
       : isShortCall
         ? "make a short call to"
         : "call";
-    await speak(
+    await chimeThenSpeak(
       `Are you sure you want to ${wants} ${contactToCall.name}? Say "yes, ${action} ${contactToCall.name}" to confirm.`,
     );
 
@@ -144,7 +147,7 @@ export function useCallConfirmationFlow() {
         ? "Making a short call to"
         : "Calling";
 
-    await speak(`${action} ${contactToCall.name}.`);
+    await chimeThenSpeak(`${action} ${contactToCall.name}.`);
     callNumber(contactToCall.phoneNumber);
 
     clearTimeout(callId);

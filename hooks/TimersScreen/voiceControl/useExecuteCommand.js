@@ -1,14 +1,11 @@
 import { useCallback } from "react";
 import { NativeModules } from "react-native";
 
-import {
-  useRefsData,
-  useSettingsData,
-} from "../../../context/VoiceRecognizerContext";
+import { useRefsData } from "../../../context/VoiceRecognizerContext";
 import { sleep } from "../../../utils/helpers";
 
 import { getSharedObject } from "../../../utils/sharedVariables";
-import { useSound } from "../../shared/useSound";
+import { useCommandFeedback } from "../../shared/useCommandFeedback";
 import { useSpeak } from "../../shared/useSpeak";
 
 export function useExecuteCommand({
@@ -35,12 +32,10 @@ export function useExecuteCommand({
     isTimerSleepingRef,
   } = useRefsData();
 
-  const { successSound } = useSettingsData();
-
   const { RESUME, PAUSE, REPEAT, STOP, START, STOP_MEDIA, STATUS } =
     commandsRef?.current ? commandsRef.current : {};
 
-  const { playSoundGeneral } = useSound();
+  const { chimeThenSpeak } = useCommandFeedback();
 
   const { speak } = useSpeak();
 
@@ -102,6 +97,9 @@ export function useExecuteCommand({
           }
         }
 
+        let commandExecuted = false;
+        let spokenFeedback = "";
+
         if (
           recognizedCommand?.recognizedCommand
             ?.toLowerCase()
@@ -111,20 +109,16 @@ export function useExecuteCommand({
                 .trim(),
             )
         ) {
-          speak(
-            formatSingleTimerSpeech({
-              name,
-              remainingSeconds: timeLeftRef.current,
-              paused: isPaused,
-              ringing: getSharedObject().alertingTimerNames.includes(name),
-              isActive,
-            }),
-          );
+          spokenFeedback = formatSingleTimerSpeech({
+            name,
+            remainingSeconds: timeLeftRef.current,
+            paused: isPaused,
+            ringing: getSharedObject().alertingTimerNames.includes(name),
+            isActive,
+          });
 
           commandExecuted = true;
         }
-
-        let commandExecuted;
 
         if (
           (isActive && recognizedCommand?.recognizedCommand.includes(START)) ||
@@ -168,9 +162,9 @@ export function useExecuteCommand({
           startTimer();
           commandExecuted = true;
 
-          timerIsActiveRef.current &&
-            timeLeftRef.current > 0 &&
-            speak(`${name} started`);
+          if (timerIsActiveRef.current && timeLeftRef.current > 0) {
+            spokenFeedback = `${name} started`;
+          }
         }
         if (
           timerIsActiveRef.current &&
@@ -185,7 +179,7 @@ export function useExecuteCommand({
           activateTimerRef.current(index);
 
           commandExecuted = true;
-          speak(`${name} paused`);
+          spokenFeedback = `${name} paused`;
         }
         if (
           lowerCommand.includes(
@@ -200,7 +194,7 @@ export function useExecuteCommand({
           activateTimerRef.current(index);
 
           commandExecuted = true;
-          speak(`${name} resumed`);
+          spokenFeedback = `${name} resumed`;
         }
         if (
           lowerCommand.includes(
@@ -215,7 +209,7 @@ export function useExecuteCommand({
           commandExecuted = true;
           activateTimerRef.current(index);
 
-          await speak(`${name} stopped`);
+          spokenFeedback = `${name} stopped`;
         }
 
         const nameBasedOnSecret = secretIdentifierRef.current
@@ -234,15 +228,12 @@ export function useExecuteCommand({
           await startTimer("repeat f");
           commandExecuted = true;
 
-          timerIsActiveRef.current && speak(`${name} started`);
+          if (timerIsActiveRef.current) {
+            spokenFeedback = `${name} started`;
+          }
         }
         if (commandExecuted) {
-          setTimeout(function () {
-            playSoundGeneral({
-              fileName: successSound,
-              shouldStop: false,
-            });
-          }, 200);
+          chimeThenSpeak(spokenFeedback);
         }
       } catch (error) {
         console.error(`An error occurred in executeCommand function 🦸`, error);
@@ -278,8 +269,7 @@ export function useExecuteCommand({
       index,
       resumeTimerRef,
       resetTimerRef,
-      playSoundGeneral,
-      successSound,
+      chimeThenSpeak,
     ],
   );
 

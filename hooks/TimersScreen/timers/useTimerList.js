@@ -1,24 +1,17 @@
 import { useNavigation } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { NativeModules } from "react-native";
+import { useCallback, useEffect } from "react";
 
 import TimerInterface from "../../../components/TimersScreen/TimerInterface";
 import {
   useRecognizerData,
   useRefsData,
-  useSettingsData,
   useSoundData,
 } from "../../../context/VoiceRecognizerContext";
-import {
-  getItemFromStorage,
-  setItemInStorage,
-  sleep,
-} from "../../../utils/helpers";
+import { setItemInStorage, sleep } from "../../../utils/helpers";
 import { updateSharedObject } from "../../../utils/sharedVariables";
-import { useSound } from "../../shared/useSound";
-import { useSpeak } from "../../shared/useSpeak";
+import { useCommandFeedback } from "../../shared/useCommandFeedback";
 
 export function useTimerList({
   timers,
@@ -42,11 +35,10 @@ export function useTimerList({
   } = useRefsData();
 
   const { REPEAT } = commandsRef?.current ? commandsRef.current : {};
-  const { playSoundGeneral } = useSound();
-  const { successSound } = useSettingsData();
 
   const { soundRef } = useSoundData();
-  const { speak } = useSpeak();
+
+  const { chimeThenSpeak } = useCommandFeedback();
 
   const handleDelete = useCallback(
     function handleDelete(timerName) {
@@ -194,38 +186,18 @@ export function useTimerList({
     async function () {
       isMediaPausedRef.current = true;
       isMediaPausedManuallyRef.current = true;
-      playSoundGeneral({
-        fileName: successSound,
-        shouldStop: false,
-      });
-      await speak("Media paused");
+      await chimeThenSpeak("Media paused");
     },
-    [
-      isMediaPausedManuallyRef,
-      isMediaPausedRef,
-      playSoundGeneral,
-      speak,
-      successSound,
-    ],
+    [chimeThenSpeak, isMediaPausedManuallyRef, isMediaPausedRef],
   );
 
   const resumeMedia = useCallback(
     async function () {
       isMediaPausedRef.current = false;
       isMediaPausedManuallyRef.current = false;
-      await speak("Media resumed");
-      playSoundGeneral({
-        fileName: successSound,
-        shouldStop: false,
-      });
+      await chimeThenSpeak("Media resumed");
     },
-    [
-      isMediaPausedManuallyRef,
-      isMediaPausedRef,
-      playSoundGeneral,
-      speak,
-      successSound,
-    ],
+    [chimeThenSpeak, isMediaPausedManuallyRef, isMediaPausedRef],
   );
 
   return {

@@ -5,23 +5,23 @@ import {
   hasPhrase,
 } from "../../../utils/helpers";
 import { getSharedObject } from "../../../utils/sharedVariables";
-import { useSpeak } from "../../shared/useSpeak";
+import { useCommandFeedback } from "../../shared/useCommandFeedback";
 
 export function useReportCommands() {
   const { recognizedCommandRef, commandsRef } = useRefsData();
 
-  const { speak } = useSpeak();
   const { TIME, STATUS_REPORT } = commandsRef?.current ?? {};
+
+  const { chimeThenSpeak } = useCommandFeedback();
 
   function handleTimeReport() {
     if (!hasPhrase(recognizedCommandRef.current, TIME)) return;
-    speak(getTimePhrase());
+    chimeThenSpeak(getTimePhrase());
   }
 
   function handleStatusReport() {
     if (!hasPhrase(recognizedCommandRef.current, STATUS_REPORT)) return;
-
-    speak(
+    chimeThenSpeak(
       formatStatusSpeech(
         getSharedObject()?.runningTimerNames,
         getSharedObject()?.pausedTimerNames,

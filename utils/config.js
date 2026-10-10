@@ -14,6 +14,10 @@ export const BOOT_FADE_MS = 400;
 // is focused. External apps never pass through our handlers, so this poll is
 // the only way the list learns media started or stopped.
 export const COMMANDS_RUNTIME_POLL_MS = 5000;
+// Seconds between the success chime and the spoken feedback for voice
+// commands. The chime is the instant "I heard you" ack; the voice is the
+// detail. A small gap keeps the two from overlapping. Tune on device.
+export const SUCCESS_CHIME_GAP = 0.15;
 export const VOICE_FEEDBACK_SPEEDS = [
   { label: "Slow", value: 0.3 },
   { label: "Normal", value: 0.5 },
