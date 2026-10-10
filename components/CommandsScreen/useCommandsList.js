@@ -54,18 +54,14 @@ export function useCommandsList() {
   } = useSettingsData();
   const { commandsRef, isMediaPlayingRef, isTimerSleepingRef } = useRefsData();
 
-  // Commands are loaded asynchronously into a ref. The Commands screen can
-  // mount before that load finishes, so render the bundled English commands
-  // until the active command set is available rather than showing blank rows.
-  const commands = commandsRef?.current ?? defaultCommands;
+  // Commands are loaded asynchronously into a ref. Start from the bundled
+  // English commands so rows are never blank, then load the active set in the
+  // focus effect below (reading a ref during render is not allowed).
+  const [commands, setCommands] = useState(defaultCommands);
 
-  const [isSkipEnabled, setIsSkipEnabled] = useState(
-    () => isSkipCommandsEnabledRef?.current ?? false,
-  );
+  const [isSkipEnabled, setIsSkipEnabled] = useState(false);
 
-  const [permitAnswerCalls, setPermitAnswerCalls] = useState(
-    () => permitAnswerCallsRef?.current ?? false,
-  );
+  const [permitAnswerCalls, setPermitAnswerCalls] = useState(false);
 
   // Setting-based reasons are only attached when the setting is actually off,
   // so an enabled command never claims to be switched off.
@@ -81,16 +77,18 @@ export function useCommandsList() {
 
   // Media and sleep state live in refs because the command handlers read them
   // synchronously. They are copied into state here so the list can render, and
-  // refreshed on focus since both can change while this screen is open.
+  // refreshed on focus since both can change while this screen is open. The
+  // initial value is a safe default; the focus effect fills in the real state.
   const [runtime, setRuntime] = useState({
-    mediaPlaying: isMediaPlayingRef?.current ?? false,
-    asleep: isTimerSleepingRef?.current ?? false,
+    mediaPlaying: false,
+    asleep: false,
   });
 
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
 
+      setCommands(commandsRef?.current ?? defaultCommands);
       setIsSkipEnabled(isSkipCommandsEnabledRef?.current ?? false);
       setPermitAnswerCalls(permitAnswerCallsRef?.current ?? false);
       setRuntime({
@@ -142,6 +140,7 @@ export function useCommandsList() {
         emitter.off("timerSleepChange", onSleepChange);
       };
     }, [
+      commandsRef,
       isSkipCommandsEnabledRef,
       permitAnswerCallsRef,
       isMediaPlayingRef,
