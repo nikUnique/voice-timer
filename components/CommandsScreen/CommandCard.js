@@ -15,7 +15,13 @@ function CommandCard({ item }) {
   const isOff = Boolean(item.settingNote);
 
   return (
-    <View style={[styles.card, reason && styles.disabledCard]}>
+    <View
+      style={[
+        styles.card,
+        reason && styles.disabledCard,
+        reason && !isOff && styles.stateBlockedCard,
+      ]}
+    >
       <View style={styles.iconBox}>
         <Ionicons
           name={item.icon}

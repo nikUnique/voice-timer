@@ -63,6 +63,12 @@ export const styles = StyleSheet.create({
     opacity: 0.8,
     borderLeftColor: Colors.grayTint20,
   },
+  // Temporarily held by current state (asleep / media playing), as opposed
+  // to switched off by choice: amber spine, grey border. Amber matches the
+  // note text; red stays reserved for real errors.
+  stateBlockedCard: {
+    borderLeftColor: Colors.pausedColor,
+  },
   body: {
     flex: 1,
     gap: SPACE.sm,
