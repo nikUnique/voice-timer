@@ -9,8 +9,8 @@ import { styles } from "./CommandsStyles";
 function CommandCard({ item }) {
   // One reason per card. A command can be unusable for several reasons at once,
   // and listing them separately just says "this will not work" repeatedly, so
-  // the one the user can actually act on wins: a setting they can change, and
-  // otherwise whatever the current state is.
+  // the one the user can actually act on wins: a setting they can change, then
+  // media playing, then sleep.
   const reason = item.settingNote || item.stateNote;
   const isOff = Boolean(item.settingNote);
 

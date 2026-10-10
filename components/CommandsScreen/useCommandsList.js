@@ -154,18 +154,23 @@ export function useCommandsList() {
   // Returns why a command cannot be used right now, or an empty object when it
   // is usable. Both reasons are kept separate here so the card can show the one
   // the user can act on, and so the colour can hint at which kind it is.
+  // Precedence (applied by CommandCard): a Settings reason wins, then media
+  // playing, then sleep.
   const statusNotes = useCallback(
     function (badge, settingNote) {
       const notes = {};
 
       if (settingNote) notes.settingNote = settingNote;
 
-      if (asleep && !WORKS_WHILE_ASLEEP.has(badge)) {
-        notes.stateNote = ASLEEP_NOTE;
-      } else if (mediaPlaying && badge === "PLAY") {
+      // Precedence: media playing outranks sleep (matching the main-screen
+      // banners and the runtime gate); sleep is last because it is the most
+      // permeable state - the most commands still work while asleep.
+      if (mediaPlaying && badge === "PLAY") {
         notes.stateNote = ALREADY_PLAYING_NOTE;
       } else if (mediaPlaying && !WORKS_WHILE_MEDIA_PLAYING.has(badge)) {
         notes.stateNote = MEDIA_PLAYING_NOTE;
+      } else if (asleep && !WORKS_WHILE_ASLEEP.has(badge)) {
+        notes.stateNote = ASLEEP_NOTE;
       }
 
       return notes;
