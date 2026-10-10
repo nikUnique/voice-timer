@@ -16,24 +16,28 @@ function ListHeader() {
           Why a card says &quot;Unavailable&quot;
         </Text>
         <Text style={styles.legendText}>
-          A greyed-out card ends with one reason line. It is either a setting
-          you chose, which stays until you change it back, or the current state
-          of the app, which clears on its own.
+          A greyed-out card ends with one &quot;Unavailable&quot; reason line.
+          It is either a setting you chose, which stays until you change it
+          back, or the current state of the app, which clears on its own.
         </Text>
         <Text style={styles.legendText}>
           <Text style={styles.noteLabel}>While media is playing: </Text>
-          &quot;pause all media&quot; and, when enabled in Settings, the skip
-          commands. Everything else waits for the media to pause.
+          &quot;pause all media&quot; works and, when enabled in Settings, the
+          skip commands work too. Everything else waits for the media to pause.
         </Text>
         <Text style={styles.legendText}>
-          <Text style={styles.noteLabel}>While the timer is asleep: </Text>
+          <Text style={styles.noteLabel}>
+            While the timer is asleep, these commands still work:{" "}
+          </Text>
           &quot;timer wake up&quot;, &quot;pause all media&quot;, &quot;play all
-          media&quot;, &quot;stop finished&quot;, &quot;stop [timer name]&quot;,
-          and the skip commands when enabled. Everything else waits for the wake
+          media&quot;, &quot;stop finished&quot;, &quot;stop [timer name] (only
+          if the timer is ringing, not just paused)&quot;, and the skip commands
+          when enabled. Everything else waits for the &quot;timer wake up&quot;
           command.
         </Text>
         <Text style={styles.legendText}>
-          Reopen this screen to refresh these two states.
+          These two states — whether media is playing and whether the timer is
+          asleep — refresh each time you open this screen.
         </Text>
       </View>
     </>

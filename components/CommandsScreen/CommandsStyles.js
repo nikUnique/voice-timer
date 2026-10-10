@@ -9,6 +9,9 @@ import { WEIGHT } from "../../constants/weight";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // The screen centers its child (for the loading spinner state), which
+    // would otherwise shrink-wrap this list off-center — stretch instead.
+    alignSelf: "stretch",
     padding: SPACE.xl,
   },
   list: {
@@ -125,7 +128,6 @@ export const styles = StyleSheet.create({
   prompt: {
     color: Colors.primaryShade30,
     fontWeight: WEIGHT.bold,
-    fontSize: FONT.body,
   },
   emptyStateContainer: {
     flex: 1,

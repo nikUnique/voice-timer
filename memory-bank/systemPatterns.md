@@ -103,9 +103,11 @@ over a render-time value: `isSkipCommandsEnabledRef` in `useMediaCommands`,
 That way flipping a switch applies on the next utterance.
 
 `components/CommandsScreen/useCommandsList.js` mirrors this in
-`WORKS_WHILE_ASLEEP`, `WORKS_WHILE_MEDIA_PLAYING` and `NEEDS_MEDIA_PLAYING`.
+`WORKS_WHILE_ASLEEP` and `WORKS_WHILE_MEDIA_PLAYING`.
 Keep those sets in step with the hooks — the screen must describe the runtime,
-never the other way round.
+never the other way round. Only real gates get a reason line: media playing,
+timer asleep, or a setting switched off. "Not useful right now" is covered by
+the description text, never by a greyed-out card.
 
 Feedback goes through `hooks/shared/useSpeak.js` (TTS) and the command banner.
 

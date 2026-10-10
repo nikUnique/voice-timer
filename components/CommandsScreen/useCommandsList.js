@@ -37,15 +37,12 @@ const WORKS_WHILE_ASLEEP = new Set([
   "WAKE",
 ]);
 const WORKS_WHILE_MEDIA_PLAYING = new Set(["MEDIA", "NEXT", "PREV"]);
-// These only do anything while media is playing, so they are dead when nothing
-// is. "PLAY" is the opposite: it only makes sense when media is paused.
-const NEEDS_MEDIA_PLAYING = new Set(["MEDIA", "NEXT", "PREV"]);
+// Only "PLAY" carries a tailored message: it does nothing while media is
+// already playing.
 
-const ASLEEP_NOTE = "not available while the timer is asleep";
-const MEDIA_PLAYING_NOTE =
-  "not available while media is playing, pause all media first";
-const NO_MEDIA_NOTE = "not available, nothing is playing right now";
-const ALREADY_PLAYING_NOTE = "not available, media is already playing";
+const ASLEEP_NOTE = "the timer is asleep";
+const MEDIA_PLAYING_NOTE = "media is playing — pause all media first";
+const ALREADY_PLAYING_NOTE = "media is already playing";
 
 export function useCommandsList() {
   const {
@@ -139,8 +136,6 @@ export function useCommandsList() {
         notes.stateNote = ALREADY_PLAYING_NOTE;
       } else if (mediaPlaying && !WORKS_WHILE_MEDIA_PLAYING.has(badge)) {
         notes.stateNote = MEDIA_PLAYING_NOTE;
-      } else if (NEEDS_MEDIA_PLAYING.has(badge) && !mediaPlaying) {
-        notes.stateNote = NO_MEDIA_NOTE;
       }
 
       return notes;
@@ -198,14 +193,14 @@ export function useCommandsList() {
         {
           command: `${capitalize(STOP)} [timer name]`,
           example: `${capitalize(STOP)} Focus timer`,
-          description: "Stops the timer if it was paused.",
+          description: "Stops the timer if it is paused or run out of time.",
           icon: "refresh-outline",
           badge: "STOP",
         },
         {
           command: `${capitalize(REPEAT)}`,
           example: `${capitalize(REPEAT)}`,
-          description: `Restarts the timer from the last individual timer command. Any command that used a specific timer counts - that timer will be restarted. E.g. if you last said '${normalize(START)} twenty minutes' or '${normalize(STOP)} twenty minutes', where 'twenty minutes' is one of your timers, saying '${normalize(REPEAT)}' restarts the 'twenty-minutes' timer.`,
+          description: `Restarts the timer named in your last individual timer command — any command that used a specific timer counts. E.g. if you last said '${normalize(START)} twenty minutes' or '${normalize(STOP)} twenty minutes', where 'twenty minutes' is one of your timers, saying '${normalize(REPEAT)}' restarts the 'twenty-minutes' timer. Takes effect only if you  used at least one timer specific command.`,
           icon: "repeat-outline",
           badge: "REPEAT",
         },
@@ -219,7 +214,7 @@ export function useCommandsList() {
         {
           command: `${capitalize(TIME)}`,
           example: `${capitalize(TIME)}`,
-          description: "Tells you the exact time.",
+          description: "Speaks the current time aloud.",
           icon: "time-outline",
           badge: "TIME",
           settingNote: voiceNote,
@@ -228,14 +223,14 @@ export function useCommandsList() {
           command: `${capitalize(PLAY_MEDIA)}`,
           example: `${capitalize(PLAY_MEDIA)}`,
           description:
-            "Resumes external media playback, so it only works while the media is paused.",
+            "Resumes external media playback, so it only works while media is paused.",
           icon: "play-circle-outline",
           badge: "PLAY",
         },
         {
           command: `${capitalize(STOP_MEDIA)}`,
           example: `${capitalize(STOP_MEDIA)}`,
-          description: `Pauses external media, so it only works while something is playing. This command and skip commands if enabled in Settings are the only ones that keep working once media is playing, so pause the media before using anything else.`,
+          description: `Pauses external media, so it only works while media is playing. This command and skip commands if enabled in Settings are the only ones that keep working once media is playing, so pause the media before using anything else.`,
           icon: "stop-circle-outline",
           badge: "MEDIA",
         },
@@ -243,7 +238,7 @@ export function useCommandsList() {
           command: `${capitalize(STATUS_REPORT)}`,
           example: `${capitalize(STATUS_REPORT)}`,
           description:
-            "Reads out how many timers are running, paused, or alerting, and their names. Says no timers are active if there are none.",
+            "Reads out how many timers are running, paused, or ringing, and their names. If none are active, it says so.",
           icon: "list-outline",
           badge: "STATUS",
           settingNote: voiceNote,
@@ -252,7 +247,7 @@ export function useCommandsList() {
           command: `${capitalize(STATUS)} [timer name]`,
           example: `${capitalize(STATUS)} Focus timer`,
           description:
-            "Reads the current state of a single timer - whether it is running, paused, alarming, or not active, and how much time is left.",
+            "Reads the current state of a single timer — whether it is running, paused, ringing, or not active, and how much time is left.",
           icon: "timer-outline",
           badge: "STATUS",
           settingNote: voiceNote,
@@ -260,14 +255,14 @@ export function useCommandsList() {
         {
           command: `${capitalize(TIMER_WAKE_UP)}`,
           example: `${capitalize(TIMER_WAKE_UP)}`,
-          description: `Wakes the timer after sleep, so it responds to spoken commands that were disabled by ${TIMER_GO_SLEEP} command.`,
+          description: `Wakes the timer app from sleep, so it responds again to the spoken commands that sleep disables.`,
           icon: "mic-outline",
           badge: "WAKE",
         },
         {
           command: `${capitalize(TIMER_GO_SLEEP)}`,
           example: `${capitalize(TIMER_GO_SLEEP)}`,
-          description: `Puts the timer to sleep. Spoken commands are ignored until you say "${capitalize(TIMER_WAKE_UP)}". These still work while asleep: "${capitalize(TIMER_WAKE_UP)}", "${capitalize(STOP_MEDIA)}", "${capitalize(PLAY_MEDIA)}", skip commands if enabled in Settings and media is playing, "${capitalize(STOP_FINISHED)}" and "${capitalize(STOP)} [timer name]".`,
+          description: `Puts the timer to sleep. Most spoken commands are ignored until you say "${capitalize(TIMER_WAKE_UP)}". These still work while asleep: "${capitalize(TIMER_WAKE_UP)}", "${capitalize(STOP_MEDIA)}", "${capitalize(PLAY_MEDIA)}", skip commands if enabled in Settings and media is playing, "${capitalize(STOP_FINISHED)}", and "${capitalize(STOP)} [timer name] only if the timer is ringing, not just paused".`,
           icon: "mic-off-outline",
           badge: "SLEEP",
         },
@@ -289,7 +284,7 @@ export function useCommandsList() {
           command: `${capitalize(SKIP_NEXT)}`,
           example: `${capitalize(SKIP_NEXT)}`,
           description:
-            "Only works while media is playing. Sends the next-track command to the active media app, which decides the exact action. Off by default and can trigger by accident when misheard - enable it in Settings and use at your own risk.",
+            "Only works while media is playing. Sends the next-track command to the active media app, which decides the exact action. Off by default and can trigger by accident if misheard — enable it in Settings and use at your own risk.",
           icon: "play-skip-forward-outline",
           badge: "NEXT",
           settingNote: skipNote,
@@ -298,7 +293,7 @@ export function useCommandsList() {
           command: `${capitalize(SKIP_BACK)}`,
           example: `${capitalize(SKIP_BACK)}`,
           description:
-            "Only works while media is playing. Sends the previous-track command to the active media app, which decides the exact action. Off by default and can trigger by accident when misheard - enable it in Settings and use at your own risk.",
+            "Only works while media is playing. Sends the previous-track command to the active media app, which decides the exact action. Off by default and can trigger by accident if misheard — enable it in Settings and use at your own risk.",
           icon: "play-skip-back-outline",
           badge: "PREV",
           settingNote: skipNote,
@@ -314,7 +309,7 @@ export function useCommandsList() {
         {
           command: `${capitalize(SHORT_CALL)} [contact name]`,
           example: `${capitalize(SHORT_CALL)} John`,
-          description: `Uses the same voice confirmation as call, then places the call and ends it automatically after ${PHONE_TIMEOUT / 1000} seconds, whether it was picked up or not.`,
+          description: `Uses the same voice confirmation as "Call [contact name]", then places the call and ends it automatically after ${PHONE_TIMEOUT / 1000} seconds, whether it was picked up or not.`,
           icon: "notifications-outline",
           badge: "SHORT",
           settingNote: callNote,
@@ -322,7 +317,7 @@ export function useCommandsList() {
         {
           command: `${capitalize(MINUTE_CALL)} [contact name]`,
           example: `${capitalize(MINUTE_CALL)} John`,
-          description: `Uses the same voice confirmation as call, then places the call and ends it automatically after ${MINUTE_CALL_TIMEOUT / 1000} seconds, whether it was picked up or not.`,
+          description: `Uses the same voice confirmation as "Call [contact name]", then places the call and ends it automatically after ${MINUTE_CALL_TIMEOUT / 1000} seconds, whether it was picked up or not.`,
           icon: "time-outline",
           badge: "MIN",
           settingNote: callNote,
