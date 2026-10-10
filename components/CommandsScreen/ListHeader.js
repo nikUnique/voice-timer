@@ -37,7 +37,7 @@ function ListHeader() {
         </Text>
         <Text style={styles.legendText}>
           These two states — whether media is playing and whether the timer is
-          asleep — refresh each time you open this screen.
+          asleep — update live while this screen is open.
         </Text>
       </View>
     </>

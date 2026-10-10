@@ -3,6 +3,7 @@ import {
   useSettingsData,
 } from "../../../context/VoiceRecognizerContext";
 import { hasPhrase } from "../../../utils/helpers";
+import { emitter } from "../../../utils/EventEmitter";
 import { useSound } from "../../shared/useSound";
 import { useSpeak } from "../../shared/useSpeak";
 
@@ -26,6 +27,7 @@ export function useTimerSleepCommands({ onSleepStateChange } = {}) {
     speak("Timer went to sleep");
     isTimerSleepingRef.current = true;
     onSleepStateChange?.(true);
+    emitter.emit("timerSleepChange", true);
   }
 
   function handleWakeUp() {
@@ -38,6 +40,7 @@ export function useTimerSleepCommands({ onSleepStateChange } = {}) {
     speak("Timer ready");
     isTimerSleepingRef.current = false;
     onSleepStateChange?.(false);
+    emitter.emit("timerSleepChange", false);
   }
 
   return { handleGoSleep, handleWakeUp };

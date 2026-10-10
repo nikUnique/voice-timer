@@ -7,8 +7,10 @@ import {
   useSettingsData,
 } from "../../context/VoiceRecognizerContext";
 import { capitalize, normalize } from "../../utils/helpers";
+import { emitter } from "../../utils/EventEmitter";
 import {
   CALL_TIMEOUT,
+  COMMANDS_RUNTIME_POLL_MS,
   MINUTE_CALL_TIMEOUT,
   PHONE_TIMEOUT,
 } from "../../utils/config";
@@ -108,8 +110,36 @@ export function useCommandsList() {
         },
       );
 
+      // External media apps never pass through our handlers, so poll the
+      // platform while this screen is focused. Cleared on blur/unmount.
+      const pollId = setInterval(function () {
+        if (!isActive) return;
+
+        Promise.resolve(
+          NativeModules.AudioFocusModule?.isMediaPlaying?.(),
+        ).then((playing) => {
+          if (!isActive) return;
+          setRuntime((current) => {
+            const next = Boolean(playing);
+            return current.mediaPlaying === next
+              ? current
+              : { ...current, mediaPlaying: next };
+          });
+        });
+      }, COMMANDS_RUNTIME_POLL_MS);
+
+      const onSleepChange = function (asleep) {
+        if (!isActive) return;
+        setRuntime((current) =>
+          current.asleep === asleep ? current : { ...current, asleep },
+        );
+      };
+      emitter.on("timerSleepChange", onSleepChange);
+
       return function () {
         isActive = false;
+        clearInterval(pollId);
+        emitter.off("timerSleepChange", onSleepChange);
       };
     }, [
       isSkipCommandsEnabledRef,
