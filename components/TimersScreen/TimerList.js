@@ -14,12 +14,12 @@ import { useTimerList } from "../../hooks/TimersScreen/timers/useTimerList";
 import { Text } from "../../ui/AppText";
 import Arrows from "../../ui/Arrows";
 import { emitter } from "../../utils/EventEmitter";
-import { getItemFromStorage } from "../../utils/helpers";
 import {
   getSharedObject,
   updateSharedObject,
 } from "../../utils/sharedVariables";
 import MicStatus from "./MicStatus";
+import MediaNotice from "./MediaNotice";
 import SleepNotice from "./SleepNotice";
 import TimerInterfaceButtons from "./TimerInterfaceButtons";
 
@@ -35,22 +35,20 @@ export default function TimerList({
   const [updateList, setUpdateList] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [listHeight, setListHeight] = useState(0);
+  // Shared by the two overlay notices below: while media plays it outranks
+  // sleep, so only the media notice shows.
+  const [mediaPlaying, setMediaPlaying] = useState(false);
 
   const flatListRef = useRef(null);
 
   const { setRecognizedCommand, timers, setTimers } = useRecognizerData();
-  const {
-    activateTimerRef,
-    leastTimeTimerRef,
-    workingTimersRef,
-    isTimerSleepingRef,
-  } = useRefsData();
+  const { activateTimerRef, leastTimeTimerRef, workingTimersRef } =
+    useRefsData();
 
   const {
     handleDelete,
     handleReadyState,
     renderTimer,
-    onLayoutHandler,
     pauseMedia,
     resumeMedia,
   } = useTimerList({
@@ -261,7 +259,13 @@ export default function TimerList({
               />
             )}
 
-            <SleepNotice isTimerSleeping={isTimerSleeping} />
+            {/* Media outranks sleep: while anything plays, sleep state is
+                irrelevant, so only the media notice shows. */}
+            <MediaNotice onMediaPlayingChange={setMediaPlaying} />
+            <SleepNotice
+              isTimerSleeping={isTimerSleeping}
+              hidden={mediaPlaying}
+            />
 
             {timers.length > 1 && (
               <Text style={styles.paginationLabel}>

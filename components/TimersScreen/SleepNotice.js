@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from "@react-navigation/native";
-import { memo, useCallback, useState } from "react";
+import { memo } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { Colors } from "../../constants/colors";
@@ -8,78 +7,29 @@ import { RADIUS } from "../../constants/radius";
 import { SPACE } from "../../constants/spacing";
 import { FONT } from "../../constants/typography";
 import { WEIGHT } from "../../constants/weight";
-import {
-  useRefsData,
-  useSettingsData,
-} from "../../context/VoiceRecognizerContext";
-import { ExpandableSetting } from "../../ui/ExpandableSetting";
-import * as defaultCommands from "../../utils/en_commands";
+import { Text } from "../../ui/AppText";
 
-function SleepNotice({ isTimerSleeping }) {
-  const { commandsRef } = useRefsData();
-  const { isSkipCommandsEnabledRef } = useSettingsData();
-
-  // Skip commands are toggled through a ref (see Settings), so keep a local
-  // state in sync on focus, mirroring the pattern used by useCommandsList.
-  const [isSkipEnabled, setIsSkipEnabled] = useState(
-    () => isSkipCommandsEnabledRef?.current ?? false,
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      setIsSkipEnabled(isSkipCommandsEnabledRef?.current ?? false);
-    }, [isSkipCommandsEnabledRef]),
-  );
-
-  // Commands are loaded asynchronously into a ref, so fall back to the
-  // bundled English commands until the active set is available.
-  const commands = commandsRef?.current ?? defaultCommands;
-
-  const {
-    TIMER_WAKE_UP = "",
-    STOP = "",
-    STOP_FINISHED = "",
-    PLAY_MEDIA = "",
-    STOP_MEDIA = "",
-    ANSWER_CALL = "",
-    SKIP_NEXT = "",
-    SKIP_BACK = "",
-  } = commands;
-
-  if (!isTimerSleeping) {
+// Slim banner for the sleep state. While media plays the media notice outranks
+// this one, so the caller hides it then. It states the fact and stops - the
+// per-command detail lives on the Commands screen. State, not a banner to
+// dismiss: it clears when the timer wakes. Kept at the original 70% width so it
+// clears the corner pagination counter instead of sitting underneath it.
+function SleepNotice({ isTimerSleeping, hidden }) {
+  if (hidden || !isTimerSleeping) {
     return null;
   }
 
-  // Skip next/previous keep working while sleeping, but only while media is
-  // playing and only when enabled in Settings (handled before the sleep block).
-  const extraCommands = isSkipEnabled
-    ? `, ${SKIP_NEXT}, ${SKIP_BACK} (while media is playing)`
-    : "";
-
-  const description = `Most voice commands will not work. Still available: ${TIMER_WAKE_UP}, ${STOP} [timer name], ${STOP_FINISHED}, ${PLAY_MEDIA}, ${STOP_MEDIA}, ${ANSWER_CALL}${extraCommands}.`;
-
   return (
-    <View
-      style={styles.container}
-      pointerEvents='box-none'
-    >
-      <View style={styles.card}>
+    <View style={styles.container} pointerEvents="box-none">
+      <View style={styles.banner}>
         <Ionicons
-          name='moon'
-          size={FONT.heading}
+          name="moon"
+          size={FONT.subheading}
           color={Colors.pausedColor}
-          style={styles.icon}
         />
-
-        <View style={styles.body}>
-          <ExpandableSetting
-            label='Timer is sleeping'
-            labelStyle={styles.title}
-            descriptionStyle={styles.text}
-            description={description}
-            collapsedLines={2}
-            style={styles.expandable}
-          />
+        <View style={styles.textColumn}>
+          <Text style={styles.title}>Timer is sleeping</Text>
+          <Text style={styles.subtitle}>Most voice commands are paused</Text>
         </View>
       </View>
     </View>
@@ -96,35 +46,29 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: "center",
   },
-  card: {
+  banner: {
     width: "70%",
     flexDirection: "row",
-    alignItems: "flex-start",
-    gap: SPACE.lg,
-    padding: SPACE.lg,
-    borderRadius: RADIUS.sm,
+    alignItems: "center",
+    gap: SPACE.md,
+    paddingVertical: SPACE.md,
+    paddingHorizontal: SPACE.lg,
+    borderRadius: RADIUS.full,
     backgroundColor: Colors.pausedAlpha20,
     borderWidth: 1,
     borderColor: Colors.pausedColor,
   },
-  icon: {
-    marginTop: SPACE.xs,
-  },
-  body: {
+  textColumn: {
     flex: 1,
-  },
-  expandable: {
-    width: "100%",
+    gap: SPACE.xs,
   },
   title: {
     color: Colors.pausedColor,
     fontSize: FONT.body,
     fontWeight: WEIGHT.bold,
-    marginBottom: SPACE.xs,
   },
-  text: {
+  subtitle: {
     color: Colors.primaryTint90,
     fontSize: FONT.caption,
-    lineHeight: FONT.caption * 1.4,
   },
 });

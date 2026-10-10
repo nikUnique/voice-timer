@@ -32,8 +32,8 @@ function ListHeader() {
           &quot;timer wake up&quot;, &quot;pause all media&quot;, &quot;play all
           media&quot;, &quot;stop finished&quot;, &quot;stop [timer name] (only
           if the timer is ringing, not just paused)&quot;, and the skip commands
-          when enabled. Everything else waits for the &quot;timer wake up&quot;
-          command.
+          when enabled and media is playing. Everything else waits for the
+          &quot;timer wake up&quot; command.
         </Text>
         <Text style={styles.legendText}>
           These two states — whether media is playing and whether the timer is
