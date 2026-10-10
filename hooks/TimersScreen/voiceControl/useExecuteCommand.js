@@ -89,14 +89,17 @@ export function useExecuteCommand({
           return;
         }
 
-        if (
-          isTimerSleepingRef.current &&
-          !recognizedCommand?.recognizedCommand
-            .trim()
-            .toLowerCase()
-            .includes(STOP)
-        ) {
-          return;
+        // While asleep, only a ringing timer may be stopped; a paused one is
+        // left alone. Non-STOP commands are already blocked; STOP now proceeds
+        // only when THIS timer is actually alerting.
+        if (isTimerSleepingRef.current) {
+          const command =
+            recognizedCommand?.recognizedCommand?.trim().toLowerCase() ?? "";
+          const thisTimerIsRinging =
+            getSharedObject().alertingTimerNames.includes(name);
+          if (!command.includes(STOP) || !thisTimerIsRinging) {
+            return;
+          }
         }
 
         if (
