@@ -12,25 +12,26 @@ export function useTimerSleepCommands({ onSleepStateChange } = {}) {
     useRefsData();
 
   const { speak } = useSpeak();
-  const { TIMER_WAKE_UP, TIMER_GO_SLEEP } = commandsRef?.current ?? {};
 
   const { successSound } = useSettingsData();
   const { playSoundGeneral } = useSound();
 
   function handleGoSleep() {
+    const { TIMER_GO_SLEEP } = commandsRef?.current ?? {};
     if (
       !hasPhrase(recognizedCommandRef.current, TIMER_GO_SLEEP) ||
       isTimerSleepingRef.current
     )
       return;
     playSoundGeneral({ fileName: successSound, shouldStop: false });
-    speak("Timer went to sleep");
+    speak("Timer app went to sleep");
     isTimerSleepingRef.current = true;
     onSleepStateChange?.(true);
     emitter.emit("timerSleepChange", true);
   }
 
   function handleWakeUp() {
+    const { TIMER_WAKE_UP } = commandsRef?.current ?? {};
     if (
       !hasPhrase(recognizedCommandRef.current, TIMER_WAKE_UP) ||
       !isTimerSleepingRef.current

@@ -27,7 +27,7 @@ function ListHeader() {
         </Text>
         <Text style={styles.legendText}>
           <Text style={styles.noteLabel}>
-            While the timer is asleep, these commands still work:{" "}
+            While the timer app is asleep, these commands still work:{" "}
           </Text>
           &quot;timer wake up&quot;, &quot;pause all media&quot;, &quot;play all
           media&quot;, &quot;stop finished&quot;, &quot;stop [timer name] (only
@@ -36,8 +36,8 @@ function ListHeader() {
           &quot;timer wake up&quot; command.
         </Text>
         <Text style={styles.legendText}>
-          These two states — whether media is playing and whether the timer is
-          asleep — update live while this screen is open.
+          These two states — whether media is playing and whether the timer app
+          is asleep — update live while this screen is open.
         </Text>
       </View>
     </>

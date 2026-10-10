@@ -28,7 +28,7 @@ function SleepNotice({ isTimerSleeping, hidden }) {
           color={Colors.pausedColor}
         />
         <View style={styles.textColumn}>
-          <Text style={styles.title}>Timer is sleeping</Text>
+          <Text style={styles.title}>Timer app is sleeping</Text>
           <Text style={styles.subtitle}>Most voice commands are paused</Text>
         </View>
       </View>

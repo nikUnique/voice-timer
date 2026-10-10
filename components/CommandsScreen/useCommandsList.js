@@ -42,7 +42,7 @@ const WORKS_WHILE_MEDIA_PLAYING = new Set(["MEDIA", "NEXT", "PREV"]);
 // Only "PLAY" carries a tailored message: it does nothing while media is
 // already playing.
 
-const ASLEEP_NOTE = "the timer is asleep";
+const ASLEEP_NOTE = "the timer app is asleep";
 const MEDIA_PLAYING_NOTE = "media is playing — pause all media first";
 const ALREADY_PLAYING_NOTE = "media is already playing";
 
@@ -296,7 +296,7 @@ export function useCommandsList() {
         {
           command: `${capitalize(TIMER_GO_SLEEP)}`,
           example: `${capitalize(TIMER_GO_SLEEP)}`,
-          description: `Puts the timer to sleep. Most spoken commands are ignored until you say "${capitalize(TIMER_WAKE_UP)}". These still work while asleep: "${capitalize(TIMER_WAKE_UP)}", "${capitalize(STOP_MEDIA)}", "${capitalize(PLAY_MEDIA)}", skip commands if enabled in Settings and media is playing, "${capitalize(STOP_FINISHED)}", and "${capitalize(STOP)} [timer name] only if the timer is ringing, not just paused".`,
+          description: `Puts the timer app to sleep. Most spoken commands are ignored until you say "${capitalize(TIMER_WAKE_UP)}". These still work while asleep: "${capitalize(TIMER_WAKE_UP)}", "${capitalize(STOP_MEDIA)}", "${capitalize(PLAY_MEDIA)}", skip commands if enabled in Settings and media is playing, "${capitalize(STOP_FINISHED)}", and "${capitalize(STOP)} [timer name] only if the timer is ringing, not just paused".`,
           icon: "mic-off-outline",
           badge: "SLEEP",
         },
