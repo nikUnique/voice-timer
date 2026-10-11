@@ -27,7 +27,6 @@ export function useCommandsControl({
     recognizedCommandRef,
     setIsListening,
     isListeningRef,
-    ignoreUntilRef,
     resultEventRef,
     currentSpeechRef,
   } = useRefsData();
@@ -244,7 +243,6 @@ export function useCommandsControl({
     },
     [
       currentSpeechRef,
-      ignoreUntilRef,
       isListeningRef,
       recognizedCommandRef,
       resultEventRef,

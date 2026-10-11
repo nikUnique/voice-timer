@@ -2,7 +2,6 @@ import { useCallback, useEffect } from "react";
 import { AppState } from "react-native";
 
 import { emitter } from "../../../utils/EventEmitter";
-import { updateSharedObject } from "../../../utils/sharedVariables";
 
 export function usePrepareEffects({
   saveStorage,

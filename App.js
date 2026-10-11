@@ -141,7 +141,7 @@ function AppWithContext() {
       }
     }
     load();
-  }, []);
+  }, [setContacts]);
 
   const restoreBrightness = useCallback(
     async function () {

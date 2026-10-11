@@ -17,7 +17,7 @@ import { FONT } from "../../constants/typography";
 export default function TimerInterfaceButtons({ onDelete }) {
   const navigation = useNavigation();
 
-  const [stateChanged, setStateChanged] = useState(false);
+  const [, setStateChanged] = useState(false);
   const [maximumTimersTipCreation, setMaximumTimersTipCreation] =
     useState(false);
   const [maximumTimersTipStart, setMaximumTimersTipStart] = useState(false);

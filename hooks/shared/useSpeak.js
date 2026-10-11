@@ -1,6 +1,6 @@
 import Tts from "react-native-tts";
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import { NativeModules } from "react-native";
 import {
   useRefsData,

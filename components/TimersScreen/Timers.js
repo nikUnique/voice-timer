@@ -3,7 +3,7 @@ import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import BackgroundService from "react-native-background-actions";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AppState, NativeModules, StyleSheet, View } from "react-native";
+import { AppState, StyleSheet, View } from "react-native";
 
 import {
   useRecognizerData,

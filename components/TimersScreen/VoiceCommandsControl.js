@@ -20,7 +20,6 @@ import {
 } from "../../context/VoiceRecognizerContext";
 import { useCommandsControl } from "../../hooks/TimersScreen/voiceControl/useCommandsControl";
 import { Text } from "../../ui/AppText";
-import { cleanStop } from "../../utils/helpers";
 import { getSharedObject } from "../../utils/sharedVariables";
 
 const eventEmitter = new NativeEventEmitter(NativeModules.AudioFocusModule);
