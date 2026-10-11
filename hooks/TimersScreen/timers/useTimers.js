@@ -17,7 +17,7 @@ export function useTimers() {
   const navigation = useNavigation();
   const [isMicroGranted, setIsMicroGranted] = useState(false);
   const { playSound, stopSound } = useSound();
-  const { setTimers, setEditableTimers } = useRecognizerData();
+  const { setTimers } = useRecognizerData();
 
   const {
     notificationIdRef,
@@ -181,7 +181,7 @@ export function useTimers() {
       }
       load();
     },
-    [allTimersRef, navigation, setEditableTimers, setTimers],
+    [allTimersRef, navigation, setTimers],
   );
 
   return {

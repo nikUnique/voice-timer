@@ -10,7 +10,7 @@ const ContactsContext = createContext();
 export default function VoiceRecognizerProvider({ children }) {
   const [isAlarmingScreen, setIsAlarmingScreen] = useState(false);
   const [alertingTimerNames, setAlertingTimerNames] = useState([]);
-  const [language, setLanguage] = useState("en");
+  const [language] = useState("en");
   const [isLocked, setIsLocked] = useState(false);
 
   const isListeningRef = useRef(false);
@@ -61,7 +61,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const workingTimersRef = useRef([]);
   const [timers, setTimers] = useState([]);
   const alertingTimerNamesRef = useRef([]);
-  const [editableTimers, setEditableTimers] = useState([]);
+  const [editableTimers] = useState([]);
   const [timersHistory, setTimersHistory] = useState([]);
   const allTimersRef = useRef(timers);
   const freshlyCreatedTimerRef = useRef(null);
@@ -74,7 +74,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const [screenTimeout, setScreenTimeout] = useState(1000 * 60 * 5);
   const [successSound, setSuccessSound] = useState("success.mp3");
   const [alertSound, setAlertSound] = useState("joy.mp3");
-  const [discoSound, setDiscoSound] = useState("disco.wav");
+  const [discoSound] = useState("disco.wav");
   const [alarmVolume, setAlarmVolume] = useState(0.1);
   const [autoStopAlarmTimeout, setAutoStopAlarmTimeout] = useState(0);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
