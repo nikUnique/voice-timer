@@ -50,91 +50,106 @@ export function useBackgroundActions() {
     [leastTimeTimerRef],
   );
 
-  useEffect(function () {
-    let unsubcsribeForeground;
-    async function load() {
-      unsubcsribeForeground?.();
-      unsubcsribeForeground = notifee.onForegroundEvent(
-        async ({ type, detail }) => {
-          if (type === EventType.ACTION_PRESS) {
-            const { timerName } = detail.notification.data;
+  useEffect(
+    function () {
+      let unsubcsribeForeground;
+      async function load() {
+        unsubcsribeForeground?.();
+        unsubcsribeForeground = notifee.onForegroundEvent(
+          async ({ type, detail }) => {
+            if (type === EventType.ACTION_PRESS) {
+              const { timerName } = detail.notification.data;
 
-            switch (detail.pressAction.id) {
-              case "resetTimer":
-                resetTimer(timerName);
-                break;
+              switch (detail.pressAction.id) {
+                case "resetTimer":
+                  resetTimer(timerName);
+                  break;
 
-              case "resetAllTimers":
-                resetAllTimers();
-                break;
+                case "resetAllTimers":
+                  resetAllTimers();
+                  break;
 
-              case "resetAllFinishedTimers":
-                resetAllFinishedTimers();
-                break;
+                case "resetAllFinishedTimers":
+                  resetAllFinishedTimers();
+                  break;
 
-              default:
-                break;
+                default:
+                  break;
+              }
             }
-          }
-        },
-      );
+          },
+        );
 
-      notifee.onBackgroundEvent(async ({ type, detail }) => {
-        try {
-          const activity =
-            await NativeModules.NativeUtilsModule.getCurrentActivityName();
+        notifee.onBackgroundEvent(async ({ type, detail }) => {
+          try {
+            const activity =
+              await NativeModules.NativeUtilsModule.getCurrentActivityName();
 
-          currentActivityRef.current = activity;
+            currentActivityRef.current = activity;
 
-          if (type === EventType.PRESS) {
-            updateSharedObject({ notificationTap: true });
-          }
-
-          if (type === EventType.DISMISSED) {
-            cleanStop();
-          }
-
-          if (type === EventType.ACTION_PRESS) {
-            const { timerName } = detail.notification.data;
-            let notificationId;
-
-            switch (detail.pressAction.id) {
-              case "resetTimer":
-                notificationId = detail.notification?.id;
-                notifee.cancelDisplayedNotification(notificationId);
-
-                resetTimer(timerName);
-                break;
-
-              case "pauseTimer":
-                pauseTimer(timerName);
-                break;
-
-              case "resumeTimer":
-                resumeTimer(timerName);
-                break;
-
-              case "resetAllTimers":
-                resetAllTimers();
-                break;
-
-              case "resetAllFinishedTimers":
-                resetAllFinishedTimers();
-                break;
-
-              default:
-                break;
+            if (type === EventType.PRESS) {
+              updateSharedObject({ notificationTap: true });
             }
-          }
-        } catch (err) {
-          console.error(
-            `An error occurred in onBackgroundEvent handler 🔴`,
-            err,
-          );
-        }
-      });
-    }
 
-    load();
-  }, []);
+            if (type === EventType.DISMISSED) {
+              cleanStop();
+            }
+
+            if (type === EventType.ACTION_PRESS) {
+              const { timerName } = detail.notification.data;
+              let notificationId;
+
+              switch (detail.pressAction.id) {
+                case "resetTimer":
+                  notificationId = detail.notification?.id;
+                  notifee.cancelDisplayedNotification(notificationId);
+
+                  resetTimer(timerName);
+                  break;
+
+                case "pauseTimer":
+                  pauseTimer(timerName);
+                  break;
+
+                case "resumeTimer":
+                  resumeTimer(timerName);
+                  break;
+
+                case "resetAllTimers":
+                  resetAllTimers();
+                  break;
+
+                case "resetAllFinishedTimers":
+                  resetAllFinishedTimers();
+                  break;
+
+                default:
+                  break;
+              }
+            }
+          } catch (err) {
+            console.error(
+              `An error occurred in onBackgroundEvent handler 🔴`,
+              err,
+            );
+          }
+        });
+      }
+
+      load();
+
+      return () => unsubcsribeForeground?.();
+      // Cleanup unsubscribes the foreground listener only: notifee exposes no
+      // handle for onBackgroundEvent (single global handler by design), so this
+      // effect must stay register-once — never add an unstable dep here.
+    },
+    [
+      resetTimer,
+      resetAllTimers,
+      resetAllFinishedTimers,
+      pauseTimer,
+      resumeTimer,
+      currentActivityRef,
+    ],
+  );
 }

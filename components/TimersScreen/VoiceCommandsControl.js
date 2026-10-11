@@ -96,6 +96,9 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
         unload();
       }
     };
+    // Unmount-only cleanup by design: adding `unload` would re-arm the
+    // effect whenever its identity changes. Intentionally mount-once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(
