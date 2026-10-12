@@ -11,11 +11,10 @@ export function useAlarmResetCommand() {
   const { secretIdentifierRef, recognizedCommandRef, commandsRef } =
     useRefsData();
 
-  const { STOP, STOP_FINISHED } = commandsRef?.current ?? {};
-
   const { chimeThenSpeak } = useCommandFeedback();
 
   function handleResetAlarm() {
+    const { STOP, STOP_FINISHED } = commandsRef?.current ?? {};
     const identifier = secretIdentifierRef.current
       ?.split(" ")
       .slice(2, -1)

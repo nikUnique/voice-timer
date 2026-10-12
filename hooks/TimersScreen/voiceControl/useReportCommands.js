@@ -10,16 +10,16 @@ import { useCommandFeedback } from "../../shared/useCommandFeedback";
 export function useReportCommands() {
   const { recognizedCommandRef, commandsRef } = useRefsData();
 
-  const { TIME, STATUS_REPORT } = commandsRef?.current ?? {};
-
   const { chimeThenSpeak } = useCommandFeedback();
 
   function handleTimeReport() {
+    const { TIME } = commandsRef?.current ?? {};
     if (!hasPhrase(recognizedCommandRef.current, TIME)) return;
     chimeThenSpeak(getTimePhrase());
   }
 
   function handleStatusReport() {
+    const { STATUS_REPORT } = commandsRef?.current ?? {};
     if (!hasPhrase(recognizedCommandRef.current, STATUS_REPORT)) return;
     chimeThenSpeak(
       formatStatusSpeech(

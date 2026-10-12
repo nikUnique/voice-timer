@@ -11,9 +11,6 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
   const { recognizedCommandRef, isMediaPlayingRef, commandsRef } =
     useRefsData();
 
-  const { PLAY_MEDIA, STOP_MEDIA, ANSWER_CALL, SKIP_NEXT, SKIP_BACK } =
-    commandsRef?.current ? commandsRef.current : {};
-
   const {
     isHeadsetBroken,
     isSkipCommandsEnabledRef,
@@ -31,6 +28,7 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
   }
 
   async function handleStopMedia() {
+    const { STOP_MEDIA } = commandsRef?.current ?? {};
     if (!isMediaPlayingRef.current) return;
     if (!hasPhrase(recognizedCommandRef.current, STOP_MEDIA)) return;
 
@@ -46,6 +44,7 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
   }
 
   function handleSkip() {
+    const { SKIP_NEXT, SKIP_BACK } = commandsRef?.current ?? {};
     if (!isMediaPlayingRef.current || !isSkipCommandsEnabledRef.current) return;
 
     if (hasPhrase(recognizedCommandRef.current, SKIP_NEXT)) {
@@ -60,6 +59,7 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
   }
 
   async function handlePlayMedia() {
+    const { PLAY_MEDIA } = commandsRef?.current ?? {};
     if (isMediaPlayingRef.current) return;
     if (!hasPhrase(recognizedCommandRef.current, PLAY_MEDIA)) return;
 
@@ -73,6 +73,7 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
   }
 
   function handleAnswerCall() {
+    const { ANSWER_CALL } = commandsRef?.current ?? {};
     // Same switch as call and phone: it is labelled "Make and answer calls with
     // voice", so answering is off with the rest of them.
     if (permitAnswerCallsRef?.current !== true) return;

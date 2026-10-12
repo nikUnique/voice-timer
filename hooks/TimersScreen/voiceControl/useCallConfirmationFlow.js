@@ -21,9 +21,6 @@ export function useCallConfirmationFlow() {
     useRefsData();
 
   const { speak } = useSpeak();
-  const { CALL, SHORT_CALL, MINUTE_CALL, YES, NO } = commandsRef?.current
-    ? commandsRef.current
-    : {};
 
   const { isVoiceFeedbackEnabled, permitAnswerCallsRef } = useSettingsData();
 
@@ -32,6 +29,7 @@ export function useCallConfirmationFlow() {
   const { contacts } = useContactsData();
 
   function isCallCommand(command) {
+    const { CALL, SHORT_CALL, MINUTE_CALL } = commandsRef?.current ?? {};
     return (
       hasPhrase(command, CALL) ||
       hasPhrase(command, SHORT_CALL) ||
@@ -55,6 +53,7 @@ export function useCallConfirmationFlow() {
   }
 
   async function startConfirmation() {
+    const { CALL, SHORT_CALL, MINUTE_CALL } = commandsRef?.current ?? {};
     clearTimeout(callTimeout);
 
     if (
@@ -102,6 +101,7 @@ export function useCallConfirmationFlow() {
   }
 
   async function handleYes() {
+    const { CALL, SHORT_CALL, MINUTE_CALL, YES } = commandsRef?.current ?? {};
     const command = recognizedCommandRef.current;
     const pending = prevRecognizedCommandRef.current;
 
@@ -171,6 +171,7 @@ export function useCallConfirmationFlow() {
   }
 
   async function handleNo() {
+    const { NO } = commandsRef?.current ?? {};
     if (
       !hasPhrase(recognizedCommandRef.current, NO) ||
       !isCallCommand(prevRecognizedCommandRef.current)
