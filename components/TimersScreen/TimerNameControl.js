@@ -9,7 +9,12 @@ import {
   useSettingsData,
 } from "../../context/VoiceRecognizerContext";
 import { emitter } from "../../utils/EventEmitter";
-import { setItemInStorage } from "../../utils/helpers";
+import {
+  getItemFromStorage,
+  removeItemFromStorage,
+  setItemInStorage,
+} from "../../utils/helpers";
+import Time from "./Time";
 import {
   getSharedObject,
   updateSharedObject,
@@ -17,6 +22,29 @@ import {
 import { SPACE } from "../../constants/spacing";
 import { RADIUS } from "../../constants/radius";
 import { WEIGHT } from "../../constants/weight";
+
+async function migrateTimerStorage(oldName, newName) {
+  const keys = ["timerStarted-", "timerState-", "background-", "timeout-"];
+  for (const prefix of keys) {
+    const stored = await getItemFromStorage(`${prefix}${oldName}`);
+    if (stored !== null && stored !== undefined) {
+      const migrated =
+        stored !== null && typeof stored === "object" && !Array.isArray(stored)
+          ? { ...stored, name: newName }
+          : stored;
+      await setItemInStorage(`${prefix}${newName}`, migrated);
+      await removeItemFromStorage(`${prefix}${oldName}`);
+    }
+  }
+  const sharedObject = getSharedObject();
+  if (sharedObject[`timeoutId-${oldName}`] !== undefined) {
+    updateSharedObject({
+      [`timeoutId-${newName}`]: sharedObject[`timeoutId-${oldName}`],
+      [`timeoutId-${oldName}`]: undefined,
+    });
+  }
+  delete Time[`setTimeLeft-${oldName}`];
+}
 
 export default function TimerNameControl() {
   const { name } = getSharedObject().changeTimerNameParams;
@@ -84,6 +112,10 @@ export default function TimerNameControl() {
         timer.name === name ? { ...timer, name: lowerCaseName } : timer,
       );
 
+      // Rename keeps the mounted TimerInterface (list keyed by id) with the
+      // new name prop, so migrate the per-name state to the new keys.
+      await migrateTimerStorage(name, lowerCaseName);
+
       setTimers(newTimersArr);
       setItemInStorage("timers", newTimersArr);
 
@@ -141,9 +173,9 @@ export default function TimerNameControl() {
                 cursorColor={Colors.primaryTint90}
                 maxLength={20}
                 style={[styles.textInput, textInputsStyle]}
-                inputMode='text'
+                inputMode="text"
                 autoCorrect={true}
-                keyboardType='default'
+                keyboardType="default"
                 spellCheck={true}
               />
             </View>

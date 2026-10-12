@@ -7,6 +7,7 @@ export function usePrepareEffects({
   saveStorage,
   loadTimerState,
   name,
+  time,
   pauseTimerRef,
   resumeTimerRef,
   updatePersistentNotification,
@@ -25,10 +26,12 @@ export function usePrepareEffects({
   const load = useCallback(
     async function load() {
       if (AppState.currentState === "active") {
-        await loadTimerState();
+        // Fresh props passed as arguments: loadTimerState keeps a stable
+        // identity (no reload loop) while always reading current values.
+        await loadTimerState(name, time);
       }
     },
-    [loadTimerState],
+    [loadTimerState, name, time],
   );
 
   useEffect(

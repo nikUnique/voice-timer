@@ -79,11 +79,11 @@ export function useTimerList({
     setIsReady(isReady);
     await sleep(0.25);
     await SplashScreen.hideAsync();
-  }, []);
+  }, [setIsReady]);
 
   const clearCommand = useCallback(function () {
     setRecognizedCommand(" ");
-  }, []);
+  }, [setRecognizedCommand]);
 
   // Writing activateTimerRef.current during render is unsafe under React
   // 19 concurrent rendering (the closure can come from a discarded pass and

@@ -26,80 +26,12 @@ export function useLoadTimerState({
 }) {
   const { setTimersHistory } = useRefsData();
 
-  const loadTimerState = useCallback(async function loadTimerState() {
-    try {
-      const savedTime = await getItemFromStorage(`timerStarted-${name}`);
-
-      const parsedTimerState = await getItemFromStorage(`timerState-${name}`);
-
-      const parsedHistory = await getItemFromStorage("timerHistory");
-      // const parsedHistory = await removeItemFromStorage("timerHistory");
-
-      if (parsedHistory) {
-        setTimersHistory(parsedHistory);
-        updateSharedObject({ timers: parsedHistory });
-      }
-
-      if (savedTime) {
-        const now = Date.now();
-
-        const elapsed =
-          savedTime?.timePaused > 0
-            ? Math.floor(savedTime?.timePaused - savedTime.timeStarted)
-            : now - savedTime.timeStarted;
-        const elapsedSeconds = Math.floor(elapsed / 1000);
-
-        const remainingTime = Math.floor(time - elapsedSeconds);
-
-        if (remainingTime < 0) {
-          return;
-        }
-      }
-
-      if (
-        parsedTimerState?.timerState === "running" &&
-        parsedTimerState?.name === name
-      ) {
-        clearTimeout(getSharedObject()[`timeoutId-${name}`]);
-        clearTimeout(getSharedObject()[`timeoutId-${name}`]);
-
-        if (
-          !getSharedObject().alertingTimerNames.find(
-            (timerName) => timerName.toLowerCase() === name.toLowerCase(),
-          )
-        ) {
-          console.log(`The timer ${name} is running`);
-          setIsActive(true);
-          setIsPaused(false);
-        }
-      }
-
-      if (
-        parsedTimerState?.timerState === "paused" &&
-        parsedTimerState?.name === name
-      ) {
-        setIsActive(true);
-        setIsPaused(true);
-      }
-
-      if (parsedTimerState?.name === name) {
-        timerStateRef.current = parsedTimerState?.timerState;
-      }
-
-      if (savedTime?.timeStarted) {
-        await loadTime(savedTime);
-      }
-
-      handleReadyState();
-    } catch (err) {
-      console.error(err);
-    }
-  }, []);
-
+  // Declared before loadTimerState: it calls loadTime, and referencing a
+  // const before its declaration would throw (TDZ).
   const loadTime = useCallback(
-    async function loadTime(storageTime) {
+    async function loadTime(storageTime, currentName, currentTime) {
       try {
-        if (storageTime?.name !== name) {
+        if (storageTime?.name !== currentName) {
           return;
         }
 
@@ -115,20 +47,20 @@ export function useLoadTimerState({
 
           pausedTimeRef.current = storageTime.timePaused;
 
-          removeItemFromStorage(`background-${name}`);
+          removeItemFromStorage(`background-${currentName}`);
 
           timerIsActiveRef.current = true;
         }
 
         const elapsedSeconds = Math.floor(elapsed / 1000);
 
-        const remainingTime = Math.floor(time - elapsedSeconds);
+        const remainingTime = Math.floor(currentTime - elapsedSeconds);
 
-        Time[`setTimeLeft-${name}`](remainingTime);
+        Time[`setTimeLeft-${currentName}`](remainingTime);
         timeLeftRef.current = remainingTime;
 
         if (timerStateRef.current === "running") {
-          clearTimeout(getSharedObject()[`timeoutId-${name}`]);
+          clearTimeout(getSharedObject()[`timeoutId-${currentName}`]);
 
           resumeTimerRef.current(storageTime.timeStarted);
 
@@ -139,13 +71,96 @@ export function useLoadTimerState({
       }
     },
     [
-      name,
       pausedTimeRef,
       resumeTimerRef,
-      time,
       timeLeftRef,
       timerIsActiveRef,
       timerStartedRef,
+      timerStateRef,
+    ],
+  );
+
+  const loadTimerState = useCallback(
+    async function loadTimerState(currentName, currentTime) {
+      try {
+        const savedTime = await getItemFromStorage(
+          `timerStarted-${currentName}`,
+        );
+
+        const parsedTimerState = await getItemFromStorage(
+          `timerState-${currentName}`,
+        );
+
+        const parsedHistory = await getItemFromStorage("timerHistory");
+        // const parsedHistory = await removeItemFromStorage("timerHistory");
+
+        if (parsedHistory) {
+          setTimersHistory(parsedHistory);
+          updateSharedObject({ timers: parsedHistory });
+        }
+
+        if (savedTime) {
+          const now = Date.now();
+
+          const elapsed =
+            savedTime?.timePaused > 0
+              ? Math.floor(savedTime?.timePaused - savedTime.timeStarted)
+              : now - savedTime.timeStarted;
+          const elapsedSeconds = Math.floor(elapsed / 1000);
+
+          const remainingTime = Math.floor(currentTime - elapsedSeconds);
+
+          if (remainingTime < 0) {
+            return;
+          }
+        }
+
+        if (
+          parsedTimerState?.timerState === "running" &&
+          parsedTimerState?.name === currentName
+        ) {
+          clearTimeout(getSharedObject()[`timeoutId-${currentName}`]);
+          clearTimeout(getSharedObject()[`timeoutId-${currentName}`]);
+
+          if (
+            !getSharedObject().alertingTimerNames.find(
+              (timerName) =>
+                timerName.toLowerCase() === currentName.toLowerCase(),
+            )
+          ) {
+            console.log(`The timer ${currentName} is running`);
+            setIsActive(true);
+            setIsPaused(false);
+          }
+        }
+
+        if (
+          parsedTimerState?.timerState === "paused" &&
+          parsedTimerState?.name === currentName
+        ) {
+          setIsActive(true);
+          setIsPaused(true);
+        }
+
+        if (parsedTimerState?.name === currentName) {
+          timerStateRef.current = parsedTimerState?.timerState;
+        }
+
+        if (savedTime?.timeStarted) {
+          await loadTime(savedTime, currentName, currentTime);
+        }
+
+        handleReadyState();
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    [
+      handleReadyState,
+      loadTime,
+      setIsActive,
+      setIsPaused,
+      setTimersHistory,
       timerStateRef,
     ],
   );
