@@ -31,8 +31,6 @@ const AlarmOverlay = ({ navigation }) => {
 
   const { currentActivityRef, commandsRef } = useRefsData();
 
-  const { STOP } = commandsRef?.current ? commandsRef.current : {};
-
   useEffect(
     function () {
       if (getSharedObject().alertingTimerNames.length === 0) {
@@ -51,12 +49,13 @@ const AlarmOverlay = ({ navigation }) => {
 
   const onDismiss = useCallback(
     function () {
+      const { STOP } = commandsRef?.current ?? {};
       getSharedObject().alertingTimerNames.map((alertingTimer) =>
         resetTimerEmitter.emit(`${STOP.toLowerCase()} ${alertingTimer}`),
       );
       navigation.goBack();
     },
-    [STOP, navigation],
+    [commandsRef, navigation],
   );
 
   useEffect(
@@ -84,14 +83,11 @@ const AlarmOverlay = ({ navigation }) => {
           styles.wrapper,
           !getSharedObject().alertingTimerNames.length === 0 && { opaicty: 1 },
         ]}
-        pointerEvents='auto'
+        pointerEvents="auto"
       >
         <View style={styles.overlay}>
           {getSharedObject().alertingTimerNames?.map((timer) => (
-            <View
-              key={Math.random()}
-              style={styles.timerContainer}
-            >
+            <View key={timer} style={styles.timerContainer}>
               <View style={styles.titleBox}>
                 <Text style={styles.title}>
                   {timer}
@@ -99,7 +95,7 @@ const AlarmOverlay = ({ navigation }) => {
                 </Text>
                 <View style={styles.icon}>
                   <IconButton
-                    icon='notifications'
+                    icon="notifications"
                     size={24}
                     color={Colors.primaryTint90}
                   />

@@ -1,4 +1,5 @@
 /* eslint-disable react-native/no-raw-text */
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 import { Text } from "../../ui/AppText";
@@ -14,9 +15,18 @@ import { WEIGHT } from "../../constants/weight";
 export default function About() {
   const { commandsRef } = useRefsData();
 
-  const { PLAY_MEDIA, STOP_MEDIA } = commandsRef?.current
-    ? commandsRef.current
-    : {};
+  // commandsRef.current is populated at app init by getCommands(language),
+  // before this screen mounts. Read it in an effect (not during render) and
+  // hold it in state so the static media-instructions text renders correctly.
+  const [mediaCommands, setMediaCommands] = useState({});
+  useEffect(
+    function () {
+      setMediaCommands(commandsRef?.current ?? {});
+    },
+    [commandsRef],
+  );
+
+  const { PLAY_MEDIA, STOP_MEDIA } = mediaCommands;
 
   return (
     <ScrollView
