@@ -30,33 +30,42 @@ export default function useSettingsFunctions() {
       keepScreenOnMinutes,
       isVibrating,
       keepScreenDim,
-      voiceFeedbackSpeed: voiceFeedbackSpeedRef.current,
-      permitAnswerCalls: permitAnswerCallsRef.current,
       isHeadsetBroken,
-      isSkipCommandsEnabled: isSkipCommandsEnabledRef.current,
     }),
     [
       alarmVolume,
       autoStopAlarmTimeout,
       isHeadsetBroken,
-      isSkipCommandsEnabledRef,
       isVibrating,
       isVoiceFeedbackEnabled,
       keepScreenDim,
       keepScreenOnCommand,
       keepScreenOnMinutes,
-      permitAnswerCallsRef,
       voiceEnabled,
-      voiceFeedbackSpeedRef,
     ],
   );
   const updateSettingsInStorage = useCallback(
     function (key, value) {
-      const updatedSettings = { ...settings, [key]: value };
+      // Read the live refs at save time, not in a render-time memo: the memo's
+      // ref deps are stable, so it captured stale values and could persist an
+      // out-of-date voiceFeedbackSpeed/permitAnswerCalls/isSkipCommandsEnabled
+      // whenever a different setting was toggled.
+      const updatedSettings = {
+        ...settings,
+        voiceFeedbackSpeed: voiceFeedbackSpeedRef.current,
+        permitAnswerCalls: permitAnswerCallsRef.current,
+        isSkipCommandsEnabled: isSkipCommandsEnabledRef.current,
+        [key]: value,
+      };
       setItemInStorage("settings", updatedSettings);
       console.log("Settings updated 🫴", updatedSettings);
     },
-    [settings],
+    [
+      settings,
+      voiceFeedbackSpeedRef,
+      permitAnswerCallsRef,
+      isSkipCommandsEnabledRef,
+    ],
   );
 
   const autoStopTimeoutLabel = useCallback(function (secs) {
