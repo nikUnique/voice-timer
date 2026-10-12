@@ -43,6 +43,23 @@ export function useTimeUpdate({
     setAlertingTimerNames,
   );
 
+  const sendNotification = useCallback(
+    async function () {
+      leastTimeTimerRef.current = {
+        ...leastTimeTimerRef.current,
+        timeLeft: timeLeftRef.current,
+      };
+
+      emitter.emit(`updateNotification-${name}`, {
+        title: timeLabelRef.current,
+        body: getSharedObject()?.timersLabel,
+        time: timeLeftRef.current,
+        fromWhom: "updateTime",
+      });
+    },
+    [leastTimeTimerRef, name, timeLabelRef, timeLeftRef],
+  );
+
   const prepareForAlarm = useCallback(
     async function () {
       await assignAlertingTimersNames();
@@ -118,23 +135,6 @@ export function useTimeUpdate({
       time,
       timeLeftRef,
     ],
-  );
-
-  const sendNotification = useCallback(
-    async function () {
-      leastTimeTimerRef.current = {
-        ...leastTimeTimerRef.current,
-        timeLeft: timeLeftRef.current,
-      };
-
-      emitter.emit(`updateNotification-${name}`, {
-        title: timeLabelRef.current,
-        body: getSharedObject()?.timersLabel,
-        time: timeLeftRef.current,
-        fromWhom: "updateTime",
-      });
-    },
-    [leastTimeTimerRef, name, timeLabelRef, timeLeftRef],
   );
 
   const calculateLeftTime = useCallback(

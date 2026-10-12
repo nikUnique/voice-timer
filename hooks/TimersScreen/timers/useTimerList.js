@@ -34,8 +34,6 @@ export function useTimerList({
     isMediaPausedManuallyRef,
   } = useRefsData();
 
-  const { REPEAT } = commandsRef?.current ? commandsRef.current : {};
-
   const { soundRef } = useSoundData();
 
   const { chimeThenSpeak } = useCommandFeedback();
@@ -75,15 +73,21 @@ export function useTimerList({
     [navigation, setTimers, timers],
   );
 
-  const handleReadyState = useCallback(async function (isReady = true) {
-    setIsReady(isReady);
-    await sleep(0.25);
-    await SplashScreen.hideAsync();
-  }, [setIsReady]);
+  const handleReadyState = useCallback(
+    async function (isReady = true) {
+      setIsReady(isReady);
+      await sleep(0.25);
+      await SplashScreen.hideAsync();
+    },
+    [setIsReady],
+  );
 
-  const clearCommand = useCallback(function () {
-    setRecognizedCommand(" ");
-  }, [setRecognizedCommand]);
+  const clearCommand = useCallback(
+    function () {
+      setRecognizedCommand(" ");
+    },
+    [setRecognizedCommand],
+  );
 
   // Writing activateTimerRef.current during render is unsafe under React
   // 19 concurrent rendering (the closure can come from a discarded pass and
@@ -124,7 +128,7 @@ export function useTimerList({
 
     const isRepeatCommand =
       recognizedCommand?.toLowerCase() ===
-      `${REPEAT} ${secretIdentifierRef.current}`.trim();
+      `${commandsRef.current?.REPEAT} ${secretIdentifierRef.current}`.trim();
 
     const lastCommandHasTimerName = lastCommandRef.current
       ?.toLowerCase()
