@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function useVoiceRecognizerContext({
   commandsRef,
@@ -17,6 +17,14 @@ export default function useVoiceRecognizerContext({
     },
     [commandsRef],
   );
+
+  // commandsRef.current is populated asynchronously by getCommands (below).
+  // Reading it during render is both flagged by react-hooks/refs and fragile:
+  // a ref write does not trigger a re-render, so the grammar only picked up
+  // the loaded commands when some unrelated state (timers/contacts) happened
+  // to re-render afterward. Hold the loaded commands in state so the grammar
+  // rebuilds deterministically the moment they resolve.
+  const [commands, setCommands] = useState({});
 
   const {
     START,
@@ -43,13 +51,22 @@ export default function useVoiceRecognizerContext({
     MINUTE_CALL,
     YES,
     NO,
-  } = commandsRef.current ? commandsRef.current : {};
+  } = commands;
 
   useEffect(
     function () {
-      getCommands(language);
+      let cancelled = false;
+      (async function () {
+        await getCommands(language);
+        if (!cancelled) {
+          setCommands(commandsRef.current ?? {});
+        }
+      })();
+      return function () {
+        cancelled = true;
+      };
     },
-    [language, getCommands],
+    [language, getCommands, commandsRef],
   );
 
   const allTimers = timers.map((timer) => timer.name);
@@ -91,6 +108,11 @@ export default function useVoiceRecognizerContext({
         NO,
       ]
         .flatMap((command) => command)
+        // secretIdentifierRef is a reserved wake-word suffix (always "" today;
+        // matching logic in useExecuteCommand already expects it). Reading it
+        // here is intentional scaffolding, not a stale-closure bug: it is never
+        // written, so the value is constant.
+        // eslint-disable-next-line react-hooks/refs
         .map((item) => `${item} ${secretIdentifierRef.current}`.trim()),
     [
       timers,
@@ -125,13 +147,6 @@ export default function useVoiceRecognizerContext({
   );
 
   // console.log(dynamicGrammar, "grammar");
-
-  useEffect(
-    function () {
-      getCommands(language);
-    },
-    [language, getCommands],
-  );
 
   return { allTimers, dynamicGrammar, allActions };
 }

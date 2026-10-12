@@ -4,7 +4,7 @@ import toWords from "number-to-words/src/toWords";
 import SimpleKeypad from "react-native-simple-keypad";
 import wordsToNumbers from "words-to-numbers";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { Text } from "../../ui/AppText";
@@ -104,78 +104,92 @@ function CreateTimer() {
     .map((letter) => (letter === "-" ? "0" : letter))
     .join("");
 
-  async function onCreateTimer() {
-    try {
-      lastTimerStartedRef.current = Date.now();
+  const onCreateTimer = useCallback(
+    async function onCreateTimer() {
+      try {
+        lastTimerStartedRef.current = Date.now();
 
-      const hours = +improvedInputValue.slice(0, 2);
-      const minutes = +improvedInputValue.slice(2, 4);
-      const seconds = +improvedInputValue.slice(4);
+        const hours = +improvedInputValue.slice(0, 2);
+        const minutes = +improvedInputValue.slice(2, 4);
+        const seconds = +improvedInputValue.slice(4);
 
-      const finalTime = hours * 3600 + minutes * 60 + seconds;
+        const finalTime = hours * 3600 + minutes * 60 + seconds;
 
-      if (finalTime <= 0) {
-        console.log(`Timer should have at least 1 second of time`);
-        return;
+        if (finalTime <= 0) {
+          console.log(`Timer should have at least 1 second of time`);
+          return;
+        }
+
+        const startsWithNumberTimers = timers.filter(
+          (timer) =>
+            typeof wordsToNumbers(timer.name.toLowerCase()) === "number",
+        );
+
+        const allTimerNumbers = startsWithNumberTimers.map((timer) => {
+          return wordsToNumbers(timer.name.trim());
+        });
+
+        const anotherNextNumber = allTimerNumbers.reduce((acc, _, i, arr) => {
+          return arr.includes(acc) ? ++acc : acc;
+        }, 1);
+
+        const nextAvailableNumber =
+          anotherNextNumber !== undefined && anotherNextNumber;
+
+        let newName = nextAvailableNumber
+          ? `${toWords(nextAvailableNumber).slice(0, 1).toUpperCase() + toWords(nextAvailableNumber).slice(1)}`
+          : `${toWords(1).slice(0, 1) + toWords(1).slice(1)}`;
+
+        newName = newName.includes("-") ? newName.replace("-", " ") : newName;
+
+        const newTimer = {
+          name: newName,
+          time: finalTime,
+          createdAt: Date.now(),
+          id: Math.random().toString(),
+        };
+
+        const newTimerArray = [...timers, newTimer];
+
+        const sortedTimers = newTimerArray.slice();
+
+        workingTimersRef.current.length < 5 &&
+          updateSharedObject({ name: newName });
+
+        setItemInStorage("timers", sortedTimers);
+        setTimers(sortedTimers);
+        freshlyCreatedTimerRef.current = newTimer;
+
+        // Restart vosk
+        if (voiceEnabled) {
+          setVoiceEnabled(false);
+          setTimeout(function () {
+            setVoiceEnabled(true);
+          }, 100);
+        }
+
+        if (sortedTimers.length >= 1) {
+          navigation.replace("TimersScreen");
+        }
+        if (sortedTimers.length > 1) {
+          navigation.goBack();
+        }
+      } catch (error) {
+        console.error(`An error occurred in the onCreateTimer function`, error);
       }
-
-      const startsWithNumberTimers = timers.filter(
-        (timer) => typeof wordsToNumbers(timer.name.toLowerCase()) === "number",
-      );
-
-      const allTimerNumbers = startsWithNumberTimers.map((timer) => {
-        return wordsToNumbers(timer.name.trim());
-      });
-
-      const anotherNextNumber = allTimerNumbers.reduce((acc, _, i, arr) => {
-        return arr.includes(acc) ? ++acc : acc;
-      }, 1);
-
-      const nextAvailableNumber =
-        anotherNextNumber !== undefined && anotherNextNumber;
-
-      let newName = nextAvailableNumber
-        ? `${toWords(nextAvailableNumber).slice(0, 1).toUpperCase() + toWords(nextAvailableNumber).slice(1)}`
-        : `${toWords(1).slice(0, 1) + toWords(1).slice(1)}`;
-
-      newName = newName.includes("-") ? newName.replace("-", " ") : newName;
-
-      const newTimer = {
-        name: newName,
-        time: finalTime,
-        createdAt: Date.now(),
-        id: Math.random().toString(),
-      };
-
-      const newTimerArray = [...timers, newTimer];
-
-      const sortedTimers = newTimerArray.slice();
-
-      workingTimersRef.current.length < 5 &&
-        updateSharedObject({ name: newName });
-
-      setItemInStorage("timers", sortedTimers);
-      setTimers(sortedTimers);
-      freshlyCreatedTimerRef.current = newTimer;
-
-      // Restart vosk
-      if (voiceEnabled) {
-        setVoiceEnabled(false);
-        setTimeout(function () {
-          setVoiceEnabled(true);
-        }, 100);
-      }
-
-      if (sortedTimers.length >= 1) {
-        navigation.replace("TimersScreen");
-      }
-      if (sortedTimers.length > 1) {
-        navigation.goBack();
-      }
-    } catch (error) {
-      console.error(`An error occurred in the onCreateTimer function`, error);
-    }
-  }
+    },
+    [
+      freshlyCreatedTimerRef,
+      improvedInputValue,
+      lastTimerStartedRef,
+      navigation,
+      setTimers,
+      setVoiceEnabled,
+      timers,
+      voiceEnabled,
+      workingTimersRef,
+    ],
+  );
 
   const buttonStyle = {
     fontWeight: WEIGHT.semibold,
