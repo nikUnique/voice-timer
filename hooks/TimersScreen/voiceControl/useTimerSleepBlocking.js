@@ -5,9 +5,8 @@ export function useTimerSleepBlocking() {
   const { recognizedCommandRef, isTimerSleepingRef, commandsRef } =
     useRefsData();
 
-  const { STOP, STOP_MEDIA, TIMER_WAKE_UP } = commandsRef?.current ?? {};
-
   function isTimerSleepBlocking() {
+    const { STOP, STOP_MEDIA, TIMER_WAKE_UP } = commandsRef?.current ?? {};
     const command = recognizedCommandRef.current;
     return Boolean(
       isTimerSleepingRef.current &&

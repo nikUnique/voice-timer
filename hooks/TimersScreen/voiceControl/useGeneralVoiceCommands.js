@@ -27,9 +27,6 @@ export function useGeneralVoiceCommands({
     commandsRef,
   } = useRefsData();
 
-  const commands = commandsRef?.current ?? {};
-  const { STOP, STOP_MEDIA, TIMER_WAKE_UP, ANSWER_CALL } = commands;
-
   const { isTimerSleepBlocking } = useTimerSleepBlocking();
 
   const media = useMediaCommands({
@@ -66,6 +63,8 @@ export function useGeneralVoiceCommands({
   useEffect(
     function () {
       async function load() {
+        const { STOP_MEDIA, ANSWER_CALL } = commandsRef?.current ?? {};
+
         const {
           isTimerSleepBlocking,
           media,
@@ -120,10 +119,7 @@ export function useGeneralVoiceCommands({
       });
     },
     [
-      ANSWER_CALL,
-      STOP,
-      STOP_MEDIA,
-      TIMER_WAKE_UP,
+      commandsRef,
       isMediaPlayingRef,
       isTimerSleepingRef,
       prevRecognizedCommandRef,
