@@ -19,12 +19,24 @@ export default function Time({
   isActive,
 }) {
   const [timeLeft, setTimeLeft] = useState(time);
-  const fadeAnimationRefCur = useRef(new Animated.Value(1)).current;
+  const [fadeAnimation] = useState(() => new Animated.Value(1));
   const blinkActiveRef = useRef(false);
   const { currentlyViewedItemRef } = useRefsData();
   const { speak } = useSpeak();
 
-  Time[`setTimeLeft-${name}`] = setTimeLeft;
+  useEffect(
+    function () {
+      const key = `setTimeLeft-${name}`;
+      Time[key] = setTimeLeft;
+
+      return function () {
+        if (Time[key] === setTimeLeft) {
+          delete Time[key];
+        }
+      };
+    },
+    [name],
+  );
 
   const moreThenHour = timeLeft / 3600 >= 1;
 
@@ -33,29 +45,33 @@ export default function Time({
       if (!blinkActiveRef.current) {
         return;
       }
-      fadeAnimationRefCur.stopAnimation();
-      fadeAnimationRefCur.setValue(0);
+
+      fadeAnimation.stopAnimation();
+      fadeAnimation.setValue(0);
+
       Animated.sequence([
-        Animated.timing(fadeAnimationRefCur, {
+        Animated.timing(fadeAnimation, {
           toValue: 1,
           duration: 400,
           useNativeDriver: true,
         }),
-        Animated.timing(fadeAnimationRefCur, {
+        Animated.timing(fadeAnimation, {
           toValue: 0,
           duration: 400,
           useNativeDriver: true,
         }),
       ]).start();
     },
-    [fadeAnimationRefCur],
+    [fadeAnimation],
   );
 
   useEffect(
     function () {
       let animationInterval;
+
       if (isPaused && isActive) {
         blinkActiveRef.current = true;
+
         animationInterval = setInterval(function () {
           if (blinkActiveRef.current) {
             fadeInAndOut();
@@ -66,20 +82,18 @@ export default function Time({
       if (!isPaused || !isActive) {
         blinkActiveRef.current = false;
         clearInterval(animationInterval);
-        fadeAnimationRefCur.stopAnimation(() =>
-          fadeAnimationRefCur.setValue(1),
-        );
+
+        fadeAnimation.stopAnimation(() => fadeAnimation.setValue(1));
       }
 
       return () => {
         blinkActiveRef.current = false;
         clearInterval(animationInterval);
-        fadeAnimationRefCur.stopAnimation(() =>
-          fadeAnimationRefCur.setValue(1),
-        );
+
+        fadeAnimation.stopAnimation(() => fadeAnimation.setValue(1));
       };
     },
-    [fadeAnimationRefCur, fadeInAndOut, isPaused, isActive],
+    [fadeInAndOut, isPaused, isActive, fadeAnimation],
   );
 
   useEffect(
@@ -89,6 +103,7 @@ export default function Time({
           setIsActive(false);
         }
       }
+
       endOfTimer();
       emitter.emit(`timeItem-${name}`, timeLeft);
     },
@@ -107,7 +122,7 @@ export default function Time({
   return (
     <Animated.View
       style={{
-        opacity: fadeAnimationRefCur,
+        opacity: fadeAnimation,
         alignItems: "center",
         justifyContent: "center",
       }}

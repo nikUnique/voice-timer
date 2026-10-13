@@ -54,20 +54,11 @@ export default function Timers({ navigation }) {
 
   const { soundRef, soundIsPlayingRef } = useSoundData();
 
-  const {
-    setAlertingTimerNames,
-    commandsRef,
-    workingTimersRef,
-    timers,
-    isMediaPlayingRef,
-  } = useRefsData();
+  const { setAlertingTimerNames, workingTimersRef, timers, isMediaPlayingRef } =
+    useRefsData();
 
   useOngoingNotification();
   useTTS();
-
-  const { REPEAT, STOP_FINISHED, STOP_MEDIA } = commandsRef?.current
-    ? commandsRef.current
-    : {};
 
   const { playSoundWrapper, stopSoundWrapper } = useTimers();
 
@@ -157,14 +148,11 @@ export default function Timers({ navigation }) {
       isValidCommandRef,
       dynamicGrammar,
       isAwake,
-      REPEAT,
-      STOP_FINISHED,
       timers,
       keepScreenOnCommand,
       keepScreenOnMinutes,
       dimScreenRef,
       isMediaPlayingRef,
-      STOP_MEDIA,
       keepScreenDim,
       forceKeepAwake,
     ],

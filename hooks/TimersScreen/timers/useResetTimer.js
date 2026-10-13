@@ -65,10 +65,18 @@ export function useResetTimer({
 
   useEffect(
     function () {
-      emitter.all.delete(`updateTimeGlobally-${name}`);
-      emitter.on(`updateTimeGlobally-${name}`, () => {
-        Time[`setTimeLeft-${name}`](time);
+      const eventName = `updateTimeGlobally-${name}`;
+
+      emitter.all.delete(eventName);
+
+      emitter.on(eventName, () => {
         timeLeftRef.current = time;
+
+        const setTimeLeft = Time[`setTimeLeft-${name}`];
+
+        if (typeof setTimeLeft === "function") {
+          setTimeLeft(time);
+        }
       });
     },
     [name, time, timeLeftRef],
@@ -183,7 +191,11 @@ export function useResetTimer({
         setIsActive(false);
         setIsReset(true);
 
-        Time[`setTimeLeft-${name}`](time);
+        const setTimeLeft = Time[`setTimeLeft-${name}`];
+
+        if (typeof setTimeLeft === "function") {
+          setTimeLeft(time);
+        }
         timeLeftRef.current = time;
 
         emitter.emit(`updateTimeGlobally-${name}`);

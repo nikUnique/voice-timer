@@ -149,12 +149,19 @@ export function useTimeUpdate({
       console.log(`New time comes-${name}`, timeLeftRef.current);
       console.log(Date.now(), "in useTimeUpdate");
 
-      if (Time?.[`setTimeLeft-${name}`]) {
-        Time[`setTimeLeft-${name}`](timeLeftRef.current);
+      const key = `setTimeLeft-${name}`;
+      const setTimeLeft = Time?.[key];
+
+      if (typeof setTimeLeft === "function") {
+        setTimeLeft(timeLeftRef.current);
       } else {
-        requestAnimationFrame(() =>
-          Time[`setTimeLeft-${name}`](timeLeftRef.current),
-        );
+        requestAnimationFrame(() => {
+          const setTimeLeft = Time?.[key];
+
+          if (typeof setTimeLeft === "function") {
+            setTimeLeft(timeLeftRef.current);
+          }
+        });
       }
     },
     [name, time, timeLeftRef, timerStartedRef],
