@@ -4,6 +4,10 @@
     <item name="android:editTextStyle">@style/ResetEditText</item>
     <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
     <item name="colorPrimary">@color/colorPrimary</item>
+    <!-- Application-level window background: Android paints this for the very
+         first frame before the Activity's splash theme applies. Keep it brand
+         teal so cold start never flashes white. -->
+    <item name="android:windowBackground">@color/splashscreen_background</item>
    
      <!-- <item name="android:statusBarColor">#0b7285</item> -->
 
