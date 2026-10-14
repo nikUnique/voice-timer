@@ -9,7 +9,7 @@ import {
   useRefsData,
   useSoundData,
 } from "../../../context/VoiceRecognizerContext";
-import { setItemInStorage, sleep } from "../../../utils/helpers";
+import { hasPhrase, setItemInStorage, sleep } from "../../../utils/helpers";
 import { updateSharedObject } from "../../../utils/sharedVariables";
 import { useCommandFeedback } from "../../shared/useCommandFeedback";
 
@@ -121,18 +121,16 @@ export function useTimerList({
       );
     });
 
-    const areNamesTheSame = nameBasedOnSecret
-      ?.join(" ")
-      ?.toLowerCase()
-      .includes(item.name?.toLowerCase());
+    const areNamesTheSame = hasPhrase(nameBasedOnSecret?.join(" "), item.name);
 
     const isRepeatCommand =
       recognizedCommand?.toLowerCase() ===
       `${commandsRef.current?.REPEAT} ${secretIdentifierRef.current}`.trim();
 
-    const lastCommandHasTimerName = lastCommandRef.current
-      ?.toLowerCase()
-      .includes(item.name?.toLowerCase());
+    const lastCommandHasTimerName = hasPhrase(
+      lastCommandRef.current,
+      item.name,
+    );
 
     let isCommandNew =
       areNamesTheSame || (isRepeatCommand && lastCommandHasTimerName)
@@ -141,10 +139,7 @@ export function useTimerList({
 
     if (
       numberOfRecognizedCommands.length > 1 &&
-      recognizedCommand
-        .toLowerCase()
-        .trim()
-        .includes(item.name.toLowerCase().trim())
+      hasPhrase(recognizedCommand, item.name)
     ) {
       isCommandNew =
         item.name.trim().split(" ").length > 1
