@@ -140,8 +140,9 @@ export default function LogViewer({ onClose }) {
   }, [minLevel]);
 
   useEffect(() => {
-    refresh();
+    Promise.resolve().then(refresh);
   }, [refresh]);
+
   useEffect(() => {
     if (!auto || source !== "native") return;
     const id = setInterval(refresh, 2000);

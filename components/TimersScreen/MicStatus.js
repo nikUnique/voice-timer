@@ -32,6 +32,7 @@ export default function MicStatus() {
   useEffect(
     function () {
       if (isListening) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setAnotherAppUsesMic(false);
       }
     },

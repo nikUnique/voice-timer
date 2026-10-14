@@ -52,8 +52,6 @@ export function useResetTimer({
     commandsRef,
   } = useRefsData();
 
-  const { STOP } = commandsRef?.current ? commandsRef.current : {};
-
   const { updateControlButtons } = useUpdateControlButtons({
     isActive,
     isPaused,
@@ -335,6 +333,8 @@ export function useResetTimer({
 
   useEffect(
     function () {
+      const { STOP } = commandsRef?.current ? commandsRef.current : {};
+
       resetTimerRef.current = resetTimer;
       resetTimerEmitter.all.delete(`${STOP} ${name}`);
       resetTimerEmitter.on(`${STOP} ${name}`, resetTimer);
@@ -345,7 +345,7 @@ export function useResetTimer({
       resetTimerRef,
       isFullScreenNotificationRef,
       alertingTimerNamesRef,
-      STOP,
+      commandsRef,
     ],
   );
 

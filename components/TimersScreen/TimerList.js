@@ -65,13 +65,9 @@ export default function TimerList({
 
   const isSingleTimer = sortedTimers?.length === 1;
 
-  useEffect(
-    function () {
-      if (currentIndex > sortedTimers.length - 1) {
-        setCurrentIndex(Math.max(sortedTimers.length - 1, 0));
-      }
-    },
-    [currentIndex, sortedTimers.length],
+  const safeCurrentIndex = Math.min(
+    currentIndex,
+    Math.max(sortedTimers.length - 1, 0),
   );
 
   useEffect(
@@ -233,8 +229,8 @@ export default function TimerList({
                 keyExtractor={(item) => item?.id}
                 pagingEnabled={true}
                 removeClippedSubviews={false}
-                keyboardShouldPersistTaps="handled"
-                decelerationRate="fast"
+                keyboardShouldPersistTaps='handled'
+                decelerationRate='fast'
                 getItemLayout={(_data, index) => ({
                   length: listHeight,
                   offset: listHeight * index,
@@ -248,7 +244,7 @@ export default function TimerList({
                   const newIndex = Math.round(yPosition / totalHeight);
 
                   emitter.emit(`timerSelected-${newIndex}`);
-                  if (newIndex !== currentIndex) {
+                  if (newIndex !== safeCurrentIndex) {
                     setCurrentIndex(newIndex);
                   }
                 }}
@@ -269,7 +265,7 @@ export default function TimerList({
 
             {timers.length > 1 && (
               <Text style={styles.paginationLabel}>
-                {currentIndex + 1 + "/" + timers.length}
+                {safeCurrentIndex + 1 + "/" + timers.length}
               </Text>
             )}
 
@@ -279,7 +275,7 @@ export default function TimerList({
 
             {timers.length > 1 && (
               <Arrows
-                currentIndex={currentIndex}
+                currentIndex={safeCurrentIndex}
                 timers={timers}
                 flatListRef={flatListRef}
               />

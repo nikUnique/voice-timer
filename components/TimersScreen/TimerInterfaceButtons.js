@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs */
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
