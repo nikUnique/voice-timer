@@ -5,6 +5,7 @@ import { useRefsData } from "../../../context/VoiceRecognizerContext";
 import {
   getItemFromStorage,
   removeItemFromStorage,
+  setItemInStorage,
 } from "../../../utils/helpers";
 import {
   getSharedObject,
@@ -24,7 +25,8 @@ export function useLoadTimerState({
   pausedTimeRef,
   timerIsActiveRef,
 }) {
-  const { setTimersHistory } = useRefsData();
+  const { setTimersHistory, alertingTimerNamesRef, setAlertingTimerNames } =
+    useRefsData();
 
   // Declared before loadTimerState: it calls loadTime, and referencing a
   // const before its declaration would throw (TDZ).
@@ -111,6 +113,53 @@ export function useLoadTimerState({
           const remainingTime = Math.floor(currentTime - elapsedSeconds);
 
           if (remainingTime < 0) {
+            // The timer already expired while the app window was closed.
+            // updateTime can't rescue this (it bails once a timer is more
+            // than ~5s past zero), so we enter the alerting state directly
+            // here — this drives the alarm overlay via the existing
+            // alertingTimerNames navigation effect, mirroring
+            // assignAlertingTimersNames from the live-expiry path.
+            const alreadyAlerting = alertingTimerNamesRef.current.some(
+              (timerName) =>
+                timerName.toLowerCase().trim() ===
+                currentName.toLowerCase().trim(),
+            );
+
+            if (!alreadyAlerting) {
+              alertingTimerNamesRef.current = [
+                ...new Set([...alertingTimerNamesRef.current, currentName]),
+              ];
+
+              if (getSharedObject().alertingTimerNames?.length) {
+                updateSharedObject({
+                  alertingTimerNames: [
+                    ...new Set([
+                      ...alertingTimerNamesRef.current,
+                      ...getSharedObject().alertingTimerNames,
+                    ]),
+                  ],
+                });
+              } else {
+                updateSharedObject({
+                  alertingTimerNames: [
+                    ...new Set([...alertingTimerNamesRef.current]),
+                  ],
+                });
+              }
+
+              setAlertingTimerNames(alertingTimerNamesRef.current);
+              setItemInStorage(
+                "alertingTimerNames",
+                alertingTimerNamesRef.current,
+              );
+            }
+
+            setIsActive(true);
+            setIsPaused(false);
+            Time[`setTimeLeft-${currentName}`](0);
+            timeLeftRef.current = 0;
+
+            handleReadyState();
             return;
           }
         }
@@ -161,6 +210,9 @@ export function useLoadTimerState({
       setIsActive,
       setIsPaused,
       setTimersHistory,
+      setAlertingTimerNames,
+      alertingTimerNamesRef,
+      timeLeftRef,
       timerStateRef,
     ],
   );
