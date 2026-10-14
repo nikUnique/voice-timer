@@ -77,12 +77,23 @@ function useSound() {
         const alarmSoundLoaded = alarmSoundObjectRef.current?.isLoaded?.();
         const shortSoundLoaded = shortSoundRef.current?.isLoaded?.();
 
+        // Diagnostic: surface the reload decision so a silently-dead (released)
+        // native player can be caught. After release() the JS object survives but
+        // the native player is gone; if isLoaded() wrongly reports true we would
+        // skip reloading and play() on a dead player (no sound, no error).
+        console.log(
+          `[sound] play ${fileName} loop=${isLooping} soundRef=${Boolean(
+            soundRef.current,
+          )} shortRef=${Boolean(shortSoundRef.current)} alarmLoaded=${alarmSoundLoaded} shortLoaded=${shortSoundLoaded}`,
+        );
+
         if (
           !soundRef.current ||
           !shortSoundRef.current ||
           !alarmSoundLoaded ||
           !shortSoundLoaded
         ) {
+          console.log(`[sound] reloading ${fileName}`);
           await loadSound(fileName, isLooping);
         }
 
@@ -101,6 +112,10 @@ function useSound() {
           soundRef.current?.play((success) => {
             if (success) {
               soundRef.current.release();
+              // Null the ref so the next play() reliably reloads instead of
+              // reusing a released (dead native) player.
+              soundRef.current = null;
+              alarmSoundObjectRef.current = null;
             } else {
               console.error(
                 "Playback of alarm sound failed to audio decoding errors 🔈",
@@ -114,6 +129,7 @@ function useSound() {
           shortSoundRef.current?.play((success) => {
             if (success) {
               shortSoundRef.current.release();
+              shortSoundRef.current = null;
             } else {
               console.error("Playback failed to audio decoding errors 🔈");
             }
@@ -148,6 +164,7 @@ function useSound() {
       soundRef.current?.play((success) => {
         if (success) {
           soundRef.current.release();
+          soundRef.current = null;
         } else {
           console.error(
             "Playback of disco sound failed to audio decoding errors 🔈",
@@ -222,6 +239,13 @@ function useSound() {
           alertTimeoutRef.current = null;
           soundIsPlayingRef.current = false;
           soundRef.current?.stop();
+        } else {
+          // Even without a live sound object, clear the timeout and reset the
+          // guard so a stuck true can't silently block the next alarm.
+          stopVibration();
+          clearTimeout(alertTimeoutRef.current);
+          alertTimeoutRef.current = null;
+          soundIsPlayingRef.current = false;
         }
       } catch (error) {
         console.error("Error stopping sound", error);
