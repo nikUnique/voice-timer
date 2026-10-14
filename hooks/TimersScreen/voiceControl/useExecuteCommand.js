@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { NativeModules } from "react-native";
+import { AppState, NativeModules } from "react-native";
 
 import { useRefsData } from "../../../context/VoiceRecognizerContext";
 import { sleep } from "../../../utils/helpers";
@@ -148,7 +148,13 @@ export function useExecuteCommand({
           .filter((word) => name.toLowerCase().includes(word));
 
         if (!nameInCommand.length && lowerCommand !== REPEAT) {
-          console.log("There is no such a command 😶");
+          console.log("There is no such a command 😶", {
+            lowerCommand, // what vosk actually recognized
+            name, // this timer's name
+            asleep: isTimerSleepingRef.current,
+            alerting: getSharedObject().alertingTimerNames,
+            appState: AppState.currentState,
+          });
           return;
         }
 
