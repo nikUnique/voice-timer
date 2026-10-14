@@ -42,8 +42,10 @@ export default function About() {
         <Text style={{ fontWeight: "bold" }}>Voice Timer</Text> – v{APP_VERSION}
       </Text>
       <Text style={styles.paragraph}>
-        Voice Timer is a simple and flexible timer app designed for hands-free
-        control.
+        Voice Timer is a hands-free timer: the point isn&apos;t the timer,
+        it&apos;s that you never have to touch the screen. Start, pause, resume,
+        and stop timers by voice — and control media and place calls — all
+        without a network or an account.
       </Text>
       <Text style={styles.paragraph}>
         Whether you&apos;re cooking, stretching, working out, meditating, or
@@ -51,15 +53,8 @@ export default function About() {
         responsive.
       </Text>
       <Text style={styles.paragraph}>
-        Use your voice to start, stop, and control the timer without needing to
-        touch the screen.
-      </Text>
-
-      <Text style={styles.paragraph}>
-        No tracking, no accounts, just a helpful timer.
-      </Text>
-      <Text style={styles.paragraph}>
-        This app collects no data. It works fully offline.
+        It collects no data and works fully offline. See the Commands screen for
+        everything you can say.
       </Text>
       <Text> </Text>
 
@@ -94,7 +89,7 @@ export default function About() {
 
       <Paragraph>
         Voice input works with your device&apos;s mic, wired earphones, or even
-        with Bluetooth headset, but the audio quality will suffer with a
+        with Bluetooth headset, but the audio quality may suffer with a
         Bluetooth headset.
       </Paragraph>
 
