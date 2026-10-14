@@ -187,7 +187,7 @@ export default function Timers({ navigation }) {
 
         if (!parsedValue) {
           alertingTimerNamesRef.current = getSharedObject().alertingTimerNames;
-          setAlertingTimerNames(alertingTimerNamesRef.curent);
+          setAlertingTimerNames(alertingTimerNamesRef.current);
         }
 
         if (
