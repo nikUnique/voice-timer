@@ -2,7 +2,7 @@
   "expo": {
     "name": "Voice Timer",
     "slug": "voice_timer",
-    "version": "1.2.0",
+    "version": "0.3.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "androidStatusBar": {
@@ -10,10 +10,7 @@
       "backgroundColor": "#0b7285",
       "translucent": true
     },
-    "plugins": [
-      "./lib/withNotifeeAndroidFix",
-      "expo-font"
-    ],
+    "plugins": ["./lib/withNotifeeAndroidFix", "expo-font"],
     "android": {
       "permissions": [
         "WRITE_SETTINGS",

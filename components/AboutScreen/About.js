@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "../../ui/AppText";
 
 import { Colors } from "../../constants/colors";
+import { APP_VERSION } from "../../constants/appInfo";
 import Section from "../../ui/Section";
 import { BulletPoint, Label, Paragraph, Subtitle } from "../../ui/TextUnits";
 import { useRefsData } from "../../context/VoiceRecognizerContext";
@@ -38,7 +39,7 @@ export default function About() {
     >
       <Text style={styles.title}>About</Text>
       <Text style={styles.subtitle}>
-        <Text style={{ fontWeight: "bold" }}>Voice Timer</Text> – v0.1.0
+        <Text style={{ fontWeight: "bold" }}>Voice Timer</Text> – v{APP_VERSION}
       </Text>
       <Text style={styles.paragraph}>
         Voice Timer is a simple and flexible timer app designed for hands-free
