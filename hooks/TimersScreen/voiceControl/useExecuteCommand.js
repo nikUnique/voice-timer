@@ -63,7 +63,7 @@ export function useExecuteCommand({
   const executeCommand = useCallback(
     async function () {
       try {
-        console.log("does sixteen here");
+        console.log("Executed command", name);
 
         if (!recognizedCommand?.recognizedCommand) return;
 
