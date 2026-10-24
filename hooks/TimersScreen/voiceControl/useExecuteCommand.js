@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { AppState, NativeModules } from "react-native";
 
 import { useRefsData } from "../../../context/VoiceRecognizerContext";
-import { sleep } from "../../../utils/helpers";
+import { hasPhrase, normalize, sleep } from "../../../utils/helpers";
 
 import { getSharedObject } from "../../../utils/sharedVariables";
 import { useCommandFeedback } from "../../shared/useCommandFeedback";
@@ -63,6 +63,8 @@ export function useExecuteCommand({
   const executeCommand = useCallback(
     async function () {
       try {
+        console.log("does sixteen here");
+
         if (!recognizedCommand?.recognizedCommand) return;
 
         isMediaPlayingRef.current =
@@ -91,8 +93,12 @@ export function useExecuteCommand({
           const command =
             recognizedCommand?.recognizedCommand?.trim().toLowerCase() ?? "";
           const thisTimerIsRinging =
-            getSharedObject().alertingTimerNames.includes(name);
+            getSharedObject().alertingTimerNames.includes(normalize(name));
+          console.log(getSharedObject().alertingTimerNames);
           if (!command.includes(STOP) || !thisTimerIsRinging) {
+            console.log(
+              "This doesn't include stop or this timer is not ringing ❓",
+            );
             return;
           }
         }
@@ -159,7 +165,8 @@ export function useExecuteCommand({
         }
 
         if (
-          lowerCommand.includes(
+          hasPhrase(
+            lowerCommand,
             `${START} ${name} ${secretIdentifierRef.current}`
               .toLocaleLowerCase()
               .trim(),
@@ -175,7 +182,8 @@ export function useExecuteCommand({
         if (
           timerIsActiveRef.current &&
           timeLeftRef.current > 0 &&
-          lowerCommand.includes(
+          hasPhrase(
+            lowerCommand,
             `${PAUSE} ${name} ${secretIdentifierRef.current}`
               .toLocaleLowerCase()
               .trim(),
@@ -188,7 +196,8 @@ export function useExecuteCommand({
           spokenFeedback = `${name} paused`;
         }
         if (
-          lowerCommand.includes(
+          hasPhrase(
+            lowerCommand,
             `${RESUME} ${name} ${secretIdentifierRef.current}`
               .toLocaleLowerCase()
               .trim(),
@@ -203,7 +212,8 @@ export function useExecuteCommand({
           spokenFeedback = `${name} resumed`;
         }
         if (
-          lowerCommand.includes(
+          hasPhrase(
+            lowerCommand,
             `${STOP} ${name} ${secretIdentifierRef.current}`
               .toLocaleLowerCase()
               .trim(),
