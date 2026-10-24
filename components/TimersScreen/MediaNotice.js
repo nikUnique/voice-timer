@@ -10,6 +10,7 @@ import { FONT } from "../../constants/typography";
 import { WEIGHT } from "../../constants/weight";
 import { Text } from "../../ui/AppText";
 import { COMMANDS_RUNTIME_POLL_MS } from "../../utils/config";
+import { useRefsData } from "../../context/VoiceRecognizerContext";
 
 // Slim banner for the media-playing state. While media plays it outranks
 // sleep: almost every spoken command is refused until the media is paused, so
@@ -20,6 +21,8 @@ import { COMMANDS_RUNTIME_POLL_MS } from "../../utils/config";
 function MediaNotice({ onMediaPlayingChange }) {
   const [mediaPlaying, setMediaPlaying] = useState(false);
 
+  const { currentSpeechRef } = useRefsData();
+
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
@@ -29,7 +32,10 @@ function MediaNotice({ onMediaPlayingChange }) {
           NativeModules.AudioFocusModule?.isMediaPlaying?.(),
         ).then((playing) => {
           if (!isActive) return;
-          const next = Boolean(playing);
+          // Don't treat the app's own TTS as external media playing —
+          // `isMusicActive` is true while TTS speaks, but that is not real media.
+          const ttsSpeaking = Boolean(currentSpeechRef.current);
+          const next = Boolean(playing) && !ttsSpeaking;
           onMediaPlayingChange?.(next);
           setMediaPlaying((current) => (current === next ? current : next));
         });
