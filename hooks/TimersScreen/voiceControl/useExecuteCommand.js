@@ -218,7 +218,9 @@ export function useExecuteCommand({
               .toLocaleLowerCase()
               .trim(),
           ) &&
-          ((isActive && isPaused) || timeLeftRef.current <= 0)
+          ((isActive && isPaused) ||
+            timeLeftRef.current <= 0 ||
+            getSharedObject().alertingTimerNames?.includes(name))
         ) {
           await resetTimerRef.current();
 
