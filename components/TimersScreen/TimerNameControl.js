@@ -93,6 +93,15 @@ export default function TimerNameControl() {
       setTimerName(lowerCaseName);
       updateSharedObject({ name: lowerCaseName });
 
+      const newTimersArr = timers.map((timer) =>
+        timer.name === name ? { ...timer, name: lowerCaseName } : timer,
+      );
+
+      // Update timer state before restarting Vosk so the dynamic grammar
+      // already contains the new name when recordGrammar runs.
+      setTimers(newTimersArr);
+      setItemInStorage("timers", newTimersArr);
+
       // Restart vosk
       if (voiceEnabled) {
         setVoiceEnabled(false);
@@ -108,16 +117,9 @@ export default function TimerNameControl() {
         emitter.all.delete(`${listener[0]}`);
       });
 
-      const newTimersArr = timers.map((timer) =>
-        timer.name === name ? { ...timer, name: lowerCaseName } : timer,
-      );
-
       // Rename keeps the mounted TimerInterface (list keyed by id) with the
       // new name prop, so migrate the per-name state to the new keys.
       await migrateTimerStorage(name, lowerCaseName);
-
-      setTimers(newTimersArr);
-      setItemInStorage("timers", newTimersArr);
 
       emitter.emit("goBack");
     } catch (error) {
@@ -173,9 +175,9 @@ export default function TimerNameControl() {
                 cursorColor={Colors.primaryTint90}
                 maxLength={20}
                 style={[styles.textInput, textInputsStyle]}
-                inputMode="text"
+                inputMode='text'
                 autoCorrect={true}
-                keyboardType="default"
+                keyboardType='default'
                 spellCheck={true}
               />
             </View>
