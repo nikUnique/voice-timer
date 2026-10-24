@@ -20,6 +20,7 @@ on-device by the user.
 | `f3816c1` | `Text` → `ui/AppText` across 21 files                  |
 | `760a6df` | `.clinerules/timeouts.md`                              |
 | `2500178` | `.clinerules/uncertainty.md`                           |
+* (uncommitted) | Navigation bar set to black (no teal flicker on reload) — `MainActivity.kt`, `styles.xml`, `app.json`
 
 `git log` is the authoritative history. This table is a pointer, not a
 substitute — it is deliberately short.

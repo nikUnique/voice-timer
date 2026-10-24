@@ -10,6 +10,9 @@
       "backgroundColor": "#0b7285",
       "translucent": true
     },
+    "androidNavigationBar": {
+      "backgroundColor": "#000000"
+    },
     "plugins": ["./lib/withNotifeeAndroidFix", "expo-font"],
     "android": {
       "permissions": [
