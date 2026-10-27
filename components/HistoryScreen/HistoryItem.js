@@ -55,6 +55,22 @@ function formatDay(date) {
   });
 }
 
+function isSameDay(a, b) {
+  const da = new Date(a);
+  const db = new Date(b);
+  return (
+    da.getFullYear() === db.getFullYear() &&
+    da.getMonth() === db.getMonth() &&
+    da.getDate() === db.getDate()
+  );
+}
+
+function formatTimeWithDate(date, showDate) {
+  const time = formatTime(date);
+  if (!showDate) return time;
+  return `${formatDay(date)} ${time}`;
+}
+
 export default memo(function HistoryItem({ item }) {
   const [timeLeft, setTimeLeft] = useState(item.time - item.duration);
 
@@ -66,6 +82,10 @@ export default memo(function HistoryItem({ item }) {
   const pausedAt = new Date(
     new Date(item.startTime).getTime() + item.duration * 1000,
   );
+
+  const endForCompare =
+    isCompleted || isReset ? endTime : isPaused ? pausedAt : new Date();
+  const crossDay = !isSameDay(item.startTime, endForCompare);
 
   let displayDuration;
   if (isReset) {
@@ -144,11 +164,11 @@ export default memo(function HistoryItem({ item }) {
           {item.label + ` (${formatDuration(item.time)})`}
         </Text>
         <Text style={styles.time}>
-          {formatTime(item.startTime)} —{" "}
+          {formatTimeWithDate(item.startTime, crossDay)} —{" "}
           {isCompleted || isReset
-            ? formatTime(endTime)
+            ? formatTimeWithDate(endTime, crossDay)
             : isPaused
-              ? formatTime(pausedAt)
+              ? formatTimeWithDate(pausedAt, crossDay)
               : "now"}
         </Text>
       </View>
@@ -158,29 +178,26 @@ export default memo(function HistoryItem({ item }) {
           {formatDuration(displayDuration)}
         </Text>
 
-        {isRunning || isPaused ? (
-          <View
-            style={[
-              styles.badge,
-              isPaused ? styles.pausedBadge : styles.runningBadge,
-            ]}
-          >
-            <Text
+        {isRunning ||
+          (isPaused && (
+            <View
               style={[
-                styles.badgeText,
-                isPaused ? styles.pausedText : styles.runningText,
+                styles.badge,
+                isPaused ? styles.pausedBadge : styles.runningBadge,
               ]}
             >
-              {isPaused ? "paused" : "active"}
-            </Text>
-          </View>
-        ) : isReset ? (
-          <View style={[styles.badge, styles.resetBadge]}>
-            <Text style={[styles.badgeText, styles.resetText]}>reset</Text>
-          </View>
-        ) : (
-          <Text style={styles.day}>{formatDay(item.startTime)}</Text>
-        )}
+              <Text
+                style={[
+                  styles.badgeText,
+                  isPaused ? styles.pausedText : styles.runningText,
+                ]}
+              >
+                {isPaused ? "paused" : "active"}
+              </Text>
+            </View>
+          ))}
+
+        {<Text style={styles.day}>{formatDay(item.startTime)}</Text>}
       </View>
     </View>
   );
