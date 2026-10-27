@@ -7,9 +7,9 @@ export const CONTACT_LIMIT = 20;
 export const CALL_TIMEOUT = 7000;
 export const PHONE_TIMEOUT = 12000;
 export const MINUTE_CALL_TIMEOUT = 60000;
-export const BOOT_MIN_MS = 700;
+export const BOOT_MIN_MS = 0;
 export const BOOT_SAFETY_MS = 4000;
-export const BOOT_FADE_MS = 400;
+export const BOOT_FADE_MS = 200;
 // How often the Commands screen re-checks external media playback while it
 // is focused. External apps never pass through our handlers, so this poll is
 // the only way the list learns media started or stopped.

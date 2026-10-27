@@ -76,7 +76,7 @@ export function useTimerList({
   const handleReadyState = useCallback(
     async function (isReady = true) {
       setIsReady(isReady);
-      await sleep(0.25);
+      await sleep(0.1);
       await SplashScreen.hideAsync();
     },
     [setIsReady],

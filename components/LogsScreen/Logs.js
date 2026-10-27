@@ -130,7 +130,7 @@ export default function LogViewer({ onClose }) {
     try {
       setNativeText(
         await NativeModules.Logcat.getLogs(
-          500,
+          5000,
           minLevel === "V" ? "V" : minLevel,
         ),
       );

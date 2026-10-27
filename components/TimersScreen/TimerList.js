@@ -143,7 +143,7 @@ export default function TimerList({
           return;
         }
 
-        const scrollTimeout = setTimeout(scrollToLeastTimer, 2000);
+        const scrollTimeout = setTimeout(scrollToLeastTimer, 2500);
 
         return () => {
           clearTimeout(scrollTimeout);
