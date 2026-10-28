@@ -5,7 +5,7 @@ import { NativeEventEmitter, NativeModules } from "react-native";
 
 const volumeEmitter = new NativeEventEmitter(NativeModules.VolumeObserver);
 export function useControlledVolume() {
-  const { isHeadsetBroken } = useSettingsData();
+  const { isVolumeLocked } = useSettingsData();
   const lastVolume = useRef(null);
   const isAppChange = useRef(false);
 
@@ -24,7 +24,7 @@ export function useControlledVolume() {
           return;
         }
 
-        if (isHeadsetBroken) {
+        if (isVolumeLocked) {
           NativeModules.VolumeObserver.setVolume(lastVolume.current);
         } else {
           lastVolume.current = result.volume;
@@ -36,7 +36,7 @@ export function useControlledVolume() {
       NativeModules.VolumeObserver.stopObserving();
       subscription.remove();
     };
-  }, [isHeadsetBroken]);
+  }, [isVolumeLocked]);
 
   const adjustVolumeFromApp = useCallback(async (newVolume) => {
     isAppChange.current = true;

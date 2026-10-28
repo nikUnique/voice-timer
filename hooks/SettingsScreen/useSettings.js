@@ -21,6 +21,7 @@ export function useSettings() {
     voiceFeedbackSpeedRef,
     permitAnswerCallsRef,
     setIsHeadsetBroken,
+    setIsVolumeLocked,
     isSkipCommandsEnabledRef,
   } = useSettingsData();
 
@@ -78,6 +79,7 @@ export function useSettings() {
           isSkipCommandsEnabledRef.current =
             retrievedSettings.isSkipCommandsEnabled;
           setIsHeadsetBroken(retrievedSettings.isHeadsetBroken);
+           setIsVolumeLocked(retrievedSettings.isVolumeLocked ?? retrievedSettings.isHeadsetBroken ?? false);
         } catch (error) {
           console.error(
             `An error occurred in the load settings function`,
@@ -95,6 +97,7 @@ export function useSettings() {
       setAlarmVolume,
       setAutoStopAlarmTimeout,
       setIsHeadsetBroken,
+      setIsVolumeLocked,
       setIsVibrating,
       setIsVoiceFeedbackEnabled,
       setKeepScreenDim,

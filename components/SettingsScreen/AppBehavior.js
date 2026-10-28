@@ -20,6 +20,7 @@ import useSettingsFunctions from "../../hooks/SettingsScreen/useSettingsFunction
 import useSettingsStyles from "../../hooks/SettingsScreen/useSettingsStyles";
 import { ExpandableSetting } from "../../ui/ExpandableSetting";
 import BrokenMic from "./BrokenMic";
+import VolumeLock from "./VolumeLock";
 import { SPACE } from "../../constants/spacing";
 import SkipCommands from "./SkipCommands";
 
@@ -276,6 +277,7 @@ export default memo(function AppBehavior() {
       <View style={dividerLine}></View>
 
       <BrokenMic />
+      <VolumeLock />
       <SkipCommands />
     </View>
   );

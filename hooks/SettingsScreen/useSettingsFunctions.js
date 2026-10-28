@@ -17,6 +17,7 @@ export default function useSettingsFunctions() {
     keepScreenDim,
     permitAnswerCallsRef,
     isHeadsetBroken,
+    isVolumeLocked,
     isSkipCommandsEnabledRef,
   } = useSettingsData();
 
@@ -31,11 +32,13 @@ export default function useSettingsFunctions() {
       isVibrating,
       keepScreenDim,
       isHeadsetBroken,
+      isVolumeLocked,
     }),
     [
       alarmVolume,
       autoStopAlarmTimeout,
       isHeadsetBroken,
+      isVolumeLocked,
       isVibrating,
       isVoiceFeedbackEnabled,
       keepScreenDim,

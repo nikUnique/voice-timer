@@ -85,6 +85,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const [keepScreenDim, setKeepScreenDim] = useState(false);
   const [isVibrating, setIsVibrating] = useState(false);
   const [isHeadsetBroken, setIsHeadsetBroken] = useState(false);
+  const [isVolumeLocked, setIsVolumeLocked] = useState(false);
   const isSkipCommandsEnabledRef = useRef(false);
   const dimScreenRef = useRef(null);
   const voiceFeedbackSpeedRef = useRef(0.8);
@@ -243,6 +244,8 @@ export default function VoiceRecognizerProvider({ children }) {
       permitAnswerCallsRef,
       isHeadsetBroken,
       setIsHeadsetBroken,
+      isVolumeLocked,
+      setIsVolumeLocked,
       isSkipCommandsEnabledRef,
     }),
     [
@@ -260,6 +263,7 @@ export default function VoiceRecognizerProvider({ children }) {
       microGranted,
       keepScreenDim,
       isHeadsetBroken,
+      isVolumeLocked,
     ],
   );
 
