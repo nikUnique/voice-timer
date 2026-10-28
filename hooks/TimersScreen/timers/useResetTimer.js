@@ -34,6 +34,7 @@ export function useResetTimer({
   resetTimerRef,
   isActive,
   isPaused,
+  timeLabelRef,
 }) {
   const {
     alertingTimerNamesRef,
@@ -261,10 +262,10 @@ export function useResetTimer({
           alertingTimerNamesRef.current.length === 0 &&
           AppState.currentState !== "active"
         ) {
-          onUpdateNotification(
-            ongoingNotificationLabelRef?.current,
+          await onUpdateNotification(
+            timeLabelRef?.current || ongoingNotificationLabelRef?.current,
             getSharedObject().timersLabel,
-            name,
+            leastTimeTimerRef.current?.timerName || name,
           );
         }
 
@@ -328,6 +329,7 @@ export function useResetTimer({
       leastTimeTimerRef,
       onUpdateNotification,
       ongoingNotificationLabelRef,
+      timeLabelRef,
     ],
   );
 
