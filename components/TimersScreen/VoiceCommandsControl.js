@@ -21,7 +21,6 @@ import {
 import { useCommandsControl } from "../../hooks/TimersScreen/voiceControl/useCommandsControl";
 import { Text } from "../../ui/AppText";
 import { getSharedObject } from "../../utils/sharedVariables";
-import { emitter } from "../../utils/EventEmitter";
 
 const eventEmitter = new NativeEventEmitter(NativeModules.AudioFocusModule);
 
@@ -80,26 +79,12 @@ export default memo(function VoiceCommandsControl({ setCommand }) {
 
   useEffect(
     function () {
-      let done = false;
-      const run = function () {
-        if (done) return;
-        done = true;
-        (async function () {
-          await load();
-        })();
-      };
-      emitter.on("appReady", run);
-      const safety = setTimeout(run, 1500);
-      return function () {
-        clearTimeout(safety);
-        try {
-          emitter.off("appReady", run);
-        } catch {
-          // ignore
-        }
-      };
+      async function initVosk() {
+        await load();
+      }
+      initVosk();
     },
-    [load],
+    [load, unload],
   );
 
   useEffect(function () {
