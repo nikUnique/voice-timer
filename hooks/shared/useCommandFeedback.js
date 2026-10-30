@@ -20,7 +20,7 @@ export function useCommandFeedback() {
     async function (text) {
       await playSoundGeneral({ fileName: successSound, shouldStop: false });
       await sleep(SUCCESS_CHIME_GAP);
-      await speak(text);
+      await speak(text, { skipWiredDelay: true });
     },
     [playSoundGeneral, successSound, speak],
   );

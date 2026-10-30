@@ -6,6 +6,7 @@ import {
   useRefsData,
   useSoundData,
 } from "../../context/VoiceRecognizerContext";
+import { sleep } from "../../utils/helpers";
 
 function useSound() {
   const alarmSoundObjectRef = useRef(null);
@@ -59,6 +60,10 @@ function useSound() {
       isVibrating = false,
     }) {
       try {
+        if (await NativeModules.AudioFocusModule.isWiredHeadsetConnected()) {
+          await sleep(0.5);
+        }
+
         if (isLooping) {
           Sound.setCategory("Alarm", true);
         }

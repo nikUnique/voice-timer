@@ -62,7 +62,7 @@ export function useSpeak() {
   // );
 
   const speak = useCallback(
-    async function speak(text) {
+    async function speak(text, options = {}) {
       // return new Promise((resolve, reject) => {
 
       // })
@@ -84,7 +84,7 @@ export function useSpeak() {
               ).value,
           );
 
-          if (await NativeModules.AudioFocusModule.isWiredHeadsetConnected()) {
+          if (!options?.skipWiredDelay && (await NativeModules.AudioFocusModule.isWiredHeadsetConnected())) {
             await sleep(0.5);
           }
 
