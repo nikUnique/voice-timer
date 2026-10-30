@@ -85,7 +85,7 @@ export default function BootOverlay({ visible, onHidden }) {
           },
         ]}
       >
-        <LoadingIndicator />
+        {/* <LoadingIndicator /> */}
       </Animated.View>
     </Animated.View>
   );
