@@ -1,4 +1,5 @@
 import {
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -7,10 +8,10 @@ import {
   useSyncExternalStore,
 } from "react";
 import {
+  FlatList,
   NativeModules,
   Platform,
   Pressable,
-  ScrollView,
   Share,
   StyleSheet,
   View,
@@ -37,7 +38,12 @@ const fmt = (a) => {
 };
 
 const push = (level, args) => {
-  jsLogs = [...jsLogs.slice(-199), `[${level}] ${args.map(fmt).join(" ")}`];
+  jsLogs = [...jsLogs.slice(-499), `[${level}] ${args.map(fmt).join(" ")}`];
+  listeners.forEach((l) => l());
+};
+
+const clearJsLogs = () => {
+  jsLogs = [];
   listeners.forEach((l) => l());
 };
 
@@ -64,7 +70,7 @@ const subscribe = (cb) => {
 };
 const getSnapshot = () => jsLogs;
 
-// ---------- UI ----------
+// ---------- helpers ----------
 const NOISE_TAGS = [
   "Choreographer",
   "OpenGLRenderer",
@@ -93,18 +99,35 @@ const levelOf = (line) => {
   return m ? (m[1] === "F" ? "E" : m[1]) : null;
 };
 
-function Chip({ label, active, onPress, color }) {
+// ---------- UI ----------
+const LogLine = memo(function LogLine({ line, level, striped }) {
+  return (
+    <View style={[styles.logRow, striped && styles.logRowStriped]}>
+      <Text
+        selectable
+        style={[
+          styles.line,
+          { color: LEVEL_COLOR[level] || Colors.grayTint70 },
+        ]}
+      >
+        {line}
+      </Text>
+    </View>
+  );
+});
+
+function Chip({ label, active, onPress, color, leading }) {
   return (
     <Pressable
       onPress={onPress}
       style={[
         styles.chip,
-        active && {
-          backgroundColor: Colors.primaryTint8Alpha15,
-          borderColor: Colors.primaryTint8Alpha30,
-        },
+        active && styles.chipActive,
       ]}
     >
+      {leading ? (
+        <View style={[styles.chipDot, { backgroundColor: color || Colors.primaryTint40 }]} />
+      ) : null}
       <Text
         style={[
           styles.chipText,
@@ -124,6 +147,7 @@ export default function LogViewer({ onClose }) {
   const [nativeText, setNativeText] = useState("");
   const js = useSyncExternalStore(subscribe, getSnapshot);
   const scrollRef = useRef(null);
+  const stickToBottomRef = useRef(true);
 
   const refresh = useCallback(async () => {
     if (Platform.OS !== "android") return;
@@ -160,29 +184,59 @@ export default function LogViewer({ onClose }) {
     });
   }, [source, nativeText, js, minLevel]);
 
+  const onScroll = useCallback((e) => {
+    const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
+    const distance =
+      contentSize.height - (contentOffset.y + layoutMeasurement.height);
+    stickToBottomRef.current = distance < 40;
+  }, []);
+
+  useEffect(() => {
+    if (!stickToBottomRef.current) return;
+    const id = requestAnimationFrame(() => {
+      scrollRef.current?.scrollToEnd({ animated: false });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [lines]);
+
+  const renderLine = useCallback(
+    ({ item, index }) => (
+      <LogLine
+        line={item}
+        level={levelOf(item)}
+        striped={index % 2 === 1}
+      />
+    ),
+    [],
+  );
+
   return (
     <View style={styles.root}>
       <View style={styles.header}>
         <Text style={styles.title}>Logs</Text>
-        <Pressable
-          onPress={onClose}
-          style={styles.closeBtn}
-        >
-          <Text style={styles.closeText}>Close</Text>
-        </Pressable>
+        <View style={styles.headerRight}>
+          <View style={styles.countBadge}>
+            <Text style={styles.countText}>{lines.length} lines</Text>
+          </View>
+          <Pressable onPress={onClose} style={styles.closeBtn}>
+            <Text style={styles.closeText}>Close</Text>
+          </Pressable>
+        </View>
       </View>
 
-      <View style={styles.row}>
-        <Chip
-          label='Native'
-          active={source === "native"}
-          onPress={() => setSource("native")}
-        />
-        <Chip
-          label='JS'
-          active={source === "js"}
-          onPress={() => setSource("js")}
-        />
+      <View style={styles.toolbar}>
+        <View style={styles.segmented}>
+          <Chip
+            label="Native"
+            active={source === "native"}
+            onPress={() => setSource("native")}
+          />
+          <Chip
+            label="JS"
+            active={source === "js"}
+            onPress={() => setSource("js")}
+          />
+        </View>
         <View style={styles.spacer} />
         <Chip
           label={auto ? "Auto ●" : "Auto"}
@@ -191,53 +245,54 @@ export default function LogViewer({ onClose }) {
         />
       </View>
 
-      <View style={styles.row}>
+      <View style={styles.levelRow}>
         {LEVELS.map((l) => (
           <Chip
             key={l}
             label={l}
             active={minLevel === l}
             color={LEVEL_COLOR[l]}
+            leading
             onPress={() => setMinLevel(l)}
           />
         ))}
       </View>
 
-      <ScrollView
-        ref={scrollRef}
-        style={styles.logBox}
-        contentContainerStyle={{ padding: SPACE.md }}
-        onContentSizeChange={() =>
-          scrollRef.current?.scrollToEnd({ animated: false })
-        }
-      >
-        {lines.map((l, i) => (
-          <Text
-            key={i}
-            selectable
-            style={[
-              styles.line,
-              { color: LEVEL_COLOR[levelOf(l)] || Colors.grayTint70 },
-            ]}
-          >
-            {l}
-          </Text>
-        ))}
-      </ScrollView>
+      <View style={styles.logBox}>
+        <FlatList
+          ref={scrollRef}
+          data={lines}
+          keyExtractor={(_, i) => String(i)}
+          renderItem={renderLine}
+          onScroll={onScroll}
+          scrollEventThrottle={16}
+          initialNumToRender={30}
+          maxToRenderPerBatch={20}
+          windowSize={7}
+          updateCellsBatchingPeriod={50}
+          removeClippedSubviews={Platform.OS === "android"}
+          contentContainerStyle={styles.logContent}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>No logs matching the filter</Text>
+          }
+        />
+      </View>
 
-      <View style={styles.row}>
-        <Pressable
-          style={styles.btn}
-          onPress={refresh}
-        >
-          <Text style={styles.btnText}>Refresh</Text>
+      <View style={styles.footer}>
+        <Pressable style={styles.btnPrimary} onPress={refresh}>
+          <Text style={styles.btnPrimaryText}>Refresh</Text>
         </Pressable>
         <Pressable
-          style={styles.btn}
+          style={styles.btnSecondary}
           onPress={() => Share.share({ message: lines.join("\n") })}
         >
-          <Text style={styles.btnText}>Share</Text>
+          <Text style={styles.btnSecondaryText}>Share</Text>
         </Pressable>
+        {source === "js" ? (
+          <Pressable style={styles.btnSecondary} onPress={clearJsLogs}>
+            <Text style={styles.btnSecondaryText}>Clear</Text>
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );
@@ -248,7 +303,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.grayShade30,
     padding: SPACE.lg,
-    gap: SPACE.lg,
+    gap: SPACE.md,
   },
   header: {
     flexDirection: "row",
@@ -260,49 +315,139 @@ const styles = StyleSheet.create({
     fontSize: FONT.heading,
     fontWeight: WEIGHT.semibold,
   },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACE.md,
+  },
+  countBadge: {
+    paddingHorizontal: SPACE.md,
+    paddingVertical: SPACE.xs,
+    borderRadius: RADIUS.full,
+    backgroundColor: Colors.whiteAlpha10,
+    borderWidth: 1,
+    borderColor: Colors.whiteAlpha20,
+  },
+  countText: {
+    color: Colors.grayTint70,
+    fontSize: FONT.caption,
+    fontWeight: WEIGHT.medium,
+  },
   closeBtn: {
     paddingHorizontal: SPACE.lg,
     paddingVertical: SPACE.md,
     borderRadius: RADIUS.chip,
     backgroundColor: Colors.whiteAlpha10,
+    borderWidth: 1,
+    borderColor: Colors.whiteAlpha20,
   },
   closeText: {
     color: Colors.grayTint70,
     fontSize: FONT.body,
     fontWeight: WEIGHT.medium,
   },
-  row: { flexDirection: "row", gap: SPACE.md, alignItems: "center" },
+  toolbar: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACE.md,
+  },
+  segmented: {
+    flexDirection: "row",
+    gap: SPACE.xs,
+    padding: SPACE.xs,
+    borderRadius: RADIUS.sm,
+    backgroundColor: Colors.grayShade20,
+    borderWidth: 1,
+    borderColor: Colors.whiteAlpha10,
+  },
   spacer: { flex: 1 },
+  levelRow: {
+    flexDirection: "row",
+    gap: SPACE.sm,
+    flexWrap: "wrap",
+  },
   chip: {
-    paddingHorizontal: SPACE.lg,
-    paddingVertical: SPACE.md,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACE.xs,
+    paddingHorizontal: SPACE.md,
+    paddingVertical: SPACE.sm,
     borderRadius: RADIUS.full,
     borderWidth: 1,
     borderColor: Colors.whiteAlpha20,
+    backgroundColor: Colors.whiteAlpha10,
   },
-  chipText: { fontSize: FONT.body, fontWeight: WEIGHT.medium },
+  chipActive: {
+    backgroundColor: Colors.primaryTint8Alpha15,
+    borderColor: Colors.primaryTint8Alpha30,
+  },
+  chipDot: {
+    width: SPACE.sm,
+    height: SPACE.sm,
+    borderRadius: RADIUS.full,
+  },
+  chipText: {
+    fontSize: FONT.body,
+    fontWeight: WEIGHT.medium,
+  },
   logBox: {
     flex: 1,
     backgroundColor: Colors.grayShade20,
-    borderRadius: RADIUS.sm,
+    borderRadius: RADIUS.md,
     borderWidth: 1,
     borderColor: Colors.whiteAlpha10,
+    overflow: "hidden",
+  },
+  logContent: {
+    padding: SPACE.md,
+  },
+  logRow: {
+    paddingVertical: SPACE.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.whiteAlpha10,
+  },
+  logRowStriped: {
+    backgroundColor: Colors.whiteAlpha10,
   },
   line: {
     fontFamily: Platform.select({ android: "monospace", ios: "Menlo" }),
     fontSize: FONT.caption,
-    marginBottom: SPACE.xs,
+    lineHeight: 16,
   },
-  btn: {
+  emptyText: {
+    color: Colors.grayTint70,
+    fontSize: FONT.body,
+    textAlign: "center",
+    paddingVertical: SPACE.xxxl,
+  },
+  footer: {
+    flexDirection: "row",
+    gap: SPACE.md,
+  },
+  btnPrimary: {
     flex: 1,
     alignItems: "center",
     paddingVertical: SPACE.lg,
     borderRadius: RADIUS.xs,
     backgroundColor: Colors.primary,
   },
-  btnText: {
+  btnPrimaryText: {
     color: Colors.primaryTint90,
     fontSize: FONT.body,
     fontWeight: WEIGHT.semibold,
+  },
+  btnSecondary: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: SPACE.lg,
+    borderRadius: RADIUS.xs,
+    backgroundColor: Colors.whiteAlpha10,
+    borderWidth: 1,
+    borderColor: Colors.whiteAlpha20,
+  },
+  btnSecondaryText: {
+    color: Colors.grayTint70,
+    fontSize: FONT.body,
+    fontWeight: WEIGHT.medium,
   },
 });
