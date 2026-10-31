@@ -1,13 +1,17 @@
 import { isValidPhoneNumber } from "libphonenumber-js";
-import { useState } from "react";
+import { Alert } from "react-native";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import {
+  FlatList,
   KeyboardAvoidingView,
-  ScrollView,
+  Modal,
+  Platform,
+  Pressable,
   StyleSheet,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { Text } from "../../ui/AppText";
 import { Colors } from "../../constants/colors";
@@ -49,15 +53,131 @@ function getAvatarColor(fullName) {
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }
 
+const ContactRow = memo(function ContactRow({
+  contact,
+  onCall,
+  onEdit,
+  onDelete,
+}) {
+  return (
+    <View style={styles.row}>
+      <View
+        style={[
+          styles.avatar,
+          { backgroundColor: getAvatarColor(contact.name) },
+        ]}
+      >
+        <Text style={styles.avatarText}>{getInitials(contact.name)}</Text>
+      </View>
+
+      <View style={styles.rowText}>
+        <Text style={styles.rowName} numberOfLines={1}>
+          {contact.name}
+        </Text>
+        <Text style={styles.rowNumber} numberOfLines={1}>
+          {contact.phoneNumber}
+        </Text>
+      </View>
+
+      <View style={styles.rowActions}>
+        <Pressable
+          style={styles.iconBtn}
+          onPress={() => onEdit(contact)}
+          hitSlop={8}
+        >
+          <Ionicons
+            name="pencil-outline"
+            size={FONT.subheading}
+            color={Colors.primaryTint40}
+          />
+        </Pressable>
+        <Pressable
+          style={styles.iconBtnPrimary}
+          onPress={() => onCall(contact.phoneNumber)}
+          hitSlop={8}
+        >
+          <Ionicons
+            name="call"
+            size={FONT.subheading}
+            color={Colors.primaryTint90}
+          />
+        </Pressable>
+        <Pressable
+          style={styles.iconBtnDanger}
+          onPress={() => onDelete(contact)}
+          hitSlop={8}
+        >
+          <Ionicons
+            name="trash-outline"
+            size={FONT.subheading}
+            color={Colors.dangerColor}
+          />
+        </Pressable>
+      </View>
+    </View>
+  );
+});
+
 export default function Contacts() {
-  const [name, setName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("+");
-  const [error, setError] = useState("");
-  const [showForm, setShowForm] = useState(false);
   const { contacts, setContacts } = useContactsData();
   const { setVoiceEnabled, voiceEnabled } = useSettingsData();
 
-  function handleAdd() {
+  const [search, setSearch] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [name, setName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("+");
+  const [error, setError] = useState("");
+
+  const nameInputRef = useRef(null);
+  const phoneInputRef = useRef(null);
+
+  const visibleContacts = useMemo(() => {
+    const q = normalize(search);
+    const filtered = contacts.filter((contact) => {
+      if (!q) return true;
+      const haystack = `${normalize(contact.name)} ${contact.phoneNumber
+        .replace(/\s/g, "")
+        .toLowerCase()}`;
+      return haystack.includes(q);
+    });
+    return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+  }, [contacts, search]);
+
+  useEffect(() => {
+    if (!modalVisible) return;
+    const id = setTimeout(() => nameInputRef.current?.focus(), 80);
+    return () => clearTimeout(id);
+  }, [modalVisible]);
+
+  function resetForm() {
+    setName("");
+    setPhoneNumber("+");
+    setError("");
+  }
+
+  function openAdd() {
+    if (contacts.length >= CONTACT_LIMIT) return;
+    setEditing(null);
+    resetForm();
+    setModalVisible(true);
+  }
+
+  function openEdit(contact) {
+    setEditing(contact);
+    setName(contact.name);
+    setPhoneNumber(contact.phoneNumber);
+    setError("");
+    setModalVisible(true);
+  }
+
+  function closeModal() {
+    setModalVisible(false);
+    setEditing(null);
+    resetForm();
+  }
+
+  function handleSave() {
     const normalizedName = normalize(name);
     const words = normalizedName.split(" ").filter(Boolean);
 
@@ -65,206 +185,328 @@ export default function Contacts() {
       setError("Name must be 1 or 2 words");
       return;
     }
-
     if (normalizedName.length < 3) {
       setError("Contact name should be at least 3 characters");
       return;
     }
-
-    const areOnlyLetters = /^[A-Za-z]+( [A-Za-z]+)?$/.test(normalizedName);
-
-    if (!areOnlyLetters) {
+    if (!/^[A-Za-z]+( [A-Za-z]+)?$/.test(normalizedName)) {
       setError("Name can only contain letters");
       return;
     }
-
-    const contactWithSameName = contacts.find(
-      (contact) => normalize(contact.name) === normalizedName,
+    const duplicate = contacts.find(
+      (contact) =>
+        normalize(contact.name) === normalizedName &&
+        contact.id !== editing?.id,
     );
-    if (contactWithSameName) {
+    if (duplicate) {
       setError("Contact with this name already exists");
       return;
     }
-
     if (!isValidPhoneNumber(phoneNumber)) {
       setError("Please enter a valid phone number");
       return;
     }
 
     setError("");
-    setName(normalizedName);
+    const newContact = editing
+      ? { ...editing, name: normalizedName, phoneNumber }
+      : { id: Date.now().toString(), name: normalizedName, phoneNumber };
 
-    const newContact = {
-      id: Date.now().toString(),
-      name: normalizedName,
-      phoneNumber,
-    };
+    const next = editing
+      ? contacts.map((contact) =>
+          contact.id === editing.id ? newContact : contact,
+        )
+      : [...contacts, newContact];
 
-    setContacts((prev) => [...prev, newContact]);
-    setItemInStorage("contacts", [...contacts, newContact]);
-    setName("");
-    setPhoneNumber("");
-    setShowForm(false);
+    setContacts(next);
+    setItemInStorage("contacts", next);
+
     if (voiceEnabled) {
       setVoiceEnabled(false);
-      setTimeout(function () {
-        setVoiceEnabled(true);
-      }, 100);
+      setTimeout(() => setVoiceEnabled(true), 100);
     }
+    closeModal();
   }
 
   async function handleCall(number) {
     const success = await callNumber(number);
-    if (!success) setError("Could not place the call.");
+    if (!success) {
+      Alert.alert("Call failed", "Could not place the call.");
+    }
   }
 
-  function handleDelete(id) {
-    setContacts((prev) => prev.filter((c) => c.id !== id));
-    setItemInStorage(
-      "contacts",
-      contacts.filter((c) => c.id !== id),
-    );
+  function handleDelete(contact) {
+    Alert.alert("Delete contact", `Delete ${contact.name}?`, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          const next = contacts.filter((c) => c.id !== contact.id);
+          setContacts(next);
+          setItemInStorage("contacts", next);
+        },
+      },
+    ]);
   }
 
-  const includesName = contacts.find(
-    (contact) => normalize(contact.name) === normalize(name),
-  );
+  const atLimit = contacts.length >= CONTACT_LIMIT;
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior='height'
-    >
-      {contacts?.length === 0 ? (
-        <>
-          <Text style={styles.empty}>No contacts</Text>
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyTitle}>No contacts yet</Text>
-            <Text style={styles.emptyBody}>
-              Add someone to call them by name.
-            </Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Text style={styles.title}>Contacts</Text>
+          <View style={styles.countBadge}>
+            <Text style={styles.countText}>{contacts.length}</Text>
           </View>
-        </>
-      ) : (
-        <View style={styles.listWrapper}>
-          <ScrollView keyboardShouldPersistTaps='handled'>
-            {contacts.map((item) => (
-              <View
-                key={item.id}
-                style={styles.row}
-              >
-                <TouchableOpacity
-                  style={styles.rowMain}
-                  onPress={() => handleCall(item.phoneNumber)}
-                >
-                  <View
-                    style={[
-                      styles.avatar,
-                      { backgroundColor: getAvatarColor(item.name) },
-                    ]}
-                  >
-                    <Text style={styles.avatarText}>
-                      {getInitials(item.name)}
-                    </Text>
-                  </View>
-                  <View style={styles.rowText}>
-                    <Text style={styles.rowName}>{item.name}</Text>
-                    <Text style={styles.rowNumber}>{item.phoneNumber}</Text>
-                  </View>
-                  <View style={styles.callBadge}>
-                    <Text style={styles.callBadgeText}>call</Text>
-                  </View>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={() => handleDelete(item.id)}
-                >
-                  <Text style={styles.deleteText}>×</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-          </ScrollView>
         </View>
+        <Pressable
+          style={[styles.addButton, atLimit && styles.addButtonDisabled]}
+          onPress={atLimit ? undefined : openAdd}
+          hitSlop={8}
+        >
+          <Ionicons
+            name="add"
+            size={FONT.heading}
+            color={Colors.primaryTint90}
+          />
+        </Pressable>
+      </View>
+
+      <View style={styles.searchBox}>
+        <Ionicons
+          name="search-outline"
+          size={FONT.subheading}
+          color={Colors.grayTint70}
+        />
+        <TextInput
+          style={styles.searchInput}
+          value={search}
+          onChangeText={setSearch}
+          placeholder="Search contacts"
+          placeholderTextColor={Colors.grayTint70}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
+        {search ? (
+          <Pressable onPress={() => setSearch("")} hitSlop={8}>
+            <Ionicons
+              name="close-circle"
+              size={FONT.subheading}
+              color={Colors.grayTint70}
+            />
+          </Pressable>
+        ) : null}
+      </View>
+
+      {visibleContacts.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Ionicons
+            name={search ? "search-outline" : "people-outline"}
+            size={FONT.display}
+            color={Colors.grayTint70}
+          />
+          <Text style={styles.emptyTitle}>
+            {search ? "No matches" : "No contacts yet"}
+          </Text>
+          <Text style={styles.emptyBody}>
+            {search
+              ? "Try a different search."
+              : "Add someone to call them by name."}
+          </Text>
+          {!search && !atLimit ? (
+            <Pressable style={styles.emptyCta} onPress={openAdd}>
+              <Ionicons
+                name="add"
+                size={FONT.body}
+                color={Colors.primaryTint90}
+              />
+              <Text style={styles.emptyCtaText}>Add contact</Text>
+            </Pressable>
+          ) : null}
+        </View>
+      ) : (
+        <FlatList
+          data={visibleContacts}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <ContactRow
+              contact={item}
+              onCall={handleCall}
+              onEdit={openEdit}
+              onDelete={handleDelete}
+            />
+          )}
+          initialNumToRender={12}
+          maxToRenderPerBatch={8}
+          windowSize={5}
+          removeClippedSubviews={Platform.OS === "android"}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        />
       )}
 
-      {showForm ? (
-        <View style={styles.form}>
-          {includesName && (
-            <Text style={styles.error}>
-              Contact with this name already exists
-            </Text>
-          )}
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder='Name must be 1-2 words (John Smith)'
-            placeholderTextColor={Colors.grayTint70}
-            autoCapitalize='words'
-          />
-          {error !== "" && <Text style={styles.error}>{error}</Text>}
-          <TextInput
-            style={styles.input}
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            placeholder='Phone number (+1 234 567 8900)'
-            placeholderTextColor={Colors.grayTint70}
-            keyboardType='phone-pad'
-          />
-          <Text style={styles.helperText}>Include country code, e.g. +1</Text>
-
-          <TouchableOpacity
-            style={styles.buttonPrimary}
-            onPress={handleAdd}
-          >
-            <Text style={styles.buttonText}>Save contact</Text>
-          </TouchableOpacity>
-        </View>
-      ) : contacts.length >= CONTACT_LIMIT ? (
+      {atLimit && !search ? (
         <Text style={styles.limitText}>
           You&apos;ve reached the {CONTACT_LIMIT} contact limit. Delete one to
           add another.
         </Text>
-      ) : (
-        <TouchableOpacity
-          style={styles.buttonPrimary}
-          onPress={() => setShowForm(true)}
+      ) : null}
+
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={closeModal}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.modalBackdrop}
         >
-          <Text style={styles.buttonText}>+ Add contact</Text>
-        </TouchableOpacity>
-      )}
-    </KeyboardAvoidingView>
+          <Pressable style={styles.modalDismiss} onPress={closeModal} />
+          <Pressable style={styles.modalCard} onPress={() => {}}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                {editing ? "Edit contact" : "Add contact"}
+              </Text>
+              <Pressable onPress={closeModal} hitSlop={8}>
+                <Ionicons
+                  name="close"
+                  size={FONT.heading}
+                  color={Colors.grayTint70}
+                />
+              </Pressable>
+            </View>
+
+            <Text style={styles.inputLabel}>Name</Text>
+            <TextInput
+              ref={nameInputRef}
+              style={styles.input}
+              value={name}
+              onChangeText={(text) => {
+                setName(text);
+                if (error) setError("");
+              }}
+              placeholder="John Smith"
+              placeholderTextColor={Colors.grayTint70}
+              autoCapitalize="words"
+              returnKeyType="next"
+              onSubmitEditing={() => phoneInputRef.current?.focus()}
+            />
+
+            <Text style={styles.inputLabel}>Phone number</Text>
+            <TextInput
+              ref={phoneInputRef}
+              style={styles.input}
+              value={phoneNumber}
+              onChangeText={(text) => {
+                if (!text) {
+                  setPhoneNumber("+");
+                  return;
+                }
+                if (!text.startsWith("+")) {
+                  setPhoneNumber("+" + text.replace(/^\+/, ""));
+                } else {
+                  setPhoneNumber(text);
+                }
+              }}
+              placeholder="+1 234 567 8900"
+              placeholderTextColor={Colors.grayTint70}
+              keyboardType="phone-pad"
+              returnKeyType="done"
+              onSubmitEditing={handleSave}
+            />
+            <Text style={styles.helperText}>Include country code, e.g. +1</Text>
+
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+
+            <View style={styles.modalActions}>
+              <Pressable style={styles.modalCancel} onPress={closeModal}>
+                <Text style={styles.modalCancelText}>Cancel</Text>
+              </Pressable>
+              <Pressable style={styles.modalSave} onPress={handleSave}>
+                <Text style={styles.modalSaveText}>
+                  {editing ? "Save changes" : "Save contact"}
+                </Text>
+              </Pressable>
+            </View>
+          </Pressable>
+        </KeyboardAvoidingView>
+      </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: SPACE.lg,
-    marginBottom: SPACE.huge,
     backgroundColor: Colors.grayShade30,
+    padding: SPACE.lg,
+    gap: SPACE.md,
   },
-
-  emptyState: {
-    marginTop: SPACE.huge,
+  header: {
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
   },
-  emptyTitle: {
-    fontSize: FONT.heading,
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACE.md,
+  },
+  title: {
     color: Colors.primaryTint90,
+    fontSize: FONT.heading,
     fontWeight: WEIGHT.semibold,
   },
-  emptyBody: {
-    fontSize: FONT.body,
-    color: Colors.grayTint70,
-    marginTop: SPACE.xs,
+  countBadge: {
+    minWidth: SPACE.xl,
+    paddingHorizontal: SPACE.sm,
+    paddingVertical: SPACE.xs,
+    borderRadius: RADIUS.full,
+    backgroundColor: Colors.primaryTint8Alpha15,
+    borderWidth: 1,
+    borderColor: Colors.primaryTint8Alpha30,
+    alignItems: "center",
   },
-
-  listWrapper: {
+  countText: {
+    color: Colors.primaryTint40,
+    fontSize: FONT.caption,
+    fontWeight: WEIGHT.semibold,
+  },
+  addButton: {
+    width: SPACE.xxxl,
+    height: SPACE.xxxl,
+    borderRadius: RADIUS.full,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.primary,
+  },
+  addButtonDisabled: {
+    opacity: 0.4,
+  },
+  searchBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACE.sm,
+    paddingHorizontal: SPACE.md,
+    paddingVertical: SPACE.sm,
+    borderRadius: RADIUS.sm,
+    backgroundColor: Colors.grayShade20,
+    borderWidth: 1,
+    borderColor: Colors.whiteAlpha10,
+  },
+  searchInput: {
     flex: 1,
+    color: Colors.primaryTint90,
+    fontSize: FONT.body,
+    padding: 0,
   },
-
+  listContent: {
+    gap: SPACE.sm,
+    paddingBottom: SPACE.lg,
+  },
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -272,23 +514,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.whiteAlpha10,
     borderRadius: RADIUS.sm,
-    paddingVertical: SPACE.sm,
-    paddingHorizontal: SPACE.sm,
-    marginBottom: SPACE.sm,
-  },
-
-  rowMain: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
+    padding: SPACE.md,
+    gap: SPACE.md,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20, // half of width/height for a perfect circle - doesn't map to the scale, kept as an intentional exception
+    width: SPACE.huge,
+    height: SPACE.huge,
+    borderRadius: SPACE.xxl,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: SPACE.sm,
   },
   avatarText: {
     color: Colors.grayShade30,
@@ -297,83 +531,170 @@ const styles = StyleSheet.create({
   },
   rowText: {
     flex: 1,
+    gap: SPACE.xs,
   },
   rowName: {
-    fontSize: FONT.subheading,
     color: Colors.primaryTint90,
+    fontSize: FONT.subheading,
     fontWeight: WEIGHT.semibold,
   },
   rowNumber: {
-    fontSize: FONT.body,
     color: Colors.grayTint70,
-    marginTop: SPACE.xs,
-  },
-  callBadge: {
-    backgroundColor: Colors.primaryTint8Alpha15,
-    borderWidth: 1,
-    borderColor: Colors.primaryTint8Alpha30,
-    borderRadius: RADIUS.chip,
-    paddingVertical: SPACE.xs,
-    paddingHorizontal: SPACE.sm,
-  },
-  callBadgeText: {
-    color: Colors.primaryTint8,
     fontSize: FONT.caption,
-    fontWeight: WEIGHT.semibold,
   },
-  deleteButton: {
+  rowActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACE.xs,
+  },
+  iconBtn: {
+    width: SPACE.xxxl,
+    height: SPACE.xxxl,
+    borderRadius: RADIUS.full,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.whiteAlpha10,
+    borderWidth: 1,
+    borderColor: Colors.whiteAlpha20,
+  },
+  iconBtnPrimary: {
+    width: SPACE.xxxl,
+    height: SPACE.xxxl,
+    borderRadius: RADIUS.full,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.primary,
+  },
+  iconBtnDanger: {
+    width: SPACE.xxxl,
+    height: SPACE.xxxl,
+    borderRadius: RADIUS.full,
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: Colors.dangerIconBg,
     borderWidth: 1,
     borderColor: Colors.dangerBorder,
-    borderRadius: RADIUS.chip,
-    paddingHorizontal: SPACE.sm,
-    paddingVertical: SPACE.xs,
-    marginLeft: SPACE.sm,
   },
-  deleteText: {
-    fontSize: FONT.subheading,
-    color: Colors.dangerColor,
+  emptyState: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: SPACE.md,
+    paddingHorizontal: SPACE.xxl,
   },
-  form: {
-    marginTop: SPACE.lg,
+  emptyTitle: {
+    color: Colors.primaryTint90,
+    fontSize: FONT.heading,
+    fontWeight: WEIGHT.semibold,
+    textAlign: "center",
+  },
+  emptyBody: {
+    color: Colors.grayTint70,
+    fontSize: FONT.body,
+    textAlign: "center",
+  },
+  emptyCta: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACE.xs,
+    paddingHorizontal: SPACE.lg,
+    paddingVertical: SPACE.md,
+    borderRadius: RADIUS.sm,
+    backgroundColor: Colors.primary,
+    marginTop: SPACE.md,
+  },
+  emptyCtaText: {
+    color: Colors.primaryTint90,
+    fontSize: FONT.body,
+    fontWeight: WEIGHT.semibold,
+  },
+  limitText: {
+    color: Colors.grayTint70,
+    fontSize: FONT.body,
+    textAlign: "center",
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: Colors.blackAlpha60,
+    justifyContent: "center",
+    padding: SPACE.lg,
+  },
+  modalDismiss: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  modalCard: {
+    backgroundColor: Colors.grayShade30,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: Colors.whiteAlpha10,
+    padding: SPACE.lg,
+    gap: SPACE.sm,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: SPACE.sm,
+  },
+  modalTitle: {
+    color: Colors.primaryTint90,
+    fontSize: FONT.heading,
+    fontWeight: WEIGHT.semibold,
+  },
+  inputLabel: {
+    color: Colors.grayTint70,
+    fontSize: FONT.caption,
+    fontWeight: WEIGHT.medium,
+    marginTop: SPACE.sm,
   },
   input: {
-    fontSize: FONT.subheading,
     color: Colors.primaryTint90,
+    fontSize: FONT.subheading,
     backgroundColor: Colors.grayShade20,
     borderWidth: 1,
     borderColor: Colors.whiteAlpha10,
     borderRadius: RADIUS.xs,
-    padding: SPACE.sm,
-    marginBottom: SPACE.sm,
+    padding: SPACE.md,
   },
-
   helperText: {
-    fontSize: FONT.caption,
     color: Colors.grayTint70,
-    marginBottom: SPACE.lg,
+    fontSize: FONT.caption,
+    marginTop: SPACE.xs,
   },
   error: {
-    fontSize: FONT.body,
     color: Colors.dangerColor,
-    marginBottom: SPACE.sm,
-  },
-  buttonPrimary: {
-    marginTop: SPACE.md,
-    padding: SPACE.md,
-    backgroundColor: Colors.primary,
-    borderRadius: RADIUS.sm,
-    alignItems: "center",
-  },
-  buttonText: {
-    fontSize: FONT.heading,
-    color: Colors.primaryTint90,
-    fontWeight: WEIGHT.bold,
-  },
-  limitText: {
     fontSize: FONT.body,
-    color: Colors.grayTint70,
-    textAlign: "center",
+    marginTop: SPACE.sm,
+  },
+  modalActions: {
+    flexDirection: "row",
+    gap: SPACE.md,
     marginTop: SPACE.md,
+  },
+  modalCancel: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: SPACE.md,
+    borderRadius: RADIUS.xs,
+    backgroundColor: Colors.whiteAlpha10,
+    borderWidth: 1,
+    borderColor: Colors.whiteAlpha20,
+  },
+  modalCancelText: {
+    color: Colors.grayTint70,
+    fontSize: FONT.body,
+    fontWeight: WEIGHT.medium,
+  },
+  modalSave: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: SPACE.md,
+    borderRadius: RADIUS.xs,
+    backgroundColor: Colors.primary,
+  },
+  modalSaveText: {
+    color: Colors.primaryTint90,
+    fontSize: FONT.body,
+    fontWeight: WEIGHT.semibold,
   },
 });
