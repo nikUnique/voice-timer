@@ -237,7 +237,7 @@ function CreateTimer() {
               textStyle={buttonStyle}
               backspaceIcon={
                 <Ionicons
-                  name='backspace'
+                  name="backspace"
                   color={Colors.primaryTint90}
                   size={FONT.headline}
                   style={buttonStyle}
@@ -246,7 +246,7 @@ function CreateTimer() {
             />
             <View style={styles.iconContainer}>
               <IconButton
-                icon='play'
+                icon="play"
                 color={Colors.primaryTint90}
                 onPress={onCreateTimer}
                 size={FONT.headline}
@@ -263,7 +263,6 @@ function CreateTimer() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    zIndex: -1,
     justifyContent: "center",
     alignItems: "center",
     width: "80%",

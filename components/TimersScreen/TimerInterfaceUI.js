@@ -39,7 +39,7 @@ export default memo(function TimerInterfaceUI({
           <Text style={nameText}>{name}</Text>
 
           <IconButton
-            icon='create'
+            icon="create"
             size={24}
             color={Colors.primaryTint90}
             onPress={!isActive ? startChangeNameHandler : () => {}}
@@ -70,7 +70,7 @@ export default memo(function TimerInterfaceUI({
             >
               <IconButton
                 size={FONT.display}
-                icon='refresh-outline'
+                icon="refresh-outline"
                 color={Colors.primaryTint90}
                 onPress={resetTimerRef.current}
                 style={styles.refreshButton}
@@ -80,7 +80,7 @@ export default memo(function TimerInterfaceUI({
               <View style={styles.buttonWrapper}>
                 <IconButton
                   size={FONT.display}
-                  icon='stop'
+                  icon="stop"
                   color={Colors.primaryTint90}
                   onPress={resetTimerRef.current}
                   style={[
@@ -106,7 +106,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: Colors.primaryShade30,
-    zIndex: -1,
   },
 
   centerItems: {
