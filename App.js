@@ -4,6 +4,10 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as Brightness from "expo-brightness";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -58,6 +62,7 @@ function AppWithContext() {
   const bootStartedAtRef = useRef(null);
   const { dimScreenRef, keepScreenDim } = useSettingsData();
   const { setContacts } = useContactsData();
+  const insets = useSafeAreaInsets();
 
   const dismissBoot = useCallback(function dismissBoot() {
     if (bootDismissedRef.current) return;
@@ -125,23 +130,26 @@ function AppWithContext() {
     };
   }, []);
 
-  useEffect(function () {
-    async function load() {
-      try {
-        const contacts = await getItemFromStorage("contacts");
+  useEffect(
+    function () {
+      async function load() {
+        try {
+          const contacts = await getItemFromStorage("contacts");
 
-        if (contacts) {
-          setContacts(contacts);
+          if (contacts) {
+            setContacts(contacts);
+          }
+        } catch (error) {
+          console.error(
+            `An error occurred in the loading of Contacts from async storage`,
+            error,
+          );
         }
-      } catch (error) {
-        console.error(
-          `An error occurred in the loading of Contacts from async storage`,
-          error,
-        );
       }
-    }
-    load();
-  }, [setContacts]);
+      load();
+    },
+    [setContacts],
+  );
 
   const restoreBrightness = useCallback(
     async function () {
@@ -201,7 +209,13 @@ function AppWithContext() {
         />
       }
 
-      <View style={[styles.appShell, bootVisible && styles.appHidden]}>
+      <View
+        style={[
+          styles.appShell,
+          bootVisible && styles.appHidden,
+          { marginBottom: insets.bottom },
+        ]}
+      >
         <NavigationContainer>
           <ContextMenu
             modalIsVisible={modalIsVisible}
@@ -353,7 +367,9 @@ export default memo(function App() {
   return (
     <>
       <VoiceRecognizerProvider>
-        <AppWithContext />
+        <SafeAreaProvider>
+          <AppWithContext />
+        </SafeAreaProvider>
       </VoiceRecognizerProvider>
     </>
   );
@@ -362,15 +378,16 @@ export default memo(function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // Shows through the translucent status bar (and behind the transparent
-    // app layer) during boot, so the strip above never flashes window white.
-    backgroundColor: Colors.primary,
+    // Black shows through as the bottom strip reserved for the system
+    // navigation bar under edge-to-edge (see marginBottom on appShell).
+    backgroundColor: "#000000",
   },
   // App is fully laid out but invisible while the boot overlay is up —
   // opacity keeps measurement (listHeight, onLayout) working, unlike
   // display: none, so the reveal has nothing left to pop.
   appShell: {
     flex: 1,
+    backgroundColor: Colors.primary,
   },
   appHidden: {
     opacity: 0,

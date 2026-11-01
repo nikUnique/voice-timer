@@ -11,9 +11,13 @@
       "translucent": true
     },
     "androidNavigationBar": {
-      "backgroundColor": "#000000"
+      "backgroundColor": "#000000",
+      "enforceContrast": false
     },
-    "plugins": ["./lib/withNotifeeAndroidFix", "expo-font"],
+    "plugins": [
+      "./lib/withNotifeeAndroidFix",
+      "expo-font"
+    ],
     "android": {
       "permissions": [
         "WRITE_SETTINGS",
@@ -23,7 +27,8 @@
       "adaptiveIcon": {
         "backgroundColor": "#ADD8E6"
       },
-      "package": "com.commitnobug.voice_timer"
+      "package": "com.commitnobug.voice_timer",
+      "edgeToEdgeEnabled": true
     },
     "scheme": "voicetimer"
   }
