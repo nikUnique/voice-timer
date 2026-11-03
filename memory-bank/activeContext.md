@@ -11,6 +11,11 @@ Uncommitted: notification-tap scroll fix — 2s delayed scroll in
 `useTimerList.js` (React 19 `react-hooks/refs` render error). Both verified
 on-device by the user.
 
+Uncommitted: TTS completion routed through `useTTS`'s single global listeners
+keyed by utterance id — `useSpeak` now registers zero listeners
+(`hooks/shared/useSpeak.js`, `hooks/shared/useTTS.js`). Lint clean; on-device
+verification pending.
+
 ## Recent changes
 
 | Commit    | What                                                   |

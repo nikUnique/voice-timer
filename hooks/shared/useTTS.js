@@ -1,9 +1,16 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { NativeModules } from "react-native";
 import Tts from "react-native-tts";
 import * as vosk from "react-native-vosk";
-import { useRefsData } from "../../context/VoiceRecognizerContext";
+import {
+  useRefsData,
+  useSettingsData,
+} from "../../context/VoiceRecognizerContext";
+import { TTS_TIMEOUT, VOICE_FEEDBACK_SPEEDS } from "../../utils/config";
+import { sleep } from "../../utils/helpers";
 import { getSharedObject } from "../../utils/sharedVariables";
+
+export const ttsSpeak = { current: null };
 
 export function useTTS() {
   const {
@@ -13,7 +20,12 @@ export function useTTS() {
     isMediaPausedManuallyRef,
     currentSpeechRef,
     ignoreUntilRef,
+    resultEventRef,
   } = useRefsData();
+  const { isVoiceFeedbackEnabled, voiceFeedbackSpeedRef } = useSettingsData();
+
+  const pendingRef = useRef(new Map());
+
   const releaseAudioFocus = useCallback(
     function () {
       if (
@@ -29,10 +41,6 @@ export function useTTS() {
   );
 
   const resumeRecognizer = useCallback(function resumeRecognizer() {
-    // Discard the TTS echo that Vosk may have buffered/decoded just before
-    // TTS ended, so the trailing segment cannot surface as a late result
-    // after ignoreUntil expires. reset() keeps the mic running.
-    // Called on every way TTS can end (finish, cancel, error).
     try {
       vosk.reset();
     } catch (error) {
@@ -51,11 +59,9 @@ export function useTTS() {
   const doneTalking = useCallback(
     async function doneTalking(e) {
       releaseAudioFocus();
-
       console.log("Done talking");
       ignoreUntilRef.current = Date.now() + 500;
       currentSpeechRef.current = "";
-
       resumeRecognizer();
       setTimeout(function () {
         resumeRecognizer();
@@ -72,7 +78,6 @@ export function useTTS() {
       setTimeout(function () {
         resumeRecognizer();
       }, 500);
-
       isListeningRef.current = true;
       setIsListening(true);
     },
@@ -95,21 +100,152 @@ export function useTTS() {
     [releaseAudioFocus, resumeRecognizer],
   );
 
+  const speak = useCallback(
+    async function speak(text, options = {}) {
+      try {
+        if (!isVoiceFeedbackEnabled) {
+          return;
+        }
+        currentSpeechRef.current = text.toLowerCase();
+        if (text.trim()) {
+          resultEventRef.current?.remove();
+          setIsListening(false);
+          isListeningRef.current = false;
+          await Tts.setDefaultRate(
+            +voiceFeedbackSpeedRef.current ||
+              VOICE_FEEDBACK_SPEEDS.find(
+                (option) => option.label.toLowerCase() === "normal",
+              ).value,
+          );
+          if (
+            !options?.skipWiredDelay &&
+            (await NativeModules.AudioFocusModule.isWiredHeadsetConnected())
+          ) {
+            await sleep(0.5);
+          }
+          const utteranceId = await Tts.speak(text);
+          return new Promise((resolve, reject) => {
+            const timer = setTimeout(() => {
+              const p = pendingRef.current.get(utteranceId);
+              if (p) {
+                pendingRef.current.delete(utteranceId);
+                isListeningRef.current = true;
+                setIsListening(true);
+                resumeRecognizer();
+                reject(new Error(`TTS timed out after ${TTS_TIMEOUT}ms`));
+              }
+            }, TTS_TIMEOUT);
+            pendingRef.current.set(utteranceId, { resolve, reject, timer });
+          });
+        }
+      } catch (error) {
+        console.error("An error occurred in the speak function 🤯", error);
+      }
+    },
+    [
+      currentSpeechRef,
+      isListeningRef,
+      isVoiceFeedbackEnabled,
+      resultEventRef,
+      setIsListening,
+      voiceFeedbackSpeedRef,
+      resumeRecognizer,
+    ],
+  );
+
   useEffect(
     function () {
-      Tts.removeAllListeners("tts-start");
-      Tts.removeAllListeners("tts-finish");
-      Tts.removeAllListeners("tts-error");
-      Tts.removeAllListeners("tts-cancel");
-      Tts.addEventListener("tts-start", startTalking);
-      Tts.addEventListener("tts-finish", (e) => {
-        doneTalking(e);
+      ttsSpeak.current = speak;
+    },
+    [speak],
+  );
+
+  useEffect(function () {
+    function pickBestVoice(voices) {
+      const enUs = voices.filter(
+        (v) => v.language === "en-US" && !v.notInstalled,
+      );
+      const sorted = enUs.sort((a, b) => {
+        if (a.networkConnectionRequired !== b.networkConnectionRequired)
+          return a.networkConnectionRequired ? 1 : -1;
+        return b.quality - a.quality;
       });
-      Tts.addEventListener("tts-cancel", () => {
-        releaseAudioFocus();
-        resumeRecognizer();
-      });
-      Tts.addEventListener("tts-error", errorTalking);
+      return sorted[0] ?? null;
+    }
+    Tts.getInitStatus().then(async () => {
+      Tts.setDefaultLanguage("en-US");
+      const available = await Tts.voices();
+      const bestVoice = pickBestVoice(available);
+      if (bestVoice) {
+        await Tts.setDefaultVoice(bestVoice.id);
+      }
+    });
+  }, []);
+
+  useEffect(
+    function () {
+      const subs = [];
+      subs.push(Tts.addEventListener("tts-start", startTalking));
+      subs.push(
+        Tts.addEventListener("tts-finish", (e) => {
+          const id = e?.utteranceId;
+          let p = id != null ? pendingRef.current.get(id) : null;
+          if (!p && pendingRef.current.size === 1) {
+            const onlyKey = pendingRef.current.keys().next().value;
+            p = pendingRef.current.get(onlyKey);
+            if (p) pendingRef.current.delete(onlyKey);
+          } else if (p) {
+            pendingRef.current.delete(id);
+          }
+          if (p) {
+            clearTimeout(p.timer);
+            p.resolve({ status: "finished" });
+          }
+          doneTalking(e);
+        }),
+      );
+      subs.push(
+        Tts.addEventListener("tts-cancel", (e) => {
+          const id = e?.utteranceId;
+          let p = id != null ? pendingRef.current.get(id) : null;
+          if (!p && pendingRef.current.size === 1) {
+            const onlyKey = pendingRef.current.keys().next().value;
+            p = pendingRef.current.get(onlyKey);
+            if (p) pendingRef.current.delete(onlyKey);
+          } else if (p) {
+            pendingRef.current.delete(id);
+          }
+          if (p) {
+            clearTimeout(p.timer);
+            p.resolve({ status: "cancelled" });
+          }
+          releaseAudioFocus();
+          resumeRecognizer();
+        }),
+      );
+      subs.push(
+        Tts.addEventListener("tts-error", (e) => {
+          const id = e?.utteranceId;
+          let p = id != null ? pendingRef.current.get(id) : null;
+          if (!p && pendingRef.current.size === 1) {
+            const onlyKey = pendingRef.current.keys().next().value;
+            p = pendingRef.current.get(onlyKey);
+            if (p) pendingRef.current.delete(onlyKey);
+          } else if (p) {
+            pendingRef.current.delete(id);
+          }
+          if (p) {
+            clearTimeout(p.timer);
+            p.reject(e);
+          }
+          errorTalking();
+        }),
+      );
+      return function () {
+        subs.forEach((sub) => {
+          if (sub && typeof sub.remove === "function") sub.remove();
+        });
+      };
     },
     [
       doneTalking,
@@ -119,13 +255,4 @@ export function useTTS() {
       startTalking,
     ],
   );
-
-  useEffect(function () {
-    return () => {
-      Tts.removeAllListeners("tts-start");
-      Tts.removeAllListeners("tts-finish");
-      Tts.removeAllListeners("tts-error");
-      Tts.removeAllListeners("tts-cancel");
-    };
-  }, []);
 }
