@@ -167,6 +167,35 @@ export default function TimerList({
 
   useEffect(
     function () {
+      const scrollToCurrentTimer = function () {
+        if (sortedTimers?.length <= 1) return;
+
+        if (!listHeight) {
+          setTimeout(scrollToCurrentTimer, 250);
+          return;
+        }
+
+        const targetIndexRaw =
+          leastTimeTimerRef.current?.index ?? safeCurrentIndex ?? 0;
+        const targetIndex = Math.min(
+          Math.max(targetIndexRaw, 0),
+          sortedTimers.length - 1,
+        );
+
+        try {
+          flatListRef.current?.scrollToOffset({
+            offset: targetIndex * listHeight,
+            animated: false,
+          });
+          setCurrentIndex(targetIndex);
+        } catch (error) {
+          console.error(
+            "An error occurred during app-active scrolling",
+            error,
+          );
+        }
+      };
+
       const appStateListener = AppState.addEventListener(
         "change",
         (nextAppState) => {
@@ -176,13 +205,22 @@ export default function TimerList({
             !getSharedObject()?.resetAllFinishedFromApp
           ) {
             handleReadyState(false);
+            setTimeout(scrollToCurrentTimer, 0);
           }
         },
       );
 
       return () => appStateListener.remove();
     },
-    [activateTimerRef, handleReadyState, isReady, leastTimeTimerRef],
+    [
+      activateTimerRef,
+      handleReadyState,
+      isReady,
+      leastTimeTimerRef,
+      listHeight,
+      safeCurrentIndex,
+      sortedTimers,
+    ],
   );
 
   return (
