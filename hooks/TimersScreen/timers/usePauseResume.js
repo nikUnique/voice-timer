@@ -7,7 +7,7 @@ import {
   updateSharedObject,
 } from "../../../utils/sharedVariables";
 
-import { AppState } from "react-native";
+import { AppState, NativeModules } from "react-native";
 import { setItemInStorage } from "../../../utils/helpers";
 
 import { useRefsData } from "../../../context/VoiceRecognizerContext";
@@ -156,6 +156,8 @@ export function usePauseResume({
         });
 
         await updateTime("yes");
+
+        NativeModules.TimerTick?.startTicking();
       } catch (err) {
         console.error("An error occurred ⛑️", err);
       }
@@ -252,6 +254,8 @@ export function usePauseResume({
           clearTimeout(timeoutRef.current);
           timeoutRef.current = null;
         }, 100);
+
+        NativeModules.TimerTick?.stopTicking();
 
         emitter.emit(`pause-${name}`);
         updateSharedObject({

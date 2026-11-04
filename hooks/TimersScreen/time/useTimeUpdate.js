@@ -1,4 +1,5 @@
 import notifee from "@notifee/react-native";
+import { NativeEventEmitter, NativeModules } from "react-native";
 import { useCallback, useEffect, useRef } from "react";
 
 import Time from "../../../components/TimersScreen/Time";
@@ -14,6 +15,11 @@ import {
 } from "../../../utils/sharedVariables";
 import { useTimeUpdateFunctions } from "./useTimeUpdateFunctions";
 
+const TimerTickModule = NativeModules.TimerTick;
+const tickEmitter = TimerTickModule
+  ? new NativeEventEmitter(TimerTickModule)
+  : null;
+
 export function useTimeUpdate({
   timeLeftRef,
   isPausedRef,
@@ -24,8 +30,12 @@ export function useTimeUpdate({
   updateTimerLabel,
   timeLabelRef,
   timeoutRef,
+  isActive,
+  isPaused,
 }) {
   const updateTimeCallbackRef = useRef(null);
+  const isUpdatingRef = useRef(false);
+  const pendingTickRef = useRef(false);
   const {
     leastTimeTimerRef,
     setIsAlarmingScreen,
@@ -230,38 +240,6 @@ export function useTimeUpdate({
           updateTimerLabel();
           await sendNotification();
         }
-
-        clearTimeout(timeoutRef.current);
-
-        let improvedTime;
-
-        if (
-          Date.now().toString().slice(-3) >
-          timerStartedRef.current.toString().slice(-3)
-        ) {
-          improvedTime = Math.abs(
-            Date.now().toString().slice(-3) -
-              timerStartedRef.current.toString().slice(-3),
-          );
-        }
-
-        if (
-          Date.now().toString().slice(-3) <
-          timerStartedRef.current.toString().slice(-3)
-        ) {
-          const leftOverUntil1000 =
-            1000 - timerStartedRef.current.toString().slice(-3);
-
-          improvedTime = +Date.now().toString().slice(-3) + +leftOverUntil1000;
-        }
-
-        if (timeLeftRef.current > 0) {
-          timeoutRef.current = setTimeout(
-            updateTimeCallbackRef.current,
-            1000 - improvedTime,
-          );
-          updateSharedObject({ [`timeoutId-${name}`]: timeoutRef.current });
-        }
       } catch (err) {
         console.error("An error occurred in updateTime function 🔺", err);
       }
@@ -274,8 +252,6 @@ export function useTimeUpdate({
       updateDelayAndLeastTimer,
       leastTimeTimerRef,
       alertingTimerNamesRef,
-      timeoutRef,
-      timerStartedRef,
       prepareForAlarm,
       setIsAlarmingScreen,
       updateLeastTimer,
@@ -289,6 +265,75 @@ export function useTimeUpdate({
       updateTimeCallbackRef.current = updateTime;
     },
     [updateTime],
+  );
+
+  // Manage native ticker lifecycle on mount/unmount only. Transitions
+  // (start/pause/resume/reset) are driven imperatively by the action
+  // functions so they work even when React effects do not commit while
+  // the app is backgrounded. Reference counting in the native module
+  // handles multiple concurrent timers.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(
+    function () {
+      let started = false;
+      if (isActive && !isPaused && TimerTickModule) {
+        TimerTickModule.startTicking();
+        started = true;
+      }
+      return function () {
+        if (started && TimerTickModule) {
+          TimerTickModule.stopTicking();
+        }
+      };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  // Subscribe to native "TimerTick" events. Uses updateTimeCallbackRef so it
+  // always calls the latest updateTime without re-subscribing.
+  // Missed ticks (when an update is still in progress) are queued (latest-wins)
+  // so no second is lost and the display stays precise.
+  useEffect(
+    function () {
+      if (!tickEmitter) return;
+
+      const subscription = tickEmitter.addListener("TimerTick", function () {
+        if (!timerStartedRef.current) return;
+        if (isPausedRef.current) return;
+        if (timeLeftRef.current <= 0) return;
+
+        if (isUpdatingRef.current) {
+          pendingTickRef.current = true;
+          return;
+        }
+
+        isUpdatingRef.current = true;
+
+        function runUpdate() {
+          const fn = updateTimeCallbackRef.current;
+          if (typeof fn !== "function") {
+            isUpdatingRef.current = false;
+            return;
+          }
+          fn().finally(function () {
+            if (pendingTickRef.current) {
+              pendingTickRef.current = false;
+              runUpdate();
+            } else {
+              isUpdatingRef.current = false;
+            }
+          });
+        }
+
+        runUpdate();
+      });
+
+      return function () {
+        subscription.remove();
+      };
+    },
+    [isPausedRef, timeLeftRef, timerStartedRef],
   );
 
   return { updateTime };

@@ -211,6 +211,7 @@ export function useExecuteCommand({
           commandExecuted = true;
           spokenFeedback = `${name} resumed`;
         }
+
         if (
           hasPhrase(
             lowerCommand,
