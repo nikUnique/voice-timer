@@ -295,7 +295,7 @@ export function useResetTimer({
         wasActiveBeforeLockRef.current = false;
 
         if (isPhoneLocked && !getSharedObject().alertingTimerNames.length) {
-          NativeModules.NativeUtilsModule.pressBack();
+          NativeModules.NativeUtilsModule.moveAppToBackground();
         }
       } catch (error) {
         console.error(`An error occurred in resetTimer function ❎`, error);
