@@ -2,43 +2,32 @@
 
 ## Current focus
 
-Commands-screen truthfulness, closed out. The screen is now the source of
-truth for voice-command availability, and the handlers enforce what it
-claims. Everything is committed; **14 commits are unpushed**.
-
-Uncommitted: notification-tap scroll fix — 2s delayed scroll in
-`TimerList.js` plus `activateTimerRef.current` moved into a `useEffect` in
-`useTimerList.js` (React 19 `react-hooks/refs` render error). Both verified
-on-device by the user.
-
-Uncommitted: TTS completion routed through `useTTS`'s single global listeners
-keyed by utterance id — `useSpeak` now registers zero listeners
-(`hooks/shared/useSpeak.js`, `hooks/shared/useTTS.js`). Lint clean; on-device
-verification pending.
+TimerTick native module (commit `aac9652`) is now wired on the JS side: the
+self-scheduling `setTimeout` chain and drift math in `useTimeUpdate.js` have
+been replaced with a listener on the native `"TimerTick"` event, with
+`startTicking`/`stopTicking` managed per timer lifecycle via reference counting.
+Alarm, notification, and history logic are untouched. Six commits are unpushed.
 
 ## Recent changes
 
 | Commit    | What                                                   |
 | --------- | ------------------------------------------------------ |
-| `5400206` | Enforce the "Make and answer calls with voice" switch  |
-| `4d7392d` | Restore skip to the available sets; rewrite the legend |
-| `f3816c1` | `Text` → `ui/AppText` across 21 files                  |
-| `760a6df` | `.clinerules/timeouts.md`                              |
-| `2500178` | `.clinerules/uncertainty.md`                           |
-* (uncommitted) | Navigation bar set to black (no teal flicker on reload) — `MainActivity.kt`, `styles.xml`, `app.json`
+| `6cbfc58` | Add AGENTS.md                                          |
+| `aac9652` | Add native TimerTick module and register it             |
+| `0e3346f` | Scroll to current timer when app becomes active         |
+| `da3941b` | chore(scripts): add installApk npm script              |
+| `15e2a3e` | chore(android): target Android 16 (API 36)             |
+| `54e8b9b` | Route TTS completion through useTTS global listeners   |
 
 `git log` is the authoritative history. This table is a pointer, not a
 substitute — it is deliberately short.
 
 ## Open items
 
-- **14 commits are unpushed.** Pushing is the user's call, not the agent's.
-- **`9060045`'s message still asserts skip was blocked**, which `4d7392d`
-  reverses. The correction lives in `4d7392d`'s body rather than in rewritten
-  history — squash or revert was offered and the user has not decided.
-- **No automated tests**, so the call-switch fix (`5400206`) is verified by
-  lint plus code tracing, not by running the app. On-device confirmation is
-  still outstanding.
+- **Six commits are unpushed.** Pushing is the user's call, not the agent's.
+- **On-device verification pending** for TimerTick background advancement and
+  wake-lock lifecycle (lock phone, watch `npm run adbLog` for `New time comes-<name>` logs).
+- **No automated tests**, so verification is lint plus on-device manual testing.
 
 ## Deliberate behaviours (do not "fix" these)
 

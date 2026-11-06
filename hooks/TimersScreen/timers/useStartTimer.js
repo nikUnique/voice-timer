@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from "react";
+import { NativeModules } from "react-native";
 
 import { useRefsData } from "../../../context/VoiceRecognizerContext";
 import { MAX_HISTORY } from "../../../utils/config";
@@ -88,6 +89,8 @@ export function useStartTimer({
           soundIsPlayedRef.current = false;
           isPausedRef.current = false;
           timerStateRef.current = "running";
+
+          NativeModules.TimerTick?.startTicking();
           updateSharedObject({
             runningTimerNames: [
               ...new Set([...getSharedObject().runningTimerNames, name]),

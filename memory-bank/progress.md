@@ -15,11 +15,11 @@
 
 ## Current status
 
-The app is functional and maintained. Recent work has been a truthfulness pass
-on the Commands screen rather than new features: it is now the source of truth
-for voice-command availability, its legend and availability sets match the real
-gating, `Text` runs through `ui/AppText` everywhere, and the voice-calling
-switch is actually enforced. Fourteen commits are unpushed.
+The app is functional and maintained. Recent work: TimerTick native module
+wired into JS (replacing the `setTimeout` chain in `useTimeUpdate.js` with
+native ticks + wake lock for background timer advancement), TTS completion
+routing, notification-tap scroll fix, and a truthfulness pass on the Commands
+screen. Six commits are unpushed.
 
 ## Known issues
 
@@ -38,6 +38,8 @@ now stays pinned through a burst of commands and fades 5s after the last one.
   files, so verification is lint plus manual on-device testing.
 - iOS is scaffolded under `ios/`, but the native modules and all recent work are
   Android-first. iOS behaviour is unverified.
+- TimerTick background advancement and wake-lock lifecycle are wired on the JS
+  side but not yet verified on a physical device.
 
 ## Evolution of decisions
 

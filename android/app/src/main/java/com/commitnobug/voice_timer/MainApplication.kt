@@ -25,6 +25,7 @@ class MainApplication : Application(), ReactApplication {
                     add(VolumeObserverPackage())
                     add(CallPackage())
                     add(LogcatPackage())
+                    add(TimerTickPackage())
                 }
         )
     }
