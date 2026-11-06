@@ -45,6 +45,7 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
 
     private val audioManager: AudioManager =
     reactContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    private var mediaFocusRequest: AudioFocusRequest? = null
     private var focusRequest: AudioFocusRequest? = null
     private var scoReceiver: BroadcastReceiver? = null
     private var callback: AudioManager.AudioRecordingCallback? = null
@@ -249,10 +250,53 @@ class AudioFocusModule(private val reactContext: ReactApplicationContext) :
     }
 
     @ReactMethod
+    fun requestMediaAudioFocus(callback: Callback) {
+        val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mediaFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+                .setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build()
+                )
+                .setOnAudioFocusChangeListener { focusChange ->
+                    Log.d("AudioFocusModule", "Media focus changed: $focusChange")
+                }
+                .build()
+            audioManager?.requestAudioFocus(mediaFocusRequest!!)
+        } else {
+            @Suppress("DEPRECATION")
+            audioManager?.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+        }
+
+        val granted = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+        Log.d("AudioFocusModule", "requestMediaAudioFocus result: $result, granted: $granted")
+
+        val delay = if (granted && hasWiredHeadsetConnected()) 500L else 0L
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            callback(granted)
+        }, delay)
+    }
+
+    @ReactMethod
+    fun releaseMediaAudioFocus() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mediaFocusRequest?.let { audioManager?.abandonAudioFocusRequest(it) }
+            mediaFocusRequest = null
+            Log.d(TAG, "media audio focus released")
+        } else {
+            @Suppress("DEPRECATION")
+            audioManager?.abandonAudioFocus(null)
+        }
+    }
+
+    @ReactMethod
     fun releaseAudioFocus() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             focusRequest?.let { audioManager?.abandonAudioFocusRequest(it) }
-                Log.d(TAG, "requestAudioFocus released")
+            focusRequest = null
+            Log.d(TAG, "requestAudioFocus released")
         } else {
             @Suppress("DEPRECATION")
             audioManager?.abandonAudioFocus(null)

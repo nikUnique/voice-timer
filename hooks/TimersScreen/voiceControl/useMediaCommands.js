@@ -38,7 +38,7 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
       return;
     }
 
-    NativeModules.AudioFocusModule.requestAudioFocus(async (granted) => {
+    NativeModules.AudioFocusModule.requestMediaAudioFocus(async (granted) => {
       if (granted) pauseMedia();
     });
   }
@@ -66,7 +66,7 @@ export function useMediaCommands({ pauseMedia, resumeMedia }) {
     await resumeMedia();
 
     if (isHeadsetBroken) {
-      await NativeModules.AudioFocusModule.releaseAudioFocus();
+      await NativeModules.AudioFocusModule.releaseMediaAudioFocus();
     } else {
       await NativeModules.NativeUtilsModule.pressHeadsetButton();
     }
