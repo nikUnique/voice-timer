@@ -1,0 +1,288 @@
+diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.kt b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.kt
+index eb40649..1fa3867 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.kt
++++ b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.kt
+@@ -7,6 +7,8 @@
+ 
+ package com.facebook.react.modules.core
+ 
++import android.os.Handler
++import android.os.Looper
+ import android.util.SparseArray
+ import android.view.Choreographer
+ import com.facebook.proguard.annotations.DoNotStrip
+@@ -53,6 +55,16 @@ public open class JavaTimerManager(
+   private val timerIdsToTimers: SparseArray<Timer> = SparseArray()
+   private val isPaused = AtomicBoolean(true)
+   private val isRunningTasks = AtomicBoolean(false)
++  @Volatile private var isDestroyed = false
++  private val mainHandler = Handler(Looper.getMainLooper())
++  private val backgroundTimerRunnable =
++      Runnable {
++        if (shouldUseBackgroundTimerScheduler()) {
++          processTimers(uptimeMillis())
++          scheduleBackgroundTimer()
++        }
++      }
++  private val backgroundTimerScheduleRunnable = Runnable { scheduleBackgroundTimer() }
+   private val timerFrameCallback = TimerFrameCallback()
+   private val idleFrameCallback = IdleFrameCallback()
+   private var currentIdleCallbackRunnable: IdleCallbackRunnable? = null
+@@ -71,43 +83,45 @@ public open class JavaTimerManager(
+ 
+   override fun onHostPause() {
+     isPaused.set(true)
+-    clearFrameCallback()
++    updateTimerScheduler()
+     maybeIdleCallback()
+   }
+ 
+   override fun onHostDestroy() {
+-    clearFrameCallback()
++    if (isPaused.get()) {
++      updateTimerScheduler()
++    }
+     maybeIdleCallback()
+   }
+ 
+   override fun onHostResume() {
+     isPaused.set(false)
++    updateTimerScheduler()
+     // TODO(5195192) Investigate possible problems related to restarting all tasks at the same
+     // moment
+-    setChoreographerCallback()
+     maybeSetChoreographerIdleCallback()
+   }
+ 
+   override fun onHeadlessJsTaskStart(taskId: Int) {
+-    if (!isRunningTasks.getAndSet(true)) {
+-      setChoreographerCallback()
+-      maybeSetChoreographerIdleCallback()
+-    }
++    isRunningTasks.set(true)
++    updateTimerScheduler()
++    maybeSetChoreographerIdleCallback()
+   }
+ 
+   override fun onHeadlessJsTaskFinish(taskId: Int) {
+-    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactApplicationContext)
+-    if (!headlessJsTaskContext.hasActiveTasks()) {
++    if (!hasActiveHeadlessTasks()) {
+       isRunningTasks.set(false)
+-      clearFrameCallback()
+-      maybeIdleCallback()
+     }
++    updateTimerScheduler()
++    maybeIdleCallback()
+   }
+ 
+   public open fun onInstanceDestroy() {
++    isDestroyed = true
+     HeadlessJsTaskContext.getInstance(reactApplicationContext).removeTaskEventListener(this)
+     reactApplicationContext.removeLifecycleEventListener(this)
+-    clearFrameCallback()
++    removeChoreographerTimerCallback()
++    clearBackgroundTimerCallback()
+     clearChoreographerIdleCallback()
+   }
+ 
+@@ -123,10 +137,66 @@ public open class JavaTimerManager(
+   @LegacyArchitecture
+   private fun maybeIdleCallback() {
+     if (isPaused.get() && !isRunningTasks.get()) {
+-      clearFrameCallback()
++      removeChoreographerTimerCallback()
++    }
++  }
++
++  private fun updateTimerScheduler() {
++    if (isDestroyed) {
++      return
++    }
++
++    if (isPaused.get()) {
++      removeChoreographerTimerCallback()
++      if (hasActiveHeadlessTasks()) {
++        scheduleBackgroundTimer()
++      } else {
++        clearBackgroundTimerCallback()
++      }
++    } else {
++      clearBackgroundTimerCallback()
++      setChoreographerCallback()
+     }
+   }
+ 
++  private fun hasActiveHeadlessTasks(): Boolean =
++      HeadlessJsTaskContext.getInstance(reactApplicationContext).hasActiveTasks()
++
++  private fun shouldUseBackgroundTimerScheduler(): Boolean =
++      !isDestroyed && isPaused.get() && hasActiveHeadlessTasks()
++
++  private fun requestBackgroundTimerReschedule() {
++    if (isDestroyed) {
++      return
++    }
++    mainHandler.removeCallbacks(backgroundTimerScheduleRunnable)
++    mainHandler.post(backgroundTimerScheduleRunnable)
++  }
++
++  private fun scheduleBackgroundTimer() {
++    mainHandler.removeCallbacks(backgroundTimerScheduleRunnable)
++    mainHandler.removeCallbacks(backgroundTimerRunnable)
++
++    if (!shouldUseBackgroundTimerScheduler()) {
++      return
++    }
++
++    val nextTimer = synchronized(timerGuard) { timers.peek() } ?: return
++    val minimumDelay =
++        if (nextTimer.repeat && nextTimer.interval < FRAME_DURATION_MS.toLong()) {
++          FRAME_DURATION_MS.toLong() + 1L
++        } else {
++          0L
++        }
++    val delay = max(minimumDelay, nextTimer.targetTime - uptimeMillis() + 1L)
++    mainHandler.postDelayed(backgroundTimerRunnable, delay)
++  }
++
++  private fun clearBackgroundTimerCallback() {
++    mainHandler.removeCallbacks(backgroundTimerRunnable)
++    mainHandler.removeCallbacks(backgroundTimerScheduleRunnable)
++  }
++
+   private fun setChoreographerCallback() {
+     if (!frameCallbackPosted) {
+       reactChoreographer.postFrameCallback(
+@@ -137,9 +207,8 @@ public open class JavaTimerManager(
+     }
+   }
+ 
+-  private fun clearFrameCallback() {
+-    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactApplicationContext)
+-    if (frameCallbackPosted && isPaused.get() && !headlessJsTaskContext.hasActiveTasks()) {
++  private fun removeChoreographerTimerCallback() {
++    if (frameCallbackPosted) {
+       reactChoreographer.removeFrameCallback(
+           ReactChoreographer.CallbackType.TIMERS_EVENTS,
+           timerFrameCallback,
+@@ -186,6 +255,7 @@ public open class JavaTimerManager(
+       timers.add(timer)
+       timerIdsToTimers.put(timerId, timer)
+     }
++    requestBackgroundTimerReschedule()
+   }
+ 
+   /**
+@@ -237,6 +307,7 @@ public open class JavaTimerManager(
+       timerIdsToTimers.remove(timerId)
+       timers.remove(timer)
+     }
++    requestBackgroundTimerReschedule()
+   }
+ 
+   @DoNotStrip
+@@ -282,38 +353,33 @@ public open class JavaTimerManager(
+     return false
+   }
+ 
+-  private inner class TimerFrameCallback : Choreographer.FrameCallback {
+-    // Temporary map for constructing the individual arrays of timers to call
+-    private var timersToCall: WritableArray? = null
++  private fun processTimers(frameTimeMillis: Long) {
++    var timersToCall: WritableArray? = null
++    synchronized(timerGuard) {
++      while (!timers.isEmpty() && timers.peek()!!.targetTime < frameTimeMillis) {
++        val timer = timers.poll() ?: break
++        if (timersToCall == null) {
++          timersToCall = Arguments.createArray()
++        }
++        timersToCall?.pushInt(timer.timerId)
++        if (timer.repeat) {
++          timer.targetTime = frameTimeMillis + timer.interval
++          timers.add(timer)
++        } else {
++          timerIdsToTimers.remove(timer.timerId)
++        }
++      }
++    }
++    timersToCall?.let { javaScriptTimerExecutor.callTimers(it) }
++  }
+ 
++  private inner class TimerFrameCallback : Choreographer.FrameCallback {
+     /** Calls all timers that have expired since the last time this frame callback was called. */
+     override fun doFrame(frameTimeNanos: Long) {
+       if (isPaused.get() && !isRunningTasks.get()) {
+         return
+       }
+-      val frameTimeMillis = frameTimeNanos / 1000000
+-      synchronized(timerGuard) {
+-        while (!timers.isEmpty() && timers.peek()!!.targetTime < frameTimeMillis) {
+-          var timer = timers.poll()
+-          if (timer == null) {
+-            break
+-          }
+-          if (timersToCall == null) {
+-            timersToCall = Arguments.createArray()
+-          }
+-          timersToCall?.pushInt(timer.timerId)
+-          if (timer.repeat) {
+-            timer.targetTime = frameTimeMillis + timer.interval
+-            timers.add(timer)
+-          } else {
+-            timerIdsToTimers.remove(timer.timerId)
+-          }
+-        }
+-      }
+-      timersToCall?.let { timers ->
+-        javaScriptTimerExecutor.callTimers(timers)
+-        timersToCall = null
+-      }
++      processTimers(frameTimeNanos / 1000000)
+       reactChoreographer.postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, this)
+     }
+   }
+diff --git a/node_modules/react-native/ReactAndroid/hermes-engine/build.gradle.kts b/node_modules/react-native/ReactAndroid/hermes-engine/build.gradle.kts
+index faf4e4f..b7e94e2 100644
+--- a/node_modules/react-native/ReactAndroid/hermes-engine/build.gradle.kts
++++ b/node_modules/react-native/ReactAndroid/hermes-engine/build.gradle.kts
+@@ -125,12 +125,38 @@
+         eachFile {
+           // We flatten the unzip as the tarball contains a `facebook-hermes-<SHA>`
+           // folder at the top level.
+-          if (this.path.startsWith("facebook-hermes-")) {
++          if (this.path.startsWith("facebook-hermes-") || this.path.startsWith("meta-hermes-")) {
+             this.path = this.path.substringAfter("/")
+           }
+         }
+       }
+       into(hermesDir)
++      doLast {
++        val cmakeFile = File(hermesDir, "lib/InternalJavaScript/CMakeLists.txt")
++        val original = cmakeFile.readText()
++        val startMarker = "# Convert path from cmake style"
++        val endMarker = "\n\nadd_custom_command("
++        val start = original.indexOf(startMarker)
++        val end = if (start >= 0) original.indexOf(endMarker, start) else -1
++
++        if (start < 0 || end < 0) {
++          throw GradleException("Could not locate Hermes InternalJavaScript path section.")
++        }
++
++        val replacement = """
++            # Use filenames relative to WORKING_DIRECTORY to avoid path escaping issues.
++            set(internal_bytecode_sources_native_path "")
++            foreach(cmake_path IN LISTS internal_bytecode_sources)
++              get_filename_component(source_filename "${'$'}{cmake_path}" NAME)
++              list(APPEND internal_bytecode_sources_native_path "${'$'}{source_filename}")
++            endforeach()
++        """.trimIndent()
++
++        cmakeFile.writeText(
++            original.substring(0, start) + replacement + original.substring(end)
++        )
++        logger.lifecycle("Applied Hermes InternalJavaScript path fix.")
++      }
+     }
+ 
+ // NOTE: ideally, we would like CMake to be installed automatically by the `externalNativeBuild`
