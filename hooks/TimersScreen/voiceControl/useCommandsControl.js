@@ -19,7 +19,7 @@ export function useCommandsControl({
   isReady,
   setResult,
 }) {
-  const { voiceEnabled } = useSettingsData();
+  const { voiceEnabled, bluetoothHeadsetMicEnabledRef } = useSettingsData();
   const { dynamicGrammar, setRecognizedCommand, setRecognizedTime } =
     useRecognizerData();
 
@@ -128,13 +128,15 @@ export function useCommandsControl({
         return;
       }
 
-      const hasBtPermission = await ensureBluetoothPermission();
+      if (bluetoothHeadsetMicEnabledRef?.current) {
+        const hasBtPermission = await ensureBluetoothPermission();
 
-      if (hasBtPermission) {
-        try {
-          await NativeModules.AudioFocusModule.startBluetoothMic();
-        } catch (error) {
-          console.log(error);
+        if (hasBtPermission) {
+          try {
+            await NativeModules.AudioFocusModule.startBluetoothMic();
+          } catch (error) {
+            console.log(error);
+          }
         }
       }
 
@@ -163,6 +165,7 @@ export function useCommandsControl({
     setIsRecognizing,
     setIsListening,
     isListeningRef,
+    bluetoothHeadsetMicEnabledRef,
   ]);
 
   const stop = useCallback(() => {

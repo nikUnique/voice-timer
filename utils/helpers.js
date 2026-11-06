@@ -117,6 +117,13 @@ export const ensureBluetoothPermission = async () => {
     return true; // not needed pre-Android 12
   }
 
+  const alreadyGranted = await PermissionsAndroid.check(
+    PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+  );
+  if (alreadyGranted) {
+    return true;
+  }
+
   const granted = await PermissionsAndroid.request(
     PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
     {

@@ -19,6 +19,7 @@ export default function useSettingsFunctions() {
     isHeadsetBroken,
     isVolumeLocked,
     isSkipCommandsEnabledRef,
+    bluetoothHeadsetMicEnabledRef,
   } = useSettingsData();
 
   const settings = useMemo(
@@ -58,6 +59,7 @@ export default function useSettingsFunctions() {
         voiceFeedbackSpeed: voiceFeedbackSpeedRef.current,
         permitAnswerCalls: permitAnswerCallsRef.current,
         isSkipCommandsEnabled: isSkipCommandsEnabledRef.current,
+        bluetoothHeadsetMicEnabled: bluetoothHeadsetMicEnabledRef.current,
         [key]: value,
       };
       setItemInStorage("settings", updatedSettings);
@@ -68,6 +70,7 @@ export default function useSettingsFunctions() {
       voiceFeedbackSpeedRef,
       permitAnswerCallsRef,
       isSkipCommandsEnabledRef,
+      bluetoothHeadsetMicEnabledRef,
     ],
   );
 

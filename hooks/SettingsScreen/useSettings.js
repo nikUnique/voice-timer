@@ -23,6 +23,7 @@ export function useSettings() {
     setIsHeadsetBroken,
     setIsVolumeLocked,
     isSkipCommandsEnabledRef,
+    bluetoothHeadsetMicEnabledRef,
   } = useSettingsData();
 
   const { timers } = useRefsData();
@@ -78,6 +79,8 @@ export function useSettings() {
           permitAnswerCallsRef.current = retrievedSettings.permitAnswerCalls;
           isSkipCommandsEnabledRef.current =
             retrievedSettings.isSkipCommandsEnabled;
+          bluetoothHeadsetMicEnabledRef.current =
+            retrievedSettings.bluetoothHeadsetMicEnabled ?? false;
           setIsHeadsetBroken(retrievedSettings.isHeadsetBroken);
            setIsVolumeLocked(retrievedSettings.isVolumeLocked ?? retrievedSettings.isHeadsetBroken ?? false);
         } catch (error) {
@@ -92,6 +95,7 @@ export function useSettings() {
     },
     [
       isSkipCommandsEnabledRef,
+      bluetoothHeadsetMicEnabledRef,
       permitAnswerCallsRef,
       requestMicrophone,
       setAlarmVolume,
