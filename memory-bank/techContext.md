@@ -2,7 +2,7 @@
 
 ## Stack
 
-React Native 0.86.3 · React 19.2.3 · Expo SDK 57 (bare workflow — `android/`
+React Native 0.76.3 · React 18.3.1 · Expo SDK 52 (bare workflow — `android/`
 and `ios/` are in the repo, not managed-only).
 
 ## Commands

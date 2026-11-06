@@ -205,8 +205,6 @@ export function useResetTimer({
           clearTimeout(timeoutRef?.current);
         }, 100);
 
-        NativeModules.TimerTick?.stopTicking();
-
         notificationTitleRef.current = "";
         notificationBodyRef.current = "";
         timerStateRef.current = "completed";

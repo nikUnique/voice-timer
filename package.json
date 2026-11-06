@@ -10,8 +10,7 @@
     "bir": "cd android && ./gradlew --stop && ./gradlew assembleRelease && ./gradlew --stop && cd .. && adb install -r ./android/app/build/outputs/apk/release/app-release.apk && adb shell am start -n com.commitnobug.voice_timer/.MainActivity",
     "installApk": "adb install -r ./android/app/build/outputs/apk/release/app-release.apk && adb shell am start -n com.commitnobug.voice_timer/.MainActivity",
     "adbLog": "adb logcat *:S ReactNative:V ReactNativeJS:V MyApp:D AudioFocusModule Call VoskDebug:D YourTag:D AndroidRuntime:E System.err:W System.out:D *:F -v color -v long",
-    "gradleClean": "cd android && ./gradlew --stop && ./gradlew clean && rm -rf .gradle build app/build app/.cxx",
-    "gradleCleanDeep": "npm run gradleClean && rm -rf node_modules/.cache $TMPDIR/metro-* && cd android && ./gradlew cleanBuildCache",
+    "gradleClean": "cd android && ./gradlew clean && cd ..",
     "stopGradle": "cd android && ./gradlew --stop && cd ..",
     "postinstall": "patch-package"
   },
