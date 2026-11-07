@@ -93,23 +93,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const permitAnswerCallsRef = useRef(false);
 
   // Contacts
-  const [contacts, setContacts] = useState([
-    { id: "1", name: "James Carter", phone: "+15551234567" },
-    { id: "2", name: "Maria Lopez", phone: "+15552345678" },
-    { id: "3", name: "David Kim", phone: "+15553456789" },
-    { id: "4", name: "Sarah Johnson", phone: "+15554567890" },
-    { id: "5", name: "Michael Brown", phone: "+15555678901" },
-    { id: "6", name: "Emily Davis", phone: "+15556789012" },
-    { id: "7", name: "Daniel Wilson", phone: "+15557890123" },
-    { id: "8", name: "Olivia Martinez", phone: "+15558901234" },
-    { id: "9", name: "Ryan Anderson", phone: "+15559012345" },
-    { id: "10", name: "Sophia Thomas", phone: "+15550123456" },
-    { id: "11", name: "Ethan Moore", phone: "+15551987654" },
-    { id: "12", name: "Grace Taylor", phone: "+15552876543" },
-    { id: "13", name: "Noah Jackson", phone: "+15553765432" },
-    { id: "14", name: "Ava White", phone: "+15554654321" },
-    { id: "15", name: "Liam Harris", phone: "+15555543210" },
-  ]);
+  const [contacts, setContacts] = useState([]);
 
   const { allTimers, dynamicGrammar, allActions } = useVoiceRecognizerContext({
     commandsRef,
