@@ -174,7 +174,8 @@ export function useCallConfirmationFlow() {
     const { NO } = commandsRef?.current ?? {};
     if (
       !hasPhrase(recognizedCommandRef.current, NO) ||
-      !isCallCommand(prevRecognizedCommandRef.current)
+      !isCallCommand(prevRecognizedCommandRef.current) ||
+      isCallPermissionOff()
     ) {
       return false;
     }
