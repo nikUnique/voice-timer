@@ -87,6 +87,15 @@ export default function About() {
       </Paragraph>
 
       <Paragraph>
+        For more reliable background timers and voice commands on Android,
+        set Voice Timer&apos;s battery usage to &quot;Unrestricted&quot; or turn
+        off battery optimization for the app. This helps prevent Android from
+        stopping the app to save power. The setting name and location vary by
+        phone. Open your phone&apos;s Settings app, find Voice Timer under Apps,
+        and look for its Battery settings.
+      </Paragraph>
+
+      <Paragraph>
         To use any voice command while media is playing, say &quot;{STOP_MEDIA}
         &quot; first. This pauses playback and activates voice control. You can
         then say &quot;{PLAY_MEDIA}&quot; to resume playback.
