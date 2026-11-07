@@ -33,26 +33,26 @@ and no cloud account.
 Commands are matched to timers by whole-word name, so `stop four` and
 `stop fourteen` are never confused.
 
-| Group | Say | Does |
-|---|---|---|
-| **Timers** | `start [name]` | Start a named timer |
-| | `pause [name]` | Pause it |
-| | `resume [name]` | Resume a paused timer |
-| | `stop [name]` | Stop/reset it (while asleep, only a ringing timer) |
-| | `repeat` | Re-run the last individual timer command |
-| | `status [name]` | Report one timer's state |
-| | `status report` | Report all timers |
-| | `stop finished` | Reset every ringing timer |
-| **Sleep** | `timer sleep` | Stop listening (most commands blocked) |
-| | `timer wake up` | Resume listening |
-| **Media** | `pause all media` | Pause all media playback |
-| | `play all media` | Resume paused media |
-| | `skip next` / `skip back` | Change track (off by default — enable in Settings) |
-| **Calls** | `call [contact]` | Start a call, with voice confirmation |
-| | `short call` / `minute call` | Same, but auto-hangs-up after a set time |
-| | `answer call` | Answer an incoming call |
-| **Utility** | `time` | Speak the current time |
-| | `volume up` / `volume down` | Adjust device volume |
+| Group       | Say                          | Does                                               |
+| ----------- | ---------------------------- | -------------------------------------------------- |
+| **Timers**  | `start [name]`               | Start a named timer                                |
+|             | `pause [name]`               | Pause it                                           |
+|             | `resume [name]`              | Resume a paused timer                              |
+|             | `stop [name]`                | Stop/reset it (while asleep, only a ringing timer) |
+|             | `repeat`                     | Re-run the last individual timer command           |
+|             | `status [name]`              | Report one timer's state                           |
+|             | `status report`              | Report all timers                                  |
+|             | `stop finished`              | Reset every ringing timer                          |
+| **Sleep**   | `timer sleep`                | Stop listening (most commands blocked)             |
+|             | `timer wake up`              | Resume listening                                   |
+| **Media**   | `pause all media`            | Pause all media playback                           |
+|             | `play all media`             | Resume paused media                                |
+|             | `skip next` / `skip back`    | Change track (off by default — enable in Settings) |
+| **Calls**   | `call [contact]`             | Start a call, with voice confirmation              |
+|             | `short call` / `minute call` | Same, but auto-hangs-up after a set time           |
+|             | `answer call`                | Answer an incoming call                            |
+| **Utility** | `time`                       | Speak the current time                             |
+|             | `volume up` / `volume down`  | Adjust device volume                               |
 
 Anything blocked by the current state — media playing, the app asleep, or a
 per-command toggle in Settings — is greyed out with a reason on the **Commands**
@@ -99,6 +99,11 @@ npm run gradleClean # clean Gradle build artifacts
 > buffer-reset, so the app never mistakes its own text-to-speech for a command.
 > `patch-package` re-applies it automatically on `npm install`. If you ever
 > upgrade Vosk, regenerate the patch.
+>
+> A second patch (`patches/react-native+0.86.3.patch`) adjusts
+> `JavaTimerManager.kt` so timers keep scheduling in background, sleep, and
+> headless-JS states, and fixes Hermes bytecode path handling for the CMake
+> build. It is also re-applied automatically by `patch-package`.
 
 ## Development
 
@@ -113,4 +118,3 @@ npm run gradleClean # clean Gradle build artifacts
 Released under the [MIT License](./LICENSE).
 
 Copyright (c) 2026 Nik
-
