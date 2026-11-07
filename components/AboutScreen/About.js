@@ -56,6 +56,11 @@ export default function About() {
         It collects no data and works fully offline. See the Commands screen for
         everything you can say.
       </Text>
+      <Text style={styles.paragraph}>
+        The app should work up to Android 16. No guarantees, though, as bugs can
+        appear. If you encounter a bug, please email commitnobug@outlook.com and
+        explain what happened, when it happened, and under what circumstances.
+      </Text>
       <Text> </Text>
 
       <Subtitle>Voice Timer Tips</Subtitle>
