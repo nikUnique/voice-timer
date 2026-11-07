@@ -73,7 +73,7 @@ as my effectiveness depends entirely on its accuracy.
 
 ---
 
-## Project notes — voice-timer
+## Project notes - voice-timer
 
 Added for this repo. Not part of the upstream text.
 
@@ -87,7 +87,7 @@ Added for this repo. Not part of the upstream text.
 
 ### Where the bank sits
 
-`memory-bank/` at the repo root — plain markdown, committed, so it is shared
+`memory-bank/` at the repo root - plain markdown, committed, so it is shared
 with collaborators and reviewed in diffs. Not in `.clineignore`, so it stays
 readable.
 
@@ -102,7 +102,7 @@ already covered and must be documented once, in one place:
 | Uncertainty (ask vs guess, verified vs assumed)   | `.clinerules/uncertainty.md`                          |
 | Shell timeouts (shortest that covers the command) | `.clinerules/timeouts.md`                             |
 | Screen architecture, design tokens, verify steps  | `.cline/skills/add-screen/SKILL.md`                   |
-| Token values                                      | `constants/*.js` — read the files, don't restate them |
+| Token values                                      | `constants/*.js` - read the files, don't restate them |
 | Build / run commands                              | `package.json` scripts                                |
 
 In the bank, reference these by path. Duplicated conventions drift, and the
@@ -121,5 +121,5 @@ real files over prose descriptions of them.
 ### What belongs in `activeContext.md`
 
 This project is small and moves in bursts, so this file should stay tight. It is
-not a changelog — `git log` already is one. Record only what git cannot answer:
+not a changelog - `git log` already is one. Record only what git cannot answer:
 what is in flight, what was tried and rejected, and why a decision was made.

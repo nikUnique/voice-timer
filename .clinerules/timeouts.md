@@ -13,7 +13,7 @@ in 0.14 s buys nothing and can cost 30 s of dead time.
 ### Default to `timeout 5`
 
 Raise only once you have seen the command take longer, and then set the
-ceiling just above the observed runtime — not to a round number that feels
+ceiling just above the observed runtime - not to a round number that feels
 safe.
 
 ### Measured in this workspace
@@ -32,7 +32,7 @@ safe.
 So `timeout 5` covers everything here except whole-project lint, which takes
 ~10 s and gets `timeout 15`. Nothing in this repo needs 30, 60 or 90.
 
-Treat the numbers as a floor to argue from, not a promise — re-measure if a
+Treat the numbers as a floor to argue from, not a promise - re-measure if a
 command surprises you.
 
 ### If it gets killed, measure before raising
@@ -44,5 +44,5 @@ that just converts a visibly hung command into a silently slow one.
 ### A reported non-completion is not a timeout problem
 
 Runners occasionally report "completion could not be observed" for a command
-that did finish. Raising the timeout does not answer that — check the real
+that did finish. Raising the timeout does not answer that - check the real
 exit state and output instead.

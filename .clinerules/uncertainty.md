@@ -15,7 +15,7 @@ answer gets committed.
 Stop before continuing if you cannot answer all of these from the code in front
 of you:
 
-- What does this value actually mean — `true`/`false` polarity, units, who set
+- What does this value actually mean - `true`/`false` polarity, units, who set
   it and when?
 - Which path actually runs at runtime, as opposed to which path exists?
 - Does this look deliberate, or does it look like a bug?
@@ -24,8 +24,8 @@ of you:
 
 When reporting, separate the two rather than blending them:
 
-- **verified** — read the file, can quote the line
-- **assumed** — inferred from a partial reading, not confirmed
+- **verified** - read the file, can quote the line
+- **assumed** - inferred from a partial reading, not confirmed
 
 Never let an assumption read as a verified fact, and do not round a partial
 reading into a confident whole. Naming a limitation once is not the same as

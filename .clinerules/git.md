@@ -3,7 +3,7 @@
 ## Never use `git stash`
 
 Never run `git stash`, `git stash push`, `git stash pop`, `git stash apply`,
-`git stash drop`, `git stash clear`, or `git stash list` — in any form, for any
+`git stash drop`, `git stash clear`, or `git stash list` - in any form, for any
 reason, including as a "quick check" or to compare against a baseline.
 
 Working in progress is never stashed. Uncommitted changes stay in the working
@@ -19,10 +19,10 @@ stash or applied on top of newer work. The risk is not worth the convenience.
 Use these instead:
 
 ```bash
-# State of a file as of a given commit — no working tree changes
+# State of a file as of a given commit - no working tree changes
 git show HEAD:path/to/file.js
 
-# Diff of working-tree changes — read only, safe
+# Diff of working-tree changes - read only, safe
 git --no-pager diff -- path/to/file.js
 
 # Diff against a specific ref
