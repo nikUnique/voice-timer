@@ -134,7 +134,7 @@ export default memo(function VoiceControl() {
 
         <View style={[switchBox, setting]}>
           <ExpandableSetting
-            label="Enable Voice Feedback"
+            label='Enable Voice Feedback'
             labelStyle={settingLabel}
             descriptionStyle={settingDescription}
             description={`Spoken responses for commands. Calling and other confirmation-based commands require this to be on. Some commands, like a time or status report, also rely on speech to respond and won't work without it.`}
@@ -153,81 +153,127 @@ export default memo(function VoiceControl() {
           />
         </View>
         {isVoiceFeedbackEnabled && (
-          <View style={setting}>
-            <View style={dividerLine}></View>
-            <Pressable
-              onPress={() => {
-                setShowVoiceFeedbackSpeed(!showVoiceFeedbackSpeed);
-              }}
-            >
-              {
-                <Text
-                  style={[
-                    settingLabel,
-                    settingBtn,
-                    showVoiceFeedbackSpeed && styles.unfoldedBtn,
-                  ]}
-                >
-                  Voice Feedback Speed: {getSpeedLabel(voiceFeedbackSpeed)}
-                </Text>
-              }
-            </Pressable>
-
-            <View>
-              {showVoiceFeedbackSpeed &&
-                VOICE_FEEDBACK_SPEEDS.map((option, i, arr) => (
-                  <Pressable
-                    key={option.value}
-                    onPress={() => {
-                      setVoiceFeedbackSpeed(+option.value);
-                      setShowVoiceFeedbackSpeed(false);
-                      voiceFeedbackSpeedRef.current = +option.value;
-
-                      updateSettingsInStorage(
-                        "voiceFeedbackSpeed",
-                        +option.value,
-                      );
-                    }}
+          <>
+            <View style={setting}>
+              <View style={dividerLine}></View>
+              <Pressable
+                onPress={() => {
+                  setShowVoiceFeedbackSpeed(!showVoiceFeedbackSpeed);
+                }}
+              >
+                {
+                  <Text
+                    style={[
+                      settingLabel,
+                      settingBtn,
+                      showVoiceFeedbackSpeed && styles.unfoldedBtn,
+                    ]}
                   >
-                    <View
-                      style={[
-                        optionView,
-                        i === arr.length - 1 && styles.lastOption,
-                      ]}
-                    >
-                      <Text style={optionText}>{option.label}</Text>
-                    </View>
-                  </Pressable>
-                ))}
-            </View>
+                    Voice Feedback Speed: {getSpeedLabel(voiceFeedbackSpeed)}
+                  </Text>
+                }
+              </Pressable>
 
-            <Pressable
-              onPress={() => {
-                setShowVoiceFeedbackSpeed(false);
-              }}
-            >
-              <Text style={[settingLabel, settingBtn]}>
+              <View>
+                {showVoiceFeedbackSpeed &&
+                  VOICE_FEEDBACK_SPEEDS.map((option, i, arr) => (
+                    <Pressable
+                      key={option.value}
+                      onPress={() => {
+                        setVoiceFeedbackSpeed(+option.value);
+                        setShowVoiceFeedbackSpeed(false);
+                        voiceFeedbackSpeedRef.current = +option.value;
+
+                        updateSettingsInStorage(
+                          "voiceFeedbackSpeed",
+                          +option.value,
+                        );
+                      }}
+                    >
+                      <View
+                        style={[
+                          optionView,
+                          i === arr.length - 1 && styles.lastOption,
+                        ]}
+                      >
+                        <Text style={optionText}>{option.label}</Text>
+                      </View>
+                    </Pressable>
+                  ))}
+              </View>
+            </View>
+            <View style={dividerLine}></View>
+
+            <View style={setting}>
+              <Text style={[settingLabel, setting]}>
                 Voice Feedback Pitch: {Math.round(voiceFeedbackPitch * 100)}%
               </Text>
-            </Pressable>
-            <Slider
-              containerStyle={{ flex: 1 }}
-              value={[voiceFeedbackPitch]}
-              onValueChange={(value) => {
-                setVoiceFeedbackPitch(value[0]);
-                voiceFeedbackPitchRef.current = value[0];
-                updateSettingsInStorage("voiceFeedbackPitch", value[0]);
-              }}
-              step={0.1}
-              minimumValue={0.5}
-              maximumValue={2}
-              minimumTrackTintColor={Colors.primaryTint90}
-              maximumTrackTintColor={Colors.primaryTint90}
-              thumbTintColor={Colors.primaryTint90}
-              style={slider}
-              trackStyle={{ height: 4, borderRadius: RADIUS.minimal }}
-            />
-          </View>
+              <View style={styles.row}>
+                <Pressable
+                  onPress={() => {
+                    setVoiceFeedbackPitch((prev) =>
+                      prev >= 0.2 ? prev - 0.1 : prev,
+                    );
+                    voiceFeedbackPitchRef.current =
+                      voiceFeedbackPitchRef.current >= 0.2
+                        ? voiceFeedbackPitchRef.current - 0.1
+                        : voiceFeedbackPitchRef.current;
+                    updateSettingsInStorage(
+                      "voiceFeedbackPitch",
+                      voiceFeedbackPitch >= 0.1
+                        ? voiceFeedbackPitch - 0.1
+                        : voiceFeedbackPitch,
+                    );
+                  }}
+                  style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+                >
+                  <View style={styles.stepBtn}>
+                    <Text style={styles.textBtn}>−</Text>
+                  </View>
+                </Pressable>
+
+                <Slider
+                  containerStyle={{ flex: 1 }}
+                  value={[voiceFeedbackPitch]}
+                  onValueChange={(value) => {
+                    setVoiceFeedbackPitch(value[0]);
+                    voiceFeedbackPitchRef.current = value[0];
+                    updateSettingsInStorage("voiceFeedbackPitch", value[0]);
+                  }}
+                  step={0.1}
+                  minimumValue={0.1}
+                  maximumValue={2}
+                  minimumTrackTintColor={Colors.primaryTint90}
+                  maximumTrackTintColor={Colors.primaryTint90}
+                  thumbTintColor={Colors.primaryTint90}
+                  style={slider}
+                  trackStyle={{ height: 4, borderRadius: RADIUS.minimal }}
+                />
+                <Pressable
+                  onPress={() => {
+                    setVoiceFeedbackPitch((prev) =>
+                      prev < 2 ? prev + 0.1 : prev,
+                    );
+                    voiceFeedbackPitchRef.current =
+                      voiceFeedbackPitchRef.current < 2
+                        ? voiceFeedbackPitchRef.current + 0.1
+                        : voiceFeedbackPitchRef.current;
+                    updateSettingsInStorage(
+                      "voiceFeedbackPitch",
+                      voiceFeedbackPitch < 2
+                        ? voiceFeedbackPitch + 0.1
+                        : voiceFeedbackPitch,
+                    );
+                  }}
+                  style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+                >
+                  <View style={styles.stepBtn}>
+                    <Text style={styles.textBtn}>+</Text>
+                  </View>
+                </Pressable>
+              </View>
+            </View>
+          </>
         )}
       </View>
     </>
@@ -237,6 +283,20 @@ export default memo(function VoiceControl() {
 const styles = StyleSheet.create({
   unfoldedBtn: {
     marginBottom: SPACE.xl,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: SPACE.md,
+  },
+  stepBtn: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 36,
+    height: 36,
+    backgroundColor: Colors.primaryTint90,
+    borderRadius: "50%",
   },
 
   lastOption: {
