@@ -8,6 +8,8 @@ import {
   View,
 } from "react-native";
 
+import { Slider } from "@miblanchard/react-native-slider";
+
 import { Text } from "../../ui/AppText";
 
 import { Colors } from "../../constants/colors";
@@ -38,6 +40,7 @@ export default memo(function VoiceControl() {
     settingBtn,
     dividerLine,
     settingDescription,
+    slider,
   } = useSettingsStyles();
 
   const { updateSettingsInStorage, openSettings } = useSettingsFunctions();
@@ -48,12 +51,16 @@ export default memo(function VoiceControl() {
     isVoiceFeedbackEnabled,
     setIsVoiceFeedbackEnabled,
     voiceFeedbackSpeedRef,
+    voiceFeedbackPitchRef,
     microGranted,
     setMicroGranted,
   } = useSettingsData();
 
   const [voiceFeedbackSpeed, setVoiceFeedbackSpeed] = useState(
     voiceFeedbackSpeedRef.current,
+  );
+  const [voiceFeedbackPitch, setVoiceFeedbackPitch] = useState(
+    voiceFeedbackPitchRef.current,
   );
 
   const optionView = {
@@ -127,7 +134,7 @@ export default memo(function VoiceControl() {
 
         <View style={[switchBox, setting]}>
           <ExpandableSetting
-            label='Enable Voice Feedback'
+            label="Enable Voice Feedback"
             labelStyle={settingLabel}
             descriptionStyle={settingDescription}
             description={`Spoken responses for commands. Calling and other confirmation-based commands require this to be on. Some commands, like a time or status report, also rely on speech to respond and won't work without it.`}
@@ -193,6 +200,33 @@ export default memo(function VoiceControl() {
                   </Pressable>
                 ))}
             </View>
+
+            <Pressable
+              onPress={() => {
+                setShowVoiceFeedbackSpeed(false);
+              }}
+            >
+              <Text style={[settingLabel, settingBtn]}>
+                Voice Feedback Pitch: {Math.round(voiceFeedbackPitch * 100)}%
+              </Text>
+            </Pressable>
+            <Slider
+              containerStyle={{ flex: 1 }}
+              value={[voiceFeedbackPitch]}
+              onValueChange={(value) => {
+                setVoiceFeedbackPitch(value[0]);
+                voiceFeedbackPitchRef.current = value[0];
+                updateSettingsInStorage("voiceFeedbackPitch", value[0]);
+              }}
+              step={0.1}
+              minimumValue={0.5}
+              maximumValue={2}
+              minimumTrackTintColor={Colors.primaryTint90}
+              maximumTrackTintColor={Colors.primaryTint90}
+              thumbTintColor={Colors.primaryTint90}
+              style={slider}
+              trackStyle={{ height: 4, borderRadius: RADIUS.minimal }}
+            />
           </View>
         )}
       </View>

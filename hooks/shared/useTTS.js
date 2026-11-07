@@ -22,7 +22,11 @@ export function useTTS() {
     ignoreUntilRef,
     resultEventRef,
   } = useRefsData();
-  const { isVoiceFeedbackEnabled, voiceFeedbackSpeedRef } = useSettingsData();
+  const {
+    isVoiceFeedbackEnabled,
+    voiceFeedbackSpeedRef,
+    voiceFeedbackPitchRef,
+  } = useSettingsData();
 
   const pendingRef = useRef(new Map());
 
@@ -117,6 +121,7 @@ export function useTTS() {
                 (option) => option.label.toLowerCase() === "normal",
               ).value,
           );
+          await Tts.setDefaultPitch(+voiceFeedbackPitchRef.current || 1);
           if (
             !options?.skipWiredDelay &&
             (await NativeModules.AudioFocusModule.isWiredHeadsetConnected())
@@ -149,6 +154,7 @@ export function useTTS() {
       resultEventRef,
       setIsListening,
       voiceFeedbackSpeedRef,
+      voiceFeedbackPitchRef,
       resumeRecognizer,
     ],
   );

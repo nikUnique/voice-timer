@@ -90,6 +90,7 @@ export default function VoiceRecognizerProvider({ children }) {
   const bluetoothHeadsetMicEnabledRef = useRef(false);
   const dimScreenRef = useRef(null);
   const voiceFeedbackSpeedRef = useRef(0.8);
+  const voiceFeedbackPitchRef = useRef(1);
   const permitAnswerCallsRef = useRef(false);
 
   // Contacts
@@ -226,6 +227,7 @@ export default function VoiceRecognizerProvider({ children }) {
       keepScreenDim,
       setKeepScreenDim,
       voiceFeedbackSpeedRef,
+      voiceFeedbackPitchRef,
       permitAnswerCallsRef,
       isHeadsetBroken,
       setIsHeadsetBroken,

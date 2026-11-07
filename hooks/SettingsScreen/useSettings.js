@@ -19,6 +19,7 @@ export function useSettings() {
     setIsVibrating,
     setKeepScreenDim,
     voiceFeedbackSpeedRef,
+    voiceFeedbackPitchRef,
     permitAnswerCallsRef,
     setIsHeadsetBroken,
     setIsVolumeLocked,
@@ -76,13 +77,19 @@ export function useSettings() {
           setIsVibrating(retrievedSettings.isVibrating);
           setKeepScreenDim(retrievedSettings.keepScreenDim);
           voiceFeedbackSpeedRef.current = +retrievedSettings.voiceFeedbackSpeed;
+          voiceFeedbackPitchRef.current =
+            +retrievedSettings.voiceFeedbackPitch || 1;
           permitAnswerCallsRef.current = retrievedSettings.permitAnswerCalls;
           isSkipCommandsEnabledRef.current =
             retrievedSettings.isSkipCommandsEnabled;
           bluetoothHeadsetMicEnabledRef.current =
             retrievedSettings.bluetoothHeadsetMicEnabled ?? false;
           setIsHeadsetBroken(retrievedSettings.isHeadsetBroken);
-           setIsVolumeLocked(retrievedSettings.isVolumeLocked ?? retrievedSettings.isHeadsetBroken ?? false);
+          setIsVolumeLocked(
+            retrievedSettings.isVolumeLocked ??
+              retrievedSettings.isHeadsetBroken ??
+              false,
+          );
         } catch (error) {
           console.error(
             `An error occurred in the load settings function`,
@@ -110,6 +117,7 @@ export function useSettings() {
       setVoiceEnabled,
       timers.length,
       voiceFeedbackSpeedRef,
+      voiceFeedbackPitchRef,
     ],
   );
 }
