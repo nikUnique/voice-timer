@@ -14,8 +14,14 @@ import { RADIUS } from "../../constants/radius";
 import { SPACE } from "../../constants/spacing";
 
 export default memo(function Sound() {
-  const { settingSection, setting, heading, settingLabel, slider } =
-    useSettingsStyles();
+  const {
+    settingSection,
+    setting,
+    heading,
+    settingLabel,
+    slider,
+    settingDescription,
+  } = useSettingsStyles();
   const { alarmVolume, setAlarmVolume } = useSettingsData();
   const { updateSettingsInStorage } = useSettingsFunctions();
 
@@ -52,6 +58,12 @@ export default memo(function Sound() {
       <View style={setting}>
         <Text style={[settingLabel, setting]}>
           Alarm Volume: {Math.round(volume * 100)}%
+        </Text>
+        <Text style={settingDescription}>
+          This percentage is of your phone&apos;s alarm volume, not of the
+          system maximum. If your phone&apos;s alarm volume is at 50%, then 100%
+          here means those full 50%. The alarm will never be louder than your
+          phone&apos;s alarm volume setting.
         </Text>
 
         <View style={styles.row}>
